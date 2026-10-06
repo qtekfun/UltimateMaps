@@ -1,0 +1,32 @@
+### query plaza_mayor
+key 'p' at 19:20:44.161
+key 'l' at 19:20:46.284
+key 'a' at 19:20:48.036
+key 'z' at 19:20:49.877
+key 'a' at 19:20:51.670
+key '_' at 19:20:53.442
+key 'm' at 19:20:55.184
+key 'a' at 19:20:56.985
+key 'y' at 19:20:58.848
+key 'o' at 19:21:00.748
+key 'r' at 19:21:02.582
+### query calle_alcala
+key 'c' at 19:21:10.421
+key 'a' at 19:21:12.435
+key 'l' at 19:21:14.359
+key 'l' at 19:21:16.185
+key 'e' at 19:21:17.935
+key '_' at 19:21:19.732
+key 'a' at 19:21:21.641
+key 'l' at 19:21:23.460
+key 'c' at 19:21:25.303
+key 'a' at 19:21:27.033
+key 'l' at 19:21:29.089
+key 'a' at 19:21:30.928
+### query atocha
+key 'a' at 19:21:39.105
+key 't' at 19:21:40.950
+key 'o' at 19:21:42.881
+key 'c' at 19:21:44.690
+key 'h' at 19:21:46.518
+key 'a' at 19:21:48.341
