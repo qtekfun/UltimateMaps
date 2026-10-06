@@ -1,0 +1,48 @@
+downloaded Fiji 20265303 expected 20265303
+downloaded Spain_Andalusia_Granada 127195575 expected 127195575
+downloaded Spain_Andalusia_Sevilla 124559006 expected 124559006
+downloaded Spain_Aragon 125217697 expected 125217697
+curl: (22) The requested URL returned error: 404
+FAIL Spain_Balearic
+curl: (22) The requested URL returned error: 404
+FAIL Spain_Basque
+curl: (22) The requested URL returned error: 404
+FAIL Spain_Canary
+curl: (23) Failure writing output to destination, passed 8000 returned 3477
+FAIL Spain_Cantabria
+curl: (22) The requested URL returned error: 404
+FAIL Spain_Castile
+curl: (22) The requested URL returned error: 404
+FAIL Spain_Castile
+curl: (22) The requested URL returned error: 404
+FAIL Spain_Castile-La
+curl: (22) The requested URL returned error: 404
+FAIL Spain_Catalonia_Provincia
+curl: (22) The requested URL returned error: 404
+FAIL Spain_Catalonia_Provincia
+curl: (22) The requested URL returned error: 404
+FAIL Spain_Catalonia_Provincia
+curl: (22) The requested URL returned error: 404
+FAIL Spain_Catalonia_Provincia
+curl: (23) Failure writing output to destination, passed 7981 returned 0
+FAIL Spain_Ceuta
+curl: (22) The requested URL returned error: 404
+FAIL Spain_Community
+curl: (22) The requested URL returned error: 404
+FAIL Spain_Comunidad
+curl: (23) Failure writing output to destination, passed 7979 returned 0
+FAIL Spain_Extremadura
+curl: (23) Failure writing output to destination, passed 7979 returned 0
+FAIL Spain_Galicia_North
+curl: (23) Failure writing output to destination, passed 7979 returned 0
+FAIL Spain_Galicia_South
+curl: (22) The requested URL returned error: 404
+FAIL Spain_La
+curl: (23) Failure writing output to destination, passed 8000 returned 3155
+FAIL Spain_Melilla
+curl: (22) The requested URL returned error: 404
+FAIL Spain_Principado
+curl: (22) The requested URL returned error: 404
+FAIL Spain_Region
+curl: (22) The requested URL returned error: 404
+FAIL Spain_Valencian

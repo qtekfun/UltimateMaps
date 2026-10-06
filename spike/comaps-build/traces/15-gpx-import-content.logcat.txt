@@ -1,0 +1,11 @@
+10-06 19:30:50.864 23433 23433 I OMcore  : (main) sdk/Framework.cpp:404 PauseSurfaceRendering(): Pause surface rendering.
+10-06 19:30:50.893  2021  2062 I ActivityTaskManager: Displayed app.comaps.fdroid/app.organicmaps.SplashActivity for user 0: +91ms
+10-06 19:30:51.029 23433 23433 W OMcore  : (main) platform/platform_android.cpp:117 GetReader(): Can't get reader: LocateZipException libs/coding/zip_reader.cpp:55, "Can't locate file inside zip assets/World.mwm"
+10-06 19:30:51.029 23433 23433 W OMcore  : (main) platform/platform_android.cpp:125 GetReader(): Can't get reader for: World.mwm in scope r
+10-06 19:30:51.042 23433 23433 W OMcore  : (main) platform/platform_android.cpp:117 GetReader(): Can't get reader: LocateZipException libs/coding/zip_reader.cpp:55, "Can't locate file inside zip assets/WorldCoasts.mwm"
+10-06 19:30:51.042 23433 23433 W OMcore  : (main) platform/platform_android.cpp:125 GetReader(): Can't get reader for: WorldCoasts.mwm in scope r
+10-06 19:30:51.043 23433 23433 I OMcore  : (main) platform/platform_unix_impl.cpp:115 GetWritableStorageStatus(): statfs return = 0 ; block size = 4096 ; blocks available = 15811076
+10-06 19:30:51.043 23433 23433 I OMcore  : (main) platform/platform_unix_impl.cpp:124 GetWritableStorageStatus(): Free space check: requested = 0 ; available = 64762167296
+10-06 19:30:51.058 23433 23739 W BookmarkManager: (pool-6-thread-1) Importing bookmarks from content://media/external/file/1000001284
+10-06 19:30:51.062 23433 23433 I OMcore  : (main) sdk/Framework.cpp:420 ResumeSurfaceRendering(): Resume surface rendering.
+10-06 19:30:51.076 23433 23471 I OMcore  : (Thread-5) map/bookmark_helpers.cpp:605 SaveKmlFileSafe(): Save kml file of type Text to /data/user/0/app.comaps.fdroid/files/bookmarks/test-spike.kml

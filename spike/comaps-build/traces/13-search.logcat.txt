@@ -1,0 +1,229 @@
+10-06 19:20:41.687 21749 21749 I OMcore  : (main) sdk/Framework.cpp:404 PauseSurfaceRendering(): Pause surface rendering.
+10-06 19:20:41.737  2021  2062 I ActivityTaskManager: Displayed app.comaps.fdroid/app.organicmaps.search.SearchActivity for user 0: +58ms
+10-06 19:20:42.208 21749 21749 I OMcore  : (main) sdk/Framework.cpp:302 DetachSurface(): Detach surface started. destroySurface = 1
+10-06 19:20:42.208 21749 21749 I OMcore  : (main) sdk/Framework.cpp:315 DetachSurface(): Destroy surface.
+10-06 19:20:42.210 21749 21749 I OMcore  : (main) sdk/Framework.cpp:337 DetachSurface(): Detach surface finished.
+10-06 19:20:42.220 21749 21749 I OMcore  : (main) sdk/Framework.cpp:1059 Java_app_organicmaps_sdk_Framework_nativeRemovePlacePageActivationListener(): Remove global map object listener
+10-06 19:20:44.589 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:265 DoSearch(): Search started: Everywhere m2::Rect(-3.709593571472168172, 44.244394582271965533, -3.6980064285278322345, 44.270143788814934283)
+10-06 19:20:46.469 21749 21792 I OMcore  : (Thread-10) search/emitter.hpp:41 Emit(): Emitting a new batch of results: 5 , 1880 ms since the search has started.
+10-06 19:20:46.469 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:267 operator()(): Search ended in 1880 ms.
+10-06 19:20:46.470 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:265 DoSearch(): Search started: Everywhere m2::Rect(-3.709593571472168172, 44.244394582271965533, -3.6980064285278322345, 44.270143788814934283)
+10-06 19:20:47.135 21749 21792 I OMcore  : (Thread-10) search/emitter.hpp:41 Emit(): Emitting a new batch of results: 10 , 665 ms since the search has started.
+10-06 19:20:47.393 21749 21792 I OMcore  : (Thread-10) search/emitter.hpp:41 Emit(): Emitting a new batch of results: 20 , 923 ms since the search has started.
+10-06 19:20:47.393 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:267 operator()(): Search ended in 923 ms.
+10-06 19:20:48.153 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:265 DoSearch(): Search started: Everywhere m2::Rect(-3.709593571472168172, 44.244394582271965533, -3.6980064285278322345, 44.270143788814934283)
+10-06 19:20:48.752 21749 21792 I OMcore  : (Thread-10) search/emitter.hpp:41 Emit(): Emitting a new batch of results: 10 , 598 ms since the search has started.
+10-06 19:20:48.907 21749 21792 I OMcore  : (Thread-10) search/emitter.hpp:41 Emit(): Emitting a new batch of results: 20 , 754 ms since the search has started.
+10-06 19:20:48.907 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:267 operator()(): Search ended in 754 ms.
+10-06 19:20:50.015 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:265 DoSearch(): Search started: Everywhere m2::Rect(-3.709593571472168172, 44.244394582271965533, -3.6980064285278322345, 44.270143788814934283)
+10-06 19:20:50.605 21749 21792 I OMcore  : (Thread-10) search/emitter.hpp:41 Emit(): Emitting a new batch of results: 10 , 589 ms since the search has started.
+10-06 19:20:50.747 21749 21792 I OMcore  : (Thread-10) search/emitter.hpp:41 Emit(): Emitting a new batch of results: 20 , 731 ms since the search has started.
+10-06 19:20:50.747 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:267 operator()(): Search ended in 731 ms.
+10-06 19:20:51.847 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:265 DoSearch(): Search started: Everywhere m2::Rect(-3.709593571472168172, 44.244394582271965533, -3.6980064285278322345, 44.270143788814934283)
+10-06 19:20:52.439 21749 21792 I OMcore  : (Thread-10) search/emitter.hpp:41 Emit(): Emitting a new batch of results: 10 , 592 ms since the search has started.
+10-06 19:20:52.628 21749 21792 I OMcore  : (Thread-10) search/emitter.hpp:41 Emit(): Emitting a new batch of results: 20 , 781 ms since the search has started.
+10-06 19:20:52.628 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:267 operator()(): Search ended in 781 ms.
+10-06 19:20:53.582 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:265 DoSearch(): Search started: Everywhere m2::Rect(-3.709593571472168172, 44.244394582271965533, -3.6980064285278322345, 44.270143788814934283)
+10-06 19:20:54.106 21749 21792 I OMcore  : (Thread-10) search/emitter.hpp:41 Emit(): Emitting a new batch of results: 10 , 524 ms since the search has started.
+10-06 19:20:54.285 21749 21792 I OMcore  : (Thread-10) search/emitter.hpp:41 Emit(): Emitting a new batch of results: 20 , 702 ms since the search has started.
+10-06 19:20:54.285 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:267 operator()(): Search ended in 703 ms.
+10-06 19:20:55.312 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:265 DoSearch(): Search started: Everywhere m2::Rect(-3.709593571472168172, 44.244394582271965533, -3.6980064285278322345, 44.270143788814934283)
+10-06 19:20:56.298 21749 21792 W OMcore  : (Thread-10) geometry/algorithm.cpp:25 GetResult(): Zero length linear object
+10-06 19:20:56.298 21749 21792 W OMcore  : (Thread-10) geometry/algorithm.cpp:25 GetResult(): Zero length linear object
+10-06 19:20:56.298 21749 21792 W OMcore  : (Thread-10) geometry/algorithm.cpp:25 GetResult(): Zero length linear object
+10-06 19:20:56.299 21749 21792 W OMcore  : (Thread-10) geometry/algorithm.cpp:25 GetResult(): Zero length linear object
+10-06 19:20:56.302 21749 21792 W OMcore  : (Thread-10) geometry/algorithm.cpp:25 GetResult(): Zero length linear object
+10-06 19:20:56.302 21749 21792 W OMcore  : (Thread-10) geometry/algorithm.cpp:25 GetResult(): Zero length linear object
+10-06 19:20:56.303 21749 21792 W OMcore  : (Thread-10) geometry/algorithm.cpp:25 GetResult(): Zero length linear object
+10-06 19:20:56.303 21749 21792 W OMcore  : (Thread-10) geometry/algorithm.cpp:25 GetResult(): Zero length linear object
+10-06 19:20:56.304 21749 21792 W OMcore  : (Thread-10) geometry/algorithm.cpp:25 GetResult(): Zero length linear object
+10-06 19:20:56.304 21749 21792 W OMcore  : (Thread-10) geometry/algorithm.cpp:25 GetResult(): Zero length linear object
+10-06 19:20:56.897 21749 21792 W OMcore  : (Thread-10) geometry/algorithm.cpp:25 GetResult(): Zero length linear object
+10-06 19:20:56.899 21749 21792 W OMcore  : (Thread-10) geometry/algorithm.cpp:25 GetResult(): Zero length linear object
+10-06 19:20:56.900 21749 21792 W OMcore  : (Thread-10) geometry/algorithm.cpp:25 GetResult(): Zero length linear object
+10-06 19:20:56.903 21749 21792 W OMcore  : (Thread-10) geometry/algorithm.cpp:25 GetResult(): Zero length linear object
+10-06 19:20:56.903 21749 21792 W OMcore  : (Thread-10) geometry/algorithm.cpp:25 GetResult(): Zero length linear object
+10-06 19:20:58.210 21749 21792 I OMcore  : (Thread-10) search/emitter.hpp:41 Emit(): Emitting a new batch of results: 5 , 2898 ms since the search has started.
+10-06 19:20:58.211 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:267 operator()(): Search ended in 2898 ms.
+10-06 19:20:58.211 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:265 DoSearch(): Search started: Everywhere m2::Rect(-3.709593571472168172, 44.244394582271965533, -3.6980064285278322345, 44.270143788814934283)
+10-06 19:20:58.649 21749 21792 W OMcore  : (Thread-10) geometry/algorithm.cpp:25 GetResult(): Zero length linear object
+10-06 19:20:58.649 21749 21792 W OMcore  : (Thread-10) geometry/algorithm.cpp:25 GetResult(): Zero length linear object
+10-06 19:20:58.652 21749 21792 W OMcore  : (Thread-10) geometry/algorithm.cpp:25 GetResult(): Zero length linear object
+10-06 19:20:58.652 21749 21792 W OMcore  : (Thread-10) geometry/algorithm.cpp:25 GetResult(): Zero length linear object
+10-06 19:20:58.652 21749 21792 W OMcore  : (Thread-10) geometry/algorithm.cpp:25 GetResult(): Zero length linear object
+10-06 19:20:58.894 21749 21792 W OMcore  : (Thread-10) geometry/algorithm.cpp:25 GetResult(): Zero length linear object
+10-06 19:20:59.852 21749 21792 I OMcore  : (Thread-10) search/emitter.hpp:41 Emit(): Emitting a new batch of results: 5 , 1641 ms since the search has started.
+10-06 19:20:59.852 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:267 operator()(): Search ended in 1641 ms.
+10-06 19:20:59.852 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:265 DoSearch(): Search started: Everywhere m2::Rect(-3.709593571472168172, 44.244394582271965533, -3.6980064285278322345, 44.270143788814934283)
+10-06 19:21:00.479 21749 21792 I OMcore  : (Thread-10) search/emitter.hpp:41 Emit(): Emitting a new batch of results: 10 , 626 ms since the search has started.
+10-06 19:21:00.687 21749 21792 I OMcore  : (Thread-10) search/emitter.hpp:41 Emit(): Emitting a new batch of results: 20 , 834 ms since the search has started.
+10-06 19:21:00.687 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:267 operator()(): Search ended in 834 ms.
+10-06 19:21:00.885 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:265 DoSearch(): Search started: Everywhere m2::Rect(-3.709593571472168172, 44.244394582271965533, -3.6980064285278322345, 44.270143788814934283)
+10-06 19:21:01.498 21749 21792 I OMcore  : (Thread-10) search/emitter.hpp:41 Emit(): Emitting a new batch of results: 10 , 612 ms since the search has started.
+10-06 19:21:01.695 21749 21792 I OMcore  : (Thread-10) search/emitter.hpp:41 Emit(): Emitting a new batch of results: 20 , 809 ms since the search has started.
+10-06 19:21:01.695 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:267 operator()(): Search ended in 810 ms.
+10-06 19:21:02.721 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:265 DoSearch(): Search started: Everywhere m2::Rect(-3.709593571472168172, 44.244394582271965533, -3.6980064285278322345, 44.270143788814934283)
+10-06 19:21:03.277 21749 21792 I OMcore  : (Thread-10) search/emitter.hpp:41 Emit(): Emitting a new batch of results: 10 , 555 ms since the search has started.
+10-06 19:21:03.462 21749 21792 I OMcore  : (Thread-10) search/emitter.hpp:41 Emit(): Emitting a new batch of results: 20 , 740 ms since the search has started.
+10-06 19:21:03.462 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:267 operator()(): Search ended in 741 ms.
+10-06 19:21:05.483 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:265 DoSearch(): Search started: Everywhere m2::Rect(-3.709593571472168172, 44.244394582271965533, -3.6980064285278322345, 44.270143788814934283)
+10-06 19:21:05.583 21749 21792 I OMcore  : (Thread-10) search/emitter.hpp:41 Emit(): Emitting a new batch of results: 0 , 100 ms since the search has started.
+10-06 19:21:05.583 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:267 operator()(): Search ended in 100 ms.
+10-06 19:21:05.584 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:265 DoSearch(): Search started: Everywhere m2::Rect(-3.709593571472168172, 44.244394582271965533, -3.6980064285278322345, 44.270143788814934283)
+10-06 19:21:05.663 21749 21792 I OMcore  : (Thread-10) search/emitter.hpp:41 Emit(): Emitting a new batch of results: 0 , 79 ms since the search has started.
+10-06 19:21:05.663 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:267 operator()(): Search ended in 79 ms.
+10-06 19:21:05.663 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:265 DoSearch(): Search started: Everywhere m2::Rect(-3.709593571472168172, 44.244394582271965533, -3.6980064285278322345, 44.270143788814934283)
+10-06 19:21:05.760 21749 21792 I OMcore  : (Thread-10) search/emitter.hpp:41 Emit(): Emitting a new batch of results: 0 , 96 ms since the search has started.
+10-06 19:21:05.760 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:267 operator()(): Search ended in 96 ms.
+10-06 19:21:05.760 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:265 DoSearch(): Search started: Everywhere m2::Rect(-3.709593571472168172, 44.244394582271965533, -3.6980064285278322345, 44.270143788814934283)
+10-06 19:21:05.837 21749 21792 I OMcore  : (Thread-10) search/emitter.hpp:41 Emit(): Emitting a new batch of results: 0 , 77 ms since the search has started.
+10-06 19:21:05.837 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:267 operator()(): Search ended in 77 ms.
+10-06 19:21:05.837 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:265 DoSearch(): Search started: Everywhere m2::Rect(-3.709593571472168172, 44.244394582271965533, -3.6980064285278322345, 44.270143788814934283)
+10-06 19:21:06.295 21749 21792 I OMcore  : (Thread-10) search/emitter.hpp:41 Emit(): Emitting a new batch of results: 0 , 457 ms since the search has started.
+10-06 19:21:06.295 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:267 operator()(): Search ended in 457 ms.
+10-06 19:21:06.295 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:265 DoSearch(): Search started: Everywhere m2::Rect(-3.709593571472168172, 44.244394582271965533, -3.6980064285278322345, 44.270143788814934283)
+10-06 19:21:06.295 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:267 operator()(): Search ended in 0 ms.
+10-06 19:21:06.295 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:265 DoSearch(): Search started: Everywhere m2::Rect(-3.709593571472168172, 44.244394582271965533, -3.6980064285278322345, 44.270143788814934283)
+10-06 19:21:06.295 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:267 operator()(): Search ended in 0 ms.
+10-06 19:21:06.295 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:265 DoSearch(): Search started: Everywhere m2::Rect(-3.709593571472168172, 44.244394582271965533, -3.6980064285278322345, 44.270143788814934283)
+10-06 19:21:06.295 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:267 operator()(): Search ended in 0 ms.
+10-06 19:21:06.295 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:265 DoSearch(): Search started: Everywhere m2::Rect(-3.709593571472168172, 44.244394582271965533, -3.6980064285278322345, 44.270143788814934283)
+10-06 19:21:06.295 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:267 operator()(): Search ended in 0 ms.
+10-06 19:21:06.295 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:265 DoSearch(): Search started: Everywhere m2::Rect(-3.709593571472168172, 44.244394582271965533, -3.6980064285278322345, 44.270143788814934283)
+10-06 19:21:06.445 21749 21792 I OMcore  : (Thread-10) search/emitter.hpp:41 Emit(): Emitting a new batch of results: 0 , 149 ms since the search has started.
+10-06 19:21:06.445 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:267 operator()(): Search ended in 149 ms.
+10-06 19:21:10.538 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:265 DoSearch(): Search started: Everywhere m2::Rect(-3.709593571472168172, 44.244394582271965533, -3.6980064285278322345, 44.270143788814934283)
+10-06 19:21:12.272 21749 21792 I OMcore  : (Thread-10) search/emitter.hpp:41 Emit(): Emitting a new batch of results: 10 , 1734 ms since the search has started.
+10-06 19:21:12.429 21749 21792 I OMcore  : (Thread-10) search/emitter.hpp:41 Emit(): Emitting a new batch of results: 20 , 1890 ms since the search has started.
+10-06 19:21:12.429 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:267 operator()(): Search ended in 1890 ms.
+10-06 19:21:12.643 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:265 DoSearch(): Search started: Everywhere m2::Rect(-3.709593571472168172, 44.244394582271965533, -3.6980064285278322345, 44.270143788814934283)
+10-06 19:21:13.768 21749 21792 I OMcore  : (Thread-10) search/emitter.hpp:41 Emit(): Emitting a new batch of results: 10 , 1124 ms since the search has started.
+10-06 19:21:13.931 21749 21792 I OMcore  : (Thread-10) search/emitter.hpp:41 Emit(): Emitting a new batch of results: 20 , 1287 ms since the search has started.
+10-06 19:21:13.932 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:267 operator()(): Search ended in 1288 ms.
+10-06 19:21:14.490 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:265 DoSearch(): Search started: Everywhere m2::Rect(-3.709593571472168172, 44.244394582271965533, -3.6980064285278322345, 44.270143788814934283)
+10-06 19:21:15.211 21749 21792 I OMcore  : (Thread-10) search/emitter.hpp:41 Emit(): Emitting a new batch of results: 10 , 720 ms since the search has started.
+10-06 19:21:15.356 21749 21792 I OMcore  : (Thread-10) search/emitter.hpp:41 Emit(): Emitting a new batch of results: 20 , 866 ms since the search has started.
+10-06 19:21:15.357 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:267 operator()(): Search ended in 866 ms.
+10-06 19:21:16.313 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:265 DoSearch(): Search started: Everywhere m2::Rect(-3.709593571472168172, 44.244394582271965533, -3.6980064285278322345, 44.270143788814934283)
+10-06 19:21:17.063 21749 21792 I OMcore  : (Thread-10) search/emitter.hpp:41 Emit(): Emitting a new batch of results: 10 , 749 ms since the search has started.
+10-06 19:21:17.215 21749 21792 I OMcore  : (Thread-10) search/emitter.hpp:41 Emit(): Emitting a new batch of results: 20 , 900 ms since the search has started.
+10-06 19:21:17.215 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:267 operator()(): Search ended in 901 ms.
+10-06 19:21:18.083 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:265 DoSearch(): Search started: Everywhere m2::Rect(-3.709593571472168172, 44.244394582271965533, -3.6980064285278322345, 44.270143788814934283)
+10-06 19:21:18.715 21749 21792 I OMcore  : (Thread-10) search/emitter.hpp:41 Emit(): Emitting a new batch of results: 10 , 631 ms since the search has started.
+10-06 19:21:18.906 21749 21792 I OMcore  : (Thread-10) search/emitter.hpp:41 Emit(): Emitting a new batch of results: 20 , 822 ms since the search has started.
+10-06 19:21:18.906 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:267 operator()(): Search ended in 823 ms.
+10-06 19:21:19.973 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:265 DoSearch(): Search started: Everywhere m2::Rect(-3.709593571472168172, 44.244394582271965533, -3.6980064285278322345, 44.270143788814934283)
+10-06 19:21:20.437 21749 21792 I OMcore  : (Thread-10) search/emitter.hpp:41 Emit(): Emitting a new batch of results: 10 , 464 ms since the search has started.
+10-06 19:21:20.592 21749 21792 I OMcore  : (Thread-10) search/emitter.hpp:41 Emit(): Emitting a new batch of results: 20 , 618 ms since the search has started.
+10-06 19:21:20.592 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:267 operator()(): Search ended in 618 ms.
+10-06 19:21:21.781 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:265 DoSearch(): Search started: Everywhere m2::Rect(-3.709593571472168172, 44.244394582271965533, -3.6980064285278322345, 44.270143788814934283)
+10-06 19:21:21.971 21749 21792 W OMcore  : (Thread-10) geometry/algorithm.cpp:25 GetResult(): Zero length linear object
+10-06 19:21:21.973 21749 21792 W OMcore  : (Thread-10) geometry/algorithm.cpp:25 GetResult(): Zero length linear object
+10-06 19:21:21.973 21749 21792 W OMcore  : (Thread-10) geometry/algorithm.cpp:25 GetResult(): Zero length linear object
+10-06 19:21:21.974 21749 21792 W OMcore  : (Thread-10) geometry/algorithm.cpp:25 GetResult(): Zero length linear object
+10-06 19:21:21.976 21749 21792 W OMcore  : (Thread-10) geometry/algorithm.cpp:25 GetResult(): Zero length linear object
+10-06 19:21:21.978 21749 21792 W OMcore  : (Thread-10) geometry/algorithm.cpp:25 GetResult(): Zero length linear object
+10-06 19:21:21.980 21749 21792 W OMcore  : (Thread-10) geometry/algorithm.cpp:25 GetResult(): Zero length linear object
+10-06 19:21:22.134 21749 21792 W OMcore  : (Thread-10) geometry/algorithm.cpp:25 GetResult(): Zero length linear object
+10-06 19:21:22.136 21749 21792 W OMcore  : (Thread-10) geometry/algorithm.cpp:25 GetResult(): Zero length linear object
+10-06 19:21:22.136 21749 21792 W OMcore  : (Thread-10) geometry/algorithm.cpp:25 GetResult(): Zero length linear object
+10-06 19:21:22.137 21749 21792 W OMcore  : (Thread-10) geometry/algorithm.cpp:25 GetResult(): Zero length linear object
+10-06 19:21:22.485 21749 21792 I OMcore  : (Thread-10) search/emitter.hpp:41 Emit(): Emitting a new batch of results: 10 , 703 ms since the search has started.
+10-06 19:21:22.664 21749 21792 I OMcore  : (Thread-10) search/emitter.hpp:41 Emit(): Emitting a new batch of results: 20 , 882 ms since the search has started.
+10-06 19:21:22.664 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:267 operator()(): Search ended in 882 ms.
+10-06 19:21:23.597 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:265 DoSearch(): Search started: Everywhere m2::Rect(-3.709593571472168172, 44.244394582271965533, -3.6980064285278322345, 44.270143788814934283)
+10-06 19:21:23.994 21749 21792 W OMcore  : (Thread-10) geometry/algorithm.cpp:25 GetResult(): Zero length linear object
+10-06 19:21:23.997 21749 21792 W OMcore  : (Thread-10) geometry/algorithm.cpp:25 GetResult(): Zero length linear object
+10-06 19:21:24.156 21749 21792 W OMcore  : (Thread-10) geometry/algorithm.cpp:25 GetResult(): Zero length linear object
+10-06 19:21:24.157 21749 21792 W OMcore  : (Thread-10) geometry/algorithm.cpp:25 GetResult(): Zero length linear object
+10-06 19:21:24.973 21749 21792 I OMcore  : (Thread-10) search/emitter.hpp:41 Emit(): Emitting a new batch of results: 10 , 1376 ms since the search has started.
+10-06 19:21:25.138 21749 21792 I OMcore  : (Thread-10) search/emitter.hpp:41 Emit(): Emitting a new batch of results: 20 , 1541 ms since the search has started.
+10-06 19:21:25.139 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:267 operator()(): Search ended in 1541 ms.
+10-06 19:21:25.443 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:265 DoSearch(): Search started: Everywhere m2::Rect(-3.709593571472168172, 44.244394582271965533, -3.6980064285278322345, 44.270143788814934283)
+10-06 19:21:25.566 21749 21792 W OMcore  : (Thread-10) geometry/algorithm.cpp:25 GetResult(): Zero length linear object
+10-06 19:21:25.623 21749 21792 W OMcore  : (Thread-10) geometry/algorithm.cpp:25 GetResult(): Zero length linear object
+10-06 19:21:26.279 21749 21792 I OMcore  : (Thread-10) search/emitter.hpp:41 Emit(): Emitting a new batch of results: 10 , 836 ms since the search has started.
+10-06 19:21:26.458 21749 21792 I OMcore  : (Thread-10) search/emitter.hpp:41 Emit(): Emitting a new batch of results: 20 , 1015 ms since the search has started.
+10-06 19:21:26.458 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:267 operator()(): Search ended in 1015 ms.
+10-06 19:21:27.404 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:265 DoSearch(): Search started: Everywhere m2::Rect(-3.709593571472168172, 44.244394582271965533, -3.6980064285278322345, 44.270143788814934283)
+10-06 19:21:27.643 21749 21792 W OMcore  : (Thread-10) geometry/algorithm.cpp:25 GetResult(): Zero length linear object
+10-06 19:21:27.736 21749 21792 W OMcore  : (Thread-10) geometry/algorithm.cpp:25 GetResult(): Zero length linear object
+10-06 19:21:28.492 21749 21792 I OMcore  : (Thread-10) search/emitter.hpp:41 Emit(): Emitting a new batch of results: 10 , 1088 ms since the search has started.
+10-06 19:21:28.650 21749 21792 I OMcore  : (Thread-10) search/emitter.hpp:41 Emit(): Emitting a new batch of results: 20 , 1246 ms since the search has started.
+10-06 19:21:28.650 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:267 operator()(): Search ended in 1246 ms.
+10-06 19:21:29.232 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:265 DoSearch(): Search started: Everywhere m2::Rect(-3.709593571472168172, 44.244394582271965533, -3.6980064285278322345, 44.270143788814934283)
+10-06 19:21:29.985 21749 21792 I OMcore  : (Thread-10) search/emitter.hpp:41 Emit(): Emitting a new batch of results: 10 , 752 ms since the search has started.
+10-06 19:21:30.137 21749 21792 I OMcore  : (Thread-10) search/emitter.hpp:41 Emit(): Emitting a new batch of results: 20 , 904 ms since the search has started.
+10-06 19:21:30.137 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:267 operator()(): Search ended in 904 ms.
+10-06 19:21:31.064 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:265 DoSearch(): Search started: Everywhere m2::Rect(-3.709593571472168172, 44.244394582271965533, -3.6980064285278322345, 44.270143788814934283)
+10-06 19:21:31.737 21749 21792 I OMcore  : (Thread-10) search/emitter.hpp:41 Emit(): Emitting a new batch of results: 10 , 672 ms since the search has started.
+10-06 19:21:31.917 21749 21792 I OMcore  : (Thread-10) search/emitter.hpp:41 Emit(): Emitting a new batch of results: 20 , 852 ms since the search has started.
+10-06 19:21:31.917 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:267 operator()(): Search ended in 852 ms.
+10-06 19:21:34.200 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:265 DoSearch(): Search started: Everywhere m2::Rect(-3.709593571472168172, 44.244394582271965533, -3.6980064285278322345, 44.270143788814934283)
+10-06 19:21:34.277 21749 21792 I OMcore  : (Thread-10) search/emitter.hpp:41 Emit(): Emitting a new batch of results: 0 , 76 ms since the search has started.
+10-06 19:21:34.277 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:267 operator()(): Search ended in 77 ms.
+10-06 19:21:34.277 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:265 DoSearch(): Search started: Everywhere m2::Rect(-3.709593571472168172, 44.244394582271965533, -3.6980064285278322345, 44.270143788814934283)
+10-06 19:21:34.398 21749 21792 I OMcore  : (Thread-10) search/emitter.hpp:41 Emit(): Emitting a new batch of results: 0 , 120 ms since the search has started.
+10-06 19:21:34.398 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:267 operator()(): Search ended in 120 ms.
+10-06 19:21:34.398 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:265 DoSearch(): Search started: Everywhere m2::Rect(-3.709593571472168172, 44.244394582271965533, -3.6980064285278322345, 44.270143788814934283)
+10-06 19:21:34.478 21749 21792 I OMcore  : (Thread-10) search/emitter.hpp:41 Emit(): Emitting a new batch of results: 0 , 80 ms since the search has started.
+10-06 19:21:34.478 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:267 operator()(): Search ended in 80 ms.
+10-06 19:21:34.478 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:265 DoSearch(): Search started: Everywhere m2::Rect(-3.709593571472168172, 44.244394582271965533, -3.6980064285278322345, 44.270143788814934283)
+10-06 19:21:34.569 21749 21792 I OMcore  : (Thread-10) search/emitter.hpp:41 Emit(): Emitting a new batch of results: 0 , 90 ms since the search has started.
+10-06 19:21:34.569 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:267 operator()(): Search ended in 90 ms.
+10-06 19:21:34.569 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:265 DoSearch(): Search started: Everywhere m2::Rect(-3.709593571472168172, 44.244394582271965533, -3.6980064285278322345, 44.270143788814934283)
+10-06 19:21:34.630 21749 21792 I OMcore  : (Thread-10) search/emitter.hpp:41 Emit(): Emitting a new batch of results: 0 , 61 ms since the search has started.
+10-06 19:21:34.630 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:267 operator()(): Search ended in 61 ms.
+10-06 19:21:34.630 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:265 DoSearch(): Search started: Everywhere m2::Rect(-3.709593571472168172, 44.244394582271965533, -3.6980064285278322345, 44.270143788814934283)
+10-06 19:21:35.014 21749 21792 I OMcore  : (Thread-10) search/emitter.hpp:41 Emit(): Emitting a new batch of results: 0 , 383 ms since the search has started.
+10-06 19:21:35.014 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:267 operator()(): Search ended in 383 ms.
+10-06 19:21:35.014 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:265 DoSearch(): Search started: Everywhere m2::Rect(-3.709593571472168172, 44.244394582271965533, -3.6980064285278322345, 44.270143788814934283)
+10-06 19:21:35.014 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:267 operator()(): Search ended in 0 ms.
+10-06 19:21:35.014 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:265 DoSearch(): Search started: Everywhere m2::Rect(-3.709593571472168172, 44.244394582271965533, -3.6980064285278322345, 44.270143788814934283)
+10-06 19:21:35.014 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:267 operator()(): Search ended in 0 ms.
+10-06 19:21:35.014 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:265 DoSearch(): Search started: Everywhere m2::Rect(-3.709593571472168172, 44.244394582271965533, -3.6980064285278322345, 44.270143788814934283)
+10-06 19:21:35.014 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:267 operator()(): Search ended in 0 ms.
+10-06 19:21:35.014 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:265 DoSearch(): Search started: Everywhere m2::Rect(-3.709593571472168172, 44.244394582271965533, -3.6980064285278322345, 44.270143788814934283)
+10-06 19:21:35.138 21749 21792 I OMcore  : (Thread-10) search/emitter.hpp:41 Emit(): Emitting a new batch of results: 0 , 124 ms since the search has started.
+10-06 19:21:35.138 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:267 operator()(): Search ended in 124 ms.
+10-06 19:21:35.138 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:265 DoSearch(): Search started: Everywhere m2::Rect(-3.709593571472168172, 44.244394582271965533, -3.6980064285278322345, 44.270143788814934283)
+10-06 19:21:35.179 21749 21792 I OMcore  : (Thread-10) search/emitter.hpp:41 Emit(): Emitting a new batch of results: 0 , 40 ms since the search has started.
+10-06 19:21:35.179 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:267 operator()(): Search ended in 40 ms.
+10-06 19:21:39.213 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:265 DoSearch(): Search started: Everywhere m2::Rect(-3.709593571472168172, 44.244394582271965533, -3.6980064285278322345, 44.270143788814934283)
+10-06 19:21:40.912 21749 21792 I OMcore  : (Thread-10) search/emitter.hpp:41 Emit(): Emitting a new batch of results: 10 , 1698 ms since the search has started.
+10-06 19:21:41.066 21749 21792 I OMcore  : (Thread-10) search/emitter.hpp:41 Emit(): Emitting a new batch of results: 20 , 1852 ms since the search has started.
+10-06 19:21:41.066 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:267 operator()(): Search ended in 1852 ms.
+10-06 19:21:41.141 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:265 DoSearch(): Search started: Everywhere m2::Rect(-3.709593571472168172, 44.244394582271965533, -3.6980064285278322345, 44.270143788814934283)
+10-06 19:21:41.805 21749 21792 I OMcore  : (Thread-10) search/emitter.hpp:41 Emit(): Emitting a new batch of results: 10 , 663 ms since the search has started.
+10-06 19:21:41.952 21749 21792 I OMcore  : (Thread-10) search/emitter.hpp:41 Emit(): Emitting a new batch of results: 20 , 810 ms since the search has started.
+10-06 19:21:41.952 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:267 operator()(): Search ended in 810 ms.
+10-06 19:21:43.042 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:265 DoSearch(): Search started: Everywhere m2::Rect(-3.709593571472168172, 44.244394582271965533, -3.6980064285278322345, 44.270143788814934283)
+10-06 19:21:43.238 21749 21792 I OMcore  : (Thread-10) search/emitter.hpp:41 Emit(): Emitting a new batch of results: 10 , 195 ms since the search has started.
+10-06 19:21:43.378 21749 21792 I OMcore  : (Thread-10) search/emitter.hpp:41 Emit(): Emitting a new batch of results: 20 , 335 ms since the search has started.
+10-06 19:21:43.378 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:267 operator()(): Search ended in 336 ms.
+10-06 19:21:44.825 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:265 DoSearch(): Search started: Everywhere m2::Rect(-3.709593571472168172, 44.244394582271965533, -3.6980064285278322345, 44.270143788814934283)
+10-06 19:21:45.285 21749 21792 I OMcore  : (Thread-10) search/emitter.hpp:41 Emit(): Emitting a new batch of results: 10 , 459 ms since the search has started.
+10-06 19:21:45.426 21749 21792 I OMcore  : (Thread-10) search/emitter.hpp:41 Emit(): Emitting a new batch of results: 20 , 600 ms since the search has started.
+10-06 19:21:45.426 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:267 operator()(): Search ended in 600 ms.
+10-06 19:21:46.658 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:265 DoSearch(): Search started: Everywhere m2::Rect(-3.709593571472168172, 44.244394582271965533, -3.6980064285278322345, 44.270143788814934283)
+10-06 19:21:46.865 21749 21792 I OMcore  : (Thread-10) search/emitter.hpp:41 Emit(): Emitting a new batch of results: 10 , 206 ms since the search has started.
+10-06 19:21:47.003 21749 21792 I OMcore  : (Thread-10) search/emitter.hpp:41 Emit(): Emitting a new batch of results: 20 , 345 ms since the search has started.
+10-06 19:21:47.003 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:267 operator()(): Search ended in 345 ms.
+10-06 19:21:48.761 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:265 DoSearch(): Search started: Everywhere m2::Rect(-3.709593571472168172, 44.244394582271965533, -3.6980064285278322345, 44.270143788814934283)
+10-06 19:21:48.978 21749 21792 I OMcore  : (Thread-10) search/emitter.hpp:41 Emit(): Emitting a new batch of results: 10 , 217 ms since the search has started.
+10-06 19:21:49.112 21749 21792 I OMcore  : (Thread-10) search/emitter.hpp:41 Emit(): Emitting a new batch of results: 20 , 350 ms since the search has started.
+10-06 19:21:49.112 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:267 operator()(): Search ended in 350 ms.
+10-06 19:21:51.510 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:265 DoSearch(): Search started: Everywhere m2::Rect(-3.709593571472168172, 44.244394582271965533, -3.6980064285278322345, 44.270143788814934283)
+10-06 19:21:51.662 21749 21792 I OMcore  : (Thread-10) search/emitter.hpp:41 Emit(): Emitting a new batch of results: 5 , 152 ms since the search has started.
+10-06 19:21:51.662 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:267 operator()(): Search ended in 152 ms.
+10-06 19:21:51.662 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:265 DoSearch(): Search started: Everywhere m2::Rect(-3.709593571472168172, 44.244394582271965533, -3.6980064285278322345, 44.270143788814934283)
+10-06 19:21:51.690 21749 21792 I OMcore  : (Thread-10) search/emitter.hpp:41 Emit(): Emitting a new batch of results: 0 , 27 ms since the search has started.
+10-06 19:21:51.690 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:267 operator()(): Search ended in 27 ms.
+10-06 19:21:51.690 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:265 DoSearch(): Search started: Everywhere m2::Rect(-3.709593571472168172, 44.244394582271965533, -3.6980064285278322345, 44.270143788814934283)
+10-06 19:21:51.833 21749 21792 I OMcore  : (Thread-10) search/emitter.hpp:41 Emit(): Emitting a new batch of results: 5 , 143 ms since the search has started.
+10-06 19:21:51.833 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:267 operator()(): Search ended in 143 ms.
+10-06 19:21:51.833 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:265 DoSearch(): Search started: Everywhere m2::Rect(-3.709593571472168172, 44.244394582271965533, -3.6980064285278322345, 44.270143788814934283)
+10-06 19:21:52.392 21749 21792 I OMcore  : (Thread-10) search/emitter.hpp:41 Emit(): Emitting a new batch of results: 5 , 558 ms since the search has started.
+10-06 19:21:52.392 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:267 operator()(): Search ended in 558 ms.
+10-06 19:21:52.392 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:265 DoSearch(): Search started: Everywhere m2::Rect(-3.709593571472168172, 44.244394582271965533, -3.6980064285278322345, 44.270143788814934283)
+10-06 19:21:52.392 21749 21792 I OMcore  : (Thread-10) search/engine.cpp:267 operator()(): Search ended in 0 ms.

@@ -1,0 +1,15 @@
+11-route-mad-bcn-car.logcat.txt | elapsed_s=17.3947 | 621843 meters. ETA: 22032.7 seconds.
+11-route-mad-bcn-car-r2.logcat.txt | elapsed_s=16.4988 | 621843 meters. ETA: 22032.7 seconds.
+11-route-mad-bcn-car-r3.logcat.txt | elapsed_s=16.6399 | 621843 meters. ETA: 22032.7 seconds.
+11-route-mad-bcn-car-warm1.logcat.txt | elapsed_s=NONE | 
+12-guadarrama-car-r1.logcat.txt | elapsed_s=0.679105 | 13803 meters. ETA: 1325.38 seconds.
+12-guadarrama-car-r2.logcat.txt | elapsed_s=0.663472 | 13803 meters. ETA: 1325.38 seconds.
+12-urban-bike-r1.logcat.txt | elapsed_s=1.14181 | 5442.24 meters. ETA: 2043.22 seconds.
+12-urban-bike-r2.logcat.txt | elapsed_s=1.13333 | 5442.24 meters. ETA: 2043.22 seconds.
+12-urban-bike-r3.logcat.txt | elapsed_s=1.1645 | 5442.24 meters. ETA: 2043.22 seconds.
+12-urban-car-5km-r1.logcat.txt | elapsed_s=0.421339 | 6709.18 meters. ETA: 1077.63 seconds.
+12-urban-car-5km-r2.logcat.txt | elapsed_s=0.437682 | 6709.18 meters. ETA: 1077.63 seconds.
+12-urban-car-5km-r3.logcat.txt | elapsed_s=0.436982 | 6709.18 meters. ETA: 1077.63 seconds.
+12-urban-foot-r1.logcat.txt | elapsed_s=1.42321 | 5091.57 meters. ETA: 3871.17 seconds.
+12-urban-foot-r2.logcat.txt | elapsed_s=1.24111 | 5091.57 meters. ETA: 3871.17 seconds.
+12-urban-foot-r3.logcat.txt | elapsed_s=1.26514 | 5091.57 meters. ETA: 3871.17 seconds.

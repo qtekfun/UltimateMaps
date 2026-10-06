@@ -1,0 +1,24 @@
++ stat -c '%n %s bytes' /home/qtekfun/repos/comaps-spike/android/app/build/outputs/apk/fdroid/release/CoMaps-26100501-fdroid-release.apk
+/home/qtekfun/repos/comaps-spike/android/app/build/outputs/apk/fdroid/release/CoMaps-26100501-fdroid-release.apk 46276863 bytes
++ /home/qtekfun/Android/Sdk/build-tools/36.0.0/aapt2 dump badging /home/qtekfun/repos/comaps-spike/android/app/build/outputs/apk/fdroid/release/CoMaps-26100501-fdroid-release.apk
++ grep -E '^package|launchable|sdkVersion|native-code'
+package: name='app.comaps.fdroid' versionCode='26100501' versionName='2026.10.05-1-FDroid' platformBuildVersionName='16' platformBuildVersionCode='36' compileSdkVersion='36' compileSdkVersionCodename='16'
+native-code: 'arm64-v8a'
++ unzip -lv /home/qtekfun/repos/comaps-spike/android/app/build/outputs/apk/fdroid/release/CoMaps-26100501-fdroid-release.apk
++ head -12
++ sort -k1 -n -r
+60176921         46011848  24%                            2327 files
+14701976  Defl:N  6279174  57% 01-01-1981 01:01 bc4579f1  lib/arm64-v8a/liborganicmaps.so
+ 6125408  Stored  6125408   0% 01-01-1981 01:01 bd533a04  resources.arsc
+ 5708468  Defl:N  2392413  58% 01-01-1981 01:01 a7b496b5  classes.dex
+ 5196276  Stored  5196276   0% 01-01-1981 01:01 49c93daa  assets/packed_polygons.bin
+ 3451900  Stored  3451900   0% 01-01-1981 01:01 44e890cb  assets/fonts/02_droidsans-fallback.ttf
+ 3155104  Stored  3155104   0% 01-01-1981 01:01 1e4b4af6  assets/fonts/06_code2000.ttf
+ 1817160  Stored  1817160   0% 01-01-1981 01:01 4f67c87a  assets/fonts/03_jomolhari-id-a3d.ttf
+ 1312992  Defl:N   428958  67% 01-01-1981 01:01 27f7b7d5  assets/icudt75l.dat
+  757076  Stored   757076   0% 01-01-1981 01:01 ad7cf255  assets/fonts/01_dejavusans.ttf
+  648548  Stored   648548   0% 01-01-1981 01:01 304cbae4  assets/categories.txt
+  574276  Defl:N   245922  57% 01-01-1981 01:01 0c5d7b20  classes2.dex
++ unzip -l /home/qtekfun/repos/comaps-spike/android/app/build/outputs/apk/fdroid/release/CoMaps-26100501-fdroid-release.apk
++ grep '\.so'
+ 14701976  01-01-1981 01:01   lib/arm64-v8a/liborganicmaps.so

@@ -1,0 +1,1105 @@
+2026-10-06T18:29:28+02:00
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.14.4/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build 
+
+> Configure project :app
+Version: 2026.10.05-1
+VersionCode: 26100501
+Create separate apks: false
+/home/qtekfun/repos/comaps-spike/android/app/secure.properties.test doesn't exist.
+/home/qtekfun/repos/comaps-spike/android/app/secure.properties.release doesn't exist.
+NO RELEASE signing keys found
+Using DEBUG signing keys
+
+> Configure project :sdk
+Building for [arm64-v8a] architectures.
+Configuring the repository for development...
+Checking submodules...
+
+[notice] A new release of pip is available: 26.0.1 -> 26.2.1
+[notice] To update, run: pip install --upgrade pip
+Skipping world map download...
+Generating json strings...
+Starting...
+Finished
+Generating search categories / synonyms...
+WARNING: Skipping unsupported language directory: en_NZ.json
+WARNING: Skipping unsupported language directory: gl.json
+WARNING: Skipping unsupported language directory: lo.json
+Generating Serbian Latin strings...
+Converting Serbian Cyrillic resource files to Serbian Latin
+Generating symbols...
+[1;31moptipng could not be found
+take a look to http://optipng.sourceforge.net/
+Generating drules...
+Building drawing rules for style default/light
+rm: no se puede borrar './tools/unix/../../data/drules_proto_default_light.bin': No existe el fichero o el directorio
+rm: no se puede borrar './tools/unix/../../data/drules_proto_default_light.txt.diff': No existe el fichero o el directorio
+mv: no se puede efectuar `stat' sobre './tools/unix/../../data/drules_proto_default_light.txt': No existe el fichero o el directorio
+Loaded priorities: 1202 overlays, 424 FG, 25 BG-top, 198 BG-by-size.
+Re-formated priorities files: 2079 overlays, 448 FG, 25 BG-top, 198 BG-by-size.
+Building drawing rules for style default/dark
+rm: no se puede borrar './tools/unix/../../data/drules_proto_default_dark.bin': No existe el fichero o el directorio
+rm: no se puede borrar './tools/unix/../../data/drules_proto_default_dark.txt.diff': No existe el fichero o el directorio
+mv: no se puede efectuar `stat' sobre './tools/unix/../../data/drules_proto_default_dark.txt': No existe el fichero o el directorio
+Loaded priorities: 1202 overlays, 424 FG, 25 BG-top, 198 BG-by-size.
+Re-formated priorities files: 2079 overlays, 448 FG, 25 BG-top, 198 BG-by-size.
+Building drawing rules for style outdoors/light
+rm: no se puede borrar './tools/unix/../../data/drules_proto_outdoors_light.bin': No existe el fichero o el directorio
+rm: no se puede borrar './tools/unix/../../data/drules_proto_outdoors_light.txt.diff': No existe el fichero o el directorio
+mv: no se puede efectuar `stat' sobre './tools/unix/../../data/drules_proto_outdoors_light.txt': No existe el fichero o el directorio
+Loaded priorities: 1205 overlays, 433 FG, 25 BG-top, 198 BG-by-size.
+Re-formated priorities files: 2085 overlays, 457 FG, 25 BG-top, 198 BG-by-size.
+Building drawing rules for style outdoors/dark
+rm: no se puede borrar './tools/unix/../../data/drules_proto_outdoors_dark.bin': No existe el fichero o el directorio
+rm: no se puede borrar './tools/unix/../../data/drules_proto_outdoors_dark.txt.diff': No existe el fichero o el directorio
+mv: no se puede efectuar `stat' sobre './tools/unix/../../data/drules_proto_outdoors_dark.txt': No existe el fichero o el directorio
+Loaded priorities: 1205 overlays, 433 FG, 25 BG-top, 198 BG-by-size.
+Re-formated priorities files: 2085 overlays, 457 FG, 25 BG-top, 198 BG-by-size.
+Building drawing rules for style walking/light
+rm: no se puede borrar './tools/unix/../../data/drules_proto_walking_light.bin': No existe el fichero o el directorio
+rm: no se puede borrar './tools/unix/../../data/drules_proto_walking_light.txt.diff': No existe el fichero o el directorio
+mv: no se puede efectuar `stat' sobre './tools/unix/../../data/drules_proto_walking_light.txt': No existe el fichero o el directorio
+Loaded priorities: 1202 overlays, 424 FG, 25 BG-top, 198 BG-by-size.
+Re-formated priorities files: 2079 overlays, 448 FG, 25 BG-top, 198 BG-by-size.
+Building drawing rules for style walking_outdoor/light
+rm: no se puede borrar './tools/unix/../../data/drules_proto_walking_outdoor_light.bin': No existe el fichero o el directorio
+rm: no se puede borrar './tools/unix/../../data/drules_proto_walking_outdoor_light.txt.diff': No existe el fichero o el directorio
+mv: no se puede efectuar `stat' sobre './tools/unix/../../data/drules_proto_walking_outdoor_light.txt': No existe el fichero o el directorio
+Loaded priorities: 1205 overlays, 433 FG, 25 BG-top, 198 BG-by-size.
+Re-formated priorities files: 2085 overlays, 457 FG, 25 BG-top, 198 BG-by-size.
+Building drawing rules for style walking/dark
+rm: no se puede borrar './tools/unix/../../data/drules_proto_walking_dark.bin': No existe el fichero o el directorio
+rm: no se puede borrar './tools/unix/../../data/drules_proto_walking_dark.txt.diff': No existe el fichero o el directorio
+mv: no se puede efectuar `stat' sobre './tools/unix/../../data/drules_proto_walking_dark.txt': No existe el fichero o el directorio
+Loaded priorities: 1202 overlays, 424 FG, 25 BG-top, 198 BG-by-size.
+Re-formated priorities files: 2079 overlays, 448 FG, 25 BG-top, 198 BG-by-size.
+Building drawing rules for style walking_outdoor/dark
+rm: no se puede borrar './tools/unix/../../data/drules_proto_walking_outdoor_dark.bin': No existe el fichero o el directorio
+rm: no se puede borrar './tools/unix/../../data/drules_proto_walking_outdoor_dark.txt.diff': No existe el fichero o el directorio
+mv: no se puede efectuar `stat' sobre './tools/unix/../../data/drules_proto_walking_outdoor_dark.txt': No existe el fichero o el directorio
+Loaded priorities: 1205 overlays, 433 FG, 25 BG-top, 198 BG-by-size.
+Re-formated priorities files: 2085 overlays, 457 FG, 25 BG-top, 198 BG-by-size.
+Building drawing rules for style cycling/light
+rm: no se puede borrar './tools/unix/../../data/drules_proto_cycling_light.bin': No existe el fichero o el directorio
+rm: no se puede borrar './tools/unix/../../data/drules_proto_cycling_light.txt.diff': No existe el fichero o el directorio
+mv: no se puede efectuar `stat' sobre './tools/unix/../../data/drules_proto_cycling_light.txt': No existe el fichero o el directorio
+Loaded priorities: 1202 overlays, 424 FG, 25 BG-top, 198 BG-by-size.
+Re-formated priorities files: 2079 overlays, 448 FG, 25 BG-top, 198 BG-by-size.
+Building drawing rules for style cycling_outdoor/light
+rm: no se puede borrar './tools/unix/../../data/drules_proto_cycling_outdoor_light.bin': No existe el fichero o el directorio
+rm: no se puede borrar './tools/unix/../../data/drules_proto_cycling_outdoor_light.txt.diff': No existe el fichero o el directorio
+mv: no se puede efectuar `stat' sobre './tools/unix/../../data/drules_proto_cycling_outdoor_light.txt': No existe el fichero o el directorio
+Loaded priorities: 1205 overlays, 433 FG, 25 BG-top, 198 BG-by-size.
+Re-formated priorities files: 2085 overlays, 457 FG, 25 BG-top, 198 BG-by-size.
+Building drawing rules for style cycling/dark
+rm: no se puede borrar './tools/unix/../../data/drules_proto_cycling_dark.bin': No existe el fichero o el directorio
+rm: no se puede borrar './tools/unix/../../data/drules_proto_cycling_dark.txt.diff': No existe el fichero o el directorio
+mv: no se puede efectuar `stat' sobre './tools/unix/../../data/drules_proto_cycling_dark.txt': No existe el fichero o el directorio
+Loaded priorities: 1202 overlays, 424 FG, 25 BG-top, 198 BG-by-size.
+Re-formated priorities files: 2079 overlays, 448 FG, 25 BG-top, 198 BG-by-size.
+Building drawing rules for style cycling_outdoor/dark
+rm: no se puede borrar './tools/unix/../../data/drules_proto_cycling_outdoor_dark.bin': No existe el fichero o el directorio
+rm: no se puede borrar './tools/unix/../../data/drules_proto_cycling_outdoor_dark.txt.diff': No existe el fichero o el directorio
+mv: no se puede efectuar `stat' sobre './tools/unix/../../data/drules_proto_cycling_outdoor_dark.txt': No existe el fichero o el directorio
+Loaded priorities: 1205 overlays, 433 FG, 25 BG-top, 198 BG-by-size.
+Re-formated priorities files: 2085 overlays, 457 FG, 25 BG-top, 198 BG-by-size.
+Building drawing rules for style driving/light
+rm: no se puede borrar './tools/unix/../../data/drules_proto_driving_light.bin': No existe el fichero o el directorio
+rm: no se puede borrar './tools/unix/../../data/drules_proto_driving_light.txt.diff': No existe el fichero o el directorio
+mv: no se puede efectuar `stat' sobre './tools/unix/../../data/drules_proto_driving_light.txt': No existe el fichero o el directorio
+Loaded priorities: 1202 overlays, 424 FG, 25 BG-top, 198 BG-by-size.
+Re-formated priorities files: 2079 overlays, 448 FG, 25 BG-top, 198 BG-by-size.
+Building drawing rules for style driving_outdoor/light
+rm: no se puede borrar './tools/unix/../../data/drules_proto_driving_outdoor_light.bin': No existe el fichero o el directorio
+rm: no se puede borrar './tools/unix/../../data/drules_proto_driving_outdoor_light.txt.diff': No existe el fichero o el directorio
+mv: no se puede efectuar `stat' sobre './tools/unix/../../data/drules_proto_driving_outdoor_light.txt': No existe el fichero o el directorio
+Loaded priorities: 1205 overlays, 433 FG, 25 BG-top, 198 BG-by-size.
+Re-formated priorities files: 2085 overlays, 457 FG, 25 BG-top, 198 BG-by-size.
+Building drawing rules for style driving/dark
+rm: no se puede borrar './tools/unix/../../data/drules_proto_driving_dark.bin': No existe el fichero o el directorio
+rm: no se puede borrar './tools/unix/../../data/drules_proto_driving_dark.txt.diff': No existe el fichero o el directorio
+mv: no se puede efectuar `stat' sobre './tools/unix/../../data/drules_proto_driving_dark.txt': No existe el fichero o el directorio
+Loaded priorities: 1202 overlays, 424 FG, 25 BG-top, 198 BG-by-size.
+Re-formated priorities files: 2079 overlays, 448 FG, 25 BG-top, 198 BG-by-size.
+Building drawing rules for style driving_outdoor/dark
+rm: no se puede borrar './tools/unix/../../data/drules_proto_driving_outdoor_dark.bin': No existe el fichero o el directorio
+rm: no se puede borrar './tools/unix/../../data/drules_proto_driving_outdoor_dark.txt.diff': No existe el fichero o el directorio
+mv: no se puede efectuar `stat' sobre './tools/unix/../../data/drules_proto_driving_outdoor_dark.txt': No existe el fichero o el directorio
+Loaded priorities: 1205 overlays, 433 FG, 25 BG-top, 198 BG-by-size.
+Re-formated priorities files: 2085 overlays, 457 FG, 25 BG-top, 198 BG-by-size.
+Building drawing rules for style public-transport/light
+rm: no se puede borrar './tools/unix/../../data/drules_proto_public-transport_light.bin': No existe el fichero o el directorio
+rm: no se puede borrar './tools/unix/../../data/drules_proto_public-transport_light.txt.diff': No existe el fichero o el directorio
+mv: no se puede efectuar `stat' sobre './tools/unix/../../data/drules_proto_public-transport_light.txt': No existe el fichero o el directorio
+Loaded priorities: 1202 overlays, 424 FG, 25 BG-top, 198 BG-by-size.
+Re-formated priorities files: 2079 overlays, 448 FG, 25 BG-top, 198 BG-by-size.
+Building drawing rules for style public-transport_outdoor/light
+rm: no se puede borrar './tools/unix/../../data/drules_proto_public-transport_outdoor_light.bin': No existe el fichero o el directorio
+rm: no se puede borrar './tools/unix/../../data/drules_proto_public-transport_outdoor_light.txt.diff': No existe el fichero o el directorio
+mv: no se puede efectuar `stat' sobre './tools/unix/../../data/drules_proto_public-transport_outdoor_light.txt': No existe el fichero o el directorio
+Loaded priorities: 1205 overlays, 433 FG, 25 BG-top, 198 BG-by-size.
+Re-formated priorities files: 2085 overlays, 457 FG, 25 BG-top, 198 BG-by-size.
+Building drawing rules for style public-transport/dark
+rm: no se puede borrar './tools/unix/../../data/drules_proto_public-transport_dark.bin': No existe el fichero o el directorio
+rm: no se puede borrar './tools/unix/../../data/drules_proto_public-transport_dark.txt.diff': No existe el fichero o el directorio
+mv: no se puede efectuar `stat' sobre './tools/unix/../../data/drules_proto_public-transport_dark.txt': No existe el fichero o el directorio
+Loaded priorities: 1202 overlays, 424 FG, 25 BG-top, 198 BG-by-size.
+Re-formated priorities files: 2079 overlays, 448 FG, 25 BG-top, 198 BG-by-size.
+Building drawing rules for style public-transport_outdoor/dark
+rm: no se puede borrar './tools/unix/../../data/drules_proto_public-transport_outdoor_dark.bin': No existe el fichero o el directorio
+rm: no se puede borrar './tools/unix/../../data/drules_proto_public-transport_outdoor_dark.txt.diff': No existe el fichero o el directorio
+mv: no se puede efectuar `stat' sobre './tools/unix/../../data/drules_proto_public-transport_outdoor_dark.txt': No existe el fichero o el directorio
+Loaded priorities: 1205 overlays, 433 FG, 25 BG-top, 198 BG-by-size.
+Re-formated priorities files: 2085 overlays, 457 FG, 25 BG-top, 198 BG-by-size.
+Building drawing rules for style vehicle/light
+rm: no se puede borrar './tools/unix/../../data/drules_proto_vehicle_light.bin': No existe el fichero o el directorio
+rm: no se puede borrar './tools/unix/../../data/drules_proto_vehicle_light.txt.diff': No existe el fichero o el directorio
+mv: no se puede efectuar `stat' sobre './tools/unix/../../data/drules_proto_vehicle_light.txt': No existe el fichero o el directorio
+Loaded priorities: 559 overlays, 261 FG, 16 BG-top, 106 BG-by-size.
+Re-formated priorities files: 943 overlays, 305 FG, 16 BG-top, 106 BG-by-size.
+Building drawing rules for style vehicle/dark
+rm: no se puede borrar './tools/unix/../../data/drules_proto_vehicle_dark.bin': No existe el fichero o el directorio
+rm: no se puede borrar './tools/unix/../../data/drules_proto_vehicle_dark.txt.diff': No existe el fichero o el directorio
+mv: no se puede efectuar `stat' sobre './tools/unix/../../data/drules_proto_vehicle_dark.txt': No existe el fichero o el directorio
+Loaded priorities: 559 overlays, 261 FG, 16 BG-top, 106 BG-by-size.
+Re-formated priorities files: 943 overlays, 305 FG, 16 BG-top, 106 BG-by-size.
+Exporting transit colors...
+Merging styles...
+Skipping diff for classificator.txt (first run or file missing)
+Skipping diff for types.txt (first run or file missing)
+Skipping diff for visibility.txt (first run or file missing)
+Skipping diff for colors.txt (first run or file missing)
+Skipping diff for patterns.txt (first run or file missing)
+Skipping diff for drules_proto.txt (first run or file missing)
+Diffs for all changes are stored in ./tools/unix/../../data/*.txt.diff
+The repository is configured for development.
+Warning: SDK processing. This version only understands SDK XML versions up to 3 but an SDK XML file of version 4 was encountered. This can happen if you use versions of Android Studio and the command-line tools that were released at different times.
+Checking the license for package Android SDK Build-Tools 35 in /home/qtekfun/Android/Sdk/licenses
+License for package Android SDK Build-Tools 35 accepted.
+Preparing "Install Android SDK Build-Tools 35 v.35.0.0".
+"Install Android SDK Build-Tools 35 v.35.0.0" ready.
+Installing Android SDK Build-Tools 35 in /home/qtekfun/Android/Sdk/build-tools/35.0.0
+"Install Android SDK Build-Tools 35 v.35.0.0" complete.
+"Install Android SDK Build-Tools 35 v.35.0.0" finished.
+[=========                              ] 25%                                   
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preFdroidReleaseBuild UP-TO-DATE
+> Task :app:mergeFdroidReleaseJniLibFolders
+> Task :sdk:preBuild UP-TO-DATE
+> Task :sdk:preBetaBuild UP-TO-DATE
+
+> Task :sdk:configureCMakeRelWithDebInfo[arm64-v8a]
+C/C++: -- The C compiler identification is Clang 19.0.1
+C/C++: -- The CXX compiler identification is Clang 19.0.1
+C/C++: -- Detecting C compiler ABI info
+C/C++: -- Detecting C compiler ABI info - done
+C/C++: -- Check for working C compiler: /home/qtekfun/Android/Sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/linux-x86_64/bin/clang - skipped
+C/C++: -- Detecting C compile features
+C/C++: -- Detecting C compile features - done
+C/C++: -- Detecting CXX compiler ABI info
+C/C++: -- Detecting CXX compiler ABI info - done
+C/C++: -- Check for working CXX compiler: /home/qtekfun/Android/Sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/linux-x86_64/bin/clang++ - skipped
+C/C++: -- Detecting CXX compile features
+C/C++: -- Detecting CXX compile features - done
+C/C++: -- Number of parallel processes: 6
+C/C++: -- Using compiler Clang 19.0.1
+C/C++: -- Using Unity Build with batch 24, use -DCMAKE_UNITY_BUILD=OFF to disable it.
+C/C++: -- Build type: RelWithDebInfo
+C/C++: -- Looking for pthread.h
+C/C++: -- Looking for pthread.h - found
+C/C++: -- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+C/C++: -- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Failed
+C/C++: -- Looking for pthread_create in pthreads
+C/C++: -- Looking for pthread_create in pthreads - not found
+C/C++: -- Looking for pthread_create in pthread
+C/C++: -- Looking for pthread_create in pthread - not found
+C/C++: -- Check if compiler accepts -pthread
+C/C++: -- Check if compiler accepts -pthread - yes
+C/C++: -- Found Threads: TRUE  
+C/C++: -- Found ZLIB: /home/qtekfun/Android/Sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/lib/aarch64-linux-android/21/libz.so (found version "1.3.0.1") 
+C/C++: -- Looking for dlfcn.h
+C/C++: -- Looking for dlfcn.h - found
+C/C++: -- Looking for fcntl.h
+C/C++: -- Looking for fcntl.h - found
+C/C++: -- Looking for inttypes.h
+C/C++: -- Looking for inttypes.h - found
+C/C++: -- Looking for memory.h
+C/C++: -- Looking for memory.h - found
+C/C++: -- Looking for stdint.h
+C/C++: -- Looking for stdint.h - found
+C/C++: -- Looking for stdlib.h
+C/C++: -- Looking for stdlib.h - found
+C/C++: -- Looking for strings.h
+C/C++: -- Looking for strings.h - found
+C/C++: -- Looking for string.h
+C/C++: -- Looking for string.h - found
+C/C++: -- Looking for sys/stat.h
+C/C++: -- Looking for sys/stat.h - found
+C/C++: -- Looking for sys/types.h
+C/C++: -- Looking for sys/types.h - found
+C/C++: -- Looking for unistd.h
+C/C++: -- Looking for unistd.h - found
+C/C++: -- Looking for getpagesize
+C/C++: -- Looking for getpagesize - found
+C/C++: -- Looking for mmap
+C/C++: -- Looking for mmap - found
+C/C++: -- Looking for getrandom
+C/C++: -- Looking for getrandom - not found
+C/C++: -- Looking for arc4random_buf
+C/C++: -- Looking for arc4random_buf - found
+C/C++: -- Looking for 4 include files stdlib.h, ..., float.h
+C/C++: -- Looking for 4 include files stdlib.h, ..., float.h - found
+C/C++: -- Performing Test HAVE_OFF_T
+C/C++: -- Performing Test HAVE_OFF_T - Success
+C/C++: -- Performing Test HAVE_SYSCALL_GETRANDOM
+C/C++: -- Performing Test HAVE_SYSCALL_GETRANDOM - Success
+C/C++: -- Performing Test FLAG_NO_STRICT_ALIASING
+C/C++: -- Performing Test FLAG_NO_STRICT_ALIASING - Success
+C/C++: -- Performing Test FLAG_VISIBILITY
+C/C++: -- Performing Test FLAG_VISIBILITY - Success
+C/C++: -- Looking for cos in m
+C/C++: -- Looking for cos in m - found
+C/C++: -- ===========================================================================
+C/C++: -- 
+C/C++: -- Configuration
+C/C++: --   Generator .................. Ninja
+C/C++: --   Build type ................. RelWithDebInfo
+C/C++: --   Prefix ..................... /usr/local
+C/C++: --   Shared libraries ........... OFF
+C/C++: --   Character type ............. char (UTF-8)
+C/C++: --   Library name postfix ....... 
+C/C++: -- 
+C/C++: --   Build documentation ........ OFF
+C/C++: --   Build examples ............. OFF
+C/C++: --   Build fuzzers .............. OFF
+C/C++: --   Build tests ................ OFF
+C/C++: --   Build tools (xmlwf) ........ OFF
+C/C++: --   Build pkg-config file ...... OFF
+C/C++: --   Install files .............. OFF
+C/C++: -- 
+C/C++: --   Features
+C/C++: --     // Advanced options, changes not advised
+C/C++: --     Attributes info .......... OFF
+C/C++: --     Context bytes ............ 1024
+C/C++: --     DTD support .............. OFF
+C/C++: --     General entities ......... OFF
+C/C++: --     Large size ............... OFF
+C/C++: --     Minimum size ............. OFF
+C/C++: --     Namespace support ........ ON
+C/C++: -- 
+C/C++: --   Entropy sources
+C/C++: --     getrandom ................ 
+C/C++: --     syscall SYS_getrandom .... 1
+C/C++: --     libbsd ................... OFF
+C/C++: --     /dev/random .............. ON
+C/C++: -- 
+C/C++: -- ===========================================================================
+C/C++: -- Performing Test HAS_NO_FORMAT_TRUNCATION
+C/C++: -- Performing Test HAS_NO_FORMAT_TRUNCATION - Success
+C/C++: C compiler: Clang
+C/C++: -- Looking for include file endian.h
+C/C++: -- Looking for include file endian.h - found
+C/C++: -- Looking for include file sched.h
+C/C++: -- Looking for include file sched.h - found
+C/C++: -- Looking for include file sys/param.h
+C/C++: -- Looking for include file sys/param.h - found
+C/C++: -- Looking for include file sys/time.h
+C/C++: -- Looking for include file sys/time.h - found
+C/C++: -- Looking for close
+C/C++: -- Looking for close - found
+C/C++: -- Looking for getpid
+C/C++: -- Looking for getpid - found
+C/C++: -- Looking for gettimeofday
+C/C++: -- Looking for gettimeofday - found
+C/C++: -- Looking for open
+C/C++: -- Looking for open - found
+C/C++: -- Looking for read
+C/C++: -- Looking for read - found
+C/C++: -- Looking for sched_yield
+C/C++: -- Looking for sched_yield - found
+C/C++: -- Looking for stddef.h
+C/C++: -- Looking for stddef.h - found
+C/C++: -- Check size of __int64
+C/C++: -- Check size of __int64 - failed
+C/C++: -- Check size of int64_t
+C/C++: -- Check size of int64_t - done
+C/C++: -- Check size of long long
+C/C++: -- Check size of long long - done
+C/C++: -- Check size of int32_t
+C/C++: -- Check size of int32_t - done
+C/C++: -- Check size of __int32
+C/C++: -- Check size of __int32 - failed
+C/C++: -- Check size of long
+C/C++: -- Check size of long - done
+C/C++: -- Check size of int
+C/C++: -- Check size of int - done
+C/C++: -- Check size of unsigned long
+C/C++: -- Check size of unsigned long - done
+C/C++: -- Check size of unsigned int
+C/C++: -- Check size of unsigned int - done
+C/C++: -- Check size of unsigned short
+C/C++: -- Check size of unsigned short - done
+C/C++: -- Check size of uint32_t
+C/C++: -- Check size of uint32_t - done
+C/C++: -- Check size of __uint32
+C/C++: -- Check size of __uint32 - failed
+C/C++: -- Check size of uint16_t
+C/C++: -- Check size of uint16_t - done
+C/C++: -- Check size of __uint16
+C/C++: -- Check size of __uint16 - failed
+C/C++: -- Check size of uint8_t
+C/C++: -- Check size of uint8_t - done
+C/C++: -- Check size of __uint8
+C/C++: -- Check size of __uint8 - failed
+C/C++: -- Check size of ssize_t
+C/C++: -- Check size of ssize_t - done
+C/C++: -- Check size of SSIZE_T
+C/C++: -- Check size of SSIZE_T - failed
+C/C++: -- Looking for strtoll
+C/C++: -- Looking for strtoll - found
+C/C++: -- Looking for strtoq
+C/C++: -- Looking for strtoq - not found
+C/C++: -- Looking for _strtoi64
+C/C++: -- Looking for _strtoi64 - not found
+C/C++: -- Looking for include file locale.h
+C/C++: -- Looking for include file locale.h - found
+C/C++: -- Looking for setlocale
+C/C++: -- Looking for setlocale - found
+C/C++: -- Performing Test HAVE_INLINE
+C/C++: -- Performing Test HAVE_INLINE - Success
+C/C++: -- Performing Test HAVE___INLINE
+C/C++: -- Performing Test HAVE___INLINE - Success
+C/C++: -- Performing Test HAVE___INLINE__
+C/C++: -- Performing Test HAVE___INLINE__ - Success
+C/C++: -- Performing Test HAVE_SYNC_BUILTINS
+C/C++: -- Performing Test HAVE_SYNC_BUILTINS - Success
+C/C++: -- Performing Test HAVE_ATOMIC_BUILTINS
+C/C++: -- Performing Test HAVE_ATOMIC_BUILTINS - Success
+C/C++: -- Looking for C++ include fnmatch.h
+C/C++: -- Looking for C++ include fnmatch.h - found
+C/C++: -- Check size of uint32_t
+C/C++: -- Check size of uint32_t - done
+C/C++: -- Found PkgConfig: /usr/bin/pkg-config (found version "2.5.1") 
+C/C++: -- Could NOT find PNG (missing: PNG_LIBRARY PNG_PNG_INCLUDE_DIR) 
+C/C++: -- Could NOT find BZip2 (missing: BZIP2_LIBRARIES BZIP2_INCLUDE_DIR) 
+C/C++: -- Checking for module 'bzip2'
+C/C++: --   Package 'bzip2' not found
+C/C++: -- Could NOT find BrotliDec (missing: BROTLIDEC_INCLUDE_DIRS BROTLIDEC_LIBRARIES) 
+C/C++: -- SKIP_TESTS: Skipping subdirectory bsdiff/bsdiff_tests
+C/C++: -- SKIP_TESTS: Skipping subdirectory opening_hours_tests
+C/C++: -- SKIP_TESTS: Skipping subdirectory opening_hours_integration_tests
+C/C++: -- SKIP_TESTS: Skipping subdirectory opening_hours_supported_features_tests
+C/C++: -- Found Python3: /usr/bin/python3 (found version "3.14.7") found components: Interpreter 
+C/C++: -- ==> Python Virtual Environment detected : /home/qtekfun/repos/comaps-spike/.venv  ==>  Using python command: /home/qtekfun/repos/comaps-spike/.venv/bin/python3
+C/C++: -- Python protobuf 3.20.3 found (>=3.20, <4.0)
+C/C++: -- SKIP_TESTS: Skipping subdirectory base_tests
+C/C++: -- SKIP_TESTS: Skipping subdirectory coding_tests
+C/C++: -- SKIP_TESTS: Skipping subdirectory descriptions_tests
+C/C++: -- SKIP_TESTS: Skipping subdirectory drape_tests
+C/C++: SKIP_TOOLS: Skipping subdirectory fonts_tool
+C/C++: -- SKIP_TESTS: Skipping subdirectory drape_frontend_tests
+C/C++: -- SKIP_TESTS: Skipping subdirectory editor_tests
+C/C++: -- SKIP_TESTS: Skipping subdirectory osm_auth_tests
+C/C++: -- SKIP_TESTS: Skipping subdirectory ge0_tests
+C/C++: SKIP_TOOLS: Skipping subdirectory mwm_diff_tool
+C/C++: -- SKIP_TESTS: Skipping subdirectory mwm_diff_tests
+C/C++: -- SKIP_TESTS: Skipping subdirectory geometry_tests
+C/C++: -- SKIP_TESTS: Skipping subdirectory i18n_tests
+C/C++: -- SKIP_TESTS: Skipping subdirectory indexer_tests
+C/C++: -- SKIP_TESTS: Skipping subdirectory kml_tests
+C/C++: -- SKIP_TESTS: Skipping subdirectory map_integration_tests
+C/C++: -- SKIP_TESTS: Skipping subdirectory map_tests
+C/C++: -- SKIP_TESTS: Skipping subdirectory mwm_tests
+C/C++: -- SKIP_TESTS: Skipping subdirectory style_tests
+C/C++: -- SKIP_TESTS: Skipping subdirectory platform_tests_support
+C/C++: -- SKIP_TESTS: Skipping subdirectory platform_tests
+C/C++: -- SKIP_TESTS: Skipping subdirectory routing_benchmarks
+C/C++: -- SKIP_TESTS: Skipping subdirectory routing_consistency_tests
+C/C++: -- SKIP_TESTS: Skipping subdirectory routing_integration_tests
+C/C++: -- SKIP_TESTS: Skipping subdirectory routing_tests
+C/C++: -- SKIP_TESTS: Skipping subdirectory routing_common_tests
+C/C++: -- SKIP_TESTS: Skipping subdirectory search_tests
+C/C++: -- SKIP_TESTS: Skipping subdirectory search_integration_tests
+C/C++: -- SKIP_TESTS: Skipping subdirectory shaders_tests
+C/C++: -- SKIP_TESTS: Skipping subdirectory storage_tests
+C/C++: -- SKIP_TESTS: Skipping subdirectory storage_integration_tests
+C/C++: -- SKIP_TESTS: Skipping subdirectory tracking_tests
+C/C++: -- SKIP_TESTS: Skipping subdirectory traffic_tests
+C/C++: -- SKIP_TESTS: Skipping subdirectory transit_experimental_tests
+C/C++: -- SKIP_TESTS: Skipping subdirectory transit_tests
+C/C++: -- SKIP_TESTS: Skipping subdirectory libs/qt_tstfrm
+C/C++: -- Configuring done
+C/C++: CMake Warning (dev) at 3party/expat/expat/CMakeLists.txt:427 (add_library):
+C/C++:   Policy CMP0069 is not set: INTERPROCEDURAL_OPTIMIZATION is enforced when
+C/C++:   enabled.  Run "cmake --help-policy CMP0069" for policy details.  Use the
+C/C++:   cmake_policy command to set the policy and suppress this warning.
+C/C++:   INTERPROCEDURAL_OPTIMIZATION property will be ignored for target 'expat'.
+C/C++: This warning is for project developers.  Use -Wno-dev to suppress it.
+C/C++: CMake Warning (dev) at 3party/gflags/CMakeLists.txt:466 (add_library):
+C/C++:   Policy CMP0069 is not set: INTERPROCEDURAL_OPTIMIZATION is enforced when
+C/C++:   enabled.  Run "cmake --help-policy CMP0069" for policy details.  Use the
+C/C++:   cmake_policy command to set the policy and suppress this warning.
+C/C++:   INTERPROCEDURAL_OPTIMIZATION property will be ignored for target
+C/C++:   'gflags_nothreads_static'.
+C/C++: This warning is for project developers.  Use -Wno-dev to suppress it.
+C/C++: CMake Warning (dev) at 3party/freetype/freetype/CMakeLists.txt:456 (add_library):
+C/C++:   Policy CMP0069 is not set: INTERPROCEDURAL_OPTIMIZATION is enforced when
+C/C++:   enabled.  Run "cmake --help-policy CMP0069" for policy details.  Use the
+C/C++:   cmake_policy command to set the policy and suppress this warning.
+C/C++:   INTERPROCEDURAL_OPTIMIZATION property will be ignored for target
+C/C++:   'freetype'.
+C/C++: This warning is for project developers.  Use -Wno-dev to suppress it.
+C/C++: -- Generating done
+C/C++: -- Build files have been written to: /home/qtekfun/repos/comaps-spike/android/sdk/.cxx/RelWithDebInfo/1s3i4a3l/arm64-v8a
+
+> Task :sdk:buildCMakeRelWithDebInfo[arm64-v8a][organicmaps]
+C/C++: ninja: Entering directory `/home/qtekfun/repos/comaps-spike/android/sdk/.cxx/RelWithDebInfo/1s3i4a3l/arm64-v8a'
+C/C++: [1/218] Building CXX object 3party/bsdiff-courgette/CMakeFiles/bsdiff.dir/Unity/unity_0_cxx.cxx.o
+C/C++: [2/218] Building CXX object 3party/icu/CMakeFiles/icui18n.dir/icu/icu4c/source/i18n/anytrans.cpp.o
+C/C++: [3/218] Building C object 3party/jansson/jansson/CMakeFiles/jansson.dir/Unity/unity_0_c.c.o
+C/C++: In file included from /home/qtekfun/repos/comaps-spike/android/sdk/.cxx/RelWithDebInfo/1s3i4a3l/arm64-v8a/3party/jansson/jansson/CMakeFiles/jansson.dir/Unity/unity_0_c.c:25:
+C/C++: /home/qtekfun/repos/comaps-spike/3party/jansson/jansson/src/value.c:934:9: warning: use of NaN is undefined behavior due to the currently enabled floating-point options [-Wnan-infinity-disabled]
+C/C++:   934 |     if (isnan(value) || isinf(value))
+C/C++:       |         ^~~~~~~~~~~~
+C/C++: /home/qtekfun/Android/Sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/math.h:67:18: note: expanded from macro 'isnan'
+C/C++:    67 | #define isnan(x) __builtin_isnan(x)
+C/C++:       |                  ^~~~~~~~~~~~~~~~~~
+C/C++: In file included from /home/qtekfun/repos/comaps-spike/android/sdk/.cxx/RelWithDebInfo/1s3i4a3l/arm64-v8a/3party/jansson/jansson/CMakeFiles/jansson.dir/Unity/unity_0_c.c:25:
+C/C++: /home/qtekfun/repos/comaps-spike/3party/jansson/jansson/src/value.c:934:25: warning: use of infinity is undefined behavior due to the currently enabled floating-point options [-Wnan-infinity-disabled]
+C/C++:   934 |     if (isnan(value) || isinf(value))
+C/C++:       |                         ^~~~~~~~~~~~
+C/C++: /home/qtekfun/Android/Sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/math.h:65:18: note: expanded from macro 'isinf'
+C/C++:    65 | #define isinf(x) __builtin_isinf(x)
+C/C++:       |                  ^~~~~~~~~~~~~~~~~~
+C/C++: In file included from /home/qtekfun/repos/comaps-spike/android/sdk/.cxx/RelWithDebInfo/1s3i4a3l/arm64-v8a/3party/jansson/jansson/CMakeFiles/jansson.dir/Unity/unity_0_c.c:25:
+C/C++: /home/qtekfun/repos/comaps-spike/3party/jansson/jansson/src/value.c:954:32: warning: use of NaN is undefined behavior due to the currently enabled floating-point options [-Wnan-infinity-disabled]
+C/C++:   954 |     if (!json_is_real(json) || isnan(value) || isinf(value))
+C/C++:       |                                ^~~~~~~~~~~~
+C/C++: /home/qtekfun/Android/Sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/math.h:67:18: note: expanded from macro 'isnan'
+C/C++:    67 | #define isnan(x) __builtin_isnan(x)
+C/C++:       |                  ^~~~~~~~~~~~~~~~~~
+C/C++: In file included from /home/qtekfun/repos/comaps-spike/android/sdk/.cxx/RelWithDebInfo/1s3i4a3l/arm64-v8a/3party/jansson/jansson/CMakeFiles/jansson.dir/Unity/unity_0_c.c:25:
+C/C++: /home/qtekfun/repos/comaps-spike/3party/jansson/jansson/src/value.c:954:48: warning: use of infinity is undefined behavior due to the currently enabled floating-point options [-Wnan-infinity-disabled]
+C/C++:   954 |     if (!json_is_real(json) || isnan(value) || isinf(value))
+C/C++:       |                                                ^~~~~~~~~~~~
+C/C++: /home/qtekfun/Android/Sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/math.h:65:18: note: expanded from macro 'isinf'
+C/C++:    65 | #define isinf(x) __builtin_isinf(x)
+C/C++:       |                  ^~~~~~~~~~~~~~~~~~
+C/C++: 4 warnings generated.
+C/C++: [4/218] Building C object 3party/expat/expat/CMakeFiles/expat.dir/Unity/unity_0_c.c.o
+C/C++: [5/218] Linking C static library 3party/jansson/jansson/lib/libjansson.a
+C/C++: [6/218] Linking C static library 3party/expat/expat/libexpat.a
+C/C++: [7/218] Building CXX object 3party/pugixml/CMakeFiles/pugixml.dir/Unity/unity_0_cxx.cxx.o
+C/C++: [8/218] Building CXX object 3party/icu/CMakeFiles/icui18n.dir/icu/icu4c/source/i18n/rbt_rule.cpp.o
+C/C++: [9/218] Linking CXX static library 3party/pugixml/libpugixml.a
+C/C++: [10/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/appendable.cpp.o
+C/C++: [11/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/bytesinkutil.cpp.o
+C/C++: [12/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/bmpset.cpp.o
+C/C++: [13/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/characterproperties.cpp.o
+C/C++: [14/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/bytestream.cpp.o
+C/C++: [15/218] Building CXX object 3party/protobuf/CMakeFiles/protobuf.dir/Unity/unity_0_cxx.cxx.o
+C/C++: In file included from /home/qtekfun/repos/comaps-spike/android/sdk/.cxx/RelWithDebInfo/1s3i4a3l/arm64-v8a/3party/protobuf/CMakeFiles/protobuf.dir/Unity/unity_0_cxx.cxx:7:
+C/C++: /home/qtekfun/repos/comaps-spike/3party/protobuf/protobuf/src/google/protobuf/generated_message_util.cc:45:10: warning: use of infinity is undefined behavior due to the currently enabled floating-point options [-Wnan-infinity-disabled]
+C/C++:    45 |   return std::numeric_limits<double>::infinity();
+C/C++:       |          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+C/C++: In file included from /home/qtekfun/repos/comaps-spike/android/sdk/.cxx/RelWithDebInfo/1s3i4a3l/arm64-v8a/3party/protobuf/CMakeFiles/protobuf.dir/Unity/unity_0_cxx.cxx:41:
+C/C++: /home/qtekfun/repos/comaps-spike/3party/protobuf/protobuf/src/google/protobuf/stubs/strutil.cc:1265:16: warning: use of infinity is undefined behavior due to the currently enabled floating-point options [-Wnan-infinity-disabled]
+C/C++:  1265 |   if (value == numeric_limits<double>::infinity()) {
+C/C++:       |                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+C/C++: /home/qtekfun/repos/comaps-spike/3party/protobuf/protobuf/src/google/protobuf/stubs/strutil.cc:1268:24: warning: use of infinity is undefined behavior due to the currently enabled floating-point options [-Wnan-infinity-disabled]
+C/C++:  1268 |   } else if (value == -numeric_limits<double>::infinity()) {
+C/C++:       |                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+C/C++: /home/qtekfun/repos/comaps-spike/3party/protobuf/protobuf/src/google/protobuf/stubs/strutil.cc:1383:16: warning: use of infinity is undefined behavior due to the currently enabled floating-point options [-Wnan-infinity-disabled]
+C/C++:  1383 |   if (value == numeric_limits<double>::infinity()) {
+C/C++:       |                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+C/C++: /home/qtekfun/repos/comaps-spike/3party/protobuf/protobuf/src/google/protobuf/stubs/strutil.cc:1386:24: warning: use of infinity is undefined behavior due to the currently enabled floating-point options [-Wnan-infinity-disabled]
+C/C++:  1386 |   } else if (value == -numeric_limits<double>::infinity()) {
+C/C++:       |                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+C/C++: 5 warnings generated.
+C/C++: [16/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/bytestrie.cpp.o
+C/C++: [17/218] Linking CXX static library 3party/protobuf/libprotobuf.a
+C/C++: [18/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/loadednormalizer2impl.cpp.o
+C/C++: [19/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/emojiprops.cpp.o
+C/C++: [20/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/cmemory.cpp.o
+C/C++: [21/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/charstr.cpp.o
+C/C++: [22/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/cstring.cpp.o
+C/C++: [23/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/edits.cpp.o
+C/C++: [24/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/loclikely.cpp.o
+C/C++: [25/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/localebuilder.cpp.o
+C/C++: [26/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/normalizer2.cpp.o
+C/C++: [27/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/loclikelysubtags.cpp.o
+C/C++: [28/218] Building C object 3party/freetype/freetype/CMakeFiles/freetype.dir/Unity/unity_0_c.c.o
+C/C++: [29/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/ubidi_props.cpp.o
+C/C++: [30/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/locid.cpp.o
+C/C++: [31/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/locutil.cpp.o
+C/C++: [32/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/locmap.cpp.o
+C/C++: [33/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/parsepos.cpp.o
+C/C++: [34/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/lsr.cpp.o
+C/C++: [35/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/resbund_cnv.cpp.o
+C/C++: [36/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/patternprops.cpp.o
+C/C++: [37/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/propname.cpp.o
+C/C++: [38/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/normalizer2impl.cpp.o
+C/C++: [39/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/putil.cpp.o
+C/C++: [40/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/resbund.cpp.o
+C/C++: [41/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/uarrsort.cpp.o
+C/C++: [42/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/resource.cpp.o
+C/C++: [43/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/ubidiwrt.cpp.o
+C/C++: [44/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/ruleiter.cpp.o
+C/C++: [45/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/stringpiece.cpp.o
+C/C++: [46/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/ucharstrieiterator.cpp.o
+C/C++: [47/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/ubidiln.cpp.o
+C/C++: [48/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/ucharstrie.cpp.o
+C/C++: [49/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/ubidi.cpp.o
+C/C++: [50/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/uchar.cpp.o
+C/C++: [51/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/ucase.cpp.o
+C/C++: [52/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/ucln_cmn.cpp.o
+C/C++: [53/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/ucmndata.cpp.o
+C/C++: [54/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/udatamem.cpp.o
+C/C++: [55/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/ucptrie.cpp.o
+C/C++: [56/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/udataswp.cpp.o
+C/C++: [57/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/uloc_keytype.cpp.o
+C/C++: [58/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/uhash_us.cpp.o
+C/C++: [59/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/uenum.cpp.o
+C/C++: [60/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/uhash.cpp.o
+C/C++: [61/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/udata.cpp.o
+C/C++: [62/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/uinvchar.cpp.o
+C/C++: [63/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/umutablecptrie.cpp.o
+C/C++: [64/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/unifunct.cpp.o
+C/C++: [65/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/umath.cpp.o
+C/C++: [66/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/umapfile.cpp.o
+C/C++: [67/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/uloc_tag.cpp.o
+C/C++: [68/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/uloc.cpp.o
+C/C++: [69/218] Building C object 3party/freetype/freetype/CMakeFiles/freetype.dir/Unity/unity_1_c.c.o
+C/C++: [70/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/unifilt.cpp.o
+C/C++: [71/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/umutex.cpp.o
+C/C++: [72/218] Linking C static library 3party/freetype/freetype/libfreetype.a
+C/C++: [73/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/uniset_closure.cpp.o
+C/C++: [74/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/uniset.cpp.o
+C/C++: [75/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/unistr_case.cpp.o
+C/C++: [76/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/uniset_props.cpp.o
+C/C++: [77/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/unames.cpp.o
+C/C++: [78/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/unistr_case_locale.cpp.o
+C/C++: [79/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/unisetspan.cpp.o
+C/C++: [80/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/uscript_props.cpp.o
+C/C++: [81/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/uobject.cpp.o
+C/C++: [82/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/unistr.cpp.o
+C/C++: [83/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/uresdata.cpp.o
+C/C++: [84/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/ustrtrns.cpp.o
+C/C++: [85/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/uscript.cpp.o
+C/C++: [86/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/uprops.cpp.o
+C/C++: [87/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/uresbund.cpp.o
+C/C++: [88/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/uset.cpp.o
+C/C++: [89/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/ushape.cpp.o
+C/C++: [90/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/ustrcase.cpp.o
+C/C++: [91/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/utf_impl.cpp.o
+C/C++: [92/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/util_props.cpp.o
+C/C++: [93/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/ustrcase_locale.cpp.o
+C/C++: [94/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/ustrenum.cpp.o
+C/C++: [95/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/ustring.cpp.o
+C/C++: [96/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/utrie_swap.cpp.o
+C/C++: [97/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/uvectr32.cpp.o
+C/C++: [98/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/utrace.cpp.o
+C/C++: [99/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/wintz.cpp.o
+C/C++: [100/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/utrie2.cpp.o
+C/C++: [101/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/util.cpp.o
+C/C++: [102/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/uvector.cpp.o
+C/C++: [103/218] Building CXX object 3party/icu/CMakeFiles/icui18n.dir/icu/icu4c/source/i18n/cpdtrans.cpp.o
+C/C++: [104/218] Building CXX object 3party/icu/CMakeFiles/icui18n.dir/icu/icu4c/source/i18n/esctrn.cpp.o
+C/C++: [105/218] Building CXX object 3party/icu/CMakeFiles/icui18n.dir/icu/icu4c/source/stubdata/stubdata.cpp.o
+C/C++: [106/218] Linking CXX static library 3party/icu/libicuuc.a
+C/C++: [107/218] Building CXX object 3party/icu/CMakeFiles/icui18n.dir/icu/icu4c/source/i18n/funcrepl.cpp.o
+C/C++: [108/218] Building CXX object 3party/icu/CMakeFiles/icui18n.dir/icu/icu4c/source/i18n/casetrn.cpp.o
+C/C++: [109/218] Building CXX object 3party/icu/CMakeFiles/icui18n.dir/icu/icu4c/source/i18n/nultrans.cpp.o
+C/C++: [110/218] Building CXX object 3party/icu/CMakeFiles/icui18n.dir/icu/icu4c/source/i18n/nortrans.cpp.o
+C/C++: [111/218] Building CXX object 3party/icu/CMakeFiles/icui18n.dir/icu/icu4c/source/i18n/name2uni.cpp.o
+C/C++: [112/218] Building CXX object 3party/icu/CMakeFiles/icui18n.dir/icu/icu4c/source/i18n/quant.cpp.o
+C/C++: [113/218] Building CXX object 3party/icu/CMakeFiles/icui18n.dir/icu/icu4c/source/i18n/rbt_data.cpp.o
+C/C++: [114/218] Building CXX object 3party/icu/CMakeFiles/icui18n.dir/icu/icu4c/source/i18n/rbt.cpp.o
+C/C++: [115/218] Building CXX object 3party/icu/CMakeFiles/icui18n.dir/icu/icu4c/source/i18n/strmatch.cpp.o
+C/C++: [116/218] Building CXX object 3party/icu/CMakeFiles/icui18n.dir/icu/icu4c/source/i18n/strrepl.cpp.o
+C/C++: [117/218] Building CXX object 3party/icu/CMakeFiles/icui18n.dir/icu/icu4c/source/i18n/rbt_set.cpp.o
+C/C++: [118/218] Building CXX object 3party/icu/CMakeFiles/icui18n.dir/icu/icu4c/source/i18n/remtrans.cpp.o
+C/C++: [119/218] Building CXX object 3party/icu/CMakeFiles/icui18n.dir/icu/icu4c/source/i18n/rbt_pars.cpp.o
+C/C++: [120/218] Building CXX object 3party/icu/CMakeFiles/icui18n.dir/icu/icu4c/source/i18n/titletrn.cpp.o
+C/C++: [121/218] Building CXX object 3party/icu/CMakeFiles/icui18n.dir/icu/icu4c/source/i18n/tolowtrn.cpp.o
+C/C++: [122/218] Building CXX object 3party/icu/CMakeFiles/icui18n.dir/icu/icu4c/source/i18n/toupptrn.cpp.o
+C/C++: [123/218] Building CXX object 3party/icu/CMakeFiles/icui18n.dir/icu/icu4c/source/i18n/transreg.cpp.o
+C/C++: [124/218] Building CXX object 3party/icu/CMakeFiles/icui18n.dir/icu/icu4c/source/i18n/tridpars.cpp.o
+C/C++: [125/218] Building CXX object 3party/icu/CMakeFiles/icui18n.dir/icu/icu4c/source/i18n/ucln_in.cpp.o
+C/C++: [126/218] Linking CXX static library 3party/bsdiff-courgette/libbsdiff.a
+C/C++: [127/218] Building CXX object 3party/icu/CMakeFiles/icui18n.dir/icu/icu4c/source/i18n/translit.cpp.o
+C/C++: [128/218] Building CXX object 3party/icu/CMakeFiles/icui18n.dir/icu/icu4c/source/i18n/uni2name.cpp.o
+C/C++: [129/218] Building CXX object 3party/agg/CMakeFiles/agg.dir/Unity/unity_0_cxx.cxx.o
+C/C++: [130/218] Building CXX object 3party/icu/CMakeFiles/icui18n.dir/icu/icu4c/source/i18n/unesctrn.cpp.o
+C/C++: [131/218] Linking CXX static library 3party/agg/libagg.a
+C/C++: [132/218] Linking CXX static library 3party/icu/libicui18n.a
+C/C++: [133/218] Building CXX object 3party/minizip/CMakeFiles/minizip.dir/Unity/unity_0_cxx.cxx.o
+C/C++: [134/218] Building C object 3party/minizip/CMakeFiles/minizip.dir/Unity/unity_0_c.c.o
+C/C++: [135/218] Building CXX object 3party/open-location-code/CMakeFiles/openlocationcode.dir/Unity/unity_0_cxx.cxx.o
+C/C++: [136/218] Linking CXX static library 3party/minizip/libminizip.a
+C/C++: [137/218] Linking CXX static library 3party/open-location-code/libopenlocationcode.a
+C/C++: [138/218] Building C object 3party/monocypher/CMakeFiles/monocypher.dir/monocypher-ed25519.c.o
+C/C++: [139/218] Building CXX object 3party/vulkan_wrapper/CMakeFiles/vulkan_wrapper.dir/Unity/unity_0_cxx.cxx.o
+C/C++: [140/218] Building C object 3party/monocypher/CMakeFiles/monocypher.dir/monocypher.c.o
+C/C++: [141/218] Linking CXX static library 3party/vulkan_wrapper/libvulkan_wrapper.a
+C/C++: [142/218] Linking C static library 3party/monocypher/libmonocypher.a
+C/C++: [143/218] Building CXX object 3party/stb_image/CMakeFiles/stb_image.dir/Unity/unity_0_cxx.cxx.o
+C/C++: [144/218] Building CXX object libs/base/CMakeFiles/base.dir/fast_math.cpp.o
+C/C++: [145/218] Linking CXX static library 3party/stb_image/libstb_image.a
+C/C++: [146/218] Building CXX object libs/base/CMakeFiles/base.dir/Unity/unity_1_cxx.cxx.o
+C/C++: [147/218] Building CXX object 3party/succinct/CMakeFiles/succinct.dir/Unity/unity_0_cxx.cxx.o
+C/C++: [148/218] Building CXX object libs/coding/CMakeFiles/coding.dir/Unity/unity_1_cxx.cxx.o
+C/C++: [149/218] Linking CXX static library 3party/succinct/libsuccinct.a
+C/C++: [150/218] Building CXX object libs/descriptions/CMakeFiles/descriptions.dir/Unity/unity_0_cxx.cxx.o
+C/C++: [151/218] Building CXX object libs/coding/CMakeFiles/coding.dir/Unity/unity_0_cxx.cxx.o
+C/C++: [152/218] Building CXX object 3party/harfbuzz/CMakeFiles/harfbuzz.dir/Unity/unity_0_cxx.cxx.o
+C/C++: [153/218] Building CXX object libs/drape/CMakeFiles/drape.dir/Unity/unity_2_cxx.cxx.o
+C/C++: [154/218] Linking CXX static library 3party/harfbuzz/libharfbuzz.a
+C/C++: [155/218] Building CXX object libs/ge0/CMakeFiles/ge0.dir/Unity/unity_0_cxx.cxx.o
+C/C++: [156/218] Building CXX object libs/mwm_diff/CMakeFiles/mwm_diff.dir/Unity/unity_0_cxx.cxx.o
+C/C++: [157/218] Building CXX object libs/drape/CMakeFiles/drape.dir/Unity/unity_0_cxx.cxx.o
+C/C++: [158/218] Building CXX object libs/drape/CMakeFiles/drape.dir/Unity/unity_1_cxx.cxx.o
+C/C++: [159/218] Building CXX object libs/geometry/CMakeFiles/geometry.dir/Unity/unity_0_cxx.cxx.o
+C/C++: [160/218] Building CXX object libs/i18n/CMakeFiles/i18n.dir/Unity/unity_0_cxx.cxx.o
+C/C++: [161/218] Building CXX object 3party/opening_hours/CMakeFiles/opening_hours.dir/Unity/unity_0_cxx.cxx.o
+C/C++: [162/218] Building CXX object libs/indexer/CMakeFiles/indexer.dir/Unity/unity_2_cxx.cxx.o
+C/C++: In file included from /home/qtekfun/repos/comaps-spike/android/sdk/.cxx/RelWithDebInfo/1s3i4a3l/arm64-v8a/libs/indexer/CMakeFiles/indexer.dir/Unity/unity_2_cxx.cxx:9:
+C/C++: /home/qtekfun/repos/comaps-spike/libs/indexer/road_shields_parser.cpp:1432:5: warning: misleading indentation; statement is not part of the previous 'if' [-Wmisleading-indentation]
+C/C++:  1432 |     if (mwmName == "Morocco")
+C/C++:       |     ^
+C/C++: /home/qtekfun/repos/comaps-spike/libs/indexer/road_shields_parser.cpp:1430:3: note: previous statement is here
+C/C++:  1430 |   if (mwmName == "Mexico")
+C/C++:       |   ^
+C/C++: 1 warning generated.
+C/C++: [163/218] Linking CXX static library 3party/opening_hours/libopening_hours.a
+C/C++: [164/218] Building CXX object libs/indexer/CMakeFiles/indexer.dir/drules_struct.pb.cc.o
+C/C++: [165/218] Building CXX object libs/cppjansson/CMakeFiles/cppjansson.dir/Unity/unity_0_cxx.cxx.o
+C/C++: [166/218] Building CXX object libs/indexer/CMakeFiles/indexer.dir/Unity/unity_1_cxx.cxx.o
+C/C++: [167/218] Building CXX object libs/platform/CMakeFiles/platform.dir/Unity/unity_1_cxx.cxx.o
+C/C++: [168/218] Building CXX object libs/kml/CMakeFiles/kml.dir/Unity/unity_0_cxx.cxx.o
+C/C++: [169/218] Building CXX object libs/indexer/CMakeFiles/indexer.dir/Unity/unity_0_cxx.cxx.o
+C/C++: [170/218] Building CXX object libs/platform/CMakeFiles/platform.dir/preferred_languages.cpp.o
+C/C++: [171/218] Building CXX object libs/editor/CMakeFiles/editor.dir/Unity/unity_0_cxx.cxx.o
+C/C++: [172/218] Building CXX object libs/platform/CMakeFiles/platform.dir/Unity/unity_0_cxx.cxx.o
+C/C++: [173/218] Building CXX object libs/routing/CMakeFiles/routing.dir/Unity/unity_3_cxx.cxx.o
+C/C++: [174/218] Building CXX object libs/routing_common/CMakeFiles/routing_common.dir/Unity/unity_0_cxx.cxx.o
+C/C++: [175/218] Building CXX object libs/routing/CMakeFiles/routing.dir/Unity/unity_2_cxx.cxx.o
+C/C++: [176/218] Building CXX object libs/routing/CMakeFiles/routing.dir/Unity/unity_0_cxx.cxx.o
+C/C++: [177/218] Building CXX object libs/routing/CMakeFiles/routing.dir/Unity/unity_1_cxx.cxx.o
+C/C++: [178/218] Building CXX object libs/traffic/CMakeFiles/traffic.dir/Unity/unity_0_cxx.cxx.o
+C/C++: [179/218] Building CXX object libs/search/CMakeFiles/search.dir/Unity/unity_1_cxx.cxx.o
+C/C++: [180/218] Building CXX object libs/storage/CMakeFiles/storage.dir/Unity/unity_0_cxx.cxx.o
+C/C++: In file included from /home/qtekfun/repos/comaps-spike/android/sdk/.cxx/RelWithDebInfo/1s3i4a3l/arm64-v8a/libs/storage/CMakeFiles/storage.dir/Unity/unity_0_cxx.cxx:11:
+C/C++: In file included from /home/qtekfun/repos/comaps-spike/libs/storage/country_parent_getter.cpp:3:
+C/C++: In file included from /home/qtekfun/repos/comaps-spike/libs/storage/storage.hpp:10:
+C/C++: In file included from /home/qtekfun/repos/comaps-spike/libs/storage/downloader_queue_universal.hpp:3:
+C/C++: In file included from /home/qtekfun/repos/comaps-spike/libs/storage/downloader_queue_interface.hpp:3:
+C/C++: /home/qtekfun/repos/comaps-spike/libs/storage/queued_country.hpp:57:11: warning: private field 'm_currentDataVersion' is not used [-Wunused-private-field]
+C/C++:    57 |   int64_t m_currentDataVersion;  ///@todo(pastk): cleanup unused
+C/C++:       |           ^
+C/C++: 1 warning generated.
+C/C++: [181/218] Building CXX object libs/search/CMakeFiles/search.dir/Unity/unity_0_cxx.cxx.o
+C/C++: [182/218] Building CXX object libs/transit/CMakeFiles/transit.dir/Unity/unity_0_cxx.cxx.o
+C/C++: [183/218] Building CXX object libs/base/CMakeFiles/base.dir/Unity/unity_0_cxx.cxx.o
+C/C++: [184/218] Linking CXX static library libs/base/libbase.a
+C/C++: [185/218] Linking CXX static library libs/cppjansson/libcppjansson.a
+C/C++: [186/218] Linking CXX static library libs/geometry/libgeometry.a
+C/C++: [187/218] Linking CXX static library libs/coding/libcoding.a
+C/C++: [188/218] Linking CXX static library libs/mwm_diff/libmwm_diff.a
+C/C++: [189/218] Linking CXX static library libs/ge0/libge0.a
+C/C++: [190/218] Linking CXX static library libs/platform/libplatform.a
+C/C++: [191/218] Linking CXX static library libs/i18n/libi18n.a
+C/C++: [192/218] Linking CXX static library libs/storage/libstorage.a
+C/C++: [193/218] Linking CXX static library libs/routing_common/librouting_common.a
+C/C++: [194/218] Linking CXX static library libs/kml/libkml.a
+C/C++: [195/218] Linking CXX static library libs/indexer/libindexer.a
+C/C++: [196/218] Linking CXX static library libs/drape/libdrape.a
+C/C++: [197/218] Linking CXX static library libs/descriptions/libdescriptions.a
+C/C++: [198/218] Linking CXX static library libs/traffic/libtraffic.a
+C/C++: [199/218] Linking CXX static library libs/transit/libtransit.a
+C/C++: [200/218] Generating ../../../../../../../../libs/shaders/gl_shaders.cpp, ../../../../../../../../libs/shaders/gl_shaders.hpp
+C/C++: ./gl_shaders.hpp was replaced
+C/C++: ./gl_shaders.cpp was replaced
+C/C++: [201/218] Linking CXX static library libs/editor/libeditor.a
+C/C++: [202/218] Linking CXX static library libs/routing/librouting.a
+C/C++: [203/218] Building CXX object libs/drape_frontend/CMakeFiles/drape_frontend.dir/Unity/unity_0_cxx.cxx.o
+C/C++: [204/218] Building CXX object libs/drape_frontend/CMakeFiles/drape_frontend.dir/Unity/unity_2_cxx.cxx.o
+C/C++: In file included from /home/qtekfun/repos/comaps-spike/android/sdk/.cxx/RelWithDebInfo/1s3i4a3l/arm64-v8a/libs/drape_frontend/CMakeFiles/drape_frontend.dir/Unity/unity_2_cxx.cxx:25:
+C/C++: In file included from /home/qtekfun/repos/comaps-spike/libs/drape_frontend/path_text_shape.cpp:1:
+C/C++: /home/qtekfun/repos/comaps-spike/libs/drape_frontend/path_text_shape.hpp:51:18: warning: private field 'm_textIndexEnd' is not used [-Wunused-private-field]
+C/C++:    51 |   uint32_t const m_textIndexEnd;
+C/C++:       |                  ^
+C/C++: 1 warning generated.
+C/C++: [205/218] Building CXX object libs/map/CMakeFiles/map.dir/Unity/unity_1_cxx.cxx.o
+C/C++: [206/218] Building CXX object libs/drape_frontend/CMakeFiles/drape_frontend.dir/Unity/unity_3_cxx.cxx.o
+C/C++: [207/218] Building CXX object libs/shaders/CMakeFiles/shaders.dir/Unity/unity_0_cxx.cxx.o
+C/C++: [208/218] Building CXX object libs/drape_frontend/CMakeFiles/drape_frontend.dir/Unity/unity_1_cxx.cxx.o
+C/C++: [209/218] Linking CXX static library libs/shaders/libshaders.a
+C/C++: [210/218] Linking CXX static library libs/drape_frontend/libdrape_frontend.a
+C/C++: [211/218] Building CXX object android/sdk/src/main/cpp/CMakeFiles/organicmaps.dir/Unity/unity_2_cxx.cxx.o
+C/C++: [212/218] Building CXX object android/sdk/src/main/cpp/CMakeFiles/organicmaps.dir/Unity/unity_0_cxx.cxx.o
+C/C++: [213/218] Building CXX object android/sdk/src/main/cpp/CMakeFiles/organicmaps.dir/Unity/unity_1_cxx.cxx.o
+C/C++: [214/218] Building CXX object libs/search/CMakeFiles/search.dir/Unity/unity_2_cxx.cxx.o
+C/C++: [215/218] Linking CXX static library libs/search/libsearch.a
+C/C++: [216/218] Building CXX object libs/map/CMakeFiles/map.dir/Unity/unity_0_cxx.cxx.o
+C/C++: [217/218] Linking CXX static library libs/map/libmap.a
+C/C++: [218/218] Linking CXX shared library ../../../../build/intermediates/cxx/RelWithDebInfo/1s3i4a3l/obj/arm64-v8a/liborganicmaps.so
+C/C++: FAILED: ../../../../build/intermediates/cxx/RelWithDebInfo/1s3i4a3l/obj/arm64-v8a/liborganicmaps.so 
+C/C++: : && /home/qtekfun/Android/Sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/linux-x86_64/bin/clang++ --target=aarch64-none-linux-android21 --sysroot=/home/qtekfun/Android/Sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/linux-x86_64/sysroot -fPIC -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security  -fexceptions -frtti -O2 -g -DNDEBUG -flto=thin  -static-libstdc++ -Wl,--build-id=sha1 -Wl,--no-rosegment -Wl,--no-undefined-version -Wl,--fatal-warnings -Wl,--no-undefined -Qunused-arguments  -Wl,--gc-sections   -Xlinker --build-id=sha1 -fuse-ld=gold -shared -Wl,-soname,liborganicmaps.so -o ../../../../build/intermediates/cxx/RelWithDebInfo/1s3i4a3l/obj/arm64-v8a/liborganicmaps.so android/sdk/src/main/cpp/CMakeFiles/organicmaps.dir/Unity/unity_2_cxx.cxx.o android/sdk/src/main/cpp/CMakeFiles/organicmaps.dir/Unity/unity_1_cxx.cxx.o android/sdk/src/main/cpp/CMakeFiles/organicmaps.dir/Unity/unity_0_cxx.cxx.o  libs/map/libmap.a  -llog  -landroid  -lEGL  -lGLESv2  -latomic  -lz  libs/drape_frontend/libdrape_frontend.a  libs/shaders/libshaders.a  libs/routing/librouting.a  libs/search/libsearch.a  libs/editor/libeditor.a  3party/opening_hours/libopening_hours.a  3party/pugixml/libpugixml.a  3party/open-location-code/libopenlocationcode.a  libs/traffic/libtraffic.a  libs/transit/libtransit.a  libs/descriptions/libdescriptions.a  libs/drape/libdrape.a  libs/indexer/libindexer.a  libs/kml/libkml.a  libs/routing_common/librouting_common.a  libs/storage/libstorage.a  libs/drape/libdrape.a  libs/indexer/libindexer.a  libs/kml/libkml.a  libs/routing_common/librouting_common.a  libs/storage/libstorage.a  3party/vulkan_wrapper/libvulkan_wrapper.a  -ldl  3party/stb_image/libstb_image.a  3party/harfbuzz/libharfbuzz.a  3party/freetype/freetype/libfreetype.a  /home/qtekfun/Android/Sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/lib/aarch64-linux-android/21/libz.so  3party/protobuf/libprotobuf.a  libs/i18n/libi18n.a  libs/platform/libplatform.a  3party/monocypher/libmonocypher.a  libs/mwm_diff/libmwm_diff.a  3party/bsdiff-courgette/libbsdiff.a  libs/ge0/libge0.a  libs/coding/libcoding.a  libs/cppjansson/libcppjansson.a  3party/jansson/jansson/lib/libjansson.a  3party/expat/expat/libexpat.a  -lm  3party/succinct/libsuccinct.a  3party/icu/libicui18n.a  3party/icu/libicuuc.a  3party/minizip/libminizip.a  /home/qtekfun/Android/Sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/lib/aarch64-linux-android/21/libz.so  libs/geometry/libgeometry.a  libs/base/libbase.a  -pthread  3party/agg/libagg.a  -latomic -lm && :
+C/C++: clang++: error: invalid linker name in argument '-fuse-ld=gold'
+C/C++: clang++: error: invalid linker name in argument '-fuse-ld=gold'
+C/C++: ninja: build stopped: subcommand failed.
+
+> Task :sdk:buildCMakeRelWithDebInfo[arm64-v8a][organicmaps] FAILED
+
+[Incubating] Problems report is available at: file:///home/qtekfun/repos/comaps-spike/android/build/reports/problems/problems-report.html
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':sdk:buildCMakeRelWithDebInfo[arm64-v8a][organicmaps]'.
+> com.android.ide.common.process.ProcessException: ninja: Entering directory `/home/qtekfun/repos/comaps-spike/android/sdk/.cxx/RelWithDebInfo/1s3i4a3l/arm64-v8a'
+  [1/218] Building CXX object 3party/bsdiff-courgette/CMakeFiles/bsdiff.dir/Unity/unity_0_cxx.cxx.o
+  [2/218] Building CXX object 3party/icu/CMakeFiles/icui18n.dir/icu/icu4c/source/i18n/anytrans.cpp.o
+  [3/218] Building C object 3party/jansson/jansson/CMakeFiles/jansson.dir/Unity/unity_0_c.c.o
+  In file included from /home/qtekfun/repos/comaps-spike/android/sdk/.cxx/RelWithDebInfo/1s3i4a3l/arm64-v8a/3party/jansson/jansson/CMakeFiles/jansson.dir/Unity/unity_0_c.c:25:
+  /home/qtekfun/repos/comaps-spike/3party/jansson/jansson/src/value.c:934:9: warning: use of NaN is undefined behavior due to the currently enabled floating-point options [-Wnan-infinity-disabled]
+    934 |     if (isnan(value) || isinf(value))
+        |         ^~~~~~~~~~~~
+  /home/qtekfun/Android/Sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/math.h:67:18: note: expanded from macro 'isnan'
+     67 | #define isnan(x) __builtin_isnan(x)
+        |                  ^~~~~~~~~~~~~~~~~~
+  In file included from /home/qtekfun/repos/comaps-spike/android/sdk/.cxx/RelWithDebInfo/1s3i4a3l/arm64-v8a/3party/jansson/jansson/CMakeFiles/jansson.dir/Unity/unity_0_c.c:25:
+  /home/qtekfun/repos/comaps-spike/3party/jansson/jansson/src/value.c:934:25: warning: use of infinity is undefined behavior due to the currently enabled floating-point options [-Wnan-infinity-disabled]
+    934 |     if (isnan(value) || isinf(value))
+        |                         ^~~~~~~~~~~~
+  /home/qtekfun/Android/Sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/math.h:65:18: note: expanded from macro 'isinf'
+     65 | #define isinf(x) __builtin_isinf(x)
+        |                  ^~~~~~~~~~~~~~~~~~
+  In file included from /home/qtekfun/repos/comaps-spike/android/sdk/.cxx/RelWithDebInfo/1s3i4a3l/arm64-v8a/3party/jansson/jansson/CMakeFiles/jansson.dir/Unity/unity_0_c.c:25:
+  /home/qtekfun/repos/comaps-spike/3party/jansson/jansson/src/value.c:954:32: warning: use of NaN is undefined behavior due to the currently enabled floating-point options [-Wnan-infinity-disabled]
+    954 |     if (!json_is_real(json) || isnan(value) || isinf(value))
+        |                                ^~~~~~~~~~~~
+  /home/qtekfun/Android/Sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/math.h:67:18: note: expanded from macro 'isnan'
+     67 | #define isnan(x) __builtin_isnan(x)
+        |                  ^~~~~~~~~~~~~~~~~~
+  In file included from /home/qtekfun/repos/comaps-spike/android/sdk/.cxx/RelWithDebInfo/1s3i4a3l/arm64-v8a/3party/jansson/jansson/CMakeFiles/jansson.dir/Unity/unity_0_c.c:25:
+  /home/qtekfun/repos/comaps-spike/3party/jansson/jansson/src/value.c:954:48: warning: use of infinity is undefined behavior due to the currently enabled floating-point options [-Wnan-infinity-disabled]
+    954 |     if (!json_is_real(json) || isnan(value) || isinf(value))
+        |                                                ^~~~~~~~~~~~
+  /home/qtekfun/Android/Sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/math.h:65:18: note: expanded from macro 'isinf'
+     65 | #define isinf(x) __builtin_isinf(x)
+        |                  ^~~~~~~~~~~~~~~~~~
+  4 warnings generated.
+  [4/218] Building C object 3party/expat/expat/CMakeFiles/expat.dir/Unity/unity_0_c.c.o
+  [5/218] Linking C static library 3party/jansson/jansson/lib/libjansson.a
+  [6/218] Linking C static library 3party/expat/expat/libexpat.a
+  [7/218] Building CXX object 3party/pugixml/CMakeFiles/pugixml.dir/Unity/unity_0_cxx.cxx.o
+  [8/218] Building CXX object 3party/icu/CMakeFiles/icui18n.dir/icu/icu4c/source/i18n/rbt_rule.cpp.o
+  [9/218] Linking CXX static library 3party/pugixml/libpugixml.a
+  [10/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/appendable.cpp.o
+  [11/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/bytesinkutil.cpp.o
+  [12/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/bmpset.cpp.o
+  [13/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/characterproperties.cpp.o
+  [14/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/bytestream.cpp.o
+  [15/218] Building CXX object 3party/protobuf/CMakeFiles/protobuf.dir/Unity/unity_0_cxx.cxx.o
+  In file included from /home/qtekfun/repos/comaps-spike/android/sdk/.cxx/RelWithDebInfo/1s3i4a3l/arm64-v8a/3party/protobuf/CMakeFiles/protobuf.dir/Unity/unity_0_cxx.cxx:7:
+  /home/qtekfun/repos/comaps-spike/3party/protobuf/protobuf/src/google/protobuf/generated_message_util.cc:45:10: warning: use of infinity is undefined behavior due to the currently enabled floating-point options [-Wnan-infinity-disabled]
+     45 |   return std::numeric_limits<double>::infinity();
+        |          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  In file included from /home/qtekfun/repos/comaps-spike/android/sdk/.cxx/RelWithDebInfo/1s3i4a3l/arm64-v8a/3party/protobuf/CMakeFiles/protobuf.dir/Unity/unity_0_cxx.cxx:41:
+  /home/qtekfun/repos/comaps-spike/3party/protobuf/protobuf/src/google/protobuf/stubs/strutil.cc:1265:16: warning: use of infinity is undefined behavior due to the currently enabled floating-point options [-Wnan-infinity-disabled]
+   1265 |   if (value == numeric_limits<double>::infinity()) {
+        |                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  /home/qtekfun/repos/comaps-spike/3party/protobuf/protobuf/src/google/protobuf/stubs/strutil.cc:1268:24: warning: use of infinity is undefined behavior due to the currently enabled floating-point options [-Wnan-infinity-disabled]
+   1268 |   } else if (value == -numeric_limits<double>::infinity()) {
+        |                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  /home/qtekfun/repos/comaps-spike/3party/protobuf/protobuf/src/google/protobuf/stubs/strutil.cc:1383:16: warning: use of infinity is undefined behavior due to the currently enabled floating-point options [-Wnan-infinity-disabled]
+   1383 |   if (value == numeric_limits<double>::infinity()) {
+        |                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  /home/qtekfun/repos/comaps-spike/3party/protobuf/protobuf/src/google/protobuf/stubs/strutil.cc:1386:24: warning: use of infinity is undefined behavior due to the currently enabled floating-point options [-Wnan-infinity-disabled]
+   1386 |   } else if (value == -numeric_limits<double>::infinity()) {
+        |                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  5 warnings generated.
+  [16/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/bytestrie.cpp.o
+  [17/218] Linking CXX static library 3party/protobuf/libprotobuf.a
+  [18/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/loadednormalizer2impl.cpp.o
+  [19/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/emojiprops.cpp.o
+  [20/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/cmemory.cpp.o
+  [21/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/charstr.cpp.o
+  [22/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/cstring.cpp.o
+  [23/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/edits.cpp.o
+  [24/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/loclikely.cpp.o
+  [25/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/localebuilder.cpp.o
+  [26/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/normalizer2.cpp.o
+  [27/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/loclikelysubtags.cpp.o
+  [28/218] Building C object 3party/freetype/freetype/CMakeFiles/freetype.dir/Unity/unity_0_c.c.o
+  [29/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/ubidi_props.cpp.o
+  [30/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/locid.cpp.o
+  [31/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/locutil.cpp.o
+  [32/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/locmap.cpp.o
+  [33/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/parsepos.cpp.o
+  [34/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/lsr.cpp.o
+  [35/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/resbund_cnv.cpp.o
+  [36/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/patternprops.cpp.o
+  [37/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/propname.cpp.o
+  [38/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/normalizer2impl.cpp.o
+  [39/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/putil.cpp.o
+  [40/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/resbund.cpp.o
+  [41/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/uarrsort.cpp.o
+  [42/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/resource.cpp.o
+  [43/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/ubidiwrt.cpp.o
+  [44/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/ruleiter.cpp.o
+  [45/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/stringpiece.cpp.o
+  [46/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/ucharstrieiterator.cpp.o
+  [47/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/ubidiln.cpp.o
+  [48/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/ucharstrie.cpp.o
+  [49/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/ubidi.cpp.o
+  [50/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/uchar.cpp.o
+  [51/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/ucase.cpp.o
+  [52/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/ucln_cmn.cpp.o
+  [53/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/ucmndata.cpp.o
+  [54/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/udatamem.cpp.o
+  [55/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/ucptrie.cpp.o
+  [56/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/udataswp.cpp.o
+  [57/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/uloc_keytype.cpp.o
+  [58/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/uhash_us.cpp.o
+  [59/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/uenum.cpp.o
+  [60/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/uhash.cpp.o
+  [61/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/udata.cpp.o
+  [62/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/uinvchar.cpp.o
+  [63/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/umutablecptrie.cpp.o
+  [64/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/unifunct.cpp.o
+  [65/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/umath.cpp.o
+  [66/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/umapfile.cpp.o
+  [67/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/uloc_tag.cpp.o
+  [68/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/uloc.cpp.o
+  [69/218] Building C object 3party/freetype/freetype/CMakeFiles/freetype.dir/Unity/unity_1_c.c.o
+  [70/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/unifilt.cpp.o
+  [71/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/umutex.cpp.o
+  [72/218] Linking C static library 3party/freetype/freetype/libfreetype.a
+  [73/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/uniset_closure.cpp.o
+  [74/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/uniset.cpp.o
+  [75/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/unistr_case.cpp.o
+  [76/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/uniset_props.cpp.o
+  [77/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/unames.cpp.o
+  [78/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/unistr_case_locale.cpp.o
+  [79/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/unisetspan.cpp.o
+  [80/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/uscript_props.cpp.o
+  [81/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/uobject.cpp.o
+  [82/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/unistr.cpp.o
+  [83/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/uresdata.cpp.o
+  [84/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/ustrtrns.cpp.o
+  [85/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/uscript.cpp.o
+  [86/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/uprops.cpp.o
+  [87/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/uresbund.cpp.o
+  [88/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/uset.cpp.o
+  [89/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/ushape.cpp.o
+  [90/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/ustrcase.cpp.o
+  [91/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/utf_impl.cpp.o
+  [92/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/util_props.cpp.o
+  [93/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/ustrcase_locale.cpp.o
+  [94/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/ustrenum.cpp.o
+  [95/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/ustring.cpp.o
+  [96/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/utrie_swap.cpp.o
+  [97/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/uvectr32.cpp.o
+  [98/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/utrace.cpp.o
+  [99/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/wintz.cpp.o
+  [100/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/utrie2.cpp.o
+  [101/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/util.cpp.o
+  [102/218] Building CXX object 3party/icu/CMakeFiles/icuuc.dir/icu/icu4c/source/common/uvector.cpp.o
+  [103/218] Building CXX object 3party/icu/CMakeFiles/icui18n.dir/icu/icu4c/source/i18n/cpdtrans.cpp.o
+  [104/218] Building CXX object 3party/icu/CMakeFiles/icui18n.dir/icu/icu4c/source/i18n/esctrn.cpp.o
+  [105/218] Building CXX object 3party/icu/CMakeFiles/icui18n.dir/icu/icu4c/source/stubdata/stubdata.cpp.o
+  [106/218] Linking CXX static library 3party/icu/libicuuc.a
+  [107/218] Building CXX object 3party/icu/CMakeFiles/icui18n.dir/icu/icu4c/source/i18n/funcrepl.cpp.o
+  [108/218] Building CXX object 3party/icu/CMakeFiles/icui18n.dir/icu/icu4c/source/i18n/casetrn.cpp.o
+  [109/218] Building CXX object 3party/icu/CMakeFiles/icui18n.dir/icu/icu4c/source/i18n/nultrans.cpp.o
+  [110/218] Building CXX object 3party/icu/CMakeFiles/icui18n.dir/icu/icu4c/source/i18n/nortrans.cpp.o
+  [111/218] Building CXX object 3party/icu/CMakeFiles/icui18n.dir/icu/icu4c/source/i18n/name2uni.cpp.o
+  [112/218] Building CXX object 3party/icu/CMakeFiles/icui18n.dir/icu/icu4c/source/i18n/quant.cpp.o
+  [113/218] Building CXX object 3party/icu/CMakeFiles/icui18n.dir/icu/icu4c/source/i18n/rbt_data.cpp.o
+  [114/218] Building CXX object 3party/icu/CMakeFiles/icui18n.dir/icu/icu4c/source/i18n/rbt.cpp.o
+  [115/218] Building CXX object 3party/icu/CMakeFiles/icui18n.dir/icu/icu4c/source/i18n/strmatch.cpp.o
+  [116/218] Building CXX object 3party/icu/CMakeFiles/icui18n.dir/icu/icu4c/source/i18n/strrepl.cpp.o
+  [117/218] Building CXX object 3party/icu/CMakeFiles/icui18n.dir/icu/icu4c/source/i18n/rbt_set.cpp.o
+  [118/218] Building CXX object 3party/icu/CMakeFiles/icui18n.dir/icu/icu4c/source/i18n/remtrans.cpp.o
+  [119/218] Building CXX object 3party/icu/CMakeFiles/icui18n.dir/icu/icu4c/source/i18n/rbt_pars.cpp.o
+  [120/218] Building CXX object 3party/icu/CMakeFiles/icui18n.dir/icu/icu4c/source/i18n/titletrn.cpp.o
+  [121/218] Building CXX object 3party/icu/CMakeFiles/icui18n.dir/icu/icu4c/source/i18n/tolowtrn.cpp.o
+  [122/218] Building CXX object 3party/icu/CMakeFiles/icui18n.dir/icu/icu4c/source/i18n/toupptrn.cpp.o
+  [123/218] Building CXX object 3party/icu/CMakeFiles/icui18n.dir/icu/icu4c/source/i18n/transreg.cpp.o
+  [124/218] Building CXX object 3party/icu/CMakeFiles/icui18n.dir/icu/icu4c/source/i18n/tridpars.cpp.o
+  [125/218] Building CXX object 3party/icu/CMakeFiles/icui18n.dir/icu/icu4c/source/i18n/ucln_in.cpp.o
+  [126/218] Linking CXX static library 3party/bsdiff-courgette/libbsdiff.a
+  [127/218] Building CXX object 3party/icu/CMakeFiles/icui18n.dir/icu/icu4c/source/i18n/translit.cpp.o
+  [128/218] Building CXX object 3party/icu/CMakeFiles/icui18n.dir/icu/icu4c/source/i18n/uni2name.cpp.o
+  [129/218] Building CXX object 3party/agg/CMakeFiles/agg.dir/Unity/unity_0_cxx.cxx.o
+  [130/218] Building CXX object 3party/icu/CMakeFiles/icui18n.dir/icu/icu4c/source/i18n/unesctrn.cpp.o
+  [131/218] Linking CXX static library 3party/agg/libagg.a
+  [132/218] Linking CXX static library 3party/icu/libicui18n.a
+  [133/218] Building CXX object 3party/minizip/CMakeFiles/minizip.dir/Unity/unity_0_cxx.cxx.o
+  [134/218] Building C object 3party/minizip/CMakeFiles/minizip.dir/Unity/unity_0_c.c.o
+  [135/218] Building CXX object 3party/open-location-code/CMakeFiles/openlocationcode.dir/Unity/unity_0_cxx.cxx.o
+  [136/218] Linking CXX static library 3party/minizip/libminizip.a
+  [137/218] Linking CXX static library 3party/open-location-code/libopenlocationcode.a
+  [138/218] Building C object 3party/monocypher/CMakeFiles/monocypher.dir/monocypher-ed25519.c.o
+  [139/218] Building CXX object 3party/vulkan_wrapper/CMakeFiles/vulkan_wrapper.dir/Unity/unity_0_cxx.cxx.o
+  [140/218] Building C object 3party/monocypher/CMakeFiles/monocypher.dir/monocypher.c.o
+  [141/218] Linking CXX static library 3party/vulkan_wrapper/libvulkan_wrapper.a
+  [142/218] Linking C static library 3party/monocypher/libmonocypher.a
+  [143/218] Building CXX object 3party/stb_image/CMakeFiles/stb_image.dir/Unity/unity_0_cxx.cxx.o
+  [144/218] Building CXX object libs/base/CMakeFiles/base.dir/fast_math.cpp.o
+  [145/218] Linking CXX static library 3party/stb_image/libstb_image.a
+  [146/218] Building CXX object libs/base/CMakeFiles/base.dir/Unity/unity_1_cxx.cxx.o
+  [147/218] Building CXX object 3party/succinct/CMakeFiles/succinct.dir/Unity/unity_0_cxx.cxx.o
+  [148/218] Building CXX object libs/coding/CMakeFiles/coding.dir/Unity/unity_1_cxx.cxx.o
+  [149/218] Linking CXX static library 3party/succinct/libsuccinct.a
+  [150/218] Building CXX object libs/descriptions/CMakeFiles/descriptions.dir/Unity/unity_0_cxx.cxx.o
+  [151/218] Building CXX object libs/coding/CMakeFiles/coding.dir/Unity/unity_0_cxx.cxx.o
+  [152/218] Building CXX object 3party/harfbuzz/CMakeFiles/harfbuzz.dir/Unity/unity_0_cxx.cxx.o
+  [153/218] Building CXX object libs/drape/CMakeFiles/drape.dir/Unity/unity_2_cxx.cxx.o
+  [154/218] Linking CXX static library 3party/harfbuzz/libharfbuzz.a
+  [155/218] Building CXX object libs/ge0/CMakeFiles/ge0.dir/Unity/unity_0_cxx.cxx.o
+  [156/218] Building CXX object libs/mwm_diff/CMakeFiles/mwm_diff.dir/Unity/unity_0_cxx.cxx.o
+  [157/218] Building CXX object libs/drape/CMakeFiles/drape.dir/Unity/unity_0_cxx.cxx.o
+  [158/218] Building CXX object libs/drape/CMakeFiles/drape.dir/Unity/unity_1_cxx.cxx.o
+  [159/218] Building CXX object libs/geometry/CMakeFiles/geometry.dir/Unity/unity_0_cxx.cxx.o
+  [160/218] Building CXX object libs/i18n/CMakeFiles/i18n.dir/Unity/unity_0_cxx.cxx.o
+  [161/218] Building CXX object 3party/opening_hours/CMakeFiles/opening_hours.dir/Unity/unity_0_cxx.cxx.o
+  [162/218] Building CXX object libs/indexer/CMakeFiles/indexer.dir/Unity/unity_2_cxx.cxx.o
+  In file included from /home/qtekfun/repos/comaps-spike/android/sdk/.cxx/RelWithDebInfo/1s3i4a3l/arm64-v8a/libs/indexer/CMakeFiles/indexer.dir/Unity/unity_2_cxx.cxx:9:
+  /home/qtekfun/repos/comaps-spike/libs/indexer/road_shields_parser.cpp:1432:5: warning: misleading indentation; statement is not part of the previous 'if' [-Wmisleading-indentation]
+   1432 |     if (mwmName == "Morocco")
+        |     ^
+  /home/qtekfun/repos/comaps-spike/libs/indexer/road_shields_parser.cpp:1430:3: note: previous statement is here
+   1430 |   if (mwmName == "Mexico")
+        |   ^
+  1 warning generated.
+  [163/218] Linking CXX static library 3party/opening_hours/libopening_hours.a
+  [164/218] Building CXX object libs/indexer/CMakeFiles/indexer.dir/drules_struct.pb.cc.o
+  [165/218] Building CXX object libs/cppjansson/CMakeFiles/cppjansson.dir/Unity/unity_0_cxx.cxx.o
+  [166/218] Building CXX object libs/indexer/CMakeFiles/indexer.dir/Unity/unity_1_cxx.cxx.o
+  [167/218] Building CXX object libs/platform/CMakeFiles/platform.dir/Unity/unity_1_cxx.cxx.o
+  [168/218] Building CXX object libs/kml/CMakeFiles/kml.dir/Unity/unity_0_cxx.cxx.o
+  [169/218] Building CXX object libs/indexer/CMakeFiles/indexer.dir/Unity/unity_0_cxx.cxx.o
+  [170/218] Building CXX object libs/platform/CMakeFiles/platform.dir/preferred_languages.cpp.o
+  [171/218] Building CXX object libs/editor/CMakeFiles/editor.dir/Unity/unity_0_cxx.cxx.o
+  [172/218] Building CXX object libs/platform/CMakeFiles/platform.dir/Unity/unity_0_cxx.cxx.o
+  [173/218] Building CXX object libs/routing/CMakeFiles/routing.dir/Unity/unity_3_cxx.cxx.o
+  [174/218] Building CXX object libs/routing_common/CMakeFiles/routing_common.dir/Unity/unity_0_cxx.cxx.o
+  [175/218] Building CXX object libs/routing/CMakeFiles/routing.dir/Unity/unity_2_cxx.cxx.o
+  [176/218] Building CXX object libs/routing/CMakeFiles/routing.dir/Unity/unity_0_cxx.cxx.o
+  [177/218] Building CXX object libs/routing/CMakeFiles/routing.dir/Unity/unity_1_cxx.cxx.o
+  [178/218] Building CXX object libs/traffic/CMakeFiles/traffic.dir/Unity/unity_0_cxx.cxx.o
+  [179/218] Building CXX object libs/search/CMakeFiles/search.dir/Unity/unity_1_cxx.cxx.o
+  [180/218] Building CXX object libs/storage/CMakeFiles/storage.dir/Unity/unity_0_cxx.cxx.o
+  In file included from /home/qtekfun/repos/comaps-spike/android/sdk/.cxx/RelWithDebInfo/1s3i4a3l/arm64-v8a/libs/storage/CMakeFiles/storage.dir/Unity/unity_0_cxx.cxx:11:
+  In file included from /home/qtekfun/repos/comaps-spike/libs/storage/country_parent_getter.cpp:3:
+  In file included from /home/qtekfun/repos/comaps-spike/libs/storage/storage.hpp:10:
+  In file included from /home/qtekfun/repos/comaps-spike/libs/storage/downloader_queue_universal.hpp:3:
+  In file included from /home/qtekfun/repos/comaps-spike/libs/storage/downloader_queue_interface.hpp:3:
+  /home/qtekfun/repos/comaps-spike/libs/storage/queued_country.hpp:57:11: warning: private field 'm_currentDataVersion' is not used [-Wunused-private-field]
+     57 |   int64_t m_currentDataVersion;  ///@todo(pastk): cleanup unused
+        |           ^
+  1 warning generated.
+  [181/218] Building CXX object libs/search/CMakeFiles/search.dir/Unity/unity_0_cxx.cxx.o
+  [182/218] Building CXX object libs/transit/CMakeFiles/transit.dir/Unity/unity_0_cxx.cxx.o
+  [183/218] Building CXX object libs/base/CMakeFiles/base.dir/Unity/unity_0_cxx.cxx.o
+  [184/218] Linking CXX static library libs/base/libbase.a
+  [185/218] Linking CXX static library libs/cppjansson/libcppjansson.a
+  [186/218] Linking CXX static library libs/geometry/libgeometry.a
+  [187/218] Linking CXX static library libs/coding/libcoding.a
+  [188/218] Linking CXX static library libs/mwm_diff/libmwm_diff.a
+  [189/218] Linking CXX static library libs/ge0/libge0.a
+  [190/218] Linking CXX static library libs/platform/libplatform.a
+  [191/218] Linking CXX static library libs/i18n/libi18n.a
+  [192/218] Linking CXX static library libs/storage/libstorage.a
+  [193/218] Linking CXX static library libs/routing_common/librouting_common.a
+  [194/218] Linking CXX static library libs/kml/libkml.a
+  [195/218] Linking CXX static library libs/indexer/libindexer.a
+  [196/218] Linking CXX static library libs/drape/libdrape.a
+  [197/218] Linking CXX static library libs/descriptions/libdescriptions.a
+  [198/218] Linking CXX static library libs/traffic/libtraffic.a
+  [199/218] Linking CXX static library libs/transit/libtransit.a
+  [200/218] Generating ../../../../../../../../libs/shaders/gl_shaders.cpp, ../../../../../../../../libs/shaders/gl_shaders.hpp
+  ./gl_shaders.hpp was replaced
+  ./gl_shaders.cpp was replaced
+  [201/218] Linking CXX static library libs/editor/libeditor.a
+  [202/218] Linking CXX static library libs/routing/librouting.a
+  [203/218] Building CXX object libs/drape_frontend/CMakeFiles/drape_frontend.dir/Unity/unity_0_cxx.cxx.o
+  [204/218] Building CXX object libs/drape_frontend/CMakeFiles/drape_frontend.dir/Unity/unity_2_cxx.cxx.o
+  In file included from /home/qtekfun/repos/comaps-spike/android/sdk/.cxx/RelWithDebInfo/1s3i4a3l/arm64-v8a/libs/drape_frontend/CMakeFiles/drape_frontend.dir/Unity/unity_2_cxx.cxx:25:
+  In file included from /home/qtekfun/repos/comaps-spike/libs/drape_frontend/path_text_shape.cpp:1:
+  /home/qtekfun/repos/comaps-spike/libs/drape_frontend/path_text_shape.hpp:51:18: warning: private field 'm_textIndexEnd' is not used [-Wunused-private-field]
+     51 |   uint32_t const m_textIndexEnd;
+        |                  ^
+  1 warning generated.
+  [205/218] Building CXX object libs/map/CMakeFiles/map.dir/Unity/unity_1_cxx.cxx.o
+  [206/218] Building CXX object libs/drape_frontend/CMakeFiles/drape_frontend.dir/Unity/unity_3_cxx.cxx.o
+  [207/218] Building CXX object libs/shaders/CMakeFiles/shaders.dir/Unity/unity_0_cxx.cxx.o
+  [208/218] Building CXX object libs/drape_frontend/CMakeFiles/drape_frontend.dir/Unity/unity_1_cxx.cxx.o
+  [209/218] Linking CXX static library libs/shaders/libshaders.a
+  [210/218] Linking CXX static library libs/drape_frontend/libdrape_frontend.a
+  [211/218] Building CXX object android/sdk/src/main/cpp/CMakeFiles/organicmaps.dir/Unity/unity_2_cxx.cxx.o
+  [212/218] Building CXX object android/sdk/src/main/cpp/CMakeFiles/organicmaps.dir/Unity/unity_0_cxx.cxx.o
+  [213/218] Building CXX object android/sdk/src/main/cpp/CMakeFiles/organicmaps.dir/Unity/unity_1_cxx.cxx.o
+  [214/218] Building CXX object libs/search/CMakeFiles/search.dir/Unity/unity_2_cxx.cxx.o
+  [215/218] Linking CXX static library libs/search/libsearch.a
+  [216/218] Building CXX object libs/map/CMakeFiles/map.dir/Unity/unity_0_cxx.cxx.o
+  [217/218] Linking CXX static library libs/map/libmap.a
+  [218/218] Linking CXX shared library ../../../../build/intermediates/cxx/RelWithDebInfo/1s3i4a3l/obj/arm64-v8a/liborganicmaps.so
+  FAILED: ../../../../build/intermediates/cxx/RelWithDebInfo/1s3i4a3l/obj/arm64-v8a/liborganicmaps.so 
+  : && /home/qtekfun/Android/Sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/linux-x86_64/bin/clang++ --target=aarch64-none-linux-android21 --sysroot=/home/qtekfun/Android/Sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/linux-x86_64/sysroot -fPIC -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security  -fexceptions -frtti -O2 -g -DNDEBUG -flto=thin  -static-libstdc++ -Wl,--build-id=sha1 -Wl,--no-rosegment -Wl,--no-undefined-version -Wl,--fatal-warnings -Wl,--no-undefined -Qunused-arguments  -Wl,--gc-sections   -Xlinker --build-id=sha1 -fuse-ld=gold -shared -Wl,-soname,liborganicmaps.so -o ../../../../build/intermediates/cxx/RelWithDebInfo/1s3i4a3l/obj/arm64-v8a/liborganicmaps.so android/sdk/src/main/cpp/CMakeFiles/organicmaps.dir/Unity/unity_2_cxx.cxx.o android/sdk/src/main/cpp/CMakeFiles/organicmaps.dir/Unity/unity_1_cxx.cxx.o android/sdk/src/main/cpp/CMakeFiles/organicmaps.dir/Unity/unity_0_cxx.cxx.o  libs/map/libmap.a  -llog  -landroid  -lEGL  -lGLESv2  -latomic  -lz  libs/drape_frontend/libdrape_frontend.a  libs/shaders/libshaders.a  libs/routing/librouting.a  libs/search/libsearch.a  libs/editor/libeditor.a  3party/opening_hours/libopening_hours.a  3party/pugixml/libpugixml.a  3party/open-location-code/libopenlocationcode.a  libs/traffic/libtraffic.a  libs/transit/libtransit.a  libs/descriptions/libdescriptions.a  libs/drape/libdrape.a  libs/indexer/libindexer.a  libs/kml/libkml.a  libs/routing_common/librouting_common.a  libs/storage/libstorage.a  libs/drape/libdrape.a  libs/indexer/libindexer.a  libs/kml/libkml.a  libs/routing_common/librouting_common.a  libs/storage/libstorage.a  3party/vulkan_wrapper/libvulkan_wrapper.a  -ldl  3party/stb_image/libstb_image.a  3party/harfbuzz/libharfbuzz.a  3party/freetype/freetype/libfreetype.a  /home/qtekfun/Android/Sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/lib/aarch64-linux-android/21/libz.so  3party/protobuf/libprotobuf.a  libs/i18n/libi18n.a  libs/platform/libplatform.a  3party/monocypher/libmonocypher.a  libs/mwm_diff/libmwm_diff.a  3party/bsdiff-courgette/libbsdiff.a  libs/ge0/libge0.a  libs/coding/libcoding.a  libs/cppjansson/libcppjansson.a  3party/jansson/jansson/lib/libjansson.a  3party/expat/expat/libexpat.a  -lm  3party/succinct/libsuccinct.a  3party/icu/libicui18n.a  3party/icu/libicuuc.a  3party/minizip/libminizip.a  /home/qtekfun/Android/Sdk/ndk/28.2.13676358/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/lib/aarch64-linux-android/21/libz.so  libs/geometry/libgeometry.a  libs/base/libbase.a  -pthread  3party/agg/libagg.a  -latomic -lm && :
+  clang++: error: invalid linker name in argument '-fuse-ld=gold'
+  clang++: error: invalid linker name in argument '-fuse-ld=gold'
+  ninja: build stopped: subcommand failed.
+  
+  C++ build system [build] failed while executing:
+      /home/qtekfun/Android/Sdk/cmake/3.22.1/bin/ninja \
+        -C \
+        /home/qtekfun/repos/comaps-spike/android/sdk/.cxx/RelWithDebInfo/1s3i4a3l/arm64-v8a \
+        organicmaps
+    from /home/qtekfun/repos/comaps-spike/android/sdk
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/8.14.4/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD FAILED in 4m 27s
+3 actionable tasks: 3 executed
+Command exited with non-zero status 1
+	Command being timed: "./gradlew assembleFdroidRelease -Parm64 -Pnjobs=6 --no-daemon -Dorg.gradle.jvmargs=-Xmx2g -Dorg.gradle.workers.max=2"
+	User time (seconds): 1048.04
+	System time (seconds): 42.35
+	Percent of CPU this job got: 406%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 4:28.27
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 1888524
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 1108
+	Minor (reclaiming a frame) page faults: 11814488
+	Voluntary context switches: 271767
+	Involuntary context switches: 82862
+	Swaps: 0
+	File system inputs: 1159952
+	File system outputs: 2658224
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 1
+exit=1
+2026-10-06T18:33:56+02:00

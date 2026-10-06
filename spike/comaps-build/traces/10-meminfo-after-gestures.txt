@@ -1,0 +1,80 @@
+2026-10-06T19:11:35+02:00
+Applications Memory Usage (in Kilobytes):
+Uptime: 38740435 Realtime: 38740435
+
+** MEMINFO in pid 18747 [app.comaps.fdroid] **
+                   Pss  Private  Private  SwapPss      Rss     Heap     Heap     Heap
+                 Total    Dirty    Clean    Dirty    Total     Size    Alloc     Free
+                ------   ------   ------   ------   ------   ------   ------   ------
+  Native Heap   162186   162148        8       39   163132   229440   162423    62916
+  Dalvik Heap     4438     4392       16       60     5120   262144     4542   257602
+ Dalvik Other     1433     1324        0        2     1920                           
+        Stack     1452     1452        0        0     1460                           
+       Ashmem       67        0        0        0      892                           
+    Other dev      250        0      248        0      524                           
+     .so mmap    22575      436    14276       11    68792                           
+    .jar mmap     1847        0      312        0    40108                           
+    .apk mmap     2183        0      772        0     5436                           
+    .ttf mmap      501        0      160        0     1168                           
+    .dex mmap     5769        0     5756        0     6528                           
+    .oat mmap      331        0       12        0    12616                           
+    .art mmap     1763     1196       96      146    11852                           
+   Other mmap     3393        4     3312        0     4288                           
+   EGL mtrack   114004   114004        0        0   114004                           
+    GL mtrack   179656   179656        0        0   179656                           
+      Unknown     1094      896      164        5     1656                           
+        TOTAL   503205   465508    25132      263   619152   491584   166965   320518
+ 
+ App Summary
+                       Pss(KB)                        Rss(KB)
+                        ------                         ------
+           Java Heap:     5684                          16972
+         Native Heap:   162148                         163132
+                Code:    21728                         134860
+               Stack:     1452                           1460
+            Graphics:   293660                         293660
+       Private Other:     5968
+              System:    12565
+             Unknown:                                    9068
+ 
+           TOTAL PSS:   503205            TOTAL RSS:   619152       TOTAL SWAP PSS:      263
+ 
+ Objects
+               Views:      192         ViewRootImpl:        1
+         AppContexts:        5           Activities:        1
+              Assets:       33        AssetManagers:        0
+       Local Binders:       31        Proxy Binders:       80
+       Parcel memory:        9         Parcel count:       36
+    Death Recipients:        0             WebViews:        0
+ 
+ Native Allocations
+                         Count                       Total(kB)
+                        ------                         ------
+   Bitmap (malloced):       19                            346
+    Other (malloced):     2444                            232
+ Other (nonmalloced):      131                             90
+ 
+ Shared Bitmaps
+                         Count                       Size(KB)
+                        ------                         ------
+              Mapped:        0                              0
+  (Enable debug.hwui.bitmap_ashmem_long_name sysprop to count unique bitmap allocations)
+ 
+ SQL
+         MEMORY_USED:      308
+  PAGECACHE_OVERFLOW:       92          MALLOC_SIZE:       46
+ 
+ DATABASES
+      pgsz     dbsz   Lookaside(b) cache hits cache misses cache size  Dbname
+PER CONNECTION STATS
+         4      104            123    10    51    12  /data/user/0/app.comaps.fdroid/no_backup/androidx.work.workdb
+         4        8                    0     0     0    (attached) temp
+         4      104             28     1    14     2  /data/user/0/app.comaps.fdroid/no_backup/androidx.work.workdb (3)
+POOL STATS
+     cache hits  cache misses    cache size  Dbname
+             11            69            14  /data/user/0/app.comaps.fdroid/no_backup/androidx.work.workdb
+ 
+--- sistema
+MemTotal:        7754764 kB
+MemFree:         1598272 kB
+MemAvailable:    3117792 kB

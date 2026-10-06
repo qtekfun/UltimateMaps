@@ -1,0 +1,185 @@
+2026-10-06T18:41:36+02:00
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.14.4/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build 
+
+> Configure project :app
+Version: 2026.10.05-1
+VersionCode: 26100501
+Create separate apks: false
+/home/qtekfun/repos/comaps-spike/android/app/secure.properties.test doesn't exist.
+/home/qtekfun/repos/comaps-spike/android/app/secure.properties.release doesn't exist.
+NO RELEASE signing keys found
+Using DEBUG signing keys
+
+> Configure project :sdk
+Building for [arm64-v8a] architectures.
+Configuring the repository for development...
+Checking submodules...
+
+[notice] A new release of pip is available: 26.0.1 -> 26.2.1
+[notice] To update, run: pip install --upgrade pip
+Skipping world map download...
+Generating json strings...
+Starting...
+Finished
+Generating search categories / synonyms...
+WARNING: Skipping unsupported language directory: en_NZ.json
+WARNING: Skipping unsupported language directory: gl.json
+WARNING: Skipping unsupported language directory: lo.json
+Generating Serbian Latin strings...
+Converting Serbian Cyrillic resource files to Serbian Latin
+Generating symbols...
+[1;31moptipng could not be found
+take a look to http://optipng.sourceforge.net/
+The repository is configured for development.
+Warning: SDK processing. This version only understands SDK XML versions up to 3 but an SDK XML file of version 4 was encountered. This can happen if you use versions of Android Studio and the command-line tools that were released at different times.
+
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preFdroidReleaseBuild UP-TO-DATE
+> Task :app:mergeFdroidReleaseJniLibFolders UP-TO-DATE
+> Task :sdk:preBuild UP-TO-DATE
+> Task :sdk:preBetaBuild UP-TO-DATE
+> Task :sdk:configureCMakeRelWithDebInfo[arm64-v8a]
+
+> Task :sdk:buildCMakeRelWithDebInfo[arm64-v8a][organicmaps] FAILED
+C/C++: ninja: Entering directory `/home/qtekfun/repos/comaps-spike/android/sdk/.cxx/RelWithDebInfo/1s3i4a3l/arm64-v8a'
+C/C++: [0/1] Re-running CMake...
+C/C++: -- The C compiler identification is GNU 16.2.1
+C/C++: -- The CXX compiler identification is GNU 16.2.1
+C/C++: -- Detecting C compiler ABI info
+C/C++: -- Detecting C compiler ABI info - failed
+C/C++: -- Check for working C compiler: /usr/bin/cc
+C/C++: -- Check for working C compiler: /usr/bin/cc - broken
+C/C++: CMake Error at /home/qtekfun/Android/Sdk/cmake/3.31.6/share/cmake-3.31/Modules/CMakeTestCCompiler.cmake:67 (message):
+C/C++:   The C compiler
+C/C++:     "/usr/bin/cc"
+C/C++:   is not able to compile a simple test program.
+C/C++:   It fails with the following output:
+C/C++:     Change Dir: '/home/qtekfun/repos/comaps-spike/android/sdk/.cxx/RelWithDebInfo/1s3i4a3l/arm64-v8a/CMakeFiles/CMakeScratch/TryCompile-0oRD6T'
+C/C++:     
+C/C++:     Run Build Command(s): /home/qtekfun/Android/Sdk/cmake/3.31.6/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_5a876/fast
+C/C++:     /usr/bin/gmake  -f CMakeFiles/cmTC_5a876.dir/build.make CMakeFiles/cmTC_5a876.dir/build
+C/C++:     gmake[1]: se entra en el directorio '/home/qtekfun/repos/comaps-spike/android/sdk/.cxx/RelWithDebInfo/1s3i4a3l/arm64-v8a/CMakeFiles/CMakeScratch/TryCompile-0oRD6T'
+C/C++:     Building C object CMakeFiles/cmTC_5a876.dir/testCCompiler.c.o
+C/C++:     /usr/bin/cc    -o CMakeFiles/cmTC_5a876.dir/testCCompiler.c.o -c /home/qtekfun/repos/comaps-spike/android/sdk/.cxx/RelWithDebInfo/1s3i4a3l/arm64-v8a/CMakeFiles/CMakeScratch/TryCompile-0oRD6T/testCCompiler.c
+C/C++:     Linking C executable cmTC_5a876
+C/C++:     /home/qtekfun/Android/Sdk/cmake/3.31.6/bin/cmake -E cmake_link_script CMakeFiles/cmTC_5a876.dir/link.txt --verbose=1
+C/C++:     /usr/bin/ld.bfd: no se reconoce la opción `--thinlto-jobs=2'
+C/C++:     /usr/bin/ld.bfd: use la opción --help para información de modo de empleo
+C/C++:     collect2: error: ld devolvió el estado de salida 1
+C/C++:     /usr/bin/cc -Wl,--thinlto-jobs=2  CMakeFiles/cmTC_5a876.dir/testCCompiler.c.o -o cmTC_5a876
+C/C++:     gmake[1]: *** [CMakeFiles/cmTC_5a876.dir/build.make:102: cmTC_5a876] Error 1
+C/C++:     gmake[1]: se sale del directorio '/home/qtekfun/repos/comaps-spike/android/sdk/.cxx/RelWithDebInfo/1s3i4a3l/arm64-v8a/CMakeFiles/CMakeScratch/TryCompile-0oRD6T'
+C/C++: -- Configuring incomplete, errors occurred!
+C/C++:     gmake: *** [Makefile:134: cmTC_5a876/fast] Error 2
+C/C++:     
+C/C++:     
+C/C++:   
+C/C++:   CMake will not be able to correctly generate this project.
+C/C++: Call Stack (most recent call first):
+C/C++:   CMakeLists.txt:3 (project)
+C/C++: FAILED: build.ninja 
+C/C++: ninja: error: rebuilding 'build.ninja': subcommand failed
+C/C++: /home/qtekfun/Android/Sdk/cmake/3.31.6/bin/cmake --regenerate-during-build -S/home/qtekfun/repos/comaps-spike -B/home/qtekfun/repos/comaps-spike/android/sdk/.cxx/RelWithDebInfo/1s3i4a3l/arm64-v8a
+
+[Incubating] Problems report is available at: file:///home/qtekfun/repos/comaps-spike/android/build/reports/problems/problems-report.html
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':sdk:buildCMakeRelWithDebInfo[arm64-v8a][organicmaps]'.
+> com.android.ide.common.process.ProcessException: ninja: Entering directory `/home/qtekfun/repos/comaps-spike/android/sdk/.cxx/RelWithDebInfo/1s3i4a3l/arm64-v8a'
+  [0/1] Re-running CMake...
+  -- The C compiler identification is GNU 16.2.1
+  -- The CXX compiler identification is GNU 16.2.1
+  -- Detecting C compiler ABI info
+  -- Detecting C compiler ABI info - failed
+  -- Check for working C compiler: /usr/bin/cc
+  -- Check for working C compiler: /usr/bin/cc - broken
+  -- Configuring incomplete, errors occurred!
+  FAILED: build.ninja 
+  /home/qtekfun/Android/Sdk/cmake/3.31.6/bin/cmake --regenerate-during-build -S/home/qtekfun/repos/comaps-spike -B/home/qtekfun/repos/comaps-spike/android/sdk/.cxx/RelWithDebInfo/1s3i4a3l/arm64-v8a
+  
+  C++ build system [build] failed while executing:
+      /home/qtekfun/Android/Sdk/cmake/3.31.6/bin/ninja \
+        -C \
+        /home/qtekfun/repos/comaps-spike/android/sdk/.cxx/RelWithDebInfo/1s3i4a3l/arm64-v8a \
+        organicmaps
+    from /home/qtekfun/repos/comaps-spike/android/sdk
+  CMake Error at /home/qtekfun/Android/Sdk/cmake/3.31.6/share/cmake-3.31/Modules/CMakeTestCCompiler.cmake:67 (message):
+    The C compiler
+  
+      "/usr/bin/cc"
+  
+    is not able to compile a simple test program.
+  
+    It fails with the following output:
+  
+      Change Dir: '/home/qtekfun/repos/comaps-spike/android/sdk/.cxx/RelWithDebInfo/1s3i4a3l/arm64-v8a/CMakeFiles/CMakeScratch/TryCompile-0oRD6T'
+      
+      Run Build Command(s): /home/qtekfun/Android/Sdk/cmake/3.31.6/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_5a876/fast
+      /usr/bin/gmake  -f CMakeFiles/cmTC_5a876.dir/build.make CMakeFiles/cmTC_5a876.dir/build
+      gmake[1]: se entra en el directorio '/home/qtekfun/repos/comaps-spike/android/sdk/.cxx/RelWithDebInfo/1s3i4a3l/arm64-v8a/CMakeFiles/CMakeScratch/TryCompile-0oRD6T'
+      Building C object CMakeFiles/cmTC_5a876.dir/testCCompiler.c.o
+      /usr/bin/cc    -o CMakeFiles/cmTC_5a876.dir/testCCompiler.c.o -c /home/qtekfun/repos/comaps-spike/android/sdk/.cxx/RelWithDebInfo/1s3i4a3l/arm64-v8a/CMakeFiles/CMakeScratch/TryCompile-0oRD6T/testCCompiler.c
+      Linking C executable cmTC_5a876
+      /home/qtekfun/Android/Sdk/cmake/3.31.6/bin/cmake -E cmake_link_script CMakeFiles/cmTC_5a876.dir/link.txt --verbose=1
+      /usr/bin/ld.bfd: no se reconoce la opción `--thinlto-jobs=2'
+      /usr/bin/ld.bfd: use la opción --help para información de modo de empleo
+      collect2: error: ld devolvió el estado de salida 1
+      /usr/bin/cc -Wl,--thinlto-jobs=2  CMakeFiles/cmTC_5a876.dir/testCCompiler.c.o -o cmTC_5a876
+      gmake[1]: *** [CMakeFiles/cmTC_5a876.dir/build.make:102: cmTC_5a876] Error 1
+      gmake[1]: se sale del directorio '/home/qtekfun/repos/comaps-spike/android/sdk/.cxx/RelWithDebInfo/1s3i4a3l/arm64-v8a/CMakeFiles/CMakeScratch/TryCompile-0oRD6T'
+      gmake: *** [Makefile:134: cmTC_5a876/fast] Error 2
+      
+      
+  
+    
+  
+    CMake will not be able to correctly generate this project.
+  Call Stack (most recent call first):
+    CMakeLists.txt:3 (project)
+  
+  
+  ninja: error: rebuilding 'build.ninja': subcommand failed
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/8.14.4/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD FAILED in 20s
+3 actionable tasks: 2 executed, 1 up-to-date
+Command exited with non-zero status 1
+	Command being timed: "./gradlew assembleFdroidRelease -Parm64 -Pnjobs=6 --no-daemon -Dorg.gradle.jvmargs=-Xmx2g -Dorg.gradle.workers.max=2"
+	User time (seconds): 46.74
+	System time (seconds): 5.42
+	Percent of CPU this job got: 255%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:20.39
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 600660
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 829
+	Minor (reclaiming a frame) page faults: 669111
+	Voluntary context switches: 71627
+	Involuntary context switches: 11154
+	Swaps: 0
+	File system inputs: 788320
+	File system outputs: 27864
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 1
+exit=1
+2026-10-06T18:41:57+02:00

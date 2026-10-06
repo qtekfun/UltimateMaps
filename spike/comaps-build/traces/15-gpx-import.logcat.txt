@@ -1,0 +1,36 @@
+10-06 19:30:23.096  2021  2062 I ActivityTaskManager: Displayed app.comaps.fdroid/app.organicmaps.SplashActivity for user 0: +42ms
+10-06 19:30:23.225 23433 23433 W OMcore  : (main) platform/platform_android.cpp:117 GetReader(): Can't get reader: LocateZipException libs/coding/zip_reader.cpp:55, "Can't locate file inside zip assets/World.mwm"
+10-06 19:30:23.225 23433 23433 W OMcore  : (main) platform/platform_android.cpp:125 GetReader(): Can't get reader for: World.mwm in scope r
+10-06 19:30:23.240 23433 23433 W OMcore  : (main) platform/platform_android.cpp:117 GetReader(): Can't get reader: LocateZipException libs/coding/zip_reader.cpp:55, "Can't locate file inside zip assets/WorldCoasts.mwm"
+10-06 19:30:23.240 23433 23433 W OMcore  : (main) platform/platform_android.cpp:125 GetReader(): Can't get reader for: WorldCoasts.mwm in scope r
+10-06 19:30:23.240 23433 23433 I OMcore  : (main) platform/platform_unix_impl.cpp:115 GetWritableStorageStatus(): statfs return = 0 ; block size = 4096 ; blocks available = 15811085
+10-06 19:30:23.240 23433 23433 I OMcore  : (main) platform/platform_unix_impl.cpp:124 GetWritableStorageStatus(): Free space check: requested = 0 ; available = 64762204160
+10-06 19:30:23.250 23433 23433 I OMcore  : (main) sdk/Framework.cpp:1017 Java_app_organicmaps_sdk_Framework_nativePlacePageActivationListener(): Set global map object listener
+10-06 19:30:23.252 23433 23739 W BookmarkManager: (pool-6-thread-1) Importing bookmarks from file:///sdcard/Download/test-spike.gpx
+10-06 19:30:23.258 23433 23739 E BookmarkManager: (pool-6-thread-1) BookmarkManager.java:446 importBookmarksFile(): Could not download bookmarks file from file:///sdcard/Download/test-spike.gpx
+10-06 19:30:23.258 23433 23739 E BookmarkManager: java.io.FileNotFoundException: /sdcard/Download/test-spike.gpx: open failed: EACCES (Permission denied)
+10-06 19:30:23.258 23433 23739 E BookmarkManager: 	at libcore.io.IoBridge.open(IoBridge.java:569)
+10-06 19:30:23.258 23433 23739 E BookmarkManager: 	at java.io.FileInputStream.<init>(FileInputStream.java:179)
+10-06 19:30:23.258 23433 23739 E BookmarkManager: 	at java.io.FileInputStream.<init>(FileInputStream.java:133)
+10-06 19:30:23.258 23433 23739 E BookmarkManager: 	at android.content.ContentResolver.openInputStream(ContentResolver.java:1596)
+10-06 19:30:23.258 23433 23739 E BookmarkManager: 	at app.organicmaps.sdk.util.StorageUtils.copyFile(StorageUtils.java:180)
+10-06 19:30:23.258 23433 23739 E BookmarkManager: 	at app.organicmaps.sdk.bookmarks.data.BookmarkManager.importBookmarksFile(BookmarkManager.java:439)
+10-06 19:30:23.258 23433 23739 E BookmarkManager: 	at app.organicmaps.sdk.bookmarks.data.BookmarkManager.importBookmarksFiles(BookmarkManager.java:459)
+10-06 19:30:23.258 23433 23739 E BookmarkManager: 	at app.organicmaps.intent.Factory$KmzKmlProcessor.$r8$lambda$EpqTSnNQG47UBvYv-Zpi1XQ4Ix0(Factory.java:63)
+10-06 19:30:23.258 23433 23739 E BookmarkManager: 	at app.organicmaps.intent.Factory$KmzKmlProcessor$$ExternalSyntheticLambda0.run(R8$$SyntheticClass:0)
+10-06 19:30:23.258 23433 23739 E BookmarkManager: 	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1100)
+10-06 19:30:23.258 23433 23739 E BookmarkManager: 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+10-06 19:30:23.258 23433 23739 E BookmarkManager: 	at java.lang.Thread.run(Thread.java:1571)
+10-06 19:30:23.258 23433 23739 E BookmarkManager: Caused by: android.system.ErrnoException: open failed: EACCES (Permission denied)
+10-06 19:30:23.258 23433 23739 E BookmarkManager: 	at libcore.io.Linux.open(Native Method)
+10-06 19:30:23.258 23433 23739 E BookmarkManager: 	at libcore.io.ForwardingOs.open(ForwardingOs.java:410)
+10-06 19:30:23.258 23433 23739 E BookmarkManager: 	at libcore.io.BlockGuardOs.open(BlockGuardOs.java:274)
+10-06 19:30:23.258 23433 23739 E BookmarkManager: 	at libcore.io.ForwardingOs.open(ForwardingOs.java:410)
+10-06 19:30:23.258 23433 23739 E BookmarkManager: 	at android.app.AndroidForwardingOs.open(AndroidForwardingOs.java:120)
+10-06 19:30:23.258 23433 23739 E BookmarkManager: 	at libcore.io.IoBridge.open(IoBridge.java:555)
+10-06 19:30:23.258 23433 23739 E BookmarkManager: 	... 11 more
+10-06 19:30:23.260 23433 23433 I OMcore  : (main) sdk/Framework.cpp:342 AttachSurface(): Attach surface started.
+10-06 19:30:23.269 23433 23433 I OMcore  : (main) sdk/Framework.cpp:386 AttachSurface(): Recover surface, viewport size: 1080 2400
+10-06 19:30:23.269 23433 23433 I OMcore  : (main) sdk/Framework.cpp:392 AttachSurface(): Attach surface finished.
+10-06 19:30:23.269 23433 23433 I OMcore  : (main) sdk/Framework.cpp:420 ResumeSurfaceRendering(): Resume surface rendering.
+10-06 19:30:23.277  2021  2062 I ActivityTaskManager: Displayed app.comaps.fdroid/app.organicmaps.MwmActivity for user 0: +94ms

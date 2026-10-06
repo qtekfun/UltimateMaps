@@ -1,0 +1,80 @@
+### run 1
+Starting: Intent { cmp=app.comaps.fdroid/app.organicmaps.DownloadResourcesActivity }
+Status: ok
+LaunchState: COLD
+Activity: app.comaps.fdroid/app.organicmaps.SplashActivity
+TotalTime: 147
+WaitTime: 150
+Complete
+### run 2
+Starting: Intent { cmp=app.comaps.fdroid/app.organicmaps.DownloadResourcesActivity }
+Status: ok
+LaunchState: COLD
+Activity: app.comaps.fdroid/app.organicmaps.SplashActivity
+TotalTime: 142
+WaitTime: 145
+Complete
+### run 3
+Starting: Intent { cmp=app.comaps.fdroid/app.organicmaps.DownloadResourcesActivity }
+Status: ok
+LaunchState: COLD
+Activity: app.comaps.fdroid/app.organicmaps.SplashActivity
+TotalTime: 142
+WaitTime: 144
+Complete
+### run 4
+Starting: Intent { cmp=app.comaps.fdroid/app.organicmaps.DownloadResourcesActivity }
+Status: ok
+LaunchState: COLD
+Activity: app.comaps.fdroid/app.organicmaps.SplashActivity
+TotalTime: 137
+WaitTime: 140
+Complete
+### run 5
+Starting: Intent { cmp=app.comaps.fdroid/app.organicmaps.DownloadResourcesActivity }
+Status: ok
+LaunchState: COLD
+Activity: app.comaps.fdroid/app.organicmaps.SplashActivity
+TotalTime: 130
+WaitTime: 133
+Complete
+### run 6
+Starting: Intent { cmp=app.comaps.fdroid/app.organicmaps.DownloadResourcesActivity }
+Status: ok
+LaunchState: COLD
+Activity: app.comaps.fdroid/app.organicmaps.SplashActivity
+TotalTime: 129
+WaitTime: 132
+Complete
+### run 7
+Starting: Intent { cmp=app.comaps.fdroid/app.organicmaps.DownloadResourcesActivity }
+Status: ok
+LaunchState: COLD
+Activity: app.comaps.fdroid/app.organicmaps.SplashActivity
+TotalTime: 148
+WaitTime: 151
+Complete
+### run 8
+Starting: Intent { cmp=app.comaps.fdroid/app.organicmaps.DownloadResourcesActivity }
+Status: ok
+LaunchState: COLD
+Activity: app.comaps.fdroid/app.organicmaps.SplashActivity
+TotalTime: 144
+WaitTime: 146
+Complete
+### run 9
+Starting: Intent { cmp=app.comaps.fdroid/app.organicmaps.DownloadResourcesActivity }
+Status: ok
+LaunchState: COLD
+Activity: app.comaps.fdroid/app.organicmaps.SplashActivity
+TotalTime: 140
+WaitTime: 142
+Complete
+### run 10
+Starting: Intent { cmp=app.comaps.fdroid/app.organicmaps.DownloadResourcesActivity }
+Status: ok
+LaunchState: COLD
+Activity: app.comaps.fdroid/app.organicmaps.SplashActivity
+TotalTime: 135
+WaitTime: 137
+Complete

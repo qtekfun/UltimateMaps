@@ -1,0 +1,26 @@
+ok Fiji
+ok Spain_Andalusia_Granada
+ok Spain_Andalusia_Sevilla
+ok Spain_Aragon
+downloaded Spain_Balearic Islands 51975648 expected 51975648
+downloaded Spain_Basque Country 89832822 expected 89832822
+downloaded Spain_Canary Islands 71301498 expected 71301498
+downloaded Spain_Cantabria 42199640 expected 42199640
+downloaded Spain_Castile and Leon_West 115259170 expected 115259170
+downloaded Spain_Castile and Leon_East 113919705 expected 113919705
+downloaded Spain_Castile-La Mancha 139020394 expected 139020394
+downloaded Spain_Catalonia_Provincia de Barcelona 155840481 expected 155840481
+downloaded Spain_Catalonia_Provincia de Girona 55722489 expected 55722489
+downloaded Spain_Catalonia_Provincia de Lleida 71240213 expected 71240213
+downloaded Spain_Catalonia_Provincia de Tarragona 54369967 expected 54369967
+downloaded Spain_Ceuta 1167113 expected 1167113
+downloaded Spain_Community of Madrid 102625286 expected 102625286
+downloaded Spain_Comunidad Foral de Navarra 59799955 expected 59799955
+downloaded Spain_Extremadura 54402323 expected 54402323
+downloaded Spain_Galicia_North 77932855 expected 77932855
+downloaded Spain_Galicia_South 56221802 expected 56221802
+downloaded Spain_La Rioja 20271139 expected 20271139
+downloaded Spain_Melilla 1173825 expected 1173825
+downloaded Spain_Principado de Asturias 43871144 expected 43871144
+downloaded Spain_Region de Murcia 48619456 expected 48619456
+downloaded Spain_Valencian Community 160504275 expected 160504275

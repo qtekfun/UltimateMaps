@@ -1,0 +1,267 @@
+10-06 19:14:40.156 20137 20137 I MwmApplication: (main) Initializing application
+10-06 19:14:40.227  2021  2062 I ActivityTaskManager: Displayed app.comaps.fdroid/app.organicmaps.SplashActivity for user 0: +164ms
+10-06 19:14:40.303 20137 20137 I OMcore  : (main) platform/AndroidPlatform.cpp:144 Initialize(): Flavor name: fdroid
+10-06 19:14:40.303 20137 20137 I OMcore  : (main) platform/AndroidPlatform.cpp:145 Initialize(): Build type name: release
+10-06 19:14:40.303 20137 20137 I OMcore  : (main) platform/AndroidPlatform.cpp:163 SetWritableDir(): Writable path =  /storage/emulated/0/Android/data/app.comaps.fdroid/files/
+10-06 19:14:40.303 20137 20137 I OMcore  : (main) platform/AndroidPlatform.cpp:151 Initialize(): Apk path =  /data/app/~~LbZ1Vn5Qbei8uufxb6-Q7g==/app.comaps.fdroid-BkJ0ACgkOadJ_iEJeuic6g==/base.apk
+10-06 19:14:40.303 20137 20137 I OMcore  : (main) platform/AndroidPlatform.cpp:152 Initialize(): Temporary path =  /data/user/0/app.comaps.fdroid/cache/
+10-06 19:14:40.307 20137 20137 I OMcore  : (main) sdk/Framework.cpp:1659 Java_app_organicmaps_sdk_Framework_nativeSetCustomMapDownloadUrl(): nativeSetCustomMapDownloadUrl: framework not created yet, skipping ResetMapDownloadMetaConfig
+10-06 19:14:40.333 20137 20137 W OMcore  : (main) platform/platform_android.cpp:125 GetReader(): Can't get reader for: countries.txt in scope w
+10-06 19:14:40.334 20137 20137 I OMcore  : (main) storage/storage.cpp:965 LoadCountriesFile(): Loaded countries list for map version: 261004
+10-06 19:14:40.335 20137 20137 W OMcore  : (main) platform/platform_android.cpp:125 GetReader(): Can't get reader for: /storage/emulated/0/Android/data/app.comaps.fdroid/files/notes.xml in scope f
+10-06 19:14:40.449 20137 20137 W OMcore  : (main) indexer/categories_holder.cpp:48 ParseEmoji(): Bad emoji code: U+2139
+10-06 19:14:40.449 20137 20137 W OMcore  : (main) indexer/categories_holder.cpp:48 ParseEmoji(): Bad emoji code: U+2139
+10-06 19:14:40.479 20137 20137 I OMcore  : (main) search/processor.cpp:214 SetPreferredLocale(): New preferred locale: es
+10-06 19:14:40.483 20137 20183 W OMcore  : (Thread-10) search/geocoder.cpp:719 CacheWorldLocalities(): Can't find World map file.
+10-06 19:14:40.483 20137 20183 W OMcore  : (Thread-10) search/cities_boundaries_table.cpp:52 Load(): Can't find World map file.
+10-06 19:14:40.483 20137 20183 W OMcore  : (Thread-10) search/processor.cpp:330 LoadCitiesBoundaries(): Can't load cities boundaries
+10-06 19:14:40.508 20137 20137 W OMcore  : (main) platform/platform_android.cpp:125 GetReader(): Can't get reader for: countries.txt in scope w
+10-06 19:14:40.513 20137 20137 I OMcore  : (main) routing/edge_estimator.cpp:180 EdgeEstimator(): Loading turn penalties for vehicle type: 2
+10-06 19:14:40.513 20137 20137 I OMcore  : (main) routing/edge_estimator.cpp:515 EdgeEstimator(): Loaded 144 turn penalties with default: 0.0727778
+10-06 19:14:40.513 20137 20137 I OMcore  : (main) map/framework.cpp:406 Framework(): System languages: es_ES
+10-06 19:14:40.513 20137 20137 W OMcore  : (main) power_management/power_manager.cpp:70 Load(): Cannot read power manager config file. Exception: /data/user/0/app.comaps.fdroid/files/power_manager_config; READ; No such file or directory
+10-06 19:14:40.519 20137 20183 W OMcore  : (Thread-10) platform/platform_android.cpp:125 GetReader(): Can't get reader for: countries.txt in scope w
+10-06 19:14:40.529 20137 20184 W OMcore  : (Thread-11) platform/platform_android.cpp:117 GetReader(): Can't get reader: LocateZipException libs/coding/zip_reader.cpp:55, "Can't locate file inside zip assets/World.mwm"
+10-06 19:14:40.529 20137 20184 W OMcore  : (Thread-11) platform/platform_android.cpp:125 GetReader(): Can't get reader for: World.mwm in scope r
+10-06 19:14:40.542 20137 20184 W OMcore  : (Thread-11) platform/platform_android.cpp:117 GetReader(): Can't get reader: LocateZipException libs/coding/zip_reader.cpp:55, "Can't locate file inside zip assets/WorldCoasts.mwm"
+10-06 19:14:40.542 20137 20184 W OMcore  : (Thread-11) platform/platform_android.cpp:125 GetReader(): Can't get reader for: WorldCoasts.mwm in scope r
+10-06 19:14:40.542 20137 20184 I OMcore  : (Thread-11) storage/storage.cpp:1302 RegisterLocalFile(): Found file: Spain_Andalusia_Granada in directory: /storage/emulated/0/Android/data/app.comaps.fdroid/files/261004 with size: 127195575
+10-06 19:14:40.542 20137 20184 I OMcore  : (Thread-11) storage/storage.cpp:1302 RegisterLocalFile(): Found file: Spain_Andalusia_Sevilla in directory: /storage/emulated/0/Android/data/app.comaps.fdroid/files/261004 with size: 124559006
+10-06 19:14:40.543 20137 20184 I OMcore  : (Thread-11) storage/storage.cpp:1302 RegisterLocalFile(): Found file: Spain_Aragon in directory: /storage/emulated/0/Android/data/app.comaps.fdroid/files/261004 with size: 125217697
+10-06 19:14:40.543 20137 20184 I OMcore  : (Thread-11) storage/storage.cpp:1302 RegisterLocalFile(): Found file: Spain_Balearic Islands in directory: /storage/emulated/0/Android/data/app.comaps.fdroid/files/261004 with size: 51975648
+10-06 19:14:40.543 20137 20184 I OMcore  : (Thread-11) storage/storage.cpp:1302 RegisterLocalFile(): Found file: Spain_Basque Country in directory: /storage/emulated/0/Android/data/app.comaps.fdroid/files/261004 with size: 89832822
+10-06 19:14:40.543 20137 20184 I OMcore  : (Thread-11) storage/storage.cpp:1302 RegisterLocalFile(): Found file: Spain_Canary Islands in directory: /storage/emulated/0/Android/data/app.comaps.fdroid/files/261004 with size: 71301498
+10-06 19:14:40.543 20137 20184 I OMcore  : (Thread-11) storage/storage.cpp:1302 RegisterLocalFile(): Found file: Spain_Cantabria in directory: /storage/emulated/0/Android/data/app.comaps.fdroid/files/261004 with size: 42199640
+10-06 19:14:40.543 20137 20184 I OMcore  : (Thread-11) storage/storage.cpp:1302 RegisterLocalFile(): Found file: Spain_Castile and Leon_East in directory: /storage/emulated/0/Android/data/app.comaps.fdroid/files/261004 with size: 113919705
+10-06 19:14:40.543 20137 20184 I OMcore  : (Thread-11) storage/storage.cpp:1302 RegisterLocalFile(): Found file: Spain_Castile and Leon_West in directory: /storage/emulated/0/Android/data/app.comaps.fdroid/files/261004 with size: 115259170
+10-06 19:14:40.543 20137 20184 I OMcore  : (Thread-11) storage/storage.cpp:1302 RegisterLocalFile(): Found file: Spain_Castile-La Mancha in directory: /storage/emulated/0/Android/data/app.comaps.fdroid/files/261004 with size: 139020394
+10-06 19:14:40.543 20137 20184 I OMcore  : (Thread-11) storage/storage.cpp:1302 RegisterLocalFile(): Found file: Spain_Catalonia_Provincia de Barcelona in directory: /storage/emulated/0/Android/data/app.comaps.fdroid/files/261004 with size: 155840481
+10-06 19:14:40.543 20137 20184 I OMcore  : (Thread-11) storage/storage.cpp:1302 RegisterLocalFile(): Found file: Spain_Catalonia_Provincia de Girona in directory: /storage/emulated/0/Android/data/app.comaps.fdroid/files/261004 with size: 55722489
+10-06 19:14:40.543 20137 20184 I OMcore  : (Thread-11) storage/storage.cpp:1302 RegisterLocalFile(): Found file: Spain_Catalonia_Provincia de Lleida in directory: /storage/emulated/0/Android/data/app.comaps.fdroid/files/261004 with size: 71240213
+10-06 19:14:40.543 20137 20184 I OMcore  : (Thread-11) storage/storage.cpp:1302 RegisterLocalFile(): Found file: Spain_Catalonia_Provincia de Tarragona in directory: /storage/emulated/0/Android/data/app.comaps.fdroid/files/261004 with size: 54369967
+10-06 19:14:40.544 20137 20184 I OMcore  : (Thread-11) storage/storage.cpp:1302 RegisterLocalFile(): Found file: Spain_Ceuta in directory: /storage/emulated/0/Android/data/app.comaps.fdroid/files/261004 with size: 1167113
+10-06 19:14:40.544 20137 20184 I OMcore  : (Thread-11) storage/storage.cpp:1302 RegisterLocalFile(): Found file: Spain_Community of Madrid in directory: /storage/emulated/0/Android/data/app.comaps.fdroid/files/261004 with size: 102625286
+10-06 19:14:40.544 20137 20184 I OMcore  : (Thread-11) storage/storage.cpp:1302 RegisterLocalFile(): Found file: Spain_Comunidad Foral de Navarra in directory: /storage/emulated/0/Android/data/app.comaps.fdroid/files/261004 with size: 59799955
+10-06 19:14:40.544 20137 20184 I OMcore  : (Thread-11) storage/storage.cpp:1302 RegisterLocalFile(): Found file: Spain_Extremadura in directory: /storage/emulated/0/Android/data/app.comaps.fdroid/files/261004 with size: 54402323
+10-06 19:14:40.544 20137 20184 I OMcore  : (Thread-11) storage/storage.cpp:1302 RegisterLocalFile(): Found file: Spain_Galicia_North in directory: /storage/emulated/0/Android/data/app.comaps.fdroid/files/261004 with size: 77932855
+10-06 19:14:40.544 20137 20184 I OMcore  : (Thread-11) storage/storage.cpp:1302 RegisterLocalFile(): Found file: Spain_Galicia_South in directory: /storage/emulated/0/Android/data/app.comaps.fdroid/files/261004 with size: 56221802
+10-06 19:14:40.544 20137 20184 I OMcore  : (Thread-11) storage/storage.cpp:1302 RegisterLocalFile(): Found file: Spain_La Rioja in directory: /storage/emulated/0/Android/data/app.comaps.fdroid/files/261004 with size: 20271139
+10-06 19:14:40.544 20137 20184 I OMcore  : (Thread-11) storage/storage.cpp:1302 RegisterLocalFile(): Found file: Spain_Melilla in directory: /storage/emulated/0/Android/data/app.comaps.fdroid/files/261004 with size: 1173825
+10-06 19:14:40.544 20137 20184 I OMcore  : (Thread-11) storage/storage.cpp:1302 RegisterLocalFile(): Found file: Spain_Principado de Asturias in directory: /storage/emulated/0/Android/data/app.comaps.fdroid/files/261004 with size: 43871144
+10-06 19:14:40.544 20137 20184 I OMcore  : (Thread-11) storage/storage.cpp:1302 RegisterLocalFile(): Found file: Spain_Region de Murcia in directory: /storage/emulated/0/Android/data/app.comaps.fdroid/files/261004 with size: 48619456
+10-06 19:14:40.544 20137 20184 I OMcore  : (Thread-11) storage/storage.cpp:1302 RegisterLocalFile(): Found file: Spain_Valencian Community in directory: /storage/emulated/0/Android/data/app.comaps.fdroid/files/261004 with size: 160504275
+10-06 19:14:40.544 20137 20184 I OMcore  : (Thread-11) storage/storage.cpp:1302 RegisterLocalFile(): Found file: World in directory: /storage/emulated/0/Android/data/app.comaps.fdroid/files/261004 with size: 53519450
+10-06 19:14:40.544 20137 20184 I OMcore  : (Thread-11) storage/storage.cpp:1302 RegisterLocalFile(): Found file: WorldCoasts in directory: /storage/emulated/0/Android/data/app.comaps.fdroid/files/261004 with size: 8489900
+10-06 19:14:40.546 20137 20184 I OMcore  : (Thread-11) map/framework.cpp:179 RegisterMap(): Loaded Spain_Andalusia_Granada map, of version 261004
+10-06 19:14:40.546 20137 20184 I OMcore  : (Thread-11) map/framework.cpp:179 RegisterMap(): Loaded Spain_Andalusia_Sevilla map, of version 261004
+10-06 19:14:40.546 20137 20184 I OMcore  : (Thread-11) map/framework.cpp:179 RegisterMap(): Loaded Spain_Aragon map, of version 261004
+10-06 19:14:40.546 20137 20184 I OMcore  : (Thread-11) map/framework.cpp:179 RegisterMap(): Loaded Spain_Balearic Islands map, of version 261004
+10-06 19:14:40.546 20137 20184 I OMcore  : (Thread-11) map/framework.cpp:179 RegisterMap(): Loaded Spain_Basque Country map, of version 261004
+10-06 19:14:40.547 20137 20184 I OMcore  : (Thread-11) map/framework.cpp:179 RegisterMap(): Loaded Spain_Canary Islands map, of version 261004
+10-06 19:14:40.548 20137 20184 I OMcore  : (Thread-11) map/framework.cpp:179 RegisterMap(): Loaded Spain_Cantabria map, of version 261004
+10-06 19:14:40.548 20137 20184 I OMcore  : (Thread-11) map/framework.cpp:179 RegisterMap(): Loaded Spain_Castile and Leon_East map, of version 261004
+10-06 19:14:40.548 20137 20184 I OMcore  : (Thread-11) map/framework.cpp:179 RegisterMap(): Loaded Spain_Castile and Leon_West map, of version 261004
+10-06 19:14:40.548 20137 20184 I OMcore  : (Thread-11) map/framework.cpp:179 RegisterMap(): Loaded Spain_Castile-La Mancha map, of version 261004
+10-06 19:14:40.549 20137 20184 I OMcore  : (Thread-11) map/framework.cpp:179 RegisterMap(): Loaded Spain_Catalonia_Provincia de Barcelona map, of version 261004
+10-06 19:14:40.549 20137 20184 I OMcore  : (Thread-11) map/framework.cpp:179 RegisterMap(): Loaded Spain_Catalonia_Provincia de Girona map, of version 261004
+10-06 19:14:40.549 20137 20184 I OMcore  : (Thread-11) map/framework.cpp:179 RegisterMap(): Loaded Spain_Catalonia_Provincia de Lleida map, of version 261004
+10-06 19:14:40.549 20137 20184 I OMcore  : (Thread-11) map/framework.cpp:179 RegisterMap(): Loaded Spain_Catalonia_Provincia de Tarragona map, of version 261004
+10-06 19:14:40.549 20137 20184 I OMcore  : (Thread-11) map/framework.cpp:179 RegisterMap(): Loaded Spain_Ceuta map, of version 261004
+10-06 19:14:40.550 20137 20184 I OMcore  : (Thread-11) map/framework.cpp:179 RegisterMap(): Loaded Spain_Community of Madrid map, of version 261004
+10-06 19:14:40.550 20137 20184 I OMcore  : (Thread-11) map/framework.cpp:179 RegisterMap(): Loaded Spain_Comunidad Foral de Navarra map, of version 261004
+10-06 19:14:40.550 20137 20184 I OMcore  : (Thread-11) map/framework.cpp:179 RegisterMap(): Loaded Spain_Extremadura map, of version 261004
+10-06 19:14:40.550 20137 20184 I OMcore  : (Thread-11) map/framework.cpp:179 RegisterMap(): Loaded Spain_Galicia_North map, of version 261004
+10-06 19:14:40.551 20137 20184 I OMcore  : (Thread-11) map/framework.cpp:179 RegisterMap(): Loaded Spain_Galicia_South map, of version 261004
+10-06 19:14:40.551 20137 20184 I OMcore  : (Thread-11) map/framework.cpp:179 RegisterMap(): Loaded Spain_La Rioja map, of version 261004
+10-06 19:14:40.551 20137 20184 I OMcore  : (Thread-11) map/framework.cpp:179 RegisterMap(): Loaded Spain_Melilla map, of version 261004
+10-06 19:14:40.551 20137 20184 I OMcore  : (Thread-11) map/framework.cpp:179 RegisterMap(): Loaded Spain_Principado de Asturias map, of version 261004
+10-06 19:14:40.551 20137 20184 I OMcore  : (Thread-11) map/framework.cpp:179 RegisterMap(): Loaded Spain_Region de Murcia map, of version 261004
+10-06 19:14:40.552 20137 20184 I OMcore  : (Thread-11) map/framework.cpp:179 RegisterMap(): Loaded Spain_Valencian Community map, of version 261004
+10-06 19:14:40.552 20137 20184 I OMcore  : (Thread-11) map/framework.cpp:179 RegisterMap(): Loaded World map, of version 261004
+10-06 19:14:40.552 20137 20184 I OMcore  : (Thread-11) map/framework.cpp:179 RegisterMap(): Loaded WorldCoasts map, of version 261004
+10-06 19:14:40.552 20137 20137 I OMcore  : (main) editor/osm_editor.cpp:147 LoadEdits(): Loading OSM edits...
+10-06 19:14:40.594 20137 20137 W OMcore  : (main) platform/platform_android.cpp:117 GetReader(): Can't get reader: LocateZipException libs/coding/zip_reader.cpp:55, "Can't locate file inside zip assets/World.mwm"
+10-06 19:14:40.594 20137 20137 W OMcore  : (main) platform/platform_android.cpp:125 GetReader(): Can't get reader for: World.mwm in scope r
+10-06 19:14:40.605 20137 20137 W OMcore  : (main) platform/platform_android.cpp:117 GetReader(): Can't get reader: LocateZipException libs/coding/zip_reader.cpp:55, "Can't locate file inside zip assets/WorldCoasts.mwm"
+10-06 19:14:40.605 20137 20137 W OMcore  : (main) platform/platform_android.cpp:125 GetReader(): Can't get reader for: WorldCoasts.mwm in scope r
+10-06 19:14:40.605 20137 20137 I OMcore  : (main) platform/platform_unix_impl.cpp:115 GetWritableStorageStatus(): statfs return = 0 ; block size = 4096 ; blocks available = 15811045
+10-06 19:14:40.605 20137 20137 I OMcore  : (main) platform/platform_unix_impl.cpp:124 GetWritableStorageStatus(): Free space check: requested = 0 ; available = 64762040320
+10-06 19:14:40.642 20137 20183 I OMcore  : (Thread-10) search/processor.cpp:328 LoadCitiesBoundaries(): Loaded cities boundaries
+10-06 19:14:40.662 20137 20137 I OMcore  : (main) sdk/Framework.cpp:1017 Java_app_organicmaps_sdk_Framework_nativePlacePageActivationListener(): Set global map object listener
+10-06 19:14:40.693 20137 20137 I OMcore  : (main) sdk/Framework.cpp:197 CreateDrapeEngine(): Android SDK version in the Drape Engine: 37
+10-06 19:14:40.695 20137 20137 I OMcore  : (main) vulkan/vulkan_layers.cpp:259 Layers(): Vulkan instance extension prepared VK_KHR_surface
+10-06 19:14:40.695 20137 20137 I OMcore  : (main) vulkan/vulkan_layers.cpp:259 Layers(): Vulkan instance extension prepared VK_KHR_android_surface
+10-06 19:14:40.696 20137 20137 I OMcore  : (main) drape/support_manager.cpp:92 IsVulkanForbidden(): Device = Mali-G715 API = [3: 1 4 343 ] Driver = [3: 54 3 0 ] SDK = 37
+10-06 19:14:40.696 20137 20137 I OMcore  : (main) vulkan/vulkan_layers.cpp:372 Initialize(): Vulkan device extension prepared VK_KHR_swapchain
+10-06 19:14:40.708 20137 20137 I OMcore  : (main) drape_frontend/visual_params.cpp:55 Init(): Visual scale = 2.625 ; Tile size = 1024 ; Resources = 6plus
+10-06 19:14:40.708 20137 20200 I OMcore  : (Thread-19) drape_frontend/backend_renderer.cpp:734 Do(): Start routine.
+10-06 19:14:40.708 20137 20200 I OMcore  : (Thread-19) drape_frontend/backend_renderer.cpp:702 OnContextCreate(): On context create.
+10-06 19:14:40.708 20137 20200 I OMcore  : (Thread-19) drape/support_manager.cpp:35 Init(): Renderer = Mali-G715 | Api = Vulkan | Version = API:1.4.343/Driver:54.3.0
+10-06 19:14:40.708 20137 20200 I OMcore  : (Thread-19) drape/support_manager.cpp:56 Init(): Max line width = 4095.94 | Max texture size = 65536
+10-06 19:14:40.708 20137 20183 I OMcore  : (Thread-10) search/processor.cpp:214 SetPreferredLocale(): New preferred locale: es
+10-06 19:14:40.708 20137 20201 I OMcore  : (Thread-20) drape_frontend/frontend_renderer.cpp:2522 Do(): Start routine.
+10-06 19:14:40.708 20137 20201 I OMcore  : (Thread-20) drape_frontend/frontend_renderer.cpp:2444 OnContextCreate(): On context create.
+10-06 19:14:40.708 20137 20137 I OMcore  : (main) sdk/Framework.cpp:420 ResumeSurfaceRendering(): Resume surface rendering.
+10-06 19:14:40.721  2021  2062 I ActivityTaskManager: Displayed app.comaps.fdroid/app.organicmaps.MwmActivity for user 0: +163ms
+10-06 19:14:40.721 20137 20200 W OMcore  : (Thread-19) platform/platform_android.cpp:117 GetReader(): Can't get reader: LocateZipException libs/coding/zip_reader.cpp:55, "Can't locate file inside zip assets/symbols/6plus/light/symbols.sdf"
+10-06 19:14:40.721 20137 20200 W OMcore  : (Thread-19) platform/platform_android.cpp:125 GetReader(): Can't get reader for: symbols/6plus/light/symbols.sdf in scope rw
+10-06 19:14:40.722 20137 20200 E OMcore  : (Thread-19) drape/symbols_texture.cpp:222 operator()(): FileAbsentException libs/platform/platform_android.cpp:126, "File not found symbols/6plus/light/symbols.sdf"
+10-06 19:14:40.748 20137 20200 W OMcore  : (Thread-19) platform/platform_android.cpp:117 GetReader(): Can't get reader: LocateZipException libs/coding/zip_reader.cpp:55, "Can't locate file inside zip assets/symbols/default/arrow-texture.png"
+10-06 19:14:40.748 20137 20200 W OMcore  : (Thread-19) platform/platform_android.cpp:125 GetReader(): Can't get reader for: symbols/default/arrow-texture.png in scope rw
+10-06 19:14:40.758 20137 20200 I OMcore  : (Thread-19) drape/texture_manager.cpp:346 Init(): Colors count = 972 texture size = 128 128
+10-06 19:14:40.799 20137 20181 I OMcore  : (Thread-7) routing/async_router.cpp:310 CalculateRoute(): Calculating the route of direct length 505999 m. checkpoints: Checkpoints(ms::LatLon(40.4168, -3.7038); ms::LatLon(41.3851, 2.1734); passed: 0) startDirection: m2::Point<d>(0, 0) router name: astar-bidirectional-Car
+10-06 19:14:40.800 20137 20181 I OMcore  : (Thread-7) routing/index_router.cpp:1096 MakeWorldGraph(): Avoid next roads: RoutingOptions: {}
+10-06 19:14:41.065 20137 20181 I OMcore  : (Thread-7) routing/index_graph_loader.cpp:163 CreateIndexGraph(): routing section for Spain_Catalonia_Provincia de Barcelona loaded in 0.239524 seconds
+10-06 19:14:41.286 20137 20181 I OMcore  : (Thread-7) routing/index_graph_loader.cpp:163 CreateIndexGraph(): routing section for Spain_Community of Madrid loaded in 0.199991 seconds
+10-06 19:14:41.431 20137 20181 I OMcore  : (Thread-7) routing/index_router.cpp:703 CalculateSubroute(): Routing in mode: LeapsOnly
+10-06 19:14:41.557 20137 20137 I OMcore  : (main) routing/routing_session.cpp:924 SetTurnNotificationsLocale(): The language for turn notifications is es
+10-06 19:14:50.010 20137 20181 I OMcore  : (Thread-7) routing/index_router.cpp:926 CalculateSubrouteLeapsOnlyMode(): Filtered candidates count = 15
+10-06 19:14:55.874 20137 20181 I OMcore  : (Thread-7) routing/index_graph_loader.cpp:163 CreateIndexGraph(): routing section for Spain_Castile-La Mancha loaded in 0.220278 seconds
+10-06 19:14:56.166 20137 20181 I OMcore  : (Thread-7) routing/index_graph_loader.cpp:163 CreateIndexGraph(): routing section for Spain_Castile and Leon_East loaded in 0.188217 seconds
+10-06 19:14:56.330 20137 20181 I OMcore  : (Thread-7) routing/index_graph_loader.cpp:163 CreateIndexGraph(): routing section for Spain_Aragon loaded in 0.148301 seconds
+10-06 19:14:56.901 20137 20181 I OMcore  : (Thread-7) routing/index_graph_loader.cpp:163 CreateIndexGraph(): routing section for Spain_Catalonia_Provincia de Lleida loaded in 0.11438 seconds
+10-06 19:14:56.998 20137 20181 I OMcore  : (Thread-7) routing/index_graph_loader.cpp:163 CreateIndexGraph(): routing section for Spain_Catalonia_Provincia de Tarragona loaded in 0.0764226 seconds
+10-06 19:14:57.013 20137 20181 I OMcore  : (Thread-7) base/timer.cpp:185 ~ScopedTimerWithLog(): Route build time: 15581 ms
+10-06 19:14:57.067 20137 20181 W OMcore  : (Thread-7) routing/turns_generator.cpp:343 CorrectCandidatesSegmentByOutgoing(): isCandidatesAngleValid == false, and this can't be fixed.
+10-06 19:14:57.067 20137 20181 W OMcore  : (Thread-7) routing/turns_generator.cpp:343 CorrectCandidatesSegmentByOutgoing(): isCandidatesAngleValid == false, and this can't be fixed.
+10-06 19:14:57.067 20137 20181 W OMcore  : (Thread-7) routing/turns_generator.cpp:343 CorrectCandidatesSegmentByOutgoing(): isCandidatesAngleValid == false, and this can't be fixed.
+10-06 19:14:57.068 20137 20181 W OMcore  : (Thread-7) routing/turns_generator.cpp:343 CorrectCandidatesSegmentByOutgoing(): isCandidatesAngleValid == false, and this can't be fixed.
+10-06 19:14:57.069 20137 20181 W OMcore  : (Thread-7) routing/turns_generator.cpp:343 CorrectCandidatesSegmentByOutgoing(): isCandidatesAngleValid == false, and this can't be fixed.
+10-06 19:14:57.076 20137 20181 I OMcore  : (Thread-7) routing/index_router.cpp:655 DoCalculateRoute(): Route length: 621843 meters. ETA: 22032.7 seconds.
+10-06 19:14:57.297 20137 20181 I OMcore  : (Thread-7) routing/async_router.cpp:212 LogCode(): Route found, elapsed seconds: 16.4988
+10-06 19:14:57.297 20137 20181 I OMcore  : (Thread-7) routing/async_router.cpp:320 CalculateRoute(): ETA: 22032.7 sec.
+10-06 19:14:57.298 20137 20181 I OMcore  : (Thread-7) routing/async_router.cpp:212 LogCode(): Route found, elapsed seconds: 16.499
+10-06 19:14:57.617 20137 20137 I OMcore  : (main) routing/routing_session.cpp:802 DisableFollowMode(): Routing disables a following mode. SessionState:  RouteNotStarted
+10-06 19:14:58.898 20137 20199 E OMcore  : (Thread-17) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 19174 }
+10-06 19:14:58.899 20137 20199 E OMcore  : (Thread-17) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 19182 }
+10-06 19:14:58.899 20137 20199 E OMcore  : (Thread-17) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 19184 }
+10-06 19:14:58.899 20137 20199 E OMcore  : (Thread-17) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 19202 }
+10-06 19:14:58.900 20137 20199 E OMcore  : (Thread-17) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 19203 }
+10-06 19:14:58.900 20137 20199 E OMcore  : (Thread-17) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 19231 }
+10-06 19:14:58.900 20137 20199 E OMcore  : (Thread-17) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 19252 }
+10-06 19:14:58.900 20137 20199 E OMcore  : (Thread-17) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 19259 }
+10-06 19:14:58.900 20137 20199 E OMcore  : (Thread-17) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 19271 }
+10-06 19:14:58.901 20137 20199 E OMcore  : (Thread-17) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 19305 }
+10-06 19:14:58.901 20137 20199 E OMcore  : (Thread-17) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 19318 }
+10-06 19:14:58.901 20137 20199 E OMcore  : (Thread-17) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 19340 }
+10-06 19:14:58.901 20137 20199 E OMcore  : (Thread-17) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 19342 }
+10-06 19:14:58.901 20137 20199 E OMcore  : (Thread-17) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 19360 }
+10-06 19:14:58.902 20137 20199 E OMcore  : (Thread-17) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 19466 }
+10-06 19:14:58.902 20137 20199 E OMcore  : (Thread-17) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 19492 }
+10-06 19:14:58.902 20137 20199 E OMcore  : (Thread-17) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 19522 }
+10-06 19:14:58.903 20137 20199 E OMcore  : (Thread-17) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 19631 }
+10-06 19:14:58.905 20137 20198 E OMcore  : (Thread-18) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 20831 }
+10-06 19:14:58.905 20137 20198 E OMcore  : (Thread-18) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 20833 }
+10-06 19:14:58.905 20137 20198 E OMcore  : (Thread-18) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 20838 }
+10-06 19:14:58.905 20137 20198 E OMcore  : (Thread-18) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 20868 }
+10-06 19:14:58.905 20137 20198 E OMcore  : (Thread-18) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 20878 }
+10-06 19:14:58.906 20137 20198 E OMcore  : (Thread-18) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 20950 }
+10-06 19:14:58.906 20137 20198 E OMcore  : (Thread-18) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 20967 }
+10-06 19:14:58.906 20137 20198 E OMcore  : (Thread-18) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 20988 }
+10-06 19:14:58.906 20137 20198 E OMcore  : (Thread-18) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 21065 }
+10-06 19:14:58.907 20137 20198 E OMcore  : (Thread-18) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 21129 }
+10-06 19:14:58.907 20137 20198 E OMcore  : (Thread-18) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 21196 }
+10-06 19:14:58.907 20137 20198 E OMcore  : (Thread-18) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 21217 }
+10-06 19:14:58.907 20137 20198 E OMcore  : (Thread-18) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 21290 }
+10-06 19:14:58.908 20137 20198 E OMcore  : (Thread-18) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 21345 }
+10-06 19:14:58.908 20137 20198 E OMcore  : (Thread-18) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 21390 }
+10-06 19:14:58.908 20137 20198 E OMcore  : (Thread-18) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 21394 }
+10-06 19:14:58.908 20137 20198 E OMcore  : (Thread-18) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 21403 }
+10-06 19:14:58.908 20137 20199 E OMcore  : (Thread-17) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 20166 }
+10-06 19:14:58.908 20137 20199 E OMcore  : (Thread-17) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 20182 }
+10-06 19:14:58.908 20137 20199 E OMcore  : (Thread-17) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 20196 }
+10-06 19:14:58.909 20137 20198 E OMcore  : (Thread-18) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 21535 }
+10-06 19:14:58.909 20137 20199 E OMcore  : (Thread-17) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 20210 }
+10-06 19:14:58.909 20137 20198 E OMcore  : (Thread-18) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 21548 }
+10-06 19:14:58.909 20137 20199 E OMcore  : (Thread-17) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 20253 }
+10-06 19:14:58.910 20137 20199 E OMcore  : (Thread-17) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 20271 }
+10-06 19:14:58.911 20137 20198 E OMcore  : (Thread-18) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 21572 }
+10-06 19:14:58.911 20137 20198 E OMcore  : (Thread-18) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 21578 }
+10-06 19:14:58.911 20137 20198 E OMcore  : (Thread-18) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 21713 }
+10-06 19:14:58.912 20137 20198 E OMcore  : (Thread-18) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 21807 }
+10-06 19:14:58.912 20137 20198 E OMcore  : (Thread-18) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 21809 }
+10-06 19:14:58.912 20137 20198 E OMcore  : (Thread-18) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 21811 }
+10-06 19:14:58.912 20137 20198 E OMcore  : (Thread-18) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 21840 }
+10-06 19:14:58.912 20137 20198 E OMcore  : (Thread-18) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 21846 }
+10-06 19:14:58.913 20137 20198 E OMcore  : (Thread-18) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 21896 }
+10-06 19:14:58.913 20137 20198 E OMcore  : (Thread-18) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 21923 }
+10-06 19:14:58.913 20137 20198 E OMcore  : (Thread-18) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 21926 }
+10-06 19:14:58.913 20137 20198 E OMcore  : (Thread-18) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 21975 }
+10-06 19:14:58.914 20137 20198 E OMcore  : (Thread-18) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 22049 }
+10-06 19:14:58.918 20137 20199 E OMcore  : (Thread-17) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 23385 }
+10-06 19:14:58.918 20137 20199 E OMcore  : (Thread-17) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 23399 }
+10-06 19:14:58.919 20137 20199 E OMcore  : (Thread-17) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 23431 }
+10-06 19:14:58.919 20137 20199 E OMcore  : (Thread-17) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 23443 }
+10-06 19:14:58.919 20137 20199 E OMcore  : (Thread-17) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 23475 }
+10-06 19:14:58.919 20137 20199 E OMcore  : (Thread-17) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 23484 }
+10-06 19:14:58.919 20137 20199 E OMcore  : (Thread-17) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 23485 }
+10-06 19:14:58.919 20137 20199 E OMcore  : (Thread-17) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 23508 }
+10-06 19:14:58.919 20137 20199 E OMcore  : (Thread-17) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 23531 }
+10-06 19:14:58.919 20137 20199 E OMcore  : (Thread-17) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 23536 }
+10-06 19:14:58.919 20137 20199 E OMcore  : (Thread-17) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 23546 }
+10-06 19:14:58.919 20137 20199 E OMcore  : (Thread-17) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 23557 }
+10-06 19:14:58.919 20137 20199 E OMcore  : (Thread-17) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 23564 }
+10-06 19:14:58.920 20137 20199 E OMcore  : (Thread-17) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 23587 }
+10-06 19:14:58.920 20137 20199 E OMcore  : (Thread-17) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 23601 }
+10-06 19:14:58.920 20137 20199 E OMcore  : (Thread-17) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 23604 }
+10-06 19:14:58.920 20137 20199 E OMcore  : (Thread-17) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 23619 }
+10-06 19:14:58.920 20137 20199 E OMcore  : (Thread-17) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 23649 }
+10-06 19:14:58.920 20137 20199 E OMcore  : (Thread-17) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 23652 }
+10-06 19:14:58.920 20137 20199 E OMcore  : (Thread-17) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 23709 }
+10-06 19:14:58.920 20137 20199 E OMcore  : (Thread-17) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 23726 }
+10-06 19:14:58.920 20137 20199 E OMcore  : (Thread-17) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 23734 }
+10-06 19:14:58.921 20137 20199 E OMcore  : (Thread-17) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 23835 }
+10-06 19:14:58.921 20137 20199 E OMcore  : (Thread-17) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 23895 }
+10-06 19:14:58.921 20137 20199 E OMcore  : (Thread-17) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 23898 }
+10-06 19:14:58.921 20137 20199 E OMcore  : (Thread-17) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 23905 }
+10-06 19:14:58.921 20137 20199 E OMcore  : (Thread-17) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 23937 }
+10-06 19:14:58.921 20137 20199 E OMcore  : (Thread-17) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 23980 }
+10-06 19:14:58.921 20137 20199 E OMcore  : (Thread-17) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 24083 }
+10-06 19:14:58.922 20137 20199 E OMcore  : (Thread-17) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 24120 }
+10-06 19:14:58.922 20137 20199 E OMcore  : (Thread-17) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 24189 }
+10-06 19:14:58.923 20137 20199 E OMcore  : (Thread-17) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 24206 }
+10-06 19:14:58.923 20137 20199 E OMcore  : (Thread-17) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 24209 }
+10-06 19:14:58.923 20137 20199 E OMcore  : (Thread-17) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 24245 }
+10-06 19:14:58.923 20137 20199 E OMcore  : (Thread-17) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 24284 }
+10-06 19:14:58.924 20137 20199 E OMcore  : (Thread-17) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 24318 }
+10-06 19:14:58.924 20137 20199 E OMcore  : (Thread-17) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 24361 }
+10-06 19:14:58.924 20137 20199 E OMcore  : (Thread-17) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 24377 }
+10-06 19:14:58.924 20137 20199 E OMcore  : (Thread-17) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 24379 }
+10-06 19:14:59.061 20137 20199 E OMcore  : (Thread-17) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 19466 }
+10-06 19:14:59.062 20137 20199 E OMcore  : (Thread-17) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 19492 }
+10-06 19:14:59.062 20137 20199 E OMcore  : (Thread-17) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 19522 }
+10-06 19:14:59.062 20137 20199 E OMcore  : (Thread-17) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 19631 }
+10-06 19:14:59.066 20137 20198 E OMcore  : (Thread-18) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 21535 }
+10-06 19:14:59.066 20137 20198 E OMcore  : (Thread-18) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 21548 }
+10-06 19:14:59.066 20137 20198 E OMcore  : (Thread-18) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 21572 }
+10-06 19:14:59.067 20137 20198 E OMcore  : (Thread-18) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 21578 }
+10-06 19:14:59.068 20137 20199 E OMcore  : (Thread-17) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 20166 }
+10-06 19:14:59.068 20137 20199 E OMcore  : (Thread-17) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 20182 }
+10-06 19:14:59.068 20137 20199 E OMcore  : (Thread-17) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 20196 }
+10-06 19:14:59.069 20137 20199 E OMcore  : (Thread-17) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 20210 }
+10-06 19:14:59.072 20137 20199 E OMcore  : (Thread-17) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 23385 }
+10-06 19:14:59.072 20137 20199 E OMcore  : (Thread-17) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 23399 }
+10-06 19:14:59.072 20137 20199 E OMcore  : (Thread-17) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 23431 }
+10-06 19:14:59.073 20137 20199 E OMcore  : (Thread-17) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 23443 }
+10-06 19:14:59.073 20137 20199 E OMcore  : (Thread-17) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 23475 }
+10-06 19:14:59.073 20137 20199 E OMcore  : (Thread-17) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 23484 }
+10-06 19:14:59.073 20137 20199 E OMcore  : (Thread-17) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 23485 }
+10-06 19:14:59.073 20137 20199 E OMcore  : (Thread-17) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 23508 }
+10-06 19:14:59.073 20137 20199 E OMcore  : (Thread-17) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 23531 }
+10-06 19:14:59.073 20137 20199 E OMcore  : (Thread-17) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 23536 }
+10-06 19:14:59.073 20137 20199 E OMcore  : (Thread-17) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 23546 }
+10-06 19:14:59.073 20137 20199 E OMcore  : (Thread-17) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 23557 }
+10-06 19:14:59.074 20137 20199 E OMcore  : (Thread-17) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 23564 }
+10-06 19:14:59.074 20137 20199 E OMcore  : (Thread-17) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 23587 }
+10-06 19:14:59.074 20137 20199 E OMcore  : (Thread-17) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 23601 }
+10-06 19:14:59.074 20137 20199 E OMcore  : (Thread-17) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 23604 }
+10-06 19:14:59.074 20137 20199 E OMcore  : (Thread-17) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 23619 }
+10-06 19:14:59.074 20137 20199 E OMcore  : (Thread-17) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 23649 }
+10-06 19:14:59.074 20137 20199 E OMcore  : (Thread-17) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 23652 }
+10-06 19:14:59.075 20137 20199 E OMcore  : (Thread-17) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 23709 }
+10-06 19:14:59.075 20137 20199 E OMcore  : (Thread-17) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 23726 }
+10-06 19:14:59.075 20137 20199 E OMcore  : (Thread-17) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 23734 }
+10-06 19:14:59.076 20137 20199 E OMcore  : (Thread-17) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 23835 }
+10-06 19:14:59.077 20137 20199 E OMcore  : (Thread-17) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 23895 }
+10-06 19:14:59.077 20137 20199 E OMcore  : (Thread-17) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 23898 }
+10-06 19:14:59.077 20137 20199 E OMcore  : (Thread-17) drape_frontend/apply_feature_functors.cpp:614 ProcessPointRules(): Style error. Symbol name must be valid for feature { MwmId [World, 261004], 23905 }

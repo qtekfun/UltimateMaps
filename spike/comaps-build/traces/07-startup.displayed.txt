@@ -1,0 +1,10 @@
+10-06 19:04:57.960  2021  2062 I ActivityTaskManager: Displayed app.comaps.fdroid/app.organicmaps.DownloadResourcesActivity for user 0: +129ms
+10-06 19:04:58.443  2021  2062 I ActivityTaskManager: Displayed app.comaps.fdroid/app.organicmaps.MwmActivity for user 0: +170ms
+10-06 19:05:05.781  2021  2062 I ActivityTaskManager: Displayed app.comaps.fdroid/app.organicmaps.DownloadResourcesActivity for user 0: +148ms
+10-06 19:05:06.284  2021  2062 I ActivityTaskManager: Displayed app.comaps.fdroid/app.organicmaps.MwmActivity for user 0: +181ms
+10-06 19:05:13.494  2021  2062 I ActivityTaskManager: Displayed app.comaps.fdroid/app.organicmaps.DownloadResourcesActivity for user 0: +144ms
+10-06 19:05:14.008  2021  2062 I ActivityTaskManager: Displayed app.comaps.fdroid/app.organicmaps.MwmActivity for user 0: +174ms
+10-06 19:05:21.230  2021  2062 I ActivityTaskManager: Displayed app.comaps.fdroid/app.organicmaps.DownloadResourcesActivity for user 0: +140ms
+10-06 19:05:21.740  2021  2062 I ActivityTaskManager: Displayed app.comaps.fdroid/app.organicmaps.MwmActivity for user 0: +187ms
+10-06 19:05:28.862  2021  2062 I ActivityTaskManager: Displayed app.comaps.fdroid/app.organicmaps.DownloadResourcesActivity for user 0: +135ms
+10-06 19:05:29.354  2021  2062 I ActivityTaskManager: Displayed app.comaps.fdroid/app.organicmaps.MwmActivity for user 0: +165ms
