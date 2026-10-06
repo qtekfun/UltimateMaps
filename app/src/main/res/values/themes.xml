@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Framework theme only as a window shell; all UI is drawn by the Mapas design system in Compose. -->
+    <style name="Theme.Mapas" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@color/map_window_background</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+    </style>
+    <color name="map_window_background">#FFF2EFE9</color>
+</resources>
