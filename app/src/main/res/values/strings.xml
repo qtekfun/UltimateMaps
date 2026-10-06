@@ -3,6 +3,33 @@
     <string name="app_name">Mapas</string>
     <string name="network_mode_offline">Offline mode: no network connections</string>
     <string name="network_connections_title">Possible connections</string>
-    <string name="link_short_needs_resolve">This short link needs a network request to Google to find its destination.</string>
+    <string name="link_short_needs_resolve">This short link needs a network request to Google to find its destination. Resolving short links is turned off, so nothing was sent.</string>
     <string name="link_not_recognized">This link is not a recognized map link.</string>
+
+    <string name="attribution_osm">© OpenStreetMap</string>
+    <string name="about_title">Map data</string>
+    <string name="about_osm_body">Map data © OpenStreetMap contributors, available under the Open Database License (ODbL). Base map style and tiles by Protomaps.</string>
+    <string name="close">Close</string>
+
+    <string name="map_locate">My location</string>
+    <string name="map_compass">Reset map to north</string>
+
+    <string name="sheet_description">Information panel</string>
+    <string name="sheet_expand">Change panel size</string>
+    <string name="sheet_state_collapsed">Collapsed</string>
+    <string name="sheet_state_medium">Half</string>
+    <string name="sheet_state_full">Full</string>
+
+    <string name="search_placeholder">Search (coming soon)</string>
+    <string name="no_maps_title">No maps yet</string>
+    <string name="no_maps_body">Downloading regions is coming soon. Until then the map shows only the background.</string>
+
+    <string name="notice_link_title">Map link</string>
+    <string name="notice_search_title">Search: %1$s</string>
+    <string name="notice_search_body">Offline search is not available yet, so this link only moved the map.</string>
+    <string name="notice_place_title">Place</string>
+    <string name="notice_place_body">Opened from a map link.</string>
+    <string name="notice_location_title">Location</string>
+    <string name="location_permission_denied">Location permission was denied. Enable it in the system settings to see where you are.</string>
+    <string name="location_unavailable">No location provider is available on this device.</string>
 </resources>

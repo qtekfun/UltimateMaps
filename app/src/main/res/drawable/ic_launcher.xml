@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Placeholder launcher icon (provisional name and brand). -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="48"
+    android:viewportHeight="48">
+    <path android:fillColor="#007AFF" android:pathData="M0,0h48v48h-48z" />
+    <path android:fillColor="#FFFFFF" android:pathData="M24,8c-6.6,0 -12,5.2 -12,11.6 0,8.7 12,20.4 12,20.4s12,-11.7 12,-20.4C36,13.2 30.6,8 24,8zM24,24c-2.5,0 -4.5,-2 -4.5,-4.4s2,-4.4 4.5,-4.4 4.5,2 4.5,4.4 -2,4.4 -4.5,4.4z" />
+</vector>

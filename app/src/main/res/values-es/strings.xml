@@ -3,6 +3,33 @@
     <string name="app_name">Mapas</string>
     <string name="network_mode_offline">Modo sin red: sin conexiones salientes</string>
     <string name="network_connections_title">Conexiones posibles</string>
-    <string name="link_short_needs_resolve">Este enlace corto necesita una petición de red a Google para conocer su destino.</string>
+    <string name="link_short_needs_resolve">Este enlace corto necesita una petición de red a Google para conocer su destino. Resolver enlaces cortos está desactivado, así que no se ha enviado nada.</string>
     <string name="link_not_recognized">Este enlace no es un enlace de mapas reconocido.</string>
+
+    <string name="attribution_osm">© OpenStreetMap</string>
+    <string name="about_title">Datos del mapa</string>
+    <string name="about_osm_body">Datos del mapa © colaboradores de OpenStreetMap, disponibles bajo la Open Database License (ODbL). Estilo base y teselas de Protomaps.</string>
+    <string name="close">Cerrar</string>
+
+    <string name="map_locate">Mi ubicación</string>
+    <string name="map_compass">Orientar el mapa al norte</string>
+
+    <string name="sheet_description">Panel de información</string>
+    <string name="sheet_expand">Cambiar el tamaño del panel</string>
+    <string name="sheet_state_collapsed">Contraído</string>
+    <string name="sheet_state_medium">Medio</string>
+    <string name="sheet_state_full">Completo</string>
+
+    <string name="search_placeholder">Buscar (próximamente)</string>
+    <string name="no_maps_title">Aún no hay mapas</string>
+    <string name="no_maps_body">La descarga de regiones llegará pronto. Mientras tanto el mapa solo muestra el fondo.</string>
+
+    <string name="notice_link_title">Enlace de mapa</string>
+    <string name="notice_search_title">Búsqueda: %1$s</string>
+    <string name="notice_search_body">La búsqueda sin conexión aún no está disponible, así que este enlace solo ha movido el mapa.</string>
+    <string name="notice_place_title">Lugar</string>
+    <string name="notice_place_body">Abierto desde un enlace de mapa.</string>
+    <string name="notice_location_title">Ubicación</string>
+    <string name="location_permission_denied">Se denegó el permiso de ubicación. Actívalo en los ajustes del sistema para ver dónde estás.</string>
+    <string name="location_unavailable">Este dispositivo no tiene ningún proveedor de ubicación disponible.</string>
 </resources>
