@@ -1,0 +1,10 @@
+# Repetición en reposo (2026-10-06 ~19:45), sin otros agentes usando el dispositivo. Comando: bash spike/comaps-build/route_probe.sh vehicle 40.4168,-3.7038 41.3874,2.1686 <prefijo> 40 (x3, arranque en frío); tiempos con route_times.sh
+run1: 10-06 19:46:13.055 27035 27079 I OMcore  : (Thread-7) routing/index_router.cpp:655 DoCalculateRoute(): Route length: 620599 meters. ETA: 21995 seconds.
+run1: Route found, elapsed seconds: 17.8224
+run1: Route found, elapsed seconds: 17.8226
+run2: 10-06 19:46:55.881 27163 27204 I OMcore  : (Thread-6) routing/index_router.cpp:655 DoCalculateRoute(): Route length: 620599 meters. ETA: 21995 seconds.
+run2: Route found, elapsed seconds: 17.9804
+run2: Route found, elapsed seconds: 17.9806
+run3: 10-06 19:47:38.651 27278 27318 I OMcore  : (Thread-8) routing/index_router.cpp:655 DoCalculateRoute(): Route length: 620599 meters. ETA: 21995 seconds.
+run3: Route found, elapsed seconds: 18.0325
+run3: Route found, elapsed seconds: 18.0328
