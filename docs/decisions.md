@@ -73,3 +73,10 @@ Formato: fecha · decisión · motivo · alternativas descartadas · cómo rever
 - **Decisión:** módulo JVM `:core-regions` con catálogo propio (schema 1, dos assets por hoja, SHA-256) en lugar de consumir `countries.txt` (SHA-1, firma Ed25519) directamente. Activación atómica = renombrado de cada fichero verificado + sustitución atómica de `installed.json`. Detalles y mapeo en `docs/phase1/regions.md`.
 - **Motivo:** RF-02 pide SHA-256 y la opción C necesita unir PMTiles y `.mwm` en una sola región.
 - **Descartado:** reutilizar el catálogo firmado de CoMaps (obliga a nuestra clave Ed25519 y a recompilar; solo documentado, no implementado).
+
+## 2026-10-06 · Almacenamiento local: androidx.sqlite directo, sin Room
+- **Decisión:** `:core-data` es un módulo JVM puro que usa la interfaz `SQLiteDriver` de androidx.sqlite 2.7.0 (Apache-2.0) con un repositorio escrito a mano (`SqlitePlacesRepository`). Tests en el PC con `sqlite-bundled`; en Android la app inyectará el driver de `sqlite-framework`. Esquema versionado con `PRAGMA user_version`.
+- **Motivo:** Room necesita KSP y un módulo Android (AGP 9 + Kotlin 2.4 sin verificar), lo que impediría probar en JVM; el esquema es pequeño. Mismas licencias, sin servicios propietarios.
+- **Dedup:** sitios por nombre normalizado + posición a ~1 m; tracks por SHA-256 de nombre, tipo y geometría. Copia de seguridad: ZIP con `mapas-backup.json` (formato 1), restauración MERGE o REPLACE atómica. KML no distingue ruta/track: las rutas se reimportan como tracks.
+- **Descartado:** Room KMP (riesgo de toolchain); JSON plano sin SQLite (sin consultas).
+- **Revertir:** migrar a Room sobre el mismo esquema si hace falta; la interfaz `PlacesRepository` aísla el cambio.
