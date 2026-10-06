@@ -60,3 +60,11 @@ Formato: fecha · decisión · motivo · alternativas descartadas · cómo rever
 - **Motivo:** instrucción del usuario.
 - **Consecuencia:** las mediciones pendientes (búsqueda en reposo, carriles, MapLibre con SurfaceView) esperan a ese permiso.
 - **Revertir:** solo por indicación del usuario.
+
+## 2026-10-06 · Motor decidido por el usuario: opción C (híbrido)
+- **Decisión:** opción C. Render con MapLibre Native + PMTiles; búsqueda, routing y datos mundiales con el núcleo de CoMaps (`.mwm`), sin su actividad ni su UI. Se inicia la Fase 1. Sustituye a la «recomendación provisional» anterior.
+- **Motivo:** decisión explícita del usuario («C, implementalo»), tras el informe del spike.
+- **Riesgos que arrastra (no resueltos):** ruta larga ≈ 18 s y búsqueda ≈ 0,6 s del núcleo de CoMaps (R12), sin medir sin GMS ni gama media (R16), licencias heredadas (R11), doble descarga por región (R17).
+- **Descartado:** A y B.
+- **Cómo revertir:** cambiar de opción es caso de «Cuándo preguntar» nº 3 de CLAUDE.md. Las interfaces `MapEngine`/`SearchEngine`/`RoutingEngine` aíslan el motor.
+- **Restricción vigente:** el Pixel 8 no se usa sin permiso explícito; Fase 1 se desarrolla con compilación y tests en el PC.

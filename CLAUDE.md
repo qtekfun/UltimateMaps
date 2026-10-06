@@ -14,7 +14,7 @@ App Android de mapas y navegación 100 % offline y privada, con UI estilo Apple 
 
 ## Estado actual
 
-Fase 0 (spike) terminada con informe en `docs/spike-informe.md`. **Opción de motor aún sin decidir en firme**: recomendación provisional C, pendiente de datos críticos (dispositivos sin GMS y gama media, búsqueda en reposo, desacople en ejecución). Sin decisión firme no se empieza la Fase 1. El repo vive solo en local (`master`): `origin` está vacío y no hay CI ni protección de rama. Esqueleto Gradle y `:core-geo`/`:core-net` ya integrados (83 tests).
+Fase 1 en curso con la opción **C** (híbrido, decidida por el usuario el 2026-10-06; ver `docs/decisions.md`). Informe del spike en `docs/spike-informe.md`. El repo vive solo en local (`master`): `origin` está vacío y no hay CI ni protección de rama. El Pixel 8 no se usa sin permiso explícito del usuario. Riesgos abiertos: latencia de ruta larga y búsqueda del núcleo de CoMaps, y licencias heredadas (bsdiff, code2000, Entypo).
 
 ## Comandos
 
