@@ -1,0 +1,47 @@
+# Copiar al repo como .github/workflows/ci.yml
+#
+# CI mínimo para que el merge automático tenga sentido: el job "build" debe ser
+# un check obligatorio en la protección de rama (ver playbook, sección «Push, PR y merge automático»).
+# Ajusta las versiones de las acciones y de Java a las vigentes cuando lo copies,
+# y amplía el job tras el spike (NDK, CMake, tests instrumentados).
+
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Prohibir dependencias propietarias (Play Services, Firebase)
+        run: |
+          if grep -rEi "play-services|firebase|com\.google\.android\.gms" \
+              --include='*.gradle' --include='*.kts' --include='*.toml' .; then
+            echo "Dependencia propietaria detectada: no permitida en el sabor foss"
+            exit 1
+          fi
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Lint, tests unitarios y compilación
+        run: ./gradlew lint test assembleDebug
