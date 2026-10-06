@@ -32,3 +32,9 @@ Formato: fecha · decisión · motivo · alternativas descartadas · cómo rever
 - **Decisión:** nunca más de 4 subagentes activos a la vez; el flujo MapLibre (d) se lanza cuando termine uno de los cuatro iniciales.
 - **Motivo:** instrucción del usuario (y RAM limitada, ~5 GB libres).
 - **Revertir:** solo por indicación del usuario.
+
+## 2026-10-06 · Licencias heredadas de CoMaps que bloquean enlazarlo tal cual en una app GPLv3
+- **Decisión:** antes de reutilizar código de CoMaps (opciones A/C) hay que excluir o reemplazar `3party/bsdiff-courgette/bsdiff` (BSD Protection License, GPL-incompatible), la fuente `data/fonts/06_code2000.ttf` (shareware) y los iconos Entypo (CC BY-SA 3.0). Se fija «GPLv3 o posterior», nunca GPLv2-only.
+- **Motivo:** ver `docs/spike/verificaciones.md` §1.2. Apache-2.0 sí es compatible con GPLv3.
+- **Descartado:** asumir que todo `3party/` es permisivo.
+- **Revertir:** si el autor de bsdiff o un asesor legal confirma compatibilidad, retirar la exclusión.
