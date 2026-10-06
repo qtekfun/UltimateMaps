@@ -38,3 +38,9 @@ Formato: fecha · decisión · motivo · alternativas descartadas · cómo rever
 - **Motivo:** ver `docs/spike/verificaciones.md` §1.2. Apache-2.0 sí es compatible con GPLv3.
 - **Descartado:** asumir que todo `3party/` es permisivo.
 - **Revertir:** si el autor de bsdiff o un asesor legal confirma compatibilidad, retirar la exclusión.
+
+## 2026-10-06 · Código independiente del motor: módulos JVM y parsers sin StAX
+- **Decisión:** `:core-geo`, `:core-net`, `:core-map`, `:core-search` y `:core-routing` son módulos Kotlin/JVM (`./gradlew test` sin Android); solo `:app` es Android (sabor `foss`, minSdk 26, `applicationId` provisional `com.qtekfun.mapas`). XML (GPX/KML) con `org.xmlpull.v1.XmlPullParser` (plataforma en Android; kXML2 solo en tests JVM), no StAX, porque `javax.xml.stream` no existe en Android. Takeout GeoJSON con kotlinx-serialization-json; CSV con lector propio.
+- **Motivo:** tests rápidos y código conservable con cualquier motor (A/B/C). Si el motor elegido exige que `:core-map` sea módulo Android, se convierte entonces.
+- **Detalles:** kXML2 acepta ficheros truncados sin error, por lo que los importadores comprueban `depth == 0` al final. Apple `?ll=...&q=Nombre` se interpreta como pin con etiqueta (no como búsqueda). Un `geo:0,0?q=texto` es búsqueda sin sesgo de posición.
+- **Descartado:** StAX (no portable a Android); `org.json` (no disponible en JVM puro).

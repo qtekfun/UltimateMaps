@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Mapas</string>
+    <string name="network_mode_offline">Offline mode: no network connections</string>
+    <string name="network_connections_title">Possible connections</string>
+    <string name="link_short_needs_resolve">This short link needs a network request to Google to find its destination.</string>
+    <string name="link_not_recognized">This link is not a recognized map link.</string>
+</resources>
