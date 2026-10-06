@@ -54,3 +54,9 @@ Formato: fecha · decisión · motivo · alternativas descartadas · cómo rever
 ## 2026-10-06 · Se integran las ramas del spike en `master` local con squash
 - **Decisión:** `spike/*` y `feat/core-geo-skeleton` se integran en `master` local sin PR (no hay remoto ni CI). 83 tests pasados con `./gradlew test --rerun-tasks` como único «check». Los ficheros `mapas-ci.yml` y `mapas-claude-settings.json` quedaron versionados en la raíz como texto (no activan nada).
 - **Revertir:** `git reset --hard 559cf42`... (solo local; las ramas originales siguen existiendo).
+
+## 2026-10-06 · El Pixel 8 solo se usa con permiso explícito del usuario
+- **Decisión:** ningún comando `adb` contra el Pixel 8 (instalar, medir, `am`, `dumpsys`, `input`, etc.) sin permiso explícito del usuario en cada ocasión.
+- **Motivo:** instrucción del usuario.
+- **Consecuencia:** las mediciones pendientes (búsqueda en reposo, carriles, MapLibre con SurfaceView) esperan a ese permiso.
+- **Revertir:** solo por indicación del usuario.
