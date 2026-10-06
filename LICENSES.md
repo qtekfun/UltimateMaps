@@ -17,5 +17,19 @@ Proyecto bajo GPLv3. Toda dependencia debe ser compatible y constar aquí antes 
 | Robolectric | 4.17 | MIT | Sí (solo tests, no se distribuye) | Tests de UI en el PC |
 | JUnit 4 | 4.13.2 | EPL-2.0 | Sí (solo tests, no se distribuye) | Tests de `:app` (requerido por Robolectric y Compose test) |
 | Datos de OpenStreetMap | n/a | ODbL 1.0 | Sí (datos, no código; atribución visible, RF-13) | Teselas PMTiles locales |
+| CoMaps (`third_party/comaps`, tag `v2026.10.05-19`) | v2026.10.05-19 | Apache-2.0 (copyright My.com, Organic Maps y CoMaps Contributors) | Si (Apache-2.0 es compatible con GPLv3; el conjunto queda GPLv3-o-posterior) | `:native-comaps`: busqueda, routing, indexer, storage y platform minima. Sin drape/render |
+| 3party de CoMaps compilados: boost (Boost), expat y jansson (MIT), pugixml (MIT), protobuf (BSD-3), ICU (ICU License), succinct, open-location-code (Apache-2.0), monocypher (BSD-2/CC0), utfcpp (BSL), opening_hours | segun submodulo | Permisivas | Si | `:native-comaps` |
 
-Sin `play-services-*`, Firebase ni SDK propietarios.
+### Excluido a proposito de la build propia (CoMaps)
+
+| Componente | Licencia | Motivo | Donde se excluye |
+|---|---|---|---|
+| `3party/bsdiff-courgette/bsdiff` | BSD Protection License | Incompatible con GPLv3 | `native-comaps/src/main/cpp/CMakeLists.txt` no hace `add_subdirectory` de el; `mwm_diff` se sustituye por `stubs/mwm_diff_stub.cpp` (sin actualizaciones por diff: se descarga el mwm completo) |
+| `data/fonts/06_code2000.ttf` (Code2000) | Shareware, no libre | Incompatible con GPLv3/F-Droid | Lista blanca de assets en `native-comaps/build.gradle.kts` (`fonts/**` fuera); el nucleo sin render no carga fuentes |
+| Iconos Entypo (`data/symbols*`, `data/styles/**`, `search-icons`) | CC BY-SA 3.0 | Obligaciones de compartir igual; solo los usa el render de CoMaps | Fuera de la lista blanca de assets; el render es de MapLibre |
+| freetype, harfbuzz, agg, stb_image, libtess2, glfw, imgui, vulkan_wrapper | varias | Solo drape/escritorio | No se compilan |
+| Datos de mapa .mwm (OSM + terceros) | ODbL y otras (ver `data/copyright.html`) | Se descargan en ejecucion, no se empaquetan | Atribucion en la pantalla "Acerca de" (pendiente) |
+
+Pendientes heredados (no bloquean la build, si la publicacion): licencia de `kdtree++` (no se compila aqui) y `gb-postcode-data` (GPLv2) dentro de los mwm de GB; ver `docs/spike/comaps-code.md` seccion 5.
+
+Sin `play-services-*, Firebase ni SDK propietarios.
