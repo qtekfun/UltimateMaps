@@ -68,3 +68,8 @@ Formato: fecha · decisión · motivo · alternativas descartadas · cómo rever
 - **Descartado:** A y B.
 - **Cómo revertir:** cambiar de opción es caso de «Cuándo preguntar» nº 3 de CLAUDE.md. Las interfaces `MapEngine`/`SearchEngine`/`RoutingEngine` aíslan el motor.
 - **Restricción vigente:** el Pixel 8 no se usa sin permiso explícito; Fase 1 se desarrolla con compilación y tests en el PC.
+
+## 2026-10-06 · `:core-regions`: catálogo propio con SHA-256 y activación por manifiesto
+- **Decisión:** módulo JVM `:core-regions` con catálogo propio (schema 1, dos assets por hoja, SHA-256) en lugar de consumir `countries.txt` (SHA-1, firma Ed25519) directamente. Activación atómica = renombrado de cada fichero verificado + sustitución atómica de `installed.json`. Detalles y mapeo en `docs/phase1/regions.md`.
+- **Motivo:** RF-02 pide SHA-256 y la opción C necesita unir PMTiles y `.mwm` en una sola región.
+- **Descartado:** reutilizar el catálogo firmado de CoMaps (obliga a nuestra clave Ed25519 y a recompilar; solo documentado, no implementado).

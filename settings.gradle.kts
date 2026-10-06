@@ -15,4 +15,4 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "UltimateMaps"
-include(":app", ":core-geo", ":core-net", ":core-map", ":core-search", ":core-routing")
+include(":app", ":core-geo", ":core-net", ":core-regions", ":core-map", ":core-search", ":core-routing")
