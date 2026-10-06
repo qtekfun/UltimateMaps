@@ -14,16 +14,16 @@ App Android de mapas y navegación 100 % offline y privada, con UI estilo Apple 
 
 ## Estado actual
 
-Fase 0 (spike). Seguir `docs/mapas-04-spike.md`. La opción de motor (A, B o C) se decide en el informe del spike y se registra en `docs/decisions.md`.
+Fase 0 (spike) terminada con informe en `docs/spike-informe.md`. **Opción de motor aún sin decidir en firme**: recomendación provisional C, pendiente de datos críticos (dispositivos sin GMS y gama media, búsqueda en reposo, desacople en ejecución). Sin decisión firme no se empieza la Fase 1. El repo vive solo en local (`master`): `origin` está vacío y no hay CI ni protección de rama. Esqueleto Gradle y `:core-geo`/`:core-net` ya integrados (83 tests).
 
 ## Comandos
 
-Se completan al terminar el spike. Por defecto:
-
 - Compilar: `./gradlew assembleDebug`
-- Tests unitarios: `./gradlew test`
+- Tests unitarios (rápidos, módulos JVM): `./gradlew test`
 - Tests instrumentados: `./gradlew connectedDebugAndroidTest`
 - Lint: `./gradlew lint`
+- Spike CoMaps (fuera del repo, `~/repos/comaps-spike`, tag `v2026.10.05-19`): `spike/comaps-build/03-build.sh` (necesita JDK 21, NDK 28.2, CMake 3.31.6 del SDK, `uconv` compilado a mano; ver `docs/spike/comaps-build.md`).
+- Medir: `spike/comaps-build/startup.sh`, `route_probe.sh`; MapLibre: `spike/maplibre/tools/`. Todo uso del dispositivo con `flock /tmp/claude-1000/device.lock`.
 
 ## Cómo trabajar (autonomía)
 
