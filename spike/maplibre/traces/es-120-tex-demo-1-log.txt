@@ -1,0 +1,6 @@
+--------- beginning of main
+10-06 18:32:16.424 11822 11822 I SPIKE   : mapview_created ms=32 texture=true
+10-06 18:32:16.499 11822 11822 I SPIKE   : style_loaded ms=107
+10-06 18:32:17.323 11822 11822 I SPIKE   : first_full_render ms=931
+10-06 18:32:17.823 11822 11822 I SPIKE   : demo_start
+10-06 18:32:26.324 11822 11822 I SPIKE   : demo_end

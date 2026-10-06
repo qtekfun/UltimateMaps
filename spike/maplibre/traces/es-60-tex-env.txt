@@ -1,0 +1,5 @@
+refresh antes: min=null peak=120.0
+    mActiveModeId=1
+  peak-refresh-rate         : 60.00 Hz
+Pixel 8
+refresh restaurado: null / 120.0
