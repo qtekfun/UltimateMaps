@@ -27,3 +27,8 @@ Formato: fecha · decisión · motivo · alternativas descartadas · cómo rever
 ## 2026-10-06 · La rama principal se llama `master`
 - **Decisión:** la rama principal es `master` (no `main`), por indicación del usuario. Donde los documentos del paquete dicen `main` (playbook, CI, `settings.json`), léase `master`.
 - **Pendiente para el usuario:** el workflow `mapas-ci.yml` (`branches: [main]`), las reglas deny de `mapas-claude-settings.json` (`git push origin main *`) y la protección de rama deben apuntar a `master`.
+
+## 2026-10-06 · Máximo 4 subagentes simultáneos
+- **Decisión:** nunca más de 4 subagentes activos a la vez; el flujo MapLibre (d) se lanza cuando termine uno de los cuatro iniciales.
+- **Motivo:** instrucción del usuario (y RAM limitada, ~5 GB libres).
+- **Revertir:** solo por indicación del usuario.
