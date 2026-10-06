@@ -18,8 +18,10 @@ Fase 1 en curso con la opción **C** (híbrido, decidida por el usuario el 2026-
 
 ## Comandos
 
-- Compilar: `./gradlew assembleDebug`
-- Tests unitarios (rápidos, módulos JVM): `./gradlew test`
+- Preparar el núcleo nativo (una vez por clon; descarga ~2 GB de submódulos, necesita red y PyPI): `git submodule update --init third_party/comaps && scripts/comaps-prepare.sh`. Sin esto, `assembleDebug` falla en `:native-comaps:configureCMake` (submódulo vacío).
+- Compilar: `./gradlew assembleDebug -Dorg.gradle.workers.max=2` (poca RAM: nada de LTO)
+- Tests unitarios (153, no necesitan el submódulo): `./gradlew test`
+- Núcleo nativo de CoMaps: inicializar el submódulo `third_party/comaps`, ejecutar `scripts/comaps-prepare.sh` (una vez) y `./gradlew :native-comaps:assembleDebug`. Ver `docs/phase1/native-core.md`.
 - Tests instrumentados: `./gradlew connectedDebugAndroidTest`
 - Lint: `./gradlew lint`
 - Spike CoMaps (fuera del repo, `~/repos/comaps-spike`, tag `v2026.10.05-19`): `spike/comaps-build/03-build.sh` (necesita JDK 21, NDK 28.2, CMake 3.31.6 del SDK, `uconv` compilado a mano; ver `docs/spike/comaps-build.md`).

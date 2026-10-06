@@ -16,6 +16,12 @@ android {
         ndk { abiFilters += "arm64-v8a" } // RNF-07: arm64-v8a obligatoria
     }
 
+    // CoMaps lee los assets del APK con un lector de acceso aleatorio: no pueden ir comprimidos
+    // (ver docs/phase1/native-core.md). Solo afecta a las extensiones del nucleo.
+    androidResources {
+        noCompress += listOf("txt", "bin", "json", "config", "csv", "mwm", "dat")
+    }
+
     flavorDimensions += "dist"
     productFlavors {
         create("foss") { dimension = "dist" }

@@ -85,3 +85,14 @@ Formato: fecha · decisión · motivo · alternativas descartadas · cómo rever
 - **Enlaces cortos:** solo se avisa; no se resuelven ni se llama a `NetworkPolicy.authorize` (no se intenta ninguna conexión).
 - **Pendiente:** sprites y glyphs NO están empaquetados (acceso bloqueado a su host durante este trabajo): ejecutar `scripts/fetch-map-assets.sh` (necesita red). Sin ellos el mapa no pinta iconos ni etiquetas. Rendimiento y arranque: no medidos (sin dispositivo). Filas de LICENSES.md añadidas.
 - **Descartado:** Material3 (se pidió sistema propio), `play-services-location` (prohibido), `LocationComponent` de MapLibre (marcador propio por GeoJSON, sin trabajo por frame).
+## 2026-10-06 · Núcleo de CoMaps como módulo nativo propio, sin Framework ni drape
+- **Decisión:** `:native-comaps` compila search + routing + storage + indexer + platform de `third_party/comaps` (submódulo en `v2026.10.05-19`) con un CMake propio, sin `drape`, `drape_frontend`, `map` (Framework) ni bookmarks. Fachada C++ (`DataSource` + `search::Engine` + `IndexRouter`) y Kotlin que implementa `SearchEngine`/`RoutingEngine`. Solo arm64-v8a, sin LTO, `-j6` máximo. `Platform` headless sin red (la red es de Kotlin).
+- **Licencias:** bsdiff-courgette no se compila (`mwm_diff` sustituido por un stub: sin diffs), Code2000 y Entypo fuera de los assets. Ver `LICENSES.md`.
+- **Motivo:** consumir `:sdk` de CoMaps arrastra Framework, Drape, editor, bookmarks y 114 funciones JNI; `IndexRouter` + `search::Engine` están cubiertos por los tests de integración de CoMaps y dejan el binario en 7,7 MB.
+- **Descartado:** compilar `libs/map` sin Drape (el constructor de Framework llama a `df::`); parchear CoMaps (el submódulo queda intacto).
+- **No verificado:** ejecución (sin dispositivo permitido). Ver `docs/phase1/native-core.md`.
+
+## 2026-10-06 · Integración de `feat/comaps-core-native` verificada solo en parte
+- **Decisión:** se integra en `master` local. `./gradlew test --offline --rerun-tasks` da 153 tests en verde (repetido por mí). `assembleDebug` completo **no lo repetí** en `master`: falla porque `third_party/comaps` no está inicializado en este checkout; el agente lo compiló en su worktree (`libumcomaps.so` arm64 7,7 MB). El código nativo no se ha ejecutado nunca (sin dispositivo permitido).
+- **Motivo:** no inicializar 2 GB de submódulos ni forzar un build largo con poca RAM sin necesidad; el siguiente paso útil es ejecutarlo.
+- **Revertir:** `git revert` del commit de integración.
