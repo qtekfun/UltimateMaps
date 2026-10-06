@@ -1,0 +1,19 @@
+es-120-tex-pan-1.txt: n=120 p50=4.2 p95=7.0 p99=10.0 max=10.7 ms; >16.6ms=0 >8.3ms=2
+   resumen gfxinfo: Total frames rendered=678 | Janky frames=0 (0.00%) | 50th percentile=5ms | 90th percentile=6ms | 95th percentile=7ms | 99th percentile=9ms
+es-120-tex-pan-2.txt: n=120 p50=4.6 p95=7.0 p99=8.2 max=10.6 ms; >16.6ms=0 >8.3ms=1
+   resumen gfxinfo: Total frames rendered=654 | Janky frames=0 (0.00%) | 50th percentile=5ms | 90th percentile=6ms | 95th percentile=7ms | 99th percentile=9ms
+es-120-tex-pan-3.txt: n=120 p50=4.7 p95=7.4 p99=10.1 max=11.3 ms; >16.6ms=0 >8.3ms=3
+   resumen gfxinfo: Total frames rendered=695 | Janky frames=0 (0.00%) | 50th percentile=5ms | 90th percentile=6ms | 95th percentile=7ms | 99th percentile=9ms
+es-120-tex-dtap-1.txt: n=120 p50=4.5 p95=6.9 p99=8.4 max=8.5 ms; >16.6ms=0 >8.3ms=2
+   resumen gfxinfo: Total frames rendered=322 | Janky frames=0 (0.00%) | 50th percentile=5ms | 90th percentile=5ms | 95th percentile=6ms | 99th percentile=7ms
+es-120-tex-dtap-2.txt: n=120 p50=4.4 p95=7.2 p99=8.0 max=8.3 ms; >16.6ms=0 >8.3ms=1
+   resumen gfxinfo: Total frames rendered=295 | Janky frames=0 (0.00%) | 50th percentile=5ms | 90th percentile=5ms | 95th percentile=6ms | 99th percentile=12ms
+es-120-tex-dtap-3.txt: n=120 p50=4.3 p95=6.5 p99=9.2 max=13.1 ms; >16.6ms=0 >8.3ms=2
+   resumen gfxinfo: Total frames rendered=312 | Janky frames=0 (0.00%) | 50th percentile=5ms | 90th percentile=5ms | 95th percentile=5ms | 99th percentile=8ms
+es-120-tex-demo-1.txt: n=120 p50=3.9 p95=6.6 p99=7.3 max=8.1 ms; >16.6ms=0 >8.3ms=0
+   resumen gfxinfo: Total frames rendered=274 | Janky frames=0 (0.00%) | 50th percentile=5ms | 90th percentile=5ms | 95th percentile=6ms | 99th percentile=6ms
+es-120-tex-demo-2.txt: n=120 p50=3.5 p95=6.2 p99=6.9 max=8.9 ms; >16.6ms=0 >8.3ms=1
+   resumen gfxinfo: Total frames rendered=235 | Janky frames=0 (0.00%) | 50th percentile=5ms | 90th percentile=5ms | 95th percentile=5ms | 99th percentile=6ms
+es-120-tex-demo-3.txt: n=120 p50=4.5 p95=7.4 p99=9.1 max=9.4 ms; >16.6ms=0 >8.3ms=2
+   resumen gfxinfo: Total frames rendered=335 | Janky frames=0 (0.00%) | 50th percentile=5ms | 90th percentile=5ms | 95th percentile=6ms | 99th percentile=7ms
+TOTAL: n=1080 p50=4.3 p95=7.1 p99=8.6 max=13.1 ms; >16.6ms=0 >8.3ms=14

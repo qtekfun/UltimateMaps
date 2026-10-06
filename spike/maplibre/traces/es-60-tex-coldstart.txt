@@ -1,0 +1,10 @@
+run=1 TotalTime_ms=239 first_full_render_ms=
+run=2 TotalTime_ms=250 first_full_render_ms=890
+run=3 TotalTime_ms=252 first_full_render_ms=915
+run=4 TotalTime_ms=255 first_full_render_ms=915
+run=5 TotalTime_ms=235 first_full_render_ms=936
+run=6 TotalTime_ms=218 first_full_render_ms=861
+run=7 TotalTime_ms=232 first_full_render_ms=835
+run=8 TotalTime_ms=233 first_full_render_ms=882
+run=9 TotalTime_ms=237 first_full_render_ms=914
+run=10 TotalTime_ms=216 first_full_render_ms=827
