@@ -34,13 +34,13 @@ Se completan al terminar el spike. Por defecto:
 
 ## Flujo de ramas y PR (autónomo)
 
-1. Una rama por tarea (`feat/<tarea>`, `fix/<tarea>` o `spike/<tema>`). Nunca trabajes ni empujes directamente a `main`.
+1. Una rama por tarea (`feat/<tarea>`, `fix/<tarea>` o `spike/<tema>`). Nunca trabajes ni empujes directamente a `master`.
 2. Commits pequeños y push de la rama con `git push -u origin <rama>`, sin pedir permiso.
 3. Abre la PR con `gh pr create`: qué cambia, cómo se probó y qué requisito (RF/RNF) cubre. Una tarea por PR.
 4. Espera a los checks con `gh pr checks --watch`. Si todos pasan, mergea con squash y borra la rama: `gh pr merge --squash --delete-branch` (o `--auto` si el repo tiene el auto-merge activado).
 5. Si un check falla, arregla en la misma rama y vuelve a empujar. Tras 3 intentos con el mismo fallo, anótalo en `docs/decisions.md`, deja la PR abierta y sigue con otra tarea.
 6. Nunca mergees con checks en rojo o pendientes, ni uses `--admin`, ni debilites, borres o desactives tests o checks para que pasen. Si un test es incorrecto, corrígelo y explícalo en la PR.
-7. Tras el merge: `git switch main && git pull` y siguiente tarea.
+7. Tras el merge: `git switch master && git pull` y siguiente tarea.
 
 ## Protocolo de decisiones
 

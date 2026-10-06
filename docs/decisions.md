@@ -2,11 +2,11 @@
 
 Formato: fecha · decisión · motivo · alternativas descartadas · cómo revertirla.
 
-## 2026-10-06 · Bootstrap del repo en local, sin push a `main`
-- **Decisión:** `main` se crea solo en local (commit inicial con `docs/` y `CLAUDE.md` copiado de `docs/mapas-CLAUDE.md`). No se empuja nada hasta que el usuario cree `main` en el remoto y configure CI y protección de rama.
-- **Motivo:** el remoto `origin` está vacío (sin `main`), así que no se pueden abrir PR. Empujar a `main` está prohibido por CLAUDE.md y crear `.github/workflows/` o la protección de rama es caso de «Cuándo preguntar» nº 5.
-- **Descartado:** empujar un commit inicial a `main` (viola el flujo); empujar una rama de spike (GitHub la haría rama por defecto).
-- **Revertir:** `git push origin main` tras acordarlo con el usuario; las ramas `spike/*` locales se pueden empujar y abrir como PR a partir de ese momento.
+## 2026-10-06 · Bootstrap del repo en local, sin push a `master`
+- **Decisión:** `master` se crea solo en local (commit inicial con `docs/` y `CLAUDE.md` copiado de `docs/mapas-CLAUDE.md`). No se empuja nada hasta que el usuario cree `master` en el remoto y configure CI y protección de rama.
+- **Motivo:** el remoto `origin` está vacío (sin `master`), así que no se pueden abrir PR. Empujar a `master` está prohibido por CLAUDE.md y crear `.github/workflows/` o la protección de rama es caso de «Cuándo preguntar» nº 5.
+- **Descartado:** empujar un commit inicial a `master` (viola el flujo); empujar una rama de spike (GitHub la haría rama por defecto).
+- **Revertir:** `git push origin master` tras acordarlo con el usuario; las ramas `spike/*` locales se pueden empujar y abrir como PR a partir de ese momento.
 
 ## 2026-10-06 · No se instala `.claude/settings.json` ni `.github/workflows/ci.yml`
 - **Decisión:** `mapas-claude-settings.json` y `mapas-ci.yml` quedan sin tocar en la raíz.
@@ -23,3 +23,7 @@ Formato: fecha · decisión · motivo · alternativas descartadas · cómo rever
 - **Dispositivo disponible:** un único Pixel 8 (Android 17, SDK 37, arm64, 120 Hz, con GMS). Cubre solo la clase «gama alta con GMS».
 - **Decisión:** el acceso al dispositivo se serializa con `flock`; compilaciones C++ limitadas a `-j6` por la RAM libre (~5 GB de 30 GB al empezar).
 - **Consecuencia:** gama media/baja, ROM china sin GMS y de-Googled quedan «no medido». Sin esas clases no se puede decidir el criterio «Sin GMS» ni los umbrales de gama media.
+
+## 2026-10-06 · La rama principal se llama `master`
+- **Decisión:** la rama principal es `master` (no `main`), por indicación del usuario. Donde los documentos del paquete dicen `main` (playbook, CI, `settings.json`), léase `master`.
+- **Pendiente para el usuario:** el workflow `mapas-ci.yml` (`branches: [main]`), las reglas deny de `mapas-claude-settings.json` (`git push origin main *`) y la protección de rama deben apuntar a `master`.
