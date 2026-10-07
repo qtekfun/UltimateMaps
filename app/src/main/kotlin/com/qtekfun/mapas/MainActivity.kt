@@ -12,6 +12,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
 import com.qtekfun.mapas.core.geo.LatLon
@@ -24,6 +25,7 @@ import com.qtekfun.mapas.location.AndroidLocationSource
 import com.qtekfun.mapas.map.MapFiles
 import com.qtekfun.mapas.map.MapLibreEngine
 import com.qtekfun.mapas.map.PrefsCameraStateStore
+import com.qtekfun.mapas.nav.NavHost
 import com.qtekfun.mapas.regions.RegionsActivity
 import com.qtekfun.mapas.settings.SettingsActivity
 import com.qtekfun.mapas.ui.MapScreen
@@ -40,6 +42,7 @@ class MainActivity : ComponentActivity() {
     private lateinit var location: AndroidLocationSource
     private var centerOnNextFix = false
     private lateinit var panel: PanelHost
+    private lateinit var navHost: NavHost
 
     private val permissionLauncher = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { grants ->
         if (grants.values.any { it }) startLocation() else state.notice = Notice.LocationDenied
@@ -65,7 +68,9 @@ class MainActivity : ComponentActivity() {
             fuelRepository = app.fuel.repository,
             fuelSettings = app.fuelSettings,
             fuelName = { id -> FuelTypes.byId(id)?.displayName ?: id },
+            navScreen = app.navScreen,
         )
+        navHost = NavHost(this, engine, app.navScreen)
         panel.onRequestLocation = ::onLocate
         state.onOpenMaps = { startActivity(Intent(this, RegionsActivity::class.java)) }
         state.onOpenSettings = { startActivity(Intent(this, SettingsActivity::class.java)) }
@@ -74,8 +79,12 @@ class MainActivity : ComponentActivity() {
         setContent {
             val dark = isSystemInDarkTheme()
             LaunchedEffect(dark) { engine.setTheme(if (dark) MapTheme.DARK else MapTheme.LIGHT) }
+            val navUi by navHost.uiState()
             MapasTheme(darkTheme = dark) {
-                MapScreen(state = state, onLocate = ::onLocate, onResetNorth = engine::resetNorth, sheetPanel = { panel.Content() }) {
+                MapScreen(
+                    state = state, onLocate = ::onLocate, onResetNorth = engine::resetNorth, sheetPanel = { panel.Content() },
+                    navigating = navUi.active, overlay = { navHost.Overlay(dark) },
+                ) {
                     AndroidView(factory = { engine.view }, modifier = Modifier.fillMaxSize())
                 }
             }
@@ -94,6 +103,7 @@ class MainActivity : ComponentActivity() {
         state.hasTiles = files.pmtilesList().isNotEmpty()
         panel.onStart()
         engine.refreshTilesIfChanged() // back from "Maps" with a region downloaded or deleted
+        (application as MapasApp).navScreen.refreshResumable() // a trip interrupted by the process dying
         if (state.locating && hasLocationPermission()) startLocation()
     }
 
@@ -151,6 +161,7 @@ class MainActivity : ComponentActivity() {
 
     private fun onFix(point: LatLon) {
         panel.userLocation = point
+        if (navHost.active) return // while navigating the map shows the follower's position and camera
         engine.showUserLocation(point)
         if (centerOnNextFix) {
             centerOnNextFix = false

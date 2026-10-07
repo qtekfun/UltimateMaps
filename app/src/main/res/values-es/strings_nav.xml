@@ -6,7 +6,7 @@
     <string name="nav_notification_open">Abrir</string>
     <string name="nav_remaining">%1$s · %2$s</string>
     <string name="nav_in_distance">%1$s: %2$s</string>
-    <string name="nav_onto_street">%1$s a %2$s</string>
+    <string name="nav_onto_street">%1$s en %2$s</string>
     <string name="nav_waiting_gps">Esperando señal GPS…</string>
     <string name="nav_recalculating">Recalculando la ruta…</string>
     <string name="nav_arrived">Has llegado</string>

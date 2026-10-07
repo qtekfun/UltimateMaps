@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Route card buttons -->
+    <string name="nav_ui_start">Start</string>
+    <string name="nav_ui_simulate">Simulate</string>
+    <string name="nav_ui_computing">Calculating the guided route…</string>
+    <!-- Navigation screen -->
+    <string name="nav_ui_stop">Stop</string>
+    <string name="nav_ui_stop_description">Stop navigation</string>
+    <string name="nav_ui_recenter">Recenter</string>
+    <string name="nav_ui_then">Then</string>
+    <string name="nav_ui_follow_route">Follow the route</string>
+    <string name="nav_ui_roundabout_exit">At the roundabout, take exit %1$d</string>
+    <string name="nav_ui_arrive_at">Arrive %1$s</string>
+    <string name="nav_ui_phase_off_route">You left the route</string>
+    <string name="nav_ui_phase_no_signal">GPS signal lost. Estimated position</string>
+    <string name="nav_ui_phase_stop_reached">Stop reached. Continue to the destination</string>
+    <string name="nav_ui_limit_description">Speed limit %1$d</string>
+    <string name="nav_ui_speed_description">Current speed %1$d km/h</string>
+    <string name="nav_ui_over_limit">Over the speed limit</string>
+    <string name="nav_ui_speed_unit">km/h</string>
+    <string name="nav_ui_lanes_description">Lanes</string>
+    <string name="nav_ui_lane_recommended">recommended lane</string>
+    <string name="nav_ui_lane_other">other lane</string>
+    <string name="nav_ui_glove">Gloves</string>
+    <string name="nav_ui_glove_on_description">Glove mode on. Tap to turn it off</string>
+    <string name="nav_ui_glove_off_description">Glove mode off. Tap to turn it on</string>
+    <!-- Simulation -->
+    <string name="nav_ui_simulating">Simulation</string>
+    <string name="nav_ui_sim_speed">%1$d km/h</string>
+    <string name="nav_ui_sim_faster">Faster</string>
+    <string name="nav_ui_sim_slower">Slower</string>
+    <!-- Arrival summary -->
+    <string name="nav_ui_summary_title">You have arrived</string>
+    <string name="nav_ui_summary_body">%1$s in %2$s</string>
+    <string name="nav_ui_summary_simulated">Simulated route. Nothing was saved.</string>
+    <string name="nav_ui_exit">Done</string>
+    <!-- Resume after the process died -->
+    <string name="nav_ui_resume_title">Navigation interrupted</string>
+    <string name="nav_ui_resume_body">The app was closed while you were navigating. Do you want to continue?</string>
+    <string name="nav_ui_resume">Resume</string>
+    <string name="nav_ui_discard">Discard</string>
+    <!-- Icons (accessibility) -->
+    <string name="nav_ui_icon_turn">Next maneuver: %1$s</string>
+</resources>

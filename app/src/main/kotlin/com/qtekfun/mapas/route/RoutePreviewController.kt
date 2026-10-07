@@ -198,6 +198,19 @@ class RoutePreviewController(
         if (state.active && state.origin == RouteOrigin.Current && state.status == RouteStatus.NEEDS_ORIGIN) compute()
     }
 
+    /**
+     * The request behind the route on screen (origin, stops, destination, profile, options), for the guided
+     * calculation that "Start" and "Simulate" make; null while there is no destination or origin yet.
+     */
+    fun currentRequest(): RouteRequest? {
+        val to = state.destination ?: return null
+        val from = when (val o = state.origin) {
+            RouteOrigin.Current -> userLocation()
+            is RouteOrigin.Picked -> o.point
+        } ?: return null
+        return RouteRequest(from, to.point, via = state.stops.map { it.point }, profile = state.profile, options = state.options)
+    }
+
     private fun compute() {
         job?.cancel()
         val to = state.destination ?: return

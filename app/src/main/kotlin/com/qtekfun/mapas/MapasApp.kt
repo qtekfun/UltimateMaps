@@ -17,7 +17,13 @@ import com.qtekfun.mapas.core.fuel.FuelSettingsStore
 import com.qtekfun.mapas.fuel.PrefsFuelSettingsStore
 import com.qtekfun.mapas.location.AndroidLocationSource
 import com.qtekfun.mapas.nav.AndroidNavEnvironment
+import com.qtekfun.mapas.nav.AndroidNavServiceControl
 import com.qtekfun.mapas.nav.CoreRouteProvider
+import com.qtekfun.mapas.nav.NavScreenController
+import com.qtekfun.mapas.nav.NavSimulation
+import com.qtekfun.mapas.nav.SharedNavUiPrefs
+import com.qtekfun.mapas.nav.SimulationAwareEnvironment
+import com.qtekfun.mapas.nav.SwitchableLocationSource
 import com.qtekfun.mapas.regions.CoreLinks
 import com.qtekfun.mapas.regions.RegionsController
 import kotlinx.coroutines.CoroutineScope
@@ -66,10 +72,29 @@ class MapasApp : Application() {
     val navigation: NavigationController by lazy {
         NavigationController(
             scope = CoroutineScope(SupervisorJob() + Dispatchers.Default),
-            location = AndroidLocationSource(this),
+            location = navLocation,
             store = NavStateStore(File(noBackupFilesDir, "navigation/state.bin")),
-            environment = AndroidNavEnvironment(this),
+            environment = SimulationAwareEnvironment(AndroidNavEnvironment(this), navLocation),
             routes = CoreRouteProvider(this),
+        )
+    }
+
+    /** The navigation's location: the real one, or the simulated walk while a route simulation runs (RF-05). */
+    private val navLocation: SwitchableLocationSource by lazy { SwitchableLocationSource(AndroidLocationSource(this)) }
+
+    /**
+     * The model of the navigation screen (start, stop, simulate, resume, arrival summary). Lives with the application
+     * so the screen survives the activity. The voice (someone else's work) plugs in with [NavScreenController.addSink].
+     */
+    val navScreen: NavScreenController by lazy {
+        val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+        NavScreenController(
+            scope = scope,
+            controller = navigation,
+            simulation = NavSimulation(scope, navLocation),
+            location = navLocation,
+            service = AndroidNavServiceControl(this),
+            prefs = SharedNavUiPrefs(this),
         )
     }
 
