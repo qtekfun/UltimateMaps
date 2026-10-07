@@ -57,4 +57,15 @@ interface MapEngine : AutoCloseable {
 
     /** Shows exactly these markers (saved places); an empty list hides them. */
     fun showMarkers(points: List<LatLon>) {}
+
+    // --- Route preview ---
+
+    /** Draws [points] as the route line and, with [fit], frames the whole route in the visible map area. */
+    fun showRoute(points: List<LatLon>, fit: Boolean = true) {}
+
+    /** Removes the route line. */
+    fun clearRoute() {}
+
+    /** Reports taps on the bare map (to pick a route origin); null removes the listener. Never called per frame. */
+    fun setMapTapListener(listener: ((LatLon) -> Unit)?) {}
 }

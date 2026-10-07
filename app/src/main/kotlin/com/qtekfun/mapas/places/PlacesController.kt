@@ -25,7 +25,6 @@ sealed interface PlacesMessage {
     data object ImportFailed : PlacesMessage
     data class Exported(val places: Int) : PlacesMessage
     data object ExportFailed : PlacesMessage
-    data object RouteSoon : PlacesMessage
 }
 
 /** Observable state of the panel (search/lists tabs, place card, lists). Written from the main thread only. */

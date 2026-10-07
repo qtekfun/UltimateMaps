@@ -18,7 +18,6 @@ import com.qtekfun.mapas.places.LongSetting
 import com.qtekfun.mapas.places.PanelMode
 import com.qtekfun.mapas.places.PlaceInfo
 import com.qtekfun.mapas.places.PlacesController
-import com.qtekfun.mapas.places.PlacesMessage
 import com.qtekfun.mapas.places.PlacesService
 import com.qtekfun.mapas.places.toPlaceInfo
 import com.qtekfun.mapas.ui.theme.MapasTheme
@@ -44,6 +43,7 @@ class SheetPanelTest {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
     private val picked = mutableListOf<SearchResult>()
     private val shared = mutableListOf<PlaceInfo>()
+    private val routed = mutableListOf<PlaceInfo>()
 
     private val sol = SearchResult("Puerta del Sol", LatLon(40.41689, -3.70351), "Madrid", "Square")
 
@@ -69,7 +69,7 @@ class SheetPanelTest {
     private val actions = PanelActions(
         onPickResult = { picked += it },
         onShowSaved = {},
-        onRoute = { places.state.message = PlacesMessage.RouteSoon },
+        onRoute = { routed += it },
         onShare = { shared += it },
         onImport = {}, onExport = {}, onFocusField = {},
     )
@@ -116,7 +116,7 @@ class SheetPanelTest {
         rule.onNodeWithTag("place_share").performClick()
         assertEquals(listOf(sol.toPlaceInfo()), shared)
         rule.onNodeWithTag("place_route").performClick()
-        rule.waitUntil(5_000) { places.state.message == PlacesMessage.RouteSoon }
+        assertEquals(listOf(sol.toPlaceInfo()), routed)
     }
 
     @Test

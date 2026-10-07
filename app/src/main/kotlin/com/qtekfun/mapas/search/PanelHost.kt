@@ -14,12 +14,16 @@ import com.qtekfun.mapas.places.GeoFormat
 import com.qtekfun.mapas.places.GeoShare
 import com.qtekfun.mapas.places.PlaceInfo
 import com.qtekfun.mapas.places.PlacesController
-import com.qtekfun.mapas.places.PlacesMessage
 import com.qtekfun.mapas.places.openPlacesService
 import com.qtekfun.mapas.places.toPlaceInfo
+import com.qtekfun.mapas.core.search.SearchResult
+import com.qtekfun.mapas.route.CoMapsRouteBackend
+import com.qtekfun.mapas.route.LogcatRouteLog
+import com.qtekfun.mapas.route.RoutePreviewController
 import com.qtekfun.mapas.ui.MapScreenState
 import com.qtekfun.mapas.ui.sheet.SheetDetent
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.sync.Mutex
 import java.io.File
 
 /**
@@ -37,6 +41,16 @@ class PanelHost(
 ) {
     /** Last known user position, in memory only; used to sort saved places by distance. */
     var userLocation: LatLon? = null
+        set(value) {
+            field = value
+            route.onUserLocation()
+        }
+
+    /** Asks the activity for the location permission and a fix (used by the route preview). */
+    var onRequestLocation: () -> Unit = {}
+
+    /** One lock for every native call (search and routing share the one core of the process). */
+    private val coreLock = Mutex()
 
     val search = SearchCoordinator(
         scope = activity.lifecycleScope,
@@ -46,6 +60,20 @@ class PanelHost(
         near = { engine.cameraState().center },
         clock = ::elapsedMillis,
         log = LogcatSearchLog,
+        mutex = coreLock,
+    )
+
+    val route = RoutePreviewController(
+        scope = activity.lifecycleScope,
+        io = Dispatchers.IO,
+        regions = regions,
+        backend = CoMapsRouteBackend(activity),
+        userLocation = { userLocation },
+        showRoute = { engine.showRoute(it) },
+        clearRoute = engine::clearRoute,
+        clock = ::elapsedMillis,
+        log = LogcatRouteLog,
+        mutex = coreLock,
     )
 
     val places = PlacesController(
@@ -65,13 +93,21 @@ class PanelHost(
     /** Call from `onStart`: re-scans the regions (they may have changed) and redraws the saved markers. */
     fun onStart() {
         search.refreshRegions()
+        route.invalidate()
         places.reload()
     }
 
-    fun onDestroy() = search.close()
+    fun onDestroy() {
+        search.close()
+        route.close()
+    }
 
     private fun input(uri: Uri) = activity.contentResolver.openInputStream(uri) ?: error("cannot open document")
     private fun output(uri: Uri) = activity.contentResolver.openOutputStream(uri, "wt") ?: error("cannot open document")
+
+    init {
+        engine.setMapTapListener { route.pickOrigin(it, null) }
+    }
 
     private fun show(info: PlaceInfo) {
         screen.notice = null
@@ -79,6 +115,11 @@ class PanelHost(
         engine.showPin(info.point)
         engine.animateTo(CameraState(info.point, PLACE_ZOOM))
         places.showCard(info)
+    }
+
+    /** A search result: the route origin while one is being picked, otherwise the place card. */
+    private fun pick(result: SearchResult) {
+        if (route.state.pickingOrigin) route.pickOrigin(result.point, result.name) else show(result.toPlaceInfo())
     }
 
     private fun share(info: PlaceInfo) {
@@ -92,16 +133,17 @@ class PanelHost(
     fun Content() {
         val focus = LocalFocusManager.current
         val actions = PanelActions(
-            onPickResult = { focus.clearFocus(); show(it.toPlaceInfo()) },
+            onPickResult = { focus.clearFocus(); pick(it) },
             onShowSaved = { focus.clearFocus(); show(it) },
-            onRoute = { places.state.message = PlacesMessage.RouteSoon },
+            onRoute = { route.start(it) },
             onShare = ::share,
             onImport = documents::pickFile,
             onExport = { format: GeoFormat -> documents.createFile(format, EXPORT_NAME) },
             onFocusField = { screen.detent = SheetDetent.FULL },
             onOpenMaps = { screen.onOpenMaps() },
+            onUseLocation = { route.useCurrentLocation(); onRequestLocation() },
         )
-        SheetPanel(search, places, actions)
+        SheetPanel(search, places, actions, route = route)
     }
 
     private companion object {

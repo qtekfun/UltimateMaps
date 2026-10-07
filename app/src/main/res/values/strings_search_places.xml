@@ -17,7 +17,6 @@
     <string name="place_route">Route</string>
     <string name="place_share">Share</string>
     <string name="place_close">Close</string>
-    <string name="msg_route_soon">Route preview is coming soon.</string>
 
     <!-- Saved places (M3) -->
     <string name="list_favorites">Favorites</string>

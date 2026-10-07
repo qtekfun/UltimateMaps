@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Route preview (M4) -->
+    <string name="route_to">To %1$s</string>
+    <string name="route_close">Close</string>
+    <string name="route_from_current">From: your location</string>
+    <string name="route_from_point">From: selected point</string>
+    <string name="route_from_named">From: %1$s</string>
+    <string name="route_change_origin">Change start</string>
+    <string name="route_use_location">Use my location</string>
+    <string name="route_pick_hint">Search for the starting place or tap the map.</string>
+    <string name="route_pick_cancel">Cancel</string>
+    <string name="route_profile_car">Car</string>
+    <string name="route_profile_foot">Walk</string>
+    <string name="route_profile_bike">Bike</string>
+    <string name="route_avoid_motorways">No motorways</string>
+    <string name="route_avoid_tolls">No tolls</string>
+    <string name="route_avoid_ferries">No ferries</string>
+    <string name="route_avoid_unpaved">No unpaved</string>
+    <string name="route_computing">Calculating route…</string>
+    <string name="route_summary">%1$s · %2$s</string>
+    <string name="route_needs_origin">Your location is not available. Allow location, or choose another starting point by search or by tapping the map.</string>
+    <string name="route_err_no_regions">No regions installed. Download a region to calculate routes offline.</string>
+    <string name="route_err_need_more_maps">Maps are missing for this route. Download the regions it crosses.</string>
+    <string name="route_err_start">The start is not on a road in the downloaded maps. Choose another starting point.</string>
+    <string name="route_err_end">The destination is not on a road in the downloaded maps.</string>
+    <string name="route_err_not_found">No route found with these options. Try changing the profile or the avoid options.</string>
+    <string name="route_err_timeout">The route took too long to calculate. Try again or choose a closer point.</string>
+    <string name="route_err_internal">The route could not be calculated.</string>
+</resources>
