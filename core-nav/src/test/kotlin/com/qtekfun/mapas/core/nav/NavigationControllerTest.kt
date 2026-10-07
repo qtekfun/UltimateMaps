@@ -194,7 +194,7 @@ class NavigationControllerTest {
         assertTrue(seen.isNotEmpty(), "no reroute requested")
         assertEquals(1, seen.first().second.size) // only the second stop is left
         assertTrue(c.state.value!!.routeRevision >= 1)
-        assertTrue(seen.drop(1).all { it.second.isEmpty() }, "later reroutes carry the stops of the new route: none")
+        assertTrue(seen.all { it.second.size == 1 }, "the stop still ahead survives every reroute")
         c.stop()
     }
 }
