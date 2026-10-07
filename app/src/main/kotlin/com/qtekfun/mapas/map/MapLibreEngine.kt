@@ -47,6 +47,11 @@ import org.maplibre.android.style.layers.PropertyFactory.circleStrokeWidth
 import org.maplibre.android.style.sources.GeoJsonSource
 import android.graphics.RectF
 import com.qtekfun.mapas.core.map.FuelPin
+import com.qtekfun.mapas.core.map.HazardLine
+import com.qtekfun.mapas.core.map.HazardKind
+import com.qtekfun.mapas.core.map.HazardPin
+import org.maplibre.android.style.layers.PropertyFactory.lineDasharray
+import org.maplibre.android.style.layers.PropertyFactory.lineOpacity
 import com.qtekfun.mapas.core.map.GeoBounds
 import org.maplibre.android.style.expressions.Expression
 import org.maplibre.android.style.layers.PropertyFactory.iconAllowOverlap
@@ -101,6 +106,11 @@ class MapLibreEngine(
     private var pendingFuel: List<FuelPin> = emptyList()
     private var fuelSource: GeoJsonSource? = null
     private var fuelTapListener: ((String) -> Unit)? = null
+    private var pendingHazardPins: List<HazardPin> = emptyList()
+    private var pendingHazardLines: List<HazardLine> = emptyList()
+    private var hazardPinSource: GeoJsonSource? = null
+    private var hazardLineSource: GeoJsonSource? = null
+    private var hazardTapListener: ((String) -> Unit)? = null
     private var viewportListener: ((GeoBounds, Double) -> Unit)? = null
     private var gestureListener: (() -> Unit)? = null
     private var heading: Float? = null
@@ -296,6 +306,86 @@ class MapLibreEngine(
         fuelTapListener = listener
     }
 
+    // --- Speed cameras and traffic incidents ---
+
+    override fun showHazards(pins: List<HazardPin>, lines: List<HazardLine>) {
+        pendingHazardPins = pins
+        pendingHazardLines = lines
+        pushHazards()
+    }
+
+    override fun setHazardTapListener(listener: ((String) -> Unit)?) {
+        hazardTapListener = listener
+    }
+
+    private fun pushHazards() {
+        if (map == null) return
+        hazardLineSource?.setGeoJson(
+            FeatureCollection.fromFeatures(
+                pendingHazardLines.filter { it.points.size >= 2 }.map { l ->
+                    Feature.fromGeometry(org.maplibre.geojson.LineString.fromLngLats(l.points.map { Point.fromLngLat(it.lon, it.lat) })).apply {
+                        addStringProperty(HZ_ID, l.id)
+                        addBooleanProperty(HZ_ZONE, l.zone)
+                    }
+                },
+            ),
+        )
+        hazardPinSource?.setGeoJson(
+            FeatureCollection.fromFeatures(
+                pendingHazardPins.map { p ->
+                    Feature.fromGeometry(Point.fromLngLat(p.point.lon, p.point.lat)).apply {
+                        addStringProperty(HZ_ID, p.id)
+                        addStringProperty(HZ_KIND, HazardIcons.name(p.kind))
+                    }
+                },
+            ),
+        )
+    }
+
+    private fun addHazardLayers(style: Style, dark: Boolean) {
+        val d = view.resources.displayMetrics
+        HazardKind.entries.forEach { style.addImage(HazardIcons.name(it), HazardIcons.render(it, dark, d.density, d.densityDpi)) }
+        style.addSource(GeoJsonSource(HZ_LINE_SOURCE).also { hazardLineSource = it })
+        style.addSource(GeoJsonSource(HZ_PIN_SOURCE).also { hazardPinSource = it })
+        // Mobile-radar zones are rough stretches: dashed and translucent, so they never look like an exact position.
+        style.addLayer(
+            LineLayer(HZ_ZONE_LAYER, HZ_LINE_SOURCE).withFilter(Expression.eq(Expression.get(HZ_ZONE), true)).withProperties(
+                lineColor(HZ_ZONE_COLOR), lineWidth(6f), lineOpacity(0.6f), lineDasharray(arrayOf(1.5f, 1.5f)), lineCap(Property.LINE_CAP_BUTT),
+            ),
+        )
+        style.addLayer(
+            LineLayer(HZ_LINE_LAYER, HZ_LINE_SOURCE).withFilter(Expression.eq(Expression.get(HZ_ZONE), false)).withProperties(
+                lineColor(HZ_LINE_COLOR), lineWidth(5f), lineOpacity(0.8f), lineCap(Property.LINE_CAP_ROUND), lineJoin(Property.LINE_JOIN_ROUND),
+            ),
+        )
+        style.addLayer(
+            SymbolLayer(HZ_PIN_LAYER, HZ_PIN_SOURCE).withProperties(
+                iconImage(Expression.get(HZ_KIND)), iconAllowOverlap(true), iconAnchor(Property.ICON_ANCHOR_CENTER),
+            ),
+        )
+        pushHazards()
+    }
+
+    /** Marker or stretch under the finger (within a 48 dp square), unless a saved marker sits right under it. */
+    private fun hazardAt(m: MapLibreMap, p: LatLng): String? {
+        val listener = hazardTapListener ?: return null
+        if (pendingHazardPins.isEmpty() && pendingHazardLines.isEmpty()) return null
+        val d = view.resources.displayMetrics.density
+        val at = m.projection.toScreenLocation(p)
+        val half = HZ_TOUCH_DP / 2 * d
+        val box = RectF(at.x - half, at.y - half, at.x + half, at.y + half)
+        val pins = m.queryRenderedFeatures(box, HZ_PIN_LAYER)
+        val hits = pins.ifEmpty { m.queryRenderedFeatures(box, HZ_ZONE_LAYER, HZ_LINE_LAYER) }
+        if (hits.isEmpty()) return null
+        val best = hits.minByOrNull { f ->
+            val g = f.geometry() as? Point
+            if (g == null) Double.MAX_VALUE / 2 else (g.latitude() - p.latitude).let { a -> a * a } + (g.longitude() - p.longitude).let { a -> a * a }
+        }
+        val id = best?.getStringProperty(HZ_ID) ?: return null
+        listener(id)
+        return id
+    }
+
     override fun setCameraGestureListener(listener: (() -> Unit)?) {
         gestureListener = listener
     }
@@ -384,6 +474,7 @@ class MapLibreEngine(
     private fun handleTap(p: LatLng): Boolean {
         val m = map
         if (m != null && fuelAt(m, p) != null) return true
+        if (m != null && hazardAt(m, p) != null) return true
         val listener = tapListener ?: return false
         listener(LatLon.ofOrNull(p.latitude, p.longitude) ?: return false)
         return true
@@ -467,6 +558,7 @@ class MapLibreEngine(
             val user = GeoJsonSource(USER_SOURCE).also { userSource = it }
             val pin = GeoJsonSource(PIN_SOURCE).also { pinSource = it }
             addRouteLayer(style, wanted == MapTheme.DARK) // below the markers, pin and user dots
+            addHazardLayers(style, wanted == MapTheme.DARK)
             addFuelLayer(style, wanted == MapTheme.DARK)
             style.addSource(user)
             style.addSource(pin)
@@ -572,6 +664,17 @@ class MapLibreEngine(
         const val USER_ARROW_LAYER = "mapas-user-arrow"
         const val USER_BEARING = "bearing"
         const val MAX_PITCH = 60.0
+        const val HZ_LINE_SOURCE = "mapas-hz-line-src"
+        const val HZ_PIN_SOURCE = "mapas-hz-pin-src"
+        const val HZ_ZONE_LAYER = "mapas-hz-zone"
+        const val HZ_LINE_LAYER = "mapas-hz-line"
+        const val HZ_PIN_LAYER = "mapas-hz-pin"
+        const val HZ_ID = "id"
+        const val HZ_KIND = "kind"
+        const val HZ_ZONE = "zone"
+        const val HZ_TOUCH_DP = 44f
+        const val HZ_ZONE_COLOR = 0xFFE8710A.toInt()
+        const val HZ_LINE_COLOR = 0xFFD93025.toInt()
         const val FUEL_SOURCE = "mapas-fuel-src"
         const val FUEL_LAYER = "mapas-fuel"
         const val FUEL_ID = "id"

@@ -54,6 +54,7 @@ class AlertVoice(
         val s = settings.value
         if (!s.voiceEnabled) return
         val lang = s.voiceLanguage.resolve(locale())
+        guide.setVolume(s.volumePercent) // free driving has no navigation controller to have set it
         guide.speak(
             Utterance(
                 AlertPhrases.of(e, s.units.resolve(locale()), lang), VoicePriority.NORMAL, lang,

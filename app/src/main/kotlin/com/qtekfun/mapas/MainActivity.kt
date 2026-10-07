@@ -33,6 +33,8 @@ import com.qtekfun.mapas.ui.MapScreenState
 import com.qtekfun.mapas.ui.Notice
 import com.qtekfun.mapas.search.PanelHost
 import com.qtekfun.mapas.ui.theme.MapasTheme
+import com.qtekfun.mapas.cameras.HazardDescriber
+import com.qtekfun.mapas.cameras.HazardsEnv
 import com.qtekfun.mapas.core.fuel.FuelTypes
 
 class MainActivity : ComponentActivity() {
@@ -70,6 +72,10 @@ class MainActivity : ComponentActivity() {
             fuelRepository = app.fuel.repository,
             fuelSettings = app.fuelSettings,
             fuelName = { id -> FuelTypes.byId(id)?.displayName ?: id },
+            hazards = HazardsEnv(
+                app.cameraSettings.settings, app.cameraData.repository, app.incidents.repository,
+                HazardDescriber(this, app.cameraData.repository, app.incidents.repository),
+            ),
             navScreen = app.navScreen,
         )
         navHost = NavHost(this, engine, app.navScreen)

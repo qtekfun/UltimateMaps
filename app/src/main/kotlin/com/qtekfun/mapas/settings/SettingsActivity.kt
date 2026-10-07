@@ -27,6 +27,9 @@ class SettingsActivity : ComponentActivity() {
             catalogUrl = { regions.serverUrl },
             openMaps = { startActivity(Intent(this, RegionsActivity::class.java)) },
             navigation = NavigationSettingsEnv(VoiceModule.settings(this), VoiceModule.guide(this)),
+            cameras = CamerasSettingsEnv(
+                app.cameraSettings, app.cameraData, app.incidents, offline = { regions.offline }, onChanged = app::ensureCameraAlerts,
+            ),
         )
         setContent {
             MapasTheme(darkTheme = isSystemInDarkTheme()) { SettingsScreen(env, onBack = ::finish) }
