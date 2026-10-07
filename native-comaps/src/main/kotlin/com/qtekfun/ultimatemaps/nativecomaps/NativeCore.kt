@@ -10,6 +10,10 @@ internal class NativeCore : NativeBridge {
     external fun nativeSearch(
         query: String, hasPos: Boolean, lat: Double, lon: Double, limit: Int, timeoutMs: Int, locale: String, categorial: Boolean,
     ): Array<String>
+
+    /** Debug bench only: performance switches ([RoutePerfMode]) for the next routes and the timing split of the last one. */
+    external fun nativeSetPerfMode(flags: Int)
+    external fun nativeLastRouteStats(): String
     external fun nativeRoute(profile: Int, points: DoubleArray, avoidFlags: Int, timeoutSec: Int): DoubleArray
 
     /** `Object[3]`: `{ DoubleArray ruta, DoubleArray guiado, Array<String> nombres }` (ver [RawGuidedRoute]). */
@@ -19,6 +23,10 @@ internal class NativeCore : NativeBridge {
         nativeInit(apk, writableDir, tmpDir, locale)
 
     override fun refreshMaps(): Int = nativeRefreshMaps()
+
+    override fun setPerfMode(flags: Int) = nativeSetPerfMode(flags)
+
+    override fun lastRouteStats(): String = nativeLastRouteStats()
 
     override fun search(
         query: String, hasPos: Boolean, lat: Double, lon: Double, limit: Int, timeoutMs: Int, locale: String,
@@ -54,6 +62,12 @@ internal interface NativeBridge {
     /** Returns "" if all is well, or the error message. */
     fun init(apk: String, writableDir: String, tmpDir: String, locale: String): String
     fun refreshMaps(): Int
+
+    /** Performance switches for the next routes ([RoutePerfMode]); 0 = stock behaviour. Debug bench only. */
+    fun setPerfMode(flags: Int) {}
+
+    /** Timing split of the last route as `key=value` pairs; empty if the bridge does not keep it. */
+    fun lastRouteStats(): String = ""
 
     /** 5 strings per result: name, address, category, lat, lon. */
     fun search(
