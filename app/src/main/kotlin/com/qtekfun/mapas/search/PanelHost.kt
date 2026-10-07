@@ -7,7 +7,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.lifecycle.lifecycleScope
+import com.qtekfun.mapas.MapasApp
 import com.qtekfun.mapas.R
+import com.qtekfun.mapas.recording.RecordingPanel
 import com.qtekfun.mapas.core.fuel.FuelRepository
 import com.qtekfun.mapas.core.fuel.FuelSettingsStore
 import com.qtekfun.mapas.core.geo.LatLon
@@ -48,6 +50,7 @@ import com.qtekfun.mapas.route.RoutePreviewController
 import com.qtekfun.mapas.ui.MapScreenState
 import com.qtekfun.mapas.ui.sheet.SheetDetent
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import java.io.File
 
@@ -151,6 +154,7 @@ class PanelHost(
             // The bottom sheet covers roughly the lower half of the screen.
             engine.frameRoute(points, CameraPadding((40 * d).toInt(), (80 * d).toInt(), (40 * d).toInt(), (300 * d).toInt()))
         },
+        recording = (activity.application as? MapasApp)?.recording?.let { RecordingPanel(it) { onRequestLocation() } },
     )
 
     /** Home, Work and the parked car (on this device only). */
@@ -278,6 +282,8 @@ class PanelHost(
         }
         fuelLayer.start()
         hazardLayer?.start()
+        // A recording was saved or tracks were deleted: refresh the tracks list.
+        (tracks.recording?.controller)?.let { r -> activity.lifecycleScope.launch { r.stored.collect { tracks.refresh() } } }
     }
 
     private fun show(info: PlaceInfo) {
