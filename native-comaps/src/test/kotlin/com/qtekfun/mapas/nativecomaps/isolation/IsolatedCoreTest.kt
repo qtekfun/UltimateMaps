@@ -36,11 +36,11 @@ class IsolatedCoreTest {
         override fun refreshMaps() = 7
         override fun search(query: String, hasPos: Boolean, lat: Double, lon: Double, limit: Int, timeoutMs: Int, locale: String): Array<String> {
             searches.incrementAndGet()
-            return arrayOf("Cafe Central", "Calle Mayor 1", "cafe", "40.4168", "-3.7038")
+            return arrayOf("Cafe Central", "Calle Mayor 1", "cafe", "40.4168", "-3.7038", "", "", "", "")
         }
         override fun searchCategory(query: String, hasPos: Boolean, lat: Double, lon: Double, limit: Int, timeoutMs: Int, locale: String): Array<String> {
             categorySearches.incrementAndGet()
-            return arrayOf("Farmacia Sol", "Calle Luna 2", "pharmacy", "40.42", "-3.70")
+            return arrayOf("Farmacia Sol", "Calle Luna 2", "pharmacy", "40.42", "-3.70", "+34 911 111 111", "https://farmacia.example", "yes", "24/7")
         }
         override fun route(profile: Int, points: DoubleArray, avoidFlags: Int, timeoutSec: Int): DoubleArray {
             routes.incrementAndGet()
@@ -124,6 +124,8 @@ class IsolatedCoreTest {
         val c = client(t)
         val r = c.searchEngine().searchCategory("pharmacy", a)
         assertEquals("Farmacia Sol", r.single().name)
+        assertEquals("tel:+34911111111", com.qtekfun.mapas.core.search.PlaceExtras.dialUri(r.single().extras?.phone))
+        assertEquals(com.qtekfun.mapas.core.search.Wheelchair.YES, r.single().extras?.wheelchair)
         assertEquals(1, t.bridge.categorySearches.get())
         assertEquals(0, t.bridge.searches.get())
     }
