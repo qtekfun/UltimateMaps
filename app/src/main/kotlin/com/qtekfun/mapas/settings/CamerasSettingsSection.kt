@@ -23,6 +23,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.qtekfun.mapas.R
+import com.qtekfun.mapas.core.cameras.AlertSoundMode
 import com.qtekfun.mapas.core.cameras.CameraAttribution
 import com.qtekfun.mapas.core.cameras.CameraDataManager
 import com.qtekfun.mapas.core.cameras.CameraSettings
@@ -78,13 +79,9 @@ fun CamerasSection(env: CamerasSettingsEnv) {
             ) { on -> env.store.update { it.copy(warnOnlyIfSpeeding = on) } }
         }
     }
-    if (s.anything) {
+    if (s.anyCamera) {
         Spacer(Modifier.height(10.dp))
-        Card("cam_voice_card") {
-            SwitchRow(
-                stringResource(R.string.cam_voice_title), stringResource(R.string.cam_voice_body), s.voiceEnabled, "cam_voice_switch",
-            ) { on -> env.store.update { it.copy(voiceEnabled = on) } }
-        }
+        AlertModeCard(stringResource(R.string.alert_mode_cam_title), s.cameraAlertMode, "cam_alert_mode") { m -> env.store.update { it.copy(cameraAlertMode = m) } }
     }
     Spacer(Modifier.height(10.dp))
     Card("cam_traffic_card") {
@@ -101,6 +98,11 @@ fun CamerasSection(env: CamerasSettingsEnv) {
                 stringResource(R.string.cam_roadworks_title), stringResource(R.string.cam_roadworks_body), s.roadworksEnabled, "cam_roadworks_switch",
             ) { on -> env.store.update { it.copy(roadworksEnabled = on) } }
         }
+    }
+
+    if (s.anyIncident) {
+        Spacer(Modifier.height(10.dp))
+        AlertModeCard(stringResource(R.string.alert_mode_incident_title), s.incidentAlertMode, "incident_alert_mode") { m -> env.store.update { it.copy(incidentAlertMode = m) } }
     }
 
     confirmCamera?.let { which ->
@@ -138,6 +140,24 @@ fun CamerasSection(env: CamerasSettingsEnv) {
         style = Mapas.typography.callout.copy(color = Mapas.colors.secondaryLabel),
         modifier = Modifier.testTag("cam_legal_note"),
     )
+}
+
+/** A 3-way choice (sound, voice, silent) for one alert category, shown as radio rows like the voice-language choice. */
+@Composable
+private fun AlertModeCard(title: String, current: AlertSoundMode, tagPrefix: String, onPick: (AlertSoundMode) -> Unit) {
+    Card("${tagPrefix}_card") {
+        BasicText(title, style = Mapas.typography.body.copy(color = Mapas.colors.label))
+        AlertSoundMode.entries.forEach { m ->
+            val label = when (m) {
+                AlertSoundMode.SOUND -> R.string.alert_mode_sound
+                AlertSoundMode.VOICE -> R.string.alert_mode_voice
+                AlertSoundMode.SILENT -> R.string.alert_mode_silent
+            }
+            ChoiceRow(stringResource(label), current == m, radio = true, tag = "${tagPrefix}_${m.name.lowercase()}") { onPick(m) }
+        }
+        Spacer(Modifier.height(4.dp))
+        BasicText(stringResource(R.string.alert_mode_note), style = Mapas.typography.callout.copy(color = Mapas.colors.secondaryLabel))
+    }
 }
 
 private enum class CameraSwitch { FIXED, MOBILE }

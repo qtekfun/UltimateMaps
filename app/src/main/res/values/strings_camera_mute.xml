@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Own mute of the camera and incident voice alerts -->
-    <string name="cam_voice_title">Voice alerts for cameras and incidents</string>
-    <string name="cam_voice_body">Speak the alerts ahead. The chip always shows; the navigation Mute still silences everything.</string>
+    <!-- Quick mute of the camera and incident alerts (sound and voice) on the navigation screen -->
     <string name="nav_ui_alerts_mute">Mute alerts</string>
     <string name="nav_ui_alerts_unmute">Unmute alerts</string>
-    <string name="nav_ui_alerts_mute_description">Camera and incident voice on. Tap to mute only those alerts</string>
-    <string name="nav_ui_alerts_unmute_description">Camera and incident voice muted. Tap to turn those alerts back on</string>
+    <string name="nav_ui_alerts_mute_description">Camera and incident alerts on. Tap to mute their sound and voice</string>
+    <string name="nav_ui_alerts_unmute_description">Camera and incident alerts muted. Tap to turn their sound and voice back on</string>
 </resources>

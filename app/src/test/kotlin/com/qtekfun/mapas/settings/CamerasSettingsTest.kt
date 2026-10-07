@@ -17,6 +17,7 @@ import com.qtekfun.mapas.core.cameras.CameraAttribution
 import com.qtekfun.mapas.core.cameras.CameraDataManager
 import com.qtekfun.mapas.core.cameras.CameraDataset
 import com.qtekfun.mapas.core.cameras.CameraKind
+import com.qtekfun.mapas.core.cameras.AlertSoundMode
 import com.qtekfun.mapas.core.cameras.CameraSettings
 import com.qtekfun.mapas.core.cameras.CameraSources
 import com.qtekfun.mapas.core.cameras.IncidentCache
@@ -158,19 +159,28 @@ class CamerasSettingsTest {
         assertTrue(store.settings.value.roadworksEnabled && store.settings.value.warnOnlyIfSpeeding)
     }
 
-    @Test fun theVoiceAlertsSwitchAppearsWithACategoryIsOnByDefaultAndWritesOnlyItsFlag() {
+    @Test fun eachCategoryHasItsOwnThreeWayAlertModeShownWhileTheCategoryIsOn() {
         show()
-        assertEquals(0, count("cam_voice_switch"), "nothing to speak while every category is off")
+        assertEquals(0, count("cam_alert_mode_card"), "nothing to announce while every category is off")
+        assertEquals(0, count("incident_alert_mode_card"))
         store.update { it.copy(acknowledged = true, incidentsEnabled = true) }
         rule.waitForIdle()
-        assertTrue(store.settings.value.voiceEnabled, "on by default")
-        rule.onNodeWithTag("cam_voice_switch").performScrollTo().performClick()
+        assertEquals(0, count("cam_alert_mode_card"), "cameras are still off")
+        assertEquals(AlertSoundMode.SOUND, store.settings.value.incidentAlertMode, "a chime by default")
+        rule.onNodeWithTag("incident_alert_mode_voice").performScrollTo().performClick()
         rule.waitForIdle()
-        assertFalse(store.settings.value.voiceEnabled)
-        assertTrue(store.settings.value.incidentsEnabled, "the category stays on: only the voice is muted")
-        rule.onNodeWithTag("cam_voice_switch").performScrollTo().performClick()
+        assertEquals(AlertSoundMode.VOICE, store.settings.value.incidentAlertMode)
+        assertEquals(AlertSoundMode.SOUND, store.settings.value.cameraAlertMode, "the camera mode is untouched")
+        store.update { it.copy(fixedEnabled = true) }
         rule.waitForIdle()
-        assertTrue(store.settings.value.voiceEnabled)
+        rule.onNodeWithTag("cam_alert_mode_silent").performScrollTo().performClick()
+        rule.waitForIdle()
+        assertEquals(AlertSoundMode.SILENT, store.settings.value.cameraAlertMode)
+        assertEquals(AlertSoundMode.VOICE, store.settings.value.incidentAlertMode, "the incident mode is untouched")
+        assertTrue(store.settings.value.incidentsEnabled && store.settings.value.fixedEnabled, "only the mode changed")
+        rule.onNodeWithTag("cam_alert_mode_sound").performScrollTo().performClick()
+        rule.waitForIdle()
+        assertEquals(AlertSoundMode.SOUND, store.settings.value.cameraAlertMode)
     }
 
     // ---- preferences, strings, cards ----

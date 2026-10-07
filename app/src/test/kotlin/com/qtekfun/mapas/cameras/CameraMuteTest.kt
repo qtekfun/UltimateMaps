@@ -14,6 +14,7 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.unit.dp
 import androidx.test.core.app.ApplicationProvider
+import com.qtekfun.mapas.core.cameras.AlertSoundMode
 import com.qtekfun.mapas.nav.NavActions
 import com.qtekfun.mapas.nav.NavPhase
 import com.qtekfun.mapas.nav.NavScreen
@@ -61,12 +62,12 @@ class CameraMuteTest {
     @Test fun theButtonShowsTheStateDescribesItAndAsksForTheOpposite() {
         show(driving())
         assertEquals("Mute alerts", text("nav_camera_mute"))
-        rule.onNodeWithTag("nav_camera_mute").assertContentDescriptionEquals("Camera and incident voice on. Tap to mute only those alerts")
+        rule.onNodeWithTag("nav_camera_mute").assertContentDescriptionEquals("Camera and incident alerts on. Tap to mute their sound and voice")
         rule.onNodeWithTag("nav_camera_mute").performClick()
         ui = driving(cameraVoiceOn = false)
         rule.waitForIdle()
         assertEquals("Unmute alerts", text("nav_camera_mute"))
-        rule.onNodeWithTag("nav_camera_mute").assertContentDescriptionEquals("Camera and incident voice muted. Tap to turn those alerts back on")
+        rule.onNodeWithTag("nav_camera_mute").assertContentDescriptionEquals("Camera and incident alerts muted. Tap to turn their sound and voice back on")
         rule.onNodeWithTag("nav_camera_mute").performClick()
         assertEquals(listOf("camera:false", "camera:true"), calls, "it never touches the navigation voice")
     }
@@ -82,16 +83,44 @@ class CameraMuteTest {
         rule.onNodeWithTag("nav_camera_mute").assertHeightIsAtLeast(56.dp)
     }
 
-    @Test fun theFlagIsPersistedWithTheOtherCameraPrefs() {
-        val prefs = ApplicationProvider.getApplicationContext<Context>().getSharedPreferences("camera_mute_test", Context.MODE_PRIVATE)
-        prefs.edit().clear().commit()
+    private fun prefs(name: String) = ApplicationProvider.getApplicationContext<Context>().getSharedPreferences(name, Context.MODE_PRIVATE).also { it.edit().clear().commit() }
+
+    @Test fun theModesAndTheMutedFlagArePersistedWithTheOtherCameraPrefs() {
+        val prefs = prefs("camera_mute_test")
         val a = PrefsCameraSettingsStore(prefs)
-        assertTrue(a.settings.value.voiceEnabled, "on by default")
-        a.update { it.copy(voiceEnabled = false) }
-        assertFalse(prefs.getBoolean(PrefsCameraSettingsStore.KEY_VOICE, true))
-        assertEquals("voice_alerts", PrefsCameraSettingsStore.KEY_VOICE)
-        assertFalse(PrefsCameraSettingsStore(prefs).settings.value.voiceEnabled, "survives a restart")
+        assertEquals(AlertSoundMode.SOUND, a.settings.value.cameraAlertMode, "a chime by default")
+        assertEquals(AlertSoundMode.SOUND, a.settings.value.incidentAlertMode)
+        assertFalse(a.settings.value.alertsMuted)
+        a.update { it.copy(cameraAlertMode = AlertSoundMode.VOICE, incidentAlertMode = AlertSoundMode.SILENT, alertsMuted = true) }
+        assertEquals("VOICE", prefs.getString("cam_alert_mode", null))
+        assertEquals("SILENT", prefs.getString("incident_alert_mode", null))
+        assertTrue(prefs.getBoolean("alerts_muted", false))
+        val b = PrefsCameraSettingsStore(prefs).settings.value
+        assertEquals(AlertSoundMode.VOICE, b.cameraAlertMode)
+        assertEquals(AlertSoundMode.SILENT, b.incidentAlertMode)
+        assertTrue(b.alertsMuted, "survives a restart")
         a.update { it.copy(incidentsEnabled = true) }
-        assertFalse(PrefsCameraSettingsStore(prefs).settings.value.voiceEnabled, "other switches do not reset it")
+        assertEquals(b.cameraAlertMode, PrefsCameraSettingsStore(prefs).settings.value.cameraAlertMode, "other switches do not reset it")
+    }
+
+    @Test fun theOldSharedVoiceFlagIsMigratedToBothCategoriesAndNeverWritten() {
+        val on = prefs("camera_migrate_on").also { it.edit().putBoolean("voice_alerts", true).commit() }
+        val a = PrefsCameraSettingsStore(on).settings.value
+        assertEquals(AlertSoundMode.VOICE, a.cameraAlertMode)
+        assertEquals(AlertSoundMode.VOICE, a.incidentAlertMode)
+        val off = prefs("camera_migrate_off").also { it.edit().putBoolean("voice_alerts", false).commit() }
+        val store = PrefsCameraSettingsStore(off)
+        assertEquals(AlertSoundMode.SILENT, store.settings.value.cameraAlertMode)
+        assertEquals(AlertSoundMode.SILENT, store.settings.value.incidentAlertMode)
+        store.update { it.copy(cameraAlertMode = AlertSoundMode.SOUND) }
+        assertFalse(off.getBoolean("voice_alerts", true), "the old key is left as it was")
+        val again = PrefsCameraSettingsStore(off).settings.value
+        assertEquals(AlertSoundMode.SOUND, again.cameraAlertMode, "an explicit mode wins over the old flag")
+        assertEquals(AlertSoundMode.SILENT, again.incidentAlertMode, "the other category was migrated and stored")
+    }
+
+    @Test fun anUnknownStoredModeFallsBackToTheDefault() {
+        val p = prefs("camera_bad_mode").also { it.edit().putString("cam_alert_mode", "LOUD").commit() }
+        assertEquals(AlertSoundMode.SOUND, PrefsCameraSettingsStore(p).settings.value.cameraAlertMode)
     }
 }
