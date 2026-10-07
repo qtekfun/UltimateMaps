@@ -2,6 +2,7 @@ package com.qtekfun.mapas.cameras
 
 import android.content.Context
 import android.content.SharedPreferences
+import com.qtekfun.mapas.core.cameras.AlertSoundMode
 import com.qtekfun.mapas.core.cameras.CameraSettings
 import com.qtekfun.mapas.core.cameras.CameraSettingsStore
 import com.qtekfun.mapas.core.cameras.normalized
@@ -37,7 +38,9 @@ class PrefsCameraSettingsStore(private val prefs: SharedPreferences) : CameraSet
             .putBoolean(KEY_ROADWORKS, next.roadworksEnabled)
             .putBoolean(KEY_ONLY_SPEEDING, next.warnOnlyIfSpeeding)
             .putBoolean(KEY_ACK, next.acknowledged)
-            .putBoolean(KEY_VOICE, next.voiceEnabled)
+            .putString(KEY_CAM_MODE, next.cameraAlertMode.name)
+            .putString(KEY_INCIDENT_MODE, next.incidentAlertMode.name)
+            .putBoolean(KEY_MUTED, next.alertsMuted)
             .putInt(KEY_REFRESH, next.incidentRefreshMinutes)
             .apply()
         state.value = next
@@ -46,6 +49,13 @@ class PrefsCameraSettingsStore(private val prefs: SharedPreferences) : CameraSet
     private fun read(): CameraSettings {
         val d = CameraSettings()
         fun bool(key: String, def: Boolean) = runCatching { prefs.getBoolean(key, def) }.getOrDefault(def)
+        // Migration: before the alert modes there was one shared voice flag. Read only (it is never written any more):
+        // true meant alerts on (it was the default, so most people have it), false meant none: on becomes the new default, a chime. Without it, or when a mode key holds nothing valid, the default applies.
+        val legacy = runCatching { if (prefs.contains(KEY_VOICE_LEGACY)) prefs.getBoolean(KEY_VOICE_LEGACY, true) else null }.getOrNull()
+            ?.let { if (it) AlertSoundMode.SOUND else AlertSoundMode.SILENT }
+        fun mode(key: String, fallback: AlertSoundMode?): AlertSoundMode =
+            runCatching { prefs.getString(key, null) }.getOrNull()?.let { n -> AlertSoundMode.entries.firstOrNull { it.name == n } }
+                ?: fallback ?: d.cameraAlertMode
         return CameraSettings(
             fixedEnabled = bool(KEY_FIXED, d.fixedEnabled),
             mobileZonesEnabled = bool(KEY_MOBILE, d.mobileZonesEnabled),
@@ -54,7 +64,9 @@ class PrefsCameraSettingsStore(private val prefs: SharedPreferences) : CameraSet
             roadworksEnabled = bool(KEY_ROADWORKS, d.roadworksEnabled),
             warnOnlyIfSpeeding = bool(KEY_ONLY_SPEEDING, d.warnOnlyIfSpeeding),
             acknowledged = bool(KEY_ACK, d.acknowledged),
-            voiceEnabled = bool(KEY_VOICE, d.voiceEnabled),
+            cameraAlertMode = mode(KEY_CAM_MODE, legacy),
+            incidentAlertMode = mode(KEY_INCIDENT_MODE, legacy),
+            alertsMuted = bool(KEY_MUTED, d.alertsMuted),
             incidentRefreshMinutes = runCatching { prefs.getInt(KEY_REFRESH, d.incidentRefreshMinutes) }.getOrDefault(d.incidentRefreshMinutes),
         ).normalized()
     }
@@ -68,7 +80,12 @@ class PrefsCameraSettingsStore(private val prefs: SharedPreferences) : CameraSet
         const val KEY_ROADWORKS = "roadworks"
         const val KEY_ONLY_SPEEDING = "only_if_speeding"
         const val KEY_ACK = "acknowledged"
-        const val KEY_VOICE = "voice_alerts"
+        const val KEY_CAM_MODE = "cam_alert_mode"
+        const val KEY_INCIDENT_MODE = "incident_alert_mode"
+        const val KEY_MUTED = "alerts_muted"
+
+        /** The old shared voice flag; only read, to migrate it (true: VOICE, false: SILENT, for both categories). */
+        const val KEY_VOICE_LEGACY = "voice_alerts"
         const val KEY_REFRESH = "incident_refresh_minutes"
     }
 }

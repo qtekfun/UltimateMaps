@@ -1,6 +1,7 @@
 package com.qtekfun.mapas.settings.backup
 
 import com.qtekfun.mapas.cameras.PrefsCameraSettingsStore
+import com.qtekfun.mapas.core.cameras.AlertSoundMode
 import com.qtekfun.mapas.core.cameras.CameraSettings
 import com.qtekfun.mapas.core.cameras.MIN_INCIDENT_REFRESH_MINUTES
 import com.qtekfun.mapas.core.fuel.FuelSettings
@@ -148,7 +149,8 @@ object SettingsSchema {
         bool(GROUP_CAMERAS, camPrefs, PrefsCameraSettingsStore.KEY_V16, cameras.v16Enabled, RestorePolicy.NEEDS_CONSENT),
         bool(GROUP_CAMERAS, camPrefs, PrefsCameraSettingsStore.KEY_ROADWORKS, cameras.roadworksEnabled, RestorePolicy.NEEDS_CONSENT),
         bool(GROUP_CAMERAS, camPrefs, PrefsCameraSettingsStore.KEY_ONLY_SPEEDING, cameras.warnOnlyIfSpeeding),
-        bool(GROUP_CAMERAS, camPrefs, PrefsCameraSettingsStore.KEY_VOICE, cameras.voiceEnabled),
+        enum(GROUP_CAMERAS, camPrefs, PrefsCameraSettingsStore.KEY_CAM_MODE, cameras.cameraAlertMode, AlertSoundMode.entries.map { it.name }),
+        enum(GROUP_CAMERAS, camPrefs, PrefsCameraSettingsStore.KEY_INCIDENT_MODE, cameras.incidentAlertMode, AlertSoundMode.entries.map { it.name }),
         int(GROUP_CAMERAS, camPrefs, PrefsCameraSettingsStore.KEY_REFRESH, cameras.incidentRefreshMinutes) { it >= MIN_INCIDENT_REFRESH_MINUTES },
 
         // Search history switch (not the history itself).
@@ -177,6 +179,10 @@ object SettingsSchema {
      * Everything here is private, device-specific, or must be accepted again by the owner.
      */
     val excluded: Map<String, String> = mapOf(
+        "${PrefsCameraSettingsStore.PREFS}/${PrefsCameraSettingsStore.KEY_MUTED}" to
+            "transient quick mute of the navigation screen: restoring it on a new phone would leave the alerts silent with no obvious reason",
+        "${PrefsCameraSettingsStore.PREFS}/${PrefsCameraSettingsStore.KEY_VOICE_LEGACY}" to
+            "old shared voice flag, only read to migrate to the per-category alert modes (which are exported)",
         "${PrefsCameraSettingsStore.PREFS}/${PrefsCameraSettingsStore.KEY_ACK}" to
             "consent: the camera notice must be accepted again on the new phone",
         "${RegionsController.PREFS}/install_location" to "device-specific storage id (card or internal)",
