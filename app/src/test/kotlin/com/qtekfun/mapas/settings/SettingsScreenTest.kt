@@ -48,9 +48,9 @@ class SettingsScreenTest {
         FuelCache(Files.createTempDirectory("fuelui").toFile()), FuelClient(policy),
     )
 
-    private fun show(store: com.qtekfun.mapas.core.fuel.FuelSettingsStore = this.store) {
+    private fun show(category: String = "fuel", store: com.qtekfun.mapas.core.fuel.FuelSettingsStore = this.store) {
         val env = SettingsEnv(store, manager, policy, offline = { offline }, setOffline = { offline = it; policy.offlineMode = it }, catalogUrl = { "https://example.org/catalog.json" }, openMaps = {})
-        rule.setContent { MapasTheme(darkTheme = false) { SettingsScreen(env, onBack = {}) } }
+        rule.setContent { MapasTheme(darkTheme = false) { SettingsScreen(env, onBack = {}, initialCategory = category) } }
     }
 
     @Test fun enablingAsksFirstAndExplainsWhatTheServerSees() {
@@ -71,6 +71,16 @@ class SettingsScreenTest {
         rule.onNodeWithTag("fuel_fuels_card").assertExists()
     }
 
+    @Test fun advancedStaysClosedUntilOpened() {
+        store.update { it.copy(enabled = true) }
+        show()
+        assertEquals(0, rule.onAllNodesWithTagCount("fuel_refresh_card"))
+        assertEquals(0, rule.onAllNodesWithTagCount("fuel_url_field"))
+        rule.onNodeWithTag("fuel_advanced_header").performScrollTo().performClick()
+        rule.onNodeWithTag("fuel_url_field").performScrollTo().assertIsDisplayed()
+        rule.onNodeWithTag("fuel_refresh_card").assertExists()
+    }
+
     @Test fun fuelChoicesMapFuelAndUrlValidation() {
         store.update { it.copy(enabled = true) }
         show()
@@ -81,6 +91,7 @@ class SettingsScreenTest {
         assertEquals("glp", store.settings.value.mapFuel)
         rule.onNodeWithTag("fuel_map_gnc").performScrollTo().performClick()
         assertEquals("gnc", store.settings.value.mapFuel)
+        rule.onNodeWithTag("fuel_advanced_header").performScrollTo().performClick() // Advanced is closed by default
         rule.onNodeWithTag("fuel_refresh_360").performScrollTo().performClick()
         assertEquals(360, store.settings.value.refreshMinutes)
         // unchecking the map fuel moves the map fuel to another downloaded one
@@ -102,12 +113,18 @@ class SettingsScreenTest {
     @Test fun privacyShowsConnectionsOfflineSwitchAndAttribution() {
         policy.addEndpoint(AllowedEndpoint("sedeaplicaciones.minetur.gob.es", ConnectionPurpose.OTHER, enabled = true))
         store.update { it.copy(enabled = true) }
-        show()
+        show("network")
         rule.onNodeWithTag("privacy_connections_card").performScrollTo().assertIsDisplayed()
         assertEquals(2, rule.onAllNodesWithTagCount("conn_host"))
         rule.onNodeWithTag("offline_switch").performScrollTo().performClick()
         rule.waitForIdle()
         assertTrue(offline && policy.offlineMode)
+        rule.onNodeWithTag("privacy_note").assertIsDisplayed()
+    }
+
+    @Test fun fuelCategoryShowsTheAttributionAndTheLastUpdate() {
+        store.update { it.copy(enabled = true) }
+        show("fuel")
         rule.onNodeWithTag("fuel_attribution").performScrollTo().assertIsDisplayed()
         rule.onNodeWithTag("fuel_last_update").assertIsDisplayed()
     }
