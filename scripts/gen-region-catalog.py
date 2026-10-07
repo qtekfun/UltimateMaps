@@ -27,6 +27,10 @@ Examples (no network):
 `--base-dir` adds the `base` block with `World.mwm` and `WorldCoasts.mwm` (they are not a region, but the core requires them
 next to each region; the app downloads them once per version). Without it, the catalog has no `base`.
 
+Each region may carry `names` ({"es": "Comunidad de Madrid"}), the optional per-language display names from CoMaps'
+`data/countries-strings` (`--names-langs`, default `es`; `name` stays the English one). Old apps ignore it; the app shows
+the one that matches the user's language and falls back to `name`. `World` and `WorldCoasts` get no entry (see `--base-dir`).
+
 `--cameras-file` (with `--cameras-base`) adds the optional `cameras` block for the speed-camera file; without it the catalog is
 unchanged and the app works without camera data.
 
@@ -69,6 +73,33 @@ def sha256_of(path):
 def display_name(comaps_id, parent_id):
     rest = comaps_id[len(parent_id) + 1:] if parent_id and comaps_id.startswith(parent_id + "_") else comaps_id
     return rest.replace("_", " - ")
+
+
+# World.mwm and WorldCoasts.mwm are listed in countries.txt next to the countries, but they are base files (the `base` block),
+# not regions: they never get a catalog entry.
+BASE_IDS = ("World", "WorldCoasts")
+NAME_LANG_RE = re.compile(r"^[a-z]{2,3}(-[A-Za-z]{2,4})?$")
+DASHES = re.compile(r"\s+[\u2013\u2014]\s+")
+
+
+def load_names(strings_dir, langs, log=lambda m: None):
+    """{lang: {comapsId: localized name}} from CoMaps' `data/countries-strings/<lang>.json/localize.json`.
+
+    Names of sub-regions in those files join the parts with an en/em dash ("Andalucia - Granada"); the catalog (and the
+    app's search) use " - ", so the dashes are normalized. A missing language file is skipped with a warning."""
+    out = {}
+    for lang in langs:
+        if not NAME_LANG_RE.match(lang):
+            raise SystemExit(f"invalid language for --names-langs: {lang}")
+        path = os.path.join(strings_dir, lang + ".json", "localize.json")
+        if not os.path.isfile(path):
+            log(f"WARNING {path} is missing; no `{lang}` names")
+            continue
+        with open(path, encoding="utf-8") as f:
+            raw = json.load(f)
+        out[lang] = {k: DASHES.sub(" - ", v.strip()) for k, v in raw.items()
+                     if isinstance(v, str) and v.strip() and not k.endswith((" Short", " Description"))}
+    return out
 
 
 def flatten(root):
@@ -173,7 +204,7 @@ def build_transit(transit_files, transit_base, log=lambda m: None):
 def build(countries, mwm_dir=None, pmtiles_dir=None, mwm_base=None, pmtiles_base=None, catalog_version=None,
           fetch=(), max_download_bytes=20 << 20, log=lambda m: None, mwm_url_by_slug=False,
           base_dir=None, base_url=None, cameras_file=None, cameras_base=None,
-          transit_files=(), transit_base=None):
+          transit_files=(), transit_base=None, names=None):
     version = str(countries["v"])
     series = countries.get("map_series", "")
     mwm_base = (mwm_base or DEFAULT_MWM_BASE.format(series=series, v=version))
@@ -191,6 +222,9 @@ def build(countries, mwm_dir=None, pmtiles_dir=None, mwm_base=None, pmtiles_base
     regions = []
     for node, parent in nodes:
         cid = node["id"]
+        if cid in BASE_IDS and parent is None:
+            log(f"{cid}: base file (the `base` block), not a region; skipped")
+            continue
         if cid in seen:  # countries.txt repeats some nodes under two parents (e.g. Campo de Hielo Sur)
             log(f"WARNING {cid}: repeated under another parent; the first occurrence is kept")
             continue
@@ -203,6 +237,11 @@ def build(countries, mwm_dir=None, pmtiles_dir=None, mwm_base=None, pmtiles_base
             "parent": slugs[parent] if parent else None,
             "version": version,
         }
+        if names:
+            local = {lang: table[cid] for lang, table in sorted(names.items())
+                     if cid in table and table[cid] != region["name"]}
+            if local:
+                region["names"] = local
         is_leaf = "g" not in node
         if is_leaf and "s" in node:
             mwm = os.path.join(mwm_dir, cid + ".mwm") if mwm_dir else None
@@ -260,17 +299,23 @@ def main(argv=None):
     ap.add_argument("--cameras-base", help="base URL of the cameras file (required with --cameras-file)")
     ap.add_argument("--transit-file", action="append", default=[], help="transit-<id>.umti (repeatable; adds the optional `transit` array)")
     ap.add_argument("--transit-base", help="base URL of the transit files (required with --transit-file)")
+    ap.add_argument("--names-dir", default=os.path.join(os.path.dirname(__file__), "..", "third_party", "comaps", "data",
+                                                        "countries-strings"),
+                    help="CoMaps countries-strings directory: adds the optional per-language `names` of each region")
+    ap.add_argument("--names-langs", default="es", help="comma-separated languages for `names` (default: es; empty = none)")
     ap.add_argument("--mwm-url-by-slug", action="store_true",
                     help="the .mwm URL uses the own id (`<slug>.mwm`), e.g. on GitHub Releases, which renames spaces")
     ap.add_argument("-o", "--output", default="-")
     a = ap.parse_args(argv)
     with open(a.countries, encoding="utf-8") as f:
         countries = json.load(f)
+    langs = [l.strip() for l in a.names_langs.split(",") if l.strip()]
+    names = load_names(a.names_dir, langs, log=lambda m: print(m, file=sys.stderr)) if langs else None
     cat = build(countries, a.mwm_dir, a.pmtiles_dir, a.mwm_base, a.pmtiles_base, a.catalog_version,
                 set(a.fetch_mwm), a.max_download_mb << 20, log=lambda m: print(m, file=sys.stderr),
                 mwm_url_by_slug=a.mwm_url_by_slug, base_dir=a.base_dir, base_url=a.base_url,
                 cameras_file=a.cameras_file, cameras_base=a.cameras_base,
-                transit_files=a.transit_file, transit_base=a.transit_base)
+                transit_files=a.transit_file, transit_base=a.transit_base, names=names)
     text = json.dumps(cat, indent=1, ensure_ascii=False) + "\n"
     if a.output == "-":
         sys.stdout.write(text)

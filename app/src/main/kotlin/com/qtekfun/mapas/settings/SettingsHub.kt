@@ -87,7 +87,10 @@ fun settingsCategories(env: SettingsEnv): List<SettingsCategory> = buildList {
         SettingsCategory(
             "network", R.string.hub_network_title, R.string.hub_network_keywords, { drawNetworkIcon(it) },
             summary = { stringResource(R.string.hub_network_summary, onOff(env.offline())) },
-            content = { NetworkSettingsContent(env) },
+            content = {
+                NetworkSettingsContent(env)
+                env.placeLanguage?.let { PlaceLanguageSection(it) }
+            },
         ),
     )
     if (env.history != null || env.recording != null || env.backup != null) {

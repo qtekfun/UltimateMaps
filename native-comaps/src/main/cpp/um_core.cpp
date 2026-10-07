@@ -262,6 +262,7 @@ struct Core::Impl
   std::mutex mu;  // serializes init / refresh / route (there are global routing options in settings)
   bool initialized = false;
   std::string locale = "en";
+  std::string engineSpec = "en";  // place locale the search engine's processors were last told about
 
   FrozenDataSource dataSource;
   std::unique_ptr<storage::Storage> storage;
@@ -331,7 +332,10 @@ std::string Core::Init(InitParams const & p)
   try
   {
     InitAndroidPlatform(p.resourcesApk, p.writableDir, p.tmpDir);
-    m_impl->locale = p.locale.empty() ? "en" : p.locale;
+    auto const place = ParsePlaceLocale(p.locale);
+    ApplyPlaceLocale(place);
+    m_impl->locale = place.lang;
+    m_impl->engineSpec = place.lang + (place.local ? ";local" : "");
 
     // As CoMaps does: sets the load style and the current one at once. A bare `classificator::Load()` fills the classificator of the
     // load style, but classif() queries that of the current style: if they differ, every type comes out as "Invalid type".
@@ -447,7 +451,18 @@ std::vector<SearchHit> Core::Search(std::string const & query, bool hasPos, doub
 
   search::SearchParams params;
   params.m_query = query;
-  params.m_inputLocale = locale.empty() ? m_impl->locale : locale;
+  // The locale string also carries how place information is localized (see ParsePlaceLocale): the engine reads it while
+  // it builds the names, the address and the category of every result.
+  auto const place = ParsePlaceLocale(locale.empty() ? m_impl->locale : locale);
+  ApplyPlaceLocale(place);
+  std::string const spec = place.lang + (place.local ? ";local" : "");
+  if (spec != m_impl->engineSpec)
+  {
+    m_impl->engine->SetLocale(languages::GetTwine(place.lang));
+    m_impl->engine->ClearCaches();  // cached locality names were built with the previous language
+    m_impl->engineSpec = spec;
+  }
+  params.m_inputLocale = place.lang;
   params.m_mode = search::Mode::Everywhere;
   params.m_maxNumResults = static_cast<size_t>(std::max(1, limit));
   params.m_batchSize = params.m_maxNumResults;

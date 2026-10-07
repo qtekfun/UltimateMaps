@@ -94,7 +94,7 @@ class RegionsActions(
 )
 
 @Composable
-fun RegionsScreen(state: RegionsUiState, actions: RegionsActions, modifier: Modifier = Modifier) {
+fun RegionsScreen(state: RegionsUiState, actions: RegionsActions, modifier: Modifier = Modifier, nameLanguage: String = "en") {
     var expanded by rememberSaveable { mutableStateOf(emptyList<String>()) }
     var confirmDelete by remember { mutableStateOf<Pair<String, String>?>(null) } // id to display name
     val installedVersions = state.installed.associate { it.region.id to it.region.version }
@@ -102,7 +102,7 @@ fun RegionsScreen(state: RegionsUiState, actions: RegionsActions, modifier: Modi
     var query by rememberSaveable { mutableStateOf("") }
     val searching = RegionSearch.normalize(query).isNotEmpty()
     // Normalized keys are computed once per catalog; typing only scans them.
-    val index = remember(catalog) { catalog?.let { RegionSearch.Index(it) } }
+    val index = remember(catalog, nameLanguage) { catalog?.let { RegionSearch.Index(it, nameLanguage) } }
     val rows = remember(catalog, index, expanded, state.installed, state.downloads, query) {
         when {
             catalog == null || index == null -> emptyList()
@@ -153,7 +153,7 @@ fun RegionsScreen(state: RegionsUiState, actions: RegionsActions, modifier: Modi
             }
             items(rows, key = { it.region.id }) { row ->
                 RegionRowView(
-                    row, actions,
+                    row, actions, nameLanguage,
                     onToggle = {
                         if (row.path != null) {
                             // A group found by search: leave the search and open it in the tree.
@@ -163,7 +163,7 @@ fun RegionsScreen(state: RegionsUiState, actions: RegionsActions, modifier: Modi
                             expanded = if (row.region.id in expanded) expanded - row.region.id else expanded + row.region.id
                         }
                     },
-                    onAskDelete = { confirmDelete = row.region.id to row.region.name },
+                    onAskDelete = { confirmDelete = row.region.id to row.region.displayName(nameLanguage) },
                 )
             }
             if (orphans.isNotEmpty()) {
@@ -400,9 +400,10 @@ private fun catalogErrorText(e: CatalogError) = stringResource(
 )
 
 @Composable
-private fun RegionRowView(row: RegionRow, actions: RegionsActions, onToggle: () -> Unit, onAskDelete: () -> Unit) {
+private fun RegionRowView(row: RegionRow, actions: RegionsActions, nameLanguage: String, onToggle: () -> Unit, onAskDelete: () -> Unit) {
     val r = row.region
     val dl = row.download
+    val shown = r.displayName(nameLanguage)
     Column(
         Modifier
             .fillMaxWidth()
@@ -413,8 +414,8 @@ private fun RegionRowView(row: RegionRow, actions: RegionsActions, onToggle: () 
         Row(verticalAlignment = Alignment.CenterVertically) {
             if (row.isGroup) BasicText(if (row.expanded) "▾" else "▸", Modifier.width(22.dp), style = Mapas.typography.body.copy(color = Mapas.colors.secondaryLabel))
             Column(Modifier.weight(1f)) {
-                BasicText(if (row.path != null) RegionSearch.segments(r.name).last() else r.name, style = Mapas.typography.body.copy(color = Mapas.colors.label))
-                if (row.path != null && row.path != RegionSearch.segments(r.name).last()) BasicText(row.path, Modifier.testTag("path_" + r.id), style = Mapas.typography.callout.copy(color = Mapas.colors.secondaryLabel))
+                BasicText(if (row.path != null) RegionSearch.segments(shown).last() else shown, style = Mapas.typography.body.copy(color = Mapas.colors.label))
+                if (row.path != null && row.path != RegionSearch.segments(shown).last()) BasicText(row.path, Modifier.testTag("path_" + r.id), style = Mapas.typography.callout.copy(color = Mapas.colors.secondaryLabel))
                 BasicText(subtitle(row), style = Mapas.typography.callout.copy(color = Mapas.colors.secondaryLabel))
             }
             if (!row.isGroup) RowActions(row, actions, onAskDelete)

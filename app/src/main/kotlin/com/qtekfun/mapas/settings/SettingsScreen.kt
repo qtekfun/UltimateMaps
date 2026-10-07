@@ -76,6 +76,8 @@ class SettingsEnv(
     val cameras: CamerasSettingsEnv? = null,
     /** Track recording part of the Data category (switch and delete); null hides it. */
     val recording: RecordingSettingsEnv? = null,
+    /** Language of place information section (search results and place card); null hides it. */
+    val placeLanguage: PlaceLanguageSettingsEnv? = null,
     /** Backup and restore part of the Data category (export, import, export everything); null hides it. */
     val backup: BackupSettingsEnv? = null,
     /** About category: the version name and the attribution lines of the installed public-transport data. */
