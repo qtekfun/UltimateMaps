@@ -5,6 +5,7 @@ Proyecto bajo GPLv3. Toda dependencia debe ser compatible y constar aquí antes 
 | Dependencia | Versión | Licencia | Compatible con GPLv3 | Uso |
 |---|---|---|---|---|
 | kotlinx-serialization-json | 1.11.0 | Apache-2.0 | Sí | `:core-geo`, lectura de Takeout GeoJSON |
+| kotlinx-coroutines (`core` y `test`) | 1.11.0 | Apache-2.0 | Sí | `:core-nav` (StateFlow/SharedFlow del seguimiento de ruta); `test` solo en tests |
 | kXML2 (`net.sf.kxml:kxml2`, incluye `org.xmlpull`) | 2.3.0 | BSD-style / dominio público (xmlpull) | Sí | Solo `compileOnly` y tests de `:core-geo`: en Android `org.xmlpull.v1` ya lo aporta la plataforma, no se empaqueta |
 | androidx.sqlite `sqlite` (interfaces `SQLiteDriver`, etc.) | 2.7.0 | Apache-2.0 | Sí | `:core-data` (API); en Android se aportará `sqlite-framework` (Apache-2.0, usa el SQLite de la plataforma) |
 | androidx.sqlite `sqlite-framework` (`AndroidSQLiteDriver`, SQLite de la plataforma) | 2.7.0 | Apache-2.0 | Sí | `:app` (base de datos de sitios y listas) |
