@@ -26,9 +26,35 @@ class CoreBenchActivity : Activity() {
         setContentView(TextView(this).apply { text = "Banco de pruebas del núcleo: mira logcat (UMBENCH)" })
         // `--ez guidance true`: en vez del banco completo, vuelca el guiado de rutas de prueba (maniobras, carriles, límites).
         val guidanceOnly = intent?.getBooleanExtra("guidance", false) == true
+        // `--ez matrix true`: rutas largas entre ciudades para localizar dónde falla el routing entre regiones.
+        val matrix = intent?.getBooleanExtra("matrix", false) == true
         thread(name = "umbench") {
-            runCatching { if (guidanceOnly) dumpGuidance() else run() }.onFailure { Log.e(tag, "FALLO: $it", it) }
+            runCatching { if (matrix) dumpMatrix() else if (guidanceOnly) dumpGuidance() else run() }.onFailure { Log.e(tag, "FALLO: $it", it) }
         }
+    }
+
+    /** Pares de ciudades en coche: código del núcleo, tiempo y longitud (sin coordenadas en el log, solo nombres de ciudad). */
+    private fun dumpMatrix() {
+        val core = CoMapsCore()
+        core.init(applicationInfo.sourceDir, File(filesDir, "maps-core").absolutePath, cacheDir.absolutePath, "es")
+        Log.i(tag, "matrix init maps=${core.refreshMaps()}")
+        val c = mapOf(
+            "Madrid" to LatLon(40.4168, -3.7038), "Guadalajara" to LatLon(40.6333, -3.1667),
+            "Medinaceli" to LatLon(41.1667, -2.4333), "Zaragoza" to LatLon(41.6488, -0.8891),
+            "Lleida" to LatLon(41.6176, 0.6200), "Tarragona" to LatLon(41.1189, 1.2445), "Barcelona" to LatLon(41.3874, 2.1686),
+        )
+        val pairs = listOf(
+            "Madrid" to "Guadalajara", "Madrid" to "Medinaceli", "Madrid" to "Zaragoza", "Madrid" to "Lleida",
+            "Madrid" to "Tarragona", "Madrid" to "Barcelona", "Zaragoza" to "Lleida", "Zaragoza" to "Barcelona",
+            "Lleida" to "Barcelona", "Lleida" to "Tarragona", "Tarragona" to "Barcelona", "Barcelona" to "Madrid",
+        )
+        val router = core.routingEngine()
+        for ((a, b) in pairs) {
+            val t0 = SystemClock.elapsedRealtime()
+            val out = router.routeDetailed(RouteRequest(c.getValue(a), c.getValue(b), profile = RoutingProfile.CAR))
+            Log.i(tag, "matrix $a->$b code=${out.code} ms=${SystemClock.elapsedRealtime() - t0} km=${out.plan?.distanceMeters?.div(1000)?.toInt()} absent=${out.absentCountries}")
+        }
+        Log.i(tag, "FIN matrix")
     }
 
     /** Vuelca a logcat el guiado de una ruta urbana de Madrid en coche, bici y a pie. Sin ejecutar aún: ver docs/phase2/maneuvers.md. */
