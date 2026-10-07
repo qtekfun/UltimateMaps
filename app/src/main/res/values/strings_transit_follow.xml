@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Itinerary card -->
+    <string name="trip_start">Start</string>
+    <string name="trip_start_description">Follow this trip step by step</string>
+
+    <!-- Banner: what to do now -->
+    <string name="trip_walk_to">Walk to %1$s</string>
+    <string name="trip_walk_to_destination">Walk to your destination</string>
+    <string name="trip_walk_detail">%1$s · %2$d min</string>
+    <string name="trip_then_board">Then line %1$s at %2$s</string>
+    <string name="trip_board_title">Board line %1$s towards %2$s</string>
+    <string name="trip_board_title_plain">Board line %1$s</string>
+    <string name="trip_wait_detail">Departs at %1$s, in %2$d min</string>
+    <string name="trip_wait_now">Departs at %1$s, now</string>
+    <string name="trip_wait_passed">Was due at %1$s</string>
+    <string name="trip_next_stop">Next stop: %1$s</string>
+    <plurals name="trip_get_off_in">
+        <item quantity="one">Get off at %2$s in %1$d stop</item>
+        <item quantity="other">Get off at %2$s in %1$d stops</item>
+    </plurals>
+    <string name="trip_get_off_next">Get off at the next stop: %1$s</string>
+    <string name="trip_get_off_detail">Due at %1$s</string>
+    <string name="trip_change_title">Change here: line %1$s towards %2$s</string>
+    <string name="trip_change_title_plain">Change here: line %1$s</string>
+    <string name="trip_change_detail">Walk to %1$s · %2$s · %3$d min · departs %4$s</string>
+    <string name="trip_change_detail_here">%1$s · departs %2$s</string>
+    <string name="trip_off_plan_title">You are off the plan</string>
+    <string name="trip_off_plan_detail">Plan a new trip from where you are</string>
+    <string name="trip_arrived_title">You have arrived</string>
+
+    <!-- Status strip -->
+    <string name="trip_no_gps">Waiting for GPS signal</string>
+    <string name="trip_estimated">No GPS: position estimated from the timetable</string>
+    <string name="trip_plan_on">On plan</string>
+    <string name="trip_plan_on_estimated">On plan (estimate)</string>
+    <plurals name="trip_plan_behind">
+        <item quantity="one">About %d min behind plan</item>
+        <item quantity="other">About %d min behind plan</item>
+    </plurals>
+    <plurals name="trip_plan_ahead">
+        <item quantity="one">About %d min ahead of plan</item>
+        <item quantity="other">About %d min ahead of plan</item>
+    </plurals>
+    <string name="trip_connection_risk">Connection to line %1$s at risk</string>
+    <string name="trip_connection_missed">Line %1$s may be missed</string>
+    <string name="trip_replan">Re-plan</string>
+    <string name="trip_replan_description">Plan a new trip from where you are</string>
+    <string name="trip_replanning">Planning a new trip…</string>
+    <string name="trip_replan_failed">No new trip found from here</string>
+
+    <!-- Bottom panel -->
+    <string name="trip_stop">Stop trip</string>
+    <string name="trip_done">Done</string>
+    <string name="trip_stop_description">Stop following this trip</string>
+    <string name="trip_arrive_at">Arrive %1$s</string>
+    <string name="trip_scheduled_note">Scheduled times, no real-time data</string>
+    <string name="trip_stop_passed">passed</string>
+    <string name="trip_stop_next">next stop</string>
+    <string name="trip_stop_row_description">%1$s, %2$s, due %3$s</string>
+    <string name="trip_stops_description">Stops of the current line</string>
+
+    <!-- Resume after the app was closed -->
+    <string name="trip_resume_title">Resume your transit trip?</string>
+    <string name="trip_resume">Resume</string>
+    <string name="trip_discard">Discard</string>
+
+    <!-- Notification -->
+    <string name="trip_channel_name">Transit trip</string>
+    <string name="trip_notification_text">%1$s · %2$s</string>
+    <string name="trip_resumed">Transit trip</string>
+
+    <!-- Status-bar chip (about 7 characters fit) -->
+    <plurals name="trip_chip_stops">
+        <item quantity="one">%d stop</item>
+        <item quantity="other">%d stops</item>
+    </plurals>
+    <string name="trip_chip_get_off">Get off</string>
+    <string name="trip_chip_minutes">%d min</string>
+    <string name="trip_chip_no_gps">No GPS</string>
+    <string name="trip_chip_replan">Re-plan</string>
+
+    <!-- Settings > Navigation -->
+    <string name="trip_prompts_title">Transit trip prompts</string>
+    <string name="trip_prompts_body">How a step-by-step transit trip tells you to board, change and get off.</string>
+    <string name="trip_prompts_note">The on-screen banner always shows. The navigation Mute silences the sound and the voice.</string>
+</resources>

@@ -41,6 +41,7 @@ fun nonDefaultValue(spec: SettingSpec, consentOn: Boolean): Any = when (spec.typ
         "voice_language" -> "EN"
         "cam_alert_mode" -> "VOICE"
         "incident_alert_mode" -> "SILENT"
+        "prompts" -> "SILENT" // transit trip prompts (default VOICE)
         "bike_cycleways" -> "STRONGLY_PREFER"
         "map_fuel" -> "g95e5"
         "source_url" -> "https://fuel.example.org/api/"

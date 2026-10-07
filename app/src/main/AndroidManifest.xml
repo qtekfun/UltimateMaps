@@ -129,5 +129,11 @@
             android:name=".nav.NavigationService"
             android:exported="false"
             android:foregroundServiceType="location" />
+
+        <!-- Step-by-step public-transport trip in the background: same foreground type as the navigation. -->
+        <service
+            android:name=".transit.follow.TransitTripService"
+            android:exported="false"
+            android:foregroundServiceType="location" />
     </application>
 </manifest>

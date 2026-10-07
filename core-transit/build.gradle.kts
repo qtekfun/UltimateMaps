@@ -8,10 +8,13 @@ dependencies {
     api(project(":core-geo"))
     api(project(":core-regions")) // TransitAsset, ResumableDownloader (download + SHA-256 verification)
     api(project(":core-net"))
+    api(project(":core-map")) // LocationFix / LocationSource for the live follower
+    api(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.serialization.json)
     testImplementation(platform(libs.junit.bom))
     testImplementation(libs.junit.jupiter)
     testImplementation(kotlin("test"))
+    testImplementation(libs.kotlinx.coroutines.test)
     testRuntimeOnly(libs.junit.platform.launcher)
 }
 
