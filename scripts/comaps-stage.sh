@@ -25,7 +25,7 @@ if [ ! -f "$C/CMakeLists.txt" ]; then
   exit 1
 fi
 for need in 3party/boost/bootstrap.sh 3party/expat/expat/CMakeLists.txt 3party/jansson/jansson/CMakeLists.txt \
-            3party/pugixml/pugixml/src/pugixml.cpp 3party/protobuf/protobuf/CMakeLists.txt 3party/icu/icu \
+            3party/pugixml/pugixml/src/pugixml.cpp 3party/protobuf/protobuf/src/google/protobuf/arena.cc 3party/icu/icu \
             3party/glm 3party/fast_double_parser 3party/utfcpp 3party/glaze 3party/just_gtfs 3party/fast_obj; do
   if [ ! -e "$C/$need" ]; then
     echo "ERROR: nested submodule file missing: $need. Fetch them with: (cd $C && git submodule update --init --recursive --depth 1)" >&2
