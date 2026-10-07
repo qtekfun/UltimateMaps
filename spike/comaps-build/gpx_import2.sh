@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 exec 9>/tmp/claude-1000/device.lock
 flock 9
-adb shell input tap 960 1456   # cerrar dialogo
+adb shell input tap 960 1456   # close dialog
 adb shell "cmd media_session >/dev/null 2>&1; am broadcast -a android.intent.action.MEDIA_SCANNER_SCAN_FILE -d file:///sdcard/Download/test-spike.gpx >/dev/null"
 sleep 3
 adb shell "content query --uri content://media/external/file --projection _id:_display_name --where \"_display_name='test-spike.gpx'\""

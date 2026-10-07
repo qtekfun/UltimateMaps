@@ -70,7 +70,7 @@ def run_gesture(kind, secs):
     n = int(secs * HZ)
     dt = 1.0 / HZ
     if kind == "pan":
-        # 1 dedo: barrido vertical de ida y vuelta (ciclos de 1 s), amplitud 500 px
+        # 1 finger: vertical back-and-forth sweep (1 s cycles), amplitude 500 px
         tp.down([(0, CX, CY)])
         t0 = time.perf_counter()
         for i in range(n):
@@ -81,7 +81,7 @@ def run_gesture(kind, secs):
             time.sleep(max(0, t0 + (i + 1) * dt - time.perf_counter()))
         tp.up([0])
     elif kind == "zoom":
-        # 2 dedos horizontales: separacion 120 <-> 600 px, ida y vuelta cada 2 s
+        # 2 horizontal fingers: separation 120 <-> 600 px, back and forth every 2 s
         tp.down([(0, CX - 60, CY), (1, CX + 60, CY)])
         t0 = time.perf_counter()
         for i in range(n):
@@ -91,7 +91,7 @@ def run_gesture(kind, secs):
             time.sleep(max(0, t0 + (i + 1) * dt - time.perf_counter()))
         tp.up([0, 1])
     elif kind == "rotate":
-        # 2 dedos a radio 250 px girando 360 grados por 3 s
+        # 2 fingers at radius 250 px rotating 360 degrees per 3 s
         r = 250
         tp.down([(0, CX - r, CY), (1, CX + r, CY)])
         t0 = time.perf_counter()
@@ -141,7 +141,7 @@ def main():
         cands, lst = find_layer()
         open(prefix + ".layers.txt", "w").write(lst)
         if not cands:
-            print("no se encontro la capa SurfaceView", file=sys.stderr)
+            print("SurfaceView layer not found", file=sys.stderr)
             sys.exit(2)
         layer = cands[0]
         adb("shell", "dumpsys", "SurfaceFlinger", "--latency-clear", layer)
@@ -153,7 +153,7 @@ def main():
             t = adb("shell", "dumpsys", "SurfaceFlinger", "--latency", f'"{layer}"')
             raw.write(f"## poll {time.time()}\n{t}\n")
             for r in parse_latency(t):
-                frames[r[1]] = r  # clave: actualPresentTime (ns)
+                frames[r[1]] = r  # key: actualPresentTime (ns)
             time.sleep(0.3)
         th.join()
         t = adb("shell", "dumpsys", "SurfaceFlinger", "--latency", f'"{layer}"')

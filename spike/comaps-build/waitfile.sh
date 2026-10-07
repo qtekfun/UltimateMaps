@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Espera (sin retener el lock) a que aparezca en el dispositivo un fichero que termine en $1 dentro de la carpeta de mapas
+# Waits (without holding the lock) for a file ending in $1 to appear on the device inside the maps folder
 HERE=$(dirname "$0")
 D=/sdcard/Android/data/app.comaps.fdroid/files/261004
 for i in $(seq 1 ${2:-60}); do

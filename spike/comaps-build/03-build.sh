@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# Compila CoMaps (flavor fdroid, sin GMS) para arm64, release (firmado con la clave debug del propio proyecto).
+# Builds CoMaps (fdroid flavor, no GMS) for arm64, release (signed with the project's own debug key).
 export ANDROID_HOME=$HOME/Android/Sdk
 export LD_LIBRARY_PATH=$HOME/repos/comaps-spike-tools/icu/lib
 export PATH=$HOME/repos/comaps-spike-tools/icu/bin:$ANDROID_HOME/cmake/3.31.6/bin:$PATH
-export LDFLAGS="-Wl,--thinlto-jobs=2"  # el enlace ThinLTO fue OOM-killed con todos los hilos
+export LDFLAGS="-Wl,--thinlto-jobs=2"  # the ThinLTO link was OOM-killed with all threads
 cd ~/repos/comaps-spike/android
 date -Is
 /usr/bin/time -v ./gradlew assembleFdroidRelease -Parm64 -Pnjobs=6 --no-daemon \

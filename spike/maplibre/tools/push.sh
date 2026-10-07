@@ -1,6 +1,6 @@
 #!/bin/bash
-# Instala el APK y empuja style/sprites/glyphs/pmtiles al dispositivo (todo bajo flock).
-# Uso: push.sh <dir_estilo> <madrid|es> <fichero.pmtiles>
+# Installs the APK and pushes style/sprites/glyphs/pmtiles to the device (all under flock).
+# Usage: push.sh <style_dir> <madrid|es> <file.pmtiles>
 W=$1; T=$2; P=$3
 L="flock /tmp/claude-1000/device.lock"
 PKG=org.ultimatemaps.spike.maplibre

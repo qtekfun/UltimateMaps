@@ -22,10 +22,10 @@ import java.io.FileInputStream;
 import java.nio.charset.StandardCharsets;
 
 /**
- * Prototipo descartable: MapLibre Native + PMTiles local (estilo protomaps basemaps).
- * Extras (am start --es/--ez/--ed): style (nombre en getExternalFilesDir, def. style.json),
- * lat, lon, zoom (double), texture (bool, def. true: TextureView para que gfxinfo vea los frames),
- * demo (bool: secuencia de zoom+giro programatica tras el primer render completo).
+ * Discardable prototype: MapLibre Native + local PMTiles (protomaps basemaps style).
+ * Extras (am start --es/--ez/--ed): style (name in getExternalFilesDir, default style.json),
+ * lat, lon, zoom (double), texture (bool, default true: TextureView so gfxinfo sees the frames),
+ * demo (bool: programmatic zoom+rotation sequence after the first full render).
  */
 public class MainActivity extends Activity {
     private static final String TAG = "SPIKE";
@@ -79,16 +79,16 @@ public class MainActivity extends Activity {
         try (FileInputStream in = new FileInputStream(f)) { return in.readAllBytes(); }
     }
 
-    /** Secuencia reproducible: zoom in/out y giro, 10 s en total. */
+    /** Reproducible sequence: zoom in/out and rotation, 10 s in total. */
     private void runDemo() {
         Log.i(TAG, "demo_start");
         CameraPosition p = map.getCameraPosition();
         double z = p.zoom;
         long[] t = {0};
-        step(t, 2000, z - 3, 0, 40);   // zoom out 3 niveles
+        step(t, 2000, z - 3, 0, 40);   // zoom out 3 levels
         step(t, 2000, z, 0, 40);       // zoom in
-        step(t, 2000, z, 120, 40);     // giro 120 grados con inclinacion
-        step(t, 2000, z, -120, 0);     // giro inverso
+        step(t, 2000, z, 120, 40);     // rotate 120 degrees with tilt
+        step(t, 2000, z, -120, 0);     // reverse rotation
         h.postDelayed(() -> Log.i(TAG, "demo_end"), t[0] + 100);
     }
 

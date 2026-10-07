@@ -5,9 +5,9 @@ import android.view.MotionEvent;
 import java.lang.reflect.Method;
 
 /**
- * Inyector multitouch para `app_process` (usuario shell): pan 1 dedo, pinch-zoom y giro con 2 dedos, a 120 Hz con
- * temporizacion local. Uso: app_process -cp /data/local/tmp/inj.dex /system/bin Inj <pan|zoom|rotate> <segundos> [hz]
- * Inyecta con InputManagerGlobal.injectInputEvent por reflexion (igual que scrcpy / el comando `input`).
+ * Multitouch injector for `app_process` (shell user): 1-finger pan, pinch-zoom and 2-finger rotation, at 120 Hz with
+ * local timing. Usage: app_process -cp /data/local/tmp/inj.dex /system/bin Inj <pan|zoom|rotate> <segundos> [hz]
+ * Injects with InputManagerGlobal.injectInputEvent via reflection (same as scrcpy / the `input` command).
  */
 public class Inj {
     static Object im;
