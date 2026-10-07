@@ -11,6 +11,10 @@ import com.qtekfun.mapas.R
 import com.qtekfun.mapas.core.fuel.FuelRepository
 import com.qtekfun.mapas.core.fuel.FuelSettingsStore
 import com.qtekfun.mapas.core.geo.LatLon
+import com.qtekfun.mapas.cameras.HazardCardController
+import com.qtekfun.mapas.cameras.HazardCardState
+import com.qtekfun.mapas.cameras.HazardsEnv
+import com.qtekfun.mapas.map.HazardMapLayer
 import com.qtekfun.mapas.fuel.FuelCardController
 import com.qtekfun.mapas.fuel.FuelCardState
 import com.qtekfun.mapas.map.FuelMapLayer
@@ -64,6 +68,8 @@ class PanelHost(
     private val fuelSettings: FuelSettingsStore = StaticFuelSettings(),
     /** Display name of a fuel id, for the station card. */
     private val fuelName: (String) -> String = { it },
+    /** Optional speed-camera and traffic layers (null: none). */
+    private val hazards: HazardsEnv? = null,
     /** The navigation model; with it the route card offers "Start" and "Simulate". Null: preview only. */
     private val navScreen: NavScreenController? = null,
 ) {
@@ -191,6 +197,23 @@ class PanelHost(
         render = engine::showFuel,
     )
 
+    val hazardCard = HazardCardController(
+        describer = { id -> hazards?.describer?.describe(id) },
+        card = HazardCardState(),
+        onOpened = { screen.notice = null; screen.detent = SheetDetent.MEDIUM },
+    )
+
+    private val hazardLayer: HazardMapLayer? = hazards?.let { h ->
+        HazardMapLayer(
+            scope = activity.lifecycleScope,
+            io = Dispatchers.Default,
+            cameras = h.cameras,
+            incidents = h.incidents,
+            settings = h.settings,
+            render = engine::showHazards,
+        )
+    }
+
     private val documents: DocumentLaunchers = DocumentLaunchers(
         activity,
         onImport = { uri -> places.import({ input(uri) }, documents.displayName(uri)) },
@@ -228,6 +251,7 @@ class PanelHost(
 
     fun onDestroy() {
         fuelLayer.stop()
+        hazardLayer?.stop()
         search.close()
         navLauncher?.reset()
         route.close()
@@ -243,8 +267,13 @@ class PanelHost(
     init {
         engine.setMapTapListener { route.pickOrigin(it, null) }
         engine.setFuelTapListener(fuelCard::onStationTap)
-        engine.setViewportListener(fuelLayer::onViewport)
+        engine.setHazardTapListener(hazardCard::onTap)
+        engine.setViewportListener { bounds, zoom ->
+            fuelLayer.onViewport(bounds, zoom)
+            hazardLayer?.onViewport(bounds, zoom)
+        }
         fuelLayer.start()
+        hazardLayer?.start()
     }
 
     private fun show(info: PlaceInfo) {
@@ -306,6 +335,7 @@ class PanelHost(
         SheetPanel(
             search, places, actions, route = route, fuel = fuel, navStart = navStart,
             quick = quick, history = history, onEmergency = ::openEmergency, tracks = tracks,
+            hazard = hazardCard.card,
         )
     }
 

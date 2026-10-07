@@ -39,6 +39,8 @@ import com.qtekfun.mapas.places.PlacesController
 import com.qtekfun.mapas.places.PlacesMessage
 import com.qtekfun.mapas.places.subtitleOf
 import com.qtekfun.mapas.nav.NavStartHost
+import com.qtekfun.mapas.cameras.HazardCard
+import com.qtekfun.mapas.cameras.HazardCardState
 import com.qtekfun.mapas.route.RoutePanel
 import com.qtekfun.mapas.route.RoutePreviewController
 import com.qtekfun.mapas.ui.theme.Mapas
@@ -89,10 +91,14 @@ fun SheetPanel(
     history: SearchHistory? = null,
     onEmergency: () -> Unit = {},
     tracks: TrackLayerController? = null,
+    /** The card of a tapped camera, zone or incident (null: none). */
+    hazard: HazardCardState? = null,
 ) {
     val card = places.state.card
     Column(modifier.fillMaxWidth().testTag("sheet_panel")) {
-        if (fuel != null && fuel.state.station != null) {
+        if (hazard != null && hazard.info != null) {
+            HazardCard(hazard)
+        } else if (fuel != null && fuel.state.station != null) {
             // Over the route panel too: "Add stop" needs the card while a route is active.
             FuelStationCard(
                 state = fuel.state, mapFuelId = fuel.mapFuelId(), fuelName = fuel.fuelName,
