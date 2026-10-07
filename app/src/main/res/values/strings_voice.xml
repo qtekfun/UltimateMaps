@@ -18,6 +18,10 @@
     <string name="nav_test_voice">Test voice</string>
     <string name="nav_voice_ready">The voice engine is ready.</string>
     <string name="nav_voice_starting">Starting the voice engine…</string>
+    <string name="nav_view3d_title">3D view</string>
+    <string name="nav_view3d_body">While navigating, tilt the map and look ahead along the road, like most navigation apps. Off: a flat map.</string>
+    <string name="nav_buildings3d_title">3D buildings</string>
+    <string name="nav_buildings3d_body">Draw buildings with height in the 3D view from zoom 15. It needs more graphics power; turn it off if the map stutters.</string>
     <string name="nav_avoid_title">Avoid by default</string>
     <string name="nav_avoid_body">Used when you plan a route. You can change it for each trip.</string>
     <string name="nav_avoid_motorways">Motorways</string>

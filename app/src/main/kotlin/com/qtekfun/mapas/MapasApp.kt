@@ -96,6 +96,7 @@ class MapasApp : Application() {
             location = navLocation,
             service = AndroidNavServiceControl(this),
             prefs = SharedNavUiPrefs(this),
+            settings = com.qtekfun.mapas.voice.VoiceModule.settings(this), // the 2D/3D choice lives with the navigation settings
         ).also { it.addSink(VoiceNavSink(this)) }
     }
 

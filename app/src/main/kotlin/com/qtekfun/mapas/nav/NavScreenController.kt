@@ -9,6 +9,8 @@ import com.qtekfun.mapas.core.nav.NavTrip
 import com.qtekfun.mapas.core.nav.NavigationController
 import com.qtekfun.mapas.core.nav.withStops
 import com.qtekfun.mapas.core.routing.RoutePlan
+import com.qtekfun.mapas.core.voice.InMemoryNavSettingsStore
+import com.qtekfun.mapas.core.voice.NavSettingsStore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -45,6 +47,12 @@ data class NavUi(
     val resumable: Boolean = false,
     /** Glove mode (RF-06): big targets, high contrast, no fine gestures. */
     val glove: Boolean = false,
+    /** The camera is the tilted 3D follow camera (false: flat 2D). Persisted in the navigation settings. */
+    val view3d: Boolean = true,
+    /** Extruded 3D buildings are wanted while [view3d] (navigation setting). */
+    val buildings3d: Boolean = true,
+    /** The whole remaining route is framed for a moment ([NavScreenController.showOverview]); the camera does not follow meanwhile. */
+    val overview: Boolean = false,
 ) {
     val active: Boolean get() = phase != null
 }
@@ -84,10 +92,14 @@ class NavScreenController(
     private val location: SwitchableLocationSource,
     private val service: NavServiceControl,
     private val prefs: NavUiPrefs = InMemoryNavUiPrefs(),
+    private val settings: NavSettingsStore = InMemoryNavSettingsStore(),
     private val clock: () -> Long = System::currentTimeMillis,
     private val stopFlashMillis: Long = STOP_FLASH_MILLIS,
+    private val overviewMillis: Long = OVERVIEW_MILLIS,
 ) {
-    private val _ui = MutableStateFlow(NavUi(glove = prefs.glove))
+    private fun idleUi() = NavUi(glove = prefs.glove, view3d = settings.settings.value.view3d, buildings3d = settings.settings.value.buildings3d)
+
+    private val _ui = MutableStateFlow(idleUi())
     val ui: StateFlow<NavUi> = _ui.asStateFlow()
 
     private val sinks = CopyOnWriteArrayList<NavEventSink>()
@@ -95,6 +107,7 @@ class NavScreenController(
     private var tripStartMillis = 0L
     private var flashJob: Job? = null
     private var flashUntil = 0L
+    private var overviewJob: Job? = null
 
     /** The native follower itself (for the service and the camera); the screen goes through [ui]. */
     val navigation: NavigationController get() = controller
@@ -108,6 +121,10 @@ class NavScreenController(
     }
 
     init {
+        // The 2D/3D switch lives in the settings (the Settings screen changes it too): follow it.
+        scope.launch {
+            settings.settings.collect { st -> _ui.update { if (it.view3d == st.view3d && it.buildings3d == st.buildings3d) it else it.copy(view3d = st.view3d, buildings3d = st.buildings3d) } }
+        }
         scope.launch { controller.state.collect(::onState) }
         scope.launch { controller.problem.collect { p -> _ui.update { it.copy(problem = p) } } }
         scope.launch { controller.events.collect(::onEvent) }
@@ -127,13 +144,13 @@ class NavScreenController(
             tripStartMillis = clock()
             flashJob?.cancel()
             flashUntil = 0L
-            _ui.value = NavUi(
+            overviewJob?.cancel()
+            _ui.value = idleUi().copy(
                 phase = NavPhase.ON_ROUTE, simulated = simulate, simulationSpeedKmh = speedKmh.coerceIn(NavSimulation.MIN_SPEED_KMH, NavSimulation.MAX_SPEED_KMH),
-                glove = prefs.glove,
             )
             if (!controller.start(withStops, 0.0, trip, persist = !simulate)) {
                 location.endSimulation()
-                _ui.value = NavUi(glove = prefs.glove)
+                _ui.value = idleUi()
                 return false
             }
             if (simulate) simulation.start(withStops, 0.0, speedKmh) else service.start()
@@ -151,7 +168,8 @@ class NavScreenController(
             controller.stop()
             location.endSimulation()
             flashJob?.cancel()
-            _ui.update { NavUi(glove = prefs.glove) }
+            overviewJob?.cancel()
+            _ui.update { idleUi() }
         }
         service.stop()
         if (wasActive) sinks.forEach { runCatching { it.onNavigationEnded(wasArrived) } }
@@ -159,9 +177,33 @@ class NavScreenController(
 
     // --- Following / recenter / glove ---
 
-    fun onUserMovedMap() = _ui.update { if (it.active && it.following) it.copy(following = false) else it }
+    fun onUserMovedMap() {
+        overviewJob?.cancel()
+        _ui.update { if (it.active && (it.following || it.overview)) it.copy(following = false, overview = false) else it }
+    }
 
-    fun recenter() = _ui.update { if (it.active) it.copy(following = true) else it }
+    fun recenter() {
+        overviewJob?.cancel()
+        _ui.update { if (it.active) it.copy(following = true, overview = false) else it }
+    }
+
+    /** Switches between the 3D and the flat 2D camera; the choice is saved in the navigation settings. */
+    fun setView3d(on: Boolean) = settings.update { it.copy(view3d = on) }
+
+    /**
+     * Frames the whole remaining route for [overviewMillis] (the map side is [NavHost]'s), then goes back to following.
+     * A touch of the map or "recenter" ends it earlier.
+     */
+    fun showOverview() {
+        val ui = _ui.value
+        if (!ui.active || ui.phase == NavPhase.ARRIVED) return
+        overviewJob?.cancel()
+        _ui.update { it.copy(overview = true, following = false) }
+        overviewJob = scope.launch {
+            delay(overviewMillis)
+            recenter()
+        }
+    }
 
     fun setGlove(on: Boolean) {
         prefs.glove = on
@@ -228,7 +270,8 @@ class NavScreenController(
                 simulation.stop()
                 location.endSimulation()
                 sinks.forEach { runCatching { it.onNavigationEnded(false) } }
-                _ui.update { NavUi(glove = prefs.glove) }
+                overviewJob?.cancel()
+                _ui.update { idleUi() }
             }
             return
         }
@@ -286,6 +329,9 @@ class NavScreenController(
 
     companion object {
         const val STOP_FLASH_MILLIS = 6_000L
+
+        /** How long the route overview stays before the camera goes back to following. */
+        const val OVERVIEW_MILLIS = 8_000L
 
         /** If the controller vanishes with the last snapshot this close to the end, the user had arrived. */
         const val ARRIVAL_SLACK_METERS = 60.0

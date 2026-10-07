@@ -18,6 +18,10 @@
     <string name="nav_test_voice">Probar voz</string>
     <string name="nav_voice_ready">El motor de voz está listo.</string>
     <string name="nav_voice_starting">Iniciando el motor de voz…</string>
+    <string name="nav_view3d_title">Vista 3D</string>
+    <string name="nav_view3d_body">Al navegar, inclina el mapa y mira hacia delante por la carretera, como la mayoría de apps de navegación. Desactivada: mapa plano.</string>
+    <string name="nav_buildings3d_title">Edificios en 3D</string>
+    <string name="nav_buildings3d_body">Dibuja los edificios con altura en la vista 3D desde el zoom 15. Necesita más potencia gráfica; desactívalo si el mapa va a tirones.</string>
     <string name="nav_avoid_title">Evitar por defecto</string>
     <string name="nav_avoid_body">Se usa al planificar una ruta. Puedes cambiarlo en cada viaje.</string>
     <string name="nav_avoid_motorways">Autopistas</string>
