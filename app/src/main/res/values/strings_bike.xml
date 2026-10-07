@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Bike: prefer or require cycle infrastructure -->
+    <string name="bike_cycleways_title">Cycle infrastructure</string>
+    <string name="bike_cycleways_settings_body">Default for bike routes: how strongly to prefer cycleways and cycle lanes. It relies on OpenStreetMap tags, which are more complete in some areas than in others.</string>
+    <string name="bike_cycleways_off">Off</string>
+    <string name="bike_cycleways_prefer">Prefer</string>
+    <string name="bike_cycleways_strong">Strongly prefer</string>
+    <string name="bike_cycleways_only">Only</string>
+    <string name="bike_cycleways_full_off">Off (standard)</string>
+    <string name="bike_cycleways_full_prefer">Prefer</string>
+    <string name="bike_cycleways_full_strong">Strongly prefer</string>
+    <string name="bike_cycleways_full_only">Only cycle infrastructure</string>
+    <string name="bike_cycleways_caption_off">Standard bike routing, which already favours cycleways and tagged cycle lanes.</string>
+    <string name="bike_cycleways_caption_prefer">Prefers cycleways and cycle lanes, with some detours.</string>
+    <string name="bike_cycleways_caption_strong">Strongly prefers cycleways and cycle lanes, even with long detours.</string>
+    <string name="bike_cycleways_caption_only">Uses only cycleways and roads tagged for bikes. Often finds no route.</string>
+    <string name="bike_err_no_cycle_route">No route found using only cycle infrastructure. Try Prefer.</string>
+</resources>

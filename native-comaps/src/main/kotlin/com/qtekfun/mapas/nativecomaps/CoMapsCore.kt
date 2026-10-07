@@ -22,6 +22,13 @@ object RouteCode {
     const val HAS_WARNINGS = 16
 
     /**
+     * Own code (not from CoMaps): bike routing with [com.qtekfun.mapas.core.routing.BikeCycleways.ONLY] found no route
+     * (start or end not near cycle infrastructure, or a gap in the network). The UI suggests "Prefer". Same value as
+     * `um::kRouteNoCycleRoute` in C++.
+     */
+    const val NO_CYCLE_ROUTE = 1004
+
+    /**
      * Own codes (not coming from CoMaps) of the isolated core: the `:core` process died and so did the retry,
      * it could not be started/connected, or the call failed for another reason. A timeout is returned as
      * [CANCELLED] (the UI already shows it as "took too long").
@@ -104,9 +111,16 @@ class CoMapsCore internal constructor(private val bridge: NativeBridge) : CoreHa
     override fun routingEngine(timeoutSec: Int, withGuidance: Boolean): DetailedRoutingEngine =
         CoMapsRoutingEngine(this, timeoutSec, withGuidance)
 
-    internal fun search(query: String, near: LatLon?, limit: Int, locale: String, timeoutMs: Int): List<SearchResult> {
+    internal fun search(
+        query: String, near: LatLon?, limit: Int, locale: String, timeoutMs: Int, categorial: Boolean = false,
+    ): List<SearchResult> {
         check(initialized) { "CoMapsCore.init() not called" }
-        val raw = bridge.search(query, near != null, near?.lat ?: 0.0, near?.lon ?: 0.0, limit, timeoutMs, locale)
+        val args = Triple(near != null, near?.lat ?: 0.0, near?.lon ?: 0.0)
+        val raw = if (categorial) {
+            bridge.searchCategory(query, args.first, args.second, args.third, limit, timeoutMs, locale)
+        } else {
+            bridge.search(query, args.first, args.second, args.third, limit, timeoutMs, locale)
+        }
         return decodeSearch(raw)
     }
 
@@ -134,6 +148,9 @@ internal class CoMapsSearchEngine(
     override fun search(query: String, near: LatLon?, limit: Int): List<SearchResult> =
         if (query.isBlank()) emptyList() else core.search(query.trim(), near, limit, locale, timeoutMs)
 
+    override fun searchCategory(query: String, near: LatLon?, limit: Int): List<SearchResult> =
+        if (query.isBlank()) emptyList() else core.search(query.trim(), near, limit, locale, timeoutMs, categorial = true)
+
     override fun close() = Unit
 }
 
@@ -154,11 +171,6 @@ internal fun RoutingProfile.toNative(): Int = when (this) {
     RoutingProfile.FOOT -> 1
     RoutingProfile.BIKE -> 2
 }
-
-/** Same bits as `um::AvoidFlags` in C++. */
-internal fun RouteOptions.toFlags(): Int =
-    (if (avoidMotorways) 1 else 0) or (if (avoidTolls) 2 else 0) or
-        (if (avoidFerries) 4 else 0) or (if (avoidUnpaved) 8 else 0)
 
 internal fun decodeSearch(raw: Array<String>): List<SearchResult> {
     require(raw.size % 5 == 0) { "malformed search response: ${raw.size}" }

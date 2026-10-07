@@ -99,6 +99,31 @@ class SheetPanelTest {
     }
 
     @Test
+    fun categoryResultsShowTheDistanceAndTheNoteAndTheChipsAreThere() {
+        search.state.regionsAvailable = true
+        search.state.category = PlaceCategory.PHARMACY
+        search.state.results = listOf(sol.copy(distanceMeters = 350.0))
+        search.state.status = SearchStatus.DONE
+        show()
+        rule.onNodeWithTag("category_row").assertIsDisplayed()
+        rule.onNodeWithTag("category_pharmacy").assertIsDisplayed()
+        rule.onNodeWithText("350 m").assertIsDisplayed()
+        rule.onNodeWithTag("category_note").assertIsDisplayed()
+        rule.onNodeWithTag("search_result").performClick()
+        assertEquals(listOf(sol.copy(distanceMeters = 350.0)), picked)
+    }
+
+    @Test
+    fun anEmptyCategoryResultSaysNothingWasFound() {
+        search.state.regionsAvailable = true
+        search.state.category = PlaceCategory.ATM
+        search.state.results = emptyList()
+        search.state.status = SearchStatus.DONE
+        show()
+        rule.onNodeWithText("Nothing found nearby in the downloaded maps.").assertIsDisplayed()
+    }
+
+    @Test
     fun placeCardShowsDetailsAndSavesToFavorites() {
         places.showCard(sol.toPlaceInfo())
         show()

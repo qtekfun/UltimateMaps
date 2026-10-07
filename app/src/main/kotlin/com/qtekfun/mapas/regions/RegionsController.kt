@@ -153,20 +153,36 @@ class RegionsController(
         }
         val before = catalogState
         if (before !is CatalogState.Loaded) catalogState = CatalogState.Loading
-        ioExecutor.execute {
-            try {
-                val (text, catalog) = fetcher.fetch(url)
-                cacheFile.writeText(text)
-                whitelistAssetHosts(catalog)
-                catalogState = CatalogState.Loaded(catalog)
-                backfillComapsIds(catalog)
-            } catch (e: NetworkDeniedException) {
-                failRefresh(if (e.reason == DenyReason.OFFLINE_MODE) CatalogError.OFFLINE_MODE else CatalogError.NOT_ALLOWED)
-            } catch (e: CatalogException) {
-                failRefresh(CatalogError.INVALID)
-            } catch (e: Exception) {
-                failRefresh(CatalogError.NETWORK)
-            }
+        ioExecutor.execute { fetchCatalogNow(url) }
+    }
+
+    @Volatile private var catalogFetchedThisProcess = false
+
+    /**
+     * Brings the catalog up to date for a feature that reads one of its blocks (the speed-camera file) and waits for the
+     * answer. [force] fetches it; otherwise it is fetched only once per process. Same request as [refreshCatalog]
+     * (through the network policy, to the server the user configured); any failure keeps the cached catalog.
+     */
+    suspend fun syncCatalog(force: Boolean) {
+        val url = serverUrl
+        if (url.isEmpty() || (!force && catalogFetchedThisProcess)) return
+        kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) { fetchCatalogNow(url) }
+    }
+
+    private fun fetchCatalogNow(url: String) {
+        try {
+            val (text, catalog) = fetcher.fetch(url)
+            cacheFile.writeText(text)
+            whitelistAssetHosts(catalog)
+            catalogState = CatalogState.Loaded(catalog)
+            catalogFetchedThisProcess = true
+            backfillComapsIds(catalog)
+        } catch (e: NetworkDeniedException) {
+            failRefresh(if (e.reason == DenyReason.OFFLINE_MODE) CatalogError.OFFLINE_MODE else CatalogError.NOT_ALLOWED)
+        } catch (e: CatalogException) {
+            failRefresh(CatalogError.INVALID)
+        } catch (e: Exception) {
+            failRefresh(CatalogError.NETWORK)
         }
     }
 

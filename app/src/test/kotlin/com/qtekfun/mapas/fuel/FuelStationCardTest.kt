@@ -12,6 +12,7 @@ import com.qtekfun.mapas.core.data.SqlitePlacesRepository
 import com.qtekfun.mapas.core.fuel.FuelStation
 import com.qtekfun.mapas.core.fuel.InMemoryFuelRepository
 import com.qtekfun.mapas.core.geo.LatLon
+import com.qtekfun.mapas.core.nav.AddStopResult
 import com.qtekfun.mapas.core.routing.RoutePlan
 import com.qtekfun.mapas.nativecomaps.DetailedRoutingEngine
 import com.qtekfun.mapas.nativecomaps.RouteCode
@@ -153,13 +154,65 @@ class FuelStationCardTest {
     }
 
     @Test
-    fun whileNavigatingTheCardOffersGoAndSaveButNotAddStop() {
+    fun whileNavigatingTheCardOffersGoAddStopAndSaveEvenWithoutAPreview() {
         controller.onStationTap("1")
-        startRoute() // the route preview behind the trip is still active
-        show(navigating = true)
+        show(navigating = true) // a trip is running: no route preview is open behind it
         rule.onNodeWithTag("fuel_go").assertIsDisplayed()
         rule.onNodeWithTag("fuel_save").assertIsDisplayed()
-        rule.onNodeWithTag("fuel_add_stop").assertDoesNotExist()
+        rule.onNodeWithTag("fuel_add_stop").assertIsDisplayed()
+    }
+
+    private fun navController(result: suspend (LatLon) -> AddStopResult, asked: MutableList<LatLon>) = FuelCardController(
+        repo, route, places, FuelCardState(), navigating = { true },
+        navStops = { p -> asked += p; result(p) }, scope = CoroutineScope(Dispatchers.Unconfined),
+    )
+
+    @Test
+    fun addStopWhileNavigatingReplansTheTripAndClosesTheCardWithoutTouchingThePreview() {
+        val asked = mutableListOf<LatLon>()
+        val nav = navController({ AddStopResult.ADDED }, asked)
+        nav.onStationTap("1")
+        nav.addStop(repsol)
+        assertEquals(listOf(repsol.location), asked)
+        assertNull(nav.card.station)
+        assertFalse(nav.card.adding)
+        assertFalse(route.state.active, "the route preview is not involved")
+    }
+
+    @Test
+    fun aFailedAddStopWhileNavigatingKeepsTheCardAndSaysTheTripGoesOn() {
+        val nav = navController({ AddStopResult.NO_ROUTE }, mutableListOf())
+        nav.onStationTap("1")
+        nav.addStop(repsol)
+        assertEquals(AddStopResult.NO_ROUTE, nav.card.navNotice)
+        assertEquals("1", nav.card.station?.id)
+        val host = FuelCardHost(
+            state = nav.card, mapFuelId = { null }, fuelName = { it }, updatedMillis = { null }, now = { now },
+            onGo = nav::go, onAddStop = nav::addStop, onSave = nav::save, navigating = { true },
+        )
+        rule.setContent { MapasTheme(darkTheme = false) { com.qtekfun.mapas.search.SheetPanel(search, places, actions, route = route, fuel = host) } }
+        rule.onNodeWithText("No route found through this stop. Your trip goes on as before.").assertIsDisplayed()
+    }
+
+    @Test
+    fun onlyOneNavAddStopRunsAtATimeAndTheButtonSaysAdding() {
+        val gate = kotlinx.coroutines.CompletableDeferred<AddStopResult>()
+        val asked = mutableListOf<LatLon>()
+        val nav = navController({ gate.await() }, asked)
+        nav.onStationTap("1")
+        nav.addStop(repsol)
+        assertTrue(nav.card.adding)
+        nav.addStop(repsol) // ignored while the first is running
+        assertEquals(1, asked.size)
+        val host = FuelCardHost(
+            state = nav.card, mapFuelId = { null }, fuelName = { it }, updatedMillis = { null }, now = { now },
+            onGo = nav::go, onAddStop = nav::addStop, onSave = nav::save, navigating = { true },
+        )
+        rule.setContent { MapasTheme(darkTheme = false) { com.qtekfun.mapas.search.SheetPanel(search, places, actions, route = route, fuel = host) } }
+        rule.onNodeWithText("Adding stop…").assertIsDisplayed()
+        gate.complete(AddStopResult.ADDED)
+        assertFalse(nav.card.adding)
+        assertNull(nav.card.station)
     }
 
     @Test

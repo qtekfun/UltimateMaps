@@ -71,6 +71,7 @@ class NavigationSettingsTest {
         assertEquals(UnitsPref.AUTO, d.units)
         assertEquals(VoiceLanguagePref.AUTO, d.voiceLanguage)
         assertFalse(d.avoidMotorways || d.avoidTolls || d.avoidFerries || d.avoidUnpaved)
+        assertEquals(com.qtekfun.mapas.core.routing.BikeCycleways.OFF, d.bikeCycleways)
     }
 
     @Test fun theSwitchesChangeTheSettings() {
@@ -182,5 +183,21 @@ class NavigationSettingsTest {
         PrefsNavSettingsStore(prefs).update { it }
         assertNull(prefs.getString(PrefsNavSettingsStore.KEY_UNITS, null))
     }
-}
 
+    @Test fun theBikeCycleLevelIsChosenWithRadiosAndFeedsTheRouteOptions() {
+        show()
+        for (level in com.qtekfun.mapas.core.routing.BikeCycleways.entries) {
+            click("nav_bike_cycleways_${level.name.lowercase()}")
+            assertEquals(level, store.settings.value.bikeCycleways)
+            assertEquals(level, store.settings.value.routeOptions().bikeCycleways)
+        }
+    }
+
+    @Test fun theBikeCycleLevelSurvivesARestartAndAnUnknownValueFallsBackToOff() {
+        val prefs = context.getSharedPreferences("test_nav_5", Context.MODE_PRIVATE)
+        PrefsNavSettingsStore(prefs).update { it.copy(bikeCycleways = com.qtekfun.mapas.core.routing.BikeCycleways.STRONGLY_PREFER) }
+        assertEquals(com.qtekfun.mapas.core.routing.BikeCycleways.STRONGLY_PREFER, PrefsNavSettingsStore(prefs).settings.value.bikeCycleways)
+        prefs.edit().putString(PrefsNavSettingsStore.KEY_BIKE_CYCLEWAYS, "TELEPORT").commit()
+        assertEquals(com.qtekfun.mapas.core.routing.BikeCycleways.OFF, PrefsNavSettingsStore(prefs).settings.value.bikeCycleways)
+    }
+}

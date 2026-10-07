@@ -1,5 +1,6 @@
 package com.qtekfun.mapas.core.nav
 
+import com.qtekfun.mapas.core.routing.BikeCycleways
 import com.qtekfun.mapas.core.routing.RouteOptions
 import com.qtekfun.mapas.core.routing.RoutingProfile
 import java.io.File
@@ -28,5 +29,15 @@ class NavTripPersistenceTest {
         val trip = NavTrip(RoutingProfile.BIKE, RouteOptions(avoidTolls = true, avoidUnpaved = true))
         store.save(lPlan(), 3.0, trip)
         assertEquals(trip, store.load()!!.trip)
+    }
+
+    @Test fun theBikeCycleLevelSurvivesTheFile() {
+        val f = File.createTempFile("trip", ".bin").also { it.delete(); it.deleteOnExit() }
+        val store = NavStateStore(f, { 1L })
+        for (level in BikeCycleways.entries) {
+            val trip = NavTrip(RoutingProfile.BIKE, RouteOptions(avoidFerries = true, bikeCycleways = level))
+            store.save(lPlan(), 3.0, trip)
+            assertEquals(trip, store.load()!!.trip, level.name)
+        }
     }
 }

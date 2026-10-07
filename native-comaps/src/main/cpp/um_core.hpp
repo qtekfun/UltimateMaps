@@ -28,6 +28,16 @@ enum AvoidFlags : int32_t
   kAvoidUnpaved = 1 << 3,
 };
 
+// Bike cycle-infrastructure level (BikeCycleways in Kotlin), 2 bits of the same flags integer: 0 = off, 1 = prefer,
+// 2 = strongly prefer, 3 = only. Only meaningful for the bike profile (see native-comaps/patches).
+constexpr int32_t kCycleLevelShift = 4;
+constexpr int32_t kCycleLevelMask = 3 << kCycleLevelShift;
+constexpr int32_t kCycleLevelOnly = 3;
+
+// Own result code (not a routing::RouterResultCode): "Only cycle infrastructure" found no route. Same value as
+// RouteCode.NO_CYCLE_ROUTE in Kotlin.
+constexpr int32_t kRouteNoCycleRoute = 1004;
+
 struct RouteOut
 {
   // routing::RouterResultCode as an integer (0 = NoError, 8 = RouteNotFound, 9 = NeedMoreMaps, ...).
@@ -76,7 +86,7 @@ public:
   int RefreshMaps();
 
   std::vector<SearchHit> Search(std::string const & query, bool hasPos, double lat, double lon, int limit,
-                                int timeoutMs, std::string const & locale);
+                                int timeoutMs, std::string const & locale, bool categorial = false);
 
   // withGuidance = false leaves the route exactly as before (no extra cost).
   RouteOut Route(Profile profile, std::vector<double> const & latLonPoints, int32_t avoidFlags, int timeoutSec,

@@ -12,6 +12,7 @@
 #include "routing/routing_options.hpp"
 #include "routing/vehicle_mask.hpp"
 
+#include "routing_common/bicycle_model.hpp"
 #include "routing_common/num_mwm_id.hpp"
 
 #include "search/engine.hpp"
@@ -380,7 +381,7 @@ int Core::RefreshMaps()
 }
 
 std::vector<SearchHit> Core::Search(std::string const & query, bool hasPos, double lat, double lon, int limit,
-                                    int timeoutMs, std::string const & locale)
+                                    int timeoutMs, std::string const & locale, bool categorial)
 {
   std::vector<SearchHit> out;
   if (!m_impl->initialized)
@@ -404,6 +405,8 @@ std::vector<SearchHit> Core::Search(std::string const & query, bool hasPos, doub
   params.m_suggestsEnabled = false;
   params.m_needAddress = true;
   params.m_needHighlighting = false;
+  // Pure category results (the query is a category name such as "pharmacy"): no matching on feature names.
+  params.m_categorialRequest = categorial;
   params.m_timeout = std::chrono::milliseconds(timeoutMs > 0 ? timeoutMs : 8000);
   if (hasPos)
   {
@@ -467,6 +470,10 @@ RouteOut Core::Route(Profile profile, std::vector<double> const & pts, int32_t a
     routing::RoutingOptions::SaveOptionsToSettings(
         routing::RoutingOptions(ToOptionMask(profile, avoidFlags), vt));
 
+    // Set on EVERY route (also for the other profiles) so a stale level can never leak; only the bicycle model reads it.
+    int32_t const cycleLevel = profile == kBike ? (avoidFlags & kCycleLevelMask) >> kCycleLevelShift : 0;
+    routing::SetBicycleCycleInfra(static_cast<routing::BicycleCycleInfra>(cycleLevel));
+
     std::vector<m2::PointD> mercatorPts;
     for (size_t i = 0; i + 1 < pts.size(); i += 2)
       mercatorPts.push_back(mercator::FromLatLon(pts[i], pts[i + 1]));
@@ -480,6 +487,14 @@ RouteOut Core::Route(Profile profile, std::vector<double> const & pts, int32_t a
                                             false /* adjust */, delegate, route);
     router.SetGuides({});
     out.code = static_cast<int32_t>(code);
+    if (cycleLevel == kCycleLevelOnly)
+    {
+      // With "only cycle infrastructure" an endpoint away from a lane is not snappable and cycle networks have gaps.
+      using R = routing::RouterResultCode;
+      if (code == R::StartPointNotFound || code == R::EndPointNotFound || code == R::RouteNotFound ||
+          code == R::IntermediatePointNotFound)
+        out.code = kRouteNoCycleRoute;
+    }
     if (code == routing::RouterResultCode::NoError || code == routing::RouterResultCode::HasWarnings)
     {
       for (auto const & p : route.GetPoly().GetPoints())

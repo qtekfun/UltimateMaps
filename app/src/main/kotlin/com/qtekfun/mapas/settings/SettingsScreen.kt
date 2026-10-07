@@ -71,6 +71,8 @@ class SettingsEnv(
     val history: HistorySettingsEnv? = null,
     /** Speed cameras and traffic section; null hides it. */
     val cameras: CamerasSettingsEnv? = null,
+    /** Track recording section (switch and delete); null hides it. */
+    val recording: RecordingSettingsEnv? = null,
 )
 
 /** The first Settings screen: Privacy (offline mode, region catalog, possible connections) and Petrol stations. */
@@ -106,6 +108,7 @@ fun SettingsScreen(env: SettingsEnv, onBack: () -> Unit, modifier: Modifier = Mo
             env.cameras?.let { CamerasSection(it) }
             env.navigation?.let { NavigationSection(it) }
             env.history?.let { HistorySection(it) }
+            env.recording?.let { RecordingSection(it) }
             Spacer(Modifier.height(32.dp))
         }
     }

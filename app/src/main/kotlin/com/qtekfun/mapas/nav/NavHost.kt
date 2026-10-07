@@ -150,6 +150,10 @@ class NavHost(
                 onExit = screen::stop,
                 onResume = { screen.resume() },
                 onDiscard = screen::discardResumable,
+                onShareEta = {
+                    EtaShare.text(activity.resources, screen.ui.value, activity.resources.configuration.locales[0])
+                        ?.let { activity.startActivity(EtaShare.intent(it)) }
+                },
             ),
             dark = dark,
         )

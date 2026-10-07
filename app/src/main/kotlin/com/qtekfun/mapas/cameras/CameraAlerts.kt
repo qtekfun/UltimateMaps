@@ -1,5 +1,6 @@
 package com.qtekfun.mapas.cameras
 
+import com.qtekfun.mapas.core.cameras.AlertBannerTracker
 import com.qtekfun.mapas.core.cameras.AlertEvent
 import com.qtekfun.mapas.core.cameras.AlertWarner
 import com.qtekfun.mapas.core.cameras.CameraDataRepository
@@ -10,6 +11,8 @@ import com.qtekfun.mapas.core.cameras.NavAlertFeed
 import com.qtekfun.mapas.core.map.LocationSource
 import com.qtekfun.mapas.core.nav.NavigationController
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 /**
@@ -18,7 +21,10 @@ import kotlinx.coroutines.launch
  * once. Free driving runs only while the app is on screen, a category switch is on, no navigation is active and the
  * location permission is granted; with everything off no location listener exists at all.
  *
- * Alerts reach the driver through [onAlert] (the navigation voice). Nothing here stores or logs a position.
+ * Alerts reach the driver through [banner] (the visual alert, always) and [onAlert] (the navigation voice, which may be
+ * muted). Whether a navigation is running is read from the navigation controller itself, not only from the screen's
+ * start/stop events, so a trip resumed by the foreground service after the system killed the process, or a switch turned
+ * on in the middle of a trip, also get route-based alerts. Nothing here stores or logs a position.
  */
 class CameraAlerts(
     private val scope: CoroutineScope,
@@ -29,12 +35,16 @@ class CameraAlerts(
     location: () -> LocationSource,
     private val hasLocationPermission: () -> Boolean,
     onAlert: (AlertEvent) -> Unit,
+    /** The visual alert; one is shared with the screens. */
+    val banner: AlertBannerTracker = AlertBannerTracker(),
+    private val clock: () -> Long = System::currentTimeMillis,
 ) {
+    private val navigationState = navigation.state
     private val warner = AlertWarner(
         listOf(cameras.alertSource { settings.settings.value }, incidents.alertSource { settings.settings.value.incidentKinds() }),
-        { settings.settings.value }, onAlert,
-    )
-    private val navFeed = NavAlertFeed(scope, navigation.state, navigation.route, warner)
+        { settings.settings.value },
+    ) { e -> banner.onAlert(e); onAlert(e) }
+    private val navFeed = NavAlertFeed(scope, navigation.state, navigation.route, warner, banner, clock)
     private val newLocation = location
     private var freeFeed: FreeDrivingFeed? = null
 
@@ -44,6 +54,11 @@ class CameraAlerts(
     /** Follows the switches: turning a category on or off starts or stops the free-driving feed. Call once. */
     fun start() {
         scope.launch { settings.settings.collect { refreshFree() } }
+        scope.launch {
+            navigationState.map { it != null }.distinctUntilChanged().collect { active ->
+                if (active) onNavigationStarted() else onNavigationEnded()
+            }
+        }
     }
 
     /** The first activity started or the last one stopped. */
@@ -73,7 +88,7 @@ class CameraAlerts(
     fun refreshFree() {
         val want = foreground && !navigating && settings.settings.value.anything && hasLocationPermission()
         if (want) {
-            (freeFeed ?: FreeDrivingFeed(newLocation(), warner).also { freeFeed = it }).start()
+            (freeFeed ?: FreeDrivingFeed(newLocation(), warner, banner, clock).also { freeFeed = it }).start()
         } else {
             freeFeed?.stop()
         }

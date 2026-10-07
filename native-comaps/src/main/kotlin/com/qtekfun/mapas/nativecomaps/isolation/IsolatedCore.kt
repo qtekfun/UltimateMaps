@@ -9,7 +9,6 @@ import com.qtekfun.mapas.nativecomaps.CoreHandle
 import com.qtekfun.mapas.nativecomaps.DetailedRoutingEngine
 import com.qtekfun.mapas.nativecomaps.RouteCode
 import com.qtekfun.mapas.nativecomaps.RouteOutcome
-import com.qtekfun.mapas.nativecomaps.toFlags
 import com.qtekfun.mapas.nativecomaps.toNative
 import java.io.IOException
 import java.util.concurrent.ExecutionException
@@ -150,10 +149,16 @@ class IsolatedCore(
     }
 
     override fun searchEngine(locale: String, timeoutMs: Int): SearchEngine = object : SearchEngine {
-        override fun search(query: String, near: LatLon?, limit: Int): List<SearchResult> {
+        override fun search(query: String, near: LatLon?, limit: Int): List<SearchResult> =
+            ask(CoreProtocol.OP_SEARCH, query, near, limit)
+
+        override fun searchCategory(query: String, near: LatLon?, limit: Int): List<SearchResult> =
+            ask(CoreProtocol.OP_SEARCH_CATEGORY, query, near, limit)
+
+        private fun ask(op: Int, query: String, near: LatLon?, limit: Int): List<SearchResult> {
             if (query.isBlank()) return emptyList()
             val payload = CoreProtocol.encodeSearch(CoreProtocol.SearchArgs(query.trim(), near, limit, locale, timeoutMs))
-            val bytes = call(CoreProtocol.OP_SEARCH, payload, timeoutMs + config.searchSlackMillis, "search") { it }
+            val bytes = call(op, payload, timeoutMs + config.searchSlackMillis, "search") { it }
             return try {
                 CoreProtocol.decodeSearchResults(bytes)
             } catch (e: IOException) {

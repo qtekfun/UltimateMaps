@@ -153,6 +153,11 @@ fun PlaceCard(
     /** "Set as Home" / "Set as Work"; a null callback hides its button. */
     onSetHome: (() -> Unit)? = null,
     onSetWork: (() -> Unit)? = null,
+    /** Opens the dialer with the number (nothing is dialled) and the website in the browser. */
+    onDial: (String) -> Unit = {},
+    onOpenWebsite: (String) -> Unit = {},
+    /** Local time for the "open now" line; injected so tests do not depend on the clock. */
+    now: () -> java.time.LocalDateTime = { java.time.LocalDateTime.now() },
 ) {
     Column(Modifier.fillMaxWidth().testTag("place_card")) {
         Row(verticalAlignment = Alignment.Top) {
@@ -178,6 +183,7 @@ fun PlaceCard(
             style = Mapas.typography.caption.copy(color = Mapas.colors.secondaryLabel),
             modifier = Modifier.padding(top = 4.dp).testTag("place_coords"),
         )
+        PlaceExtrasSection(info.point, info.extras, onDial, onOpenWebsite, now)
         Spacer(Modifier.height(12.dp))
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             PanelButton(

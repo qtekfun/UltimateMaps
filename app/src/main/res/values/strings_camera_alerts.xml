@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Visual alert ahead (chip on the map and on the navigation screen) -->
+    <string name="camalert_fixed">Speed camera ahead</string>
+    <string name="camalert_section">Average-speed section ahead</string>
+    <string name="camalert_zone">Mobile radars may operate ahead</string>
+    <string name="camalert_v16">Stopped vehicle ahead (V16)</string>
+    <string name="camalert_accident">Accident ahead</string>
+    <string name="camalert_closure">Road closure ahead</string>
+    <string name="camalert_congestion">Slow traffic ahead</string>
+    <string name="camalert_obstacle">Obstacle ahead</string>
+    <string name="camalert_description">%1$s, in %2$s</string>
+    <string name="camalert_description_limit">%1$s, in %2$s, limit %3$d km/h</string>
+</resources>
