@@ -202,6 +202,7 @@ class MapasApp : Application() {
             service = AndroidNavServiceControl(this),
             prefs = SharedNavUiPrefs(this),
             settings = com.qtekfun.mapas.voice.VoiceModule.settings(this), // the 2D/3D choice lives with the navigation settings
+            cameraSettings = cameraSettings,
         ).also {
             it.addSink(VoiceNavSink(this))
             it.addSink(AlertNavSink { if (alertsStarted) cameraAlerts else null })

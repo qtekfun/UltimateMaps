@@ -158,6 +158,21 @@ class CamerasSettingsTest {
         assertTrue(store.settings.value.roadworksEnabled && store.settings.value.warnOnlyIfSpeeding)
     }
 
+    @Test fun theVoiceAlertsSwitchAppearsWithACategoryIsOnByDefaultAndWritesOnlyItsFlag() {
+        show()
+        assertEquals(0, count("cam_voice_switch"), "nothing to speak while every category is off")
+        store.update { it.copy(acknowledged = true, incidentsEnabled = true) }
+        rule.waitForIdle()
+        assertTrue(store.settings.value.voiceEnabled, "on by default")
+        rule.onNodeWithTag("cam_voice_switch").performScrollTo().performClick()
+        rule.waitForIdle()
+        assertFalse(store.settings.value.voiceEnabled)
+        assertTrue(store.settings.value.incidentsEnabled, "the category stays on: only the voice is muted")
+        rule.onNodeWithTag("cam_voice_switch").performScrollTo().performClick()
+        rule.waitForIdle()
+        assertTrue(store.settings.value.voiceEnabled)
+    }
+
     // ---- preferences, strings, cards ----
 
     @Test fun preferencesKeepTheDefaultsOffAndNormaliseTamperedValues() {

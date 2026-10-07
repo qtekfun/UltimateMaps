@@ -63,6 +63,7 @@ class NavTestRig(
     routes: RouteProvider? = null,
     config: NavConfig = NavConfig(),
     overviewMillis: Long = 60_000L,
+    cameraSettings: com.qtekfun.mapas.core.cameras.CameraSettingsStore? = null,
 ) : AutoCloseable {
     val settings = com.qtekfun.mapas.core.voice.InMemoryNavSettingsStore()
     private val executor = Executors.newSingleThreadExecutor { Thread(it, "nav-test").apply { isDaemon = true } }
@@ -88,7 +89,7 @@ class NavTestRig(
         val g = gate
         if (g != null && gateWhen(screen.ui.value)) g.await()
     }
-    val screen: NavScreenController = NavScreenController(scope, controller, simulation, switch, service, settings = settings, clock = { clock.get() }, stopFlashMillis = 60_000L, overviewMillis = overviewMillis)
+    val screen: NavScreenController = NavScreenController(scope, controller, simulation, switch, service, settings = settings, clock = { clock.get() }, stopFlashMillis = 60_000L, overviewMillis = overviewMillis, cameraSettings = cameraSettings)
 
     init { screen.addSink(sink) }
 
