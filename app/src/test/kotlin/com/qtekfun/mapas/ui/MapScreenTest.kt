@@ -133,4 +133,33 @@ class MapScreenTest {
         rule.waitForIdle()
         rule.onNodeWithTag("sheet").assertIsDisplayed()
     }
+
+    @Test
+    fun aTappedHazardCardOpensAboveTheNavigationScreenAndItsCloseButtonWorks() {
+        val state = MapScreenState()
+        val card = com.qtekfun.mapas.cameras.HazardCardState()
+        val controller = com.qtekfun.mapas.cameras.HazardCardController(
+            describer = { id -> com.qtekfun.mapas.cameras.HazardInfo("Slow traffic $id", listOf("A-1"), null, "DGT") },
+            card = card,
+        )
+        rule.setContent {
+            MapasTheme(darkTheme = false) {
+                MapScreen(
+                    state, onLocate = {}, onResetNorth = {},
+                    sheetPanel = { com.qtekfun.mapas.cameras.HazardCard(card) },
+                    navigating = true, navSheet = card.info != null,
+                ) {}
+            }
+        }
+        rule.waitForIdle()
+        rule.onNodeWithTag("sheet").assertDoesNotExist()
+        controller.onTap("incident-1")
+        rule.waitForIdle()
+        rule.onNodeWithTag("sheet").assertIsDisplayed()
+        rule.onNodeWithTag("hazard_card").assertIsDisplayed()
+        rule.onNodeWithTag("hazard_close").performClick()
+        rule.waitForIdle()
+        assertNull(card.info)
+        rule.onNodeWithTag("sheet").assertDoesNotExist()
+    }
 }
