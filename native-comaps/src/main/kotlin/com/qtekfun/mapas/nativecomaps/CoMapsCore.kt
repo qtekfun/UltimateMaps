@@ -47,8 +47,18 @@ interface CoreHandle {
     fun routingEngine(timeoutSec: Int = 120, withGuidance: Boolean = false): DetailedRoutingEngine
 }
 
-/** Resultado detallado de una ruta: [plan] es null si no hay ruta y [code] dice por que. */
-data class RouteOutcome(val code: Int, val plan: RoutePlan?, val guidanceError: String? = null)
+/**
+ * Resultado detallado de una ruta: [plan] es null si no hay ruta y [code] dice por que.
+ * [absentCountries] son los ids de pais de CoMaps (`Spain_Catalonia_Barcelona`) que el router echo en falta con
+ * [RouteCode.NEED_MORE_MAPS]. Hoy llega vacia: `Route::GetAbsentCountries()` existe en el nucleo pero aun no esta
+ * expuesta por JNI (pendiente, ver `docs/phase2/robustness.md`); el resto de la app ya la usa si viene.
+ */
+data class RouteOutcome(
+    val code: Int,
+    val plan: RoutePlan?,
+    val guidanceError: String? = null,
+    val absentCountries: List<String> = emptyList(),
+)
 
 /** Un [RoutingEngine] que ademas explica por que no hay ruta. */
 interface DetailedRoutingEngine : RoutingEngine {

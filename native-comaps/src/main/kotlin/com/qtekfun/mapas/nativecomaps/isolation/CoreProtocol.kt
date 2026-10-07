@@ -156,13 +156,17 @@ object CoreProtocol {
         writeText(out, o.guidanceError)
         out.writeBoolean(o.plan != null)
         o.plan?.let { RoutePlanCodec.write(out, it) }
+        out.writeInt(o.absentCountries.size)
+        for (c in o.absentCountries) writeText(out, c)
     }
 
     fun decodeOutcome(bytes: ByteArray): RouteOutcome = read(bytes) { i ->
         val code = i.readInt()
         val guidanceError = readText(i)
         val plan = if (i.readBoolean()) RoutePlanCodec.read(i) else null
-        RouteOutcome(code, plan, guidanceError)
+        val n = i.readInt()
+        if (n < 0 || n > 1_000) throw IOException("bad absent count $n")
+        RouteOutcome(code, plan, guidanceError, List(n) { readText(i) ?: "" })
     }
 
     fun encodeError(kind: Int, message: String): ByteArray = write { out ->
