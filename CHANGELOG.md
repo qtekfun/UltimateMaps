@@ -4,6 +4,16 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 
 ## [Unreleased]
 
+### Fixed
+
+- **Quick chips (Home, Work, Park, SOS)** stay on one line each with less padding and an ellipsis if a label is too long (the label is now "Park" / "Aparcar"), so the row is even in English, Spanish and with a large font.
+- **The bottom sheet is opaque** in the light and dark themes: map labels and the navigation buttons no longer show through the card text.
+- **`geo:` links with `?q=text`** now run the offline search for the text (the Search tab opens with the results, like typing it); the old "offline search is not available yet" message is gone, replaced by a neutral note only when no map is installed.
+- **Place card from a `geo:`/map link** has the same actions as a search result (Save, Route, Share, Set as Home/Work); without a name it uses the coordinates.
+- **Over-the-limit warning** no longer fires at exactly the limit (a simulated 50 km/h on a 50 km/h limit): it needs a whole-km/h speed strictly above limit + tolerance, and clears 2 km/h below it.
+- **Settings texts** of Speed cameras and traffic (intro, legal note, consent dialogs, alert note) are shorter; the same facts about sources, mobile zones, no live data and no position sent are kept, in both languages.
+- **The navigation notification** uses the Settings distance units (feet and miles when imperial), like the status-bar chip.
+
 ## [0.1.0-rc.9] - pending
 
 ### Added
