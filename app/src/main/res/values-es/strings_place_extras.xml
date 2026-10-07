@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Datos extra de la ficha del lugar (etiquetas de OSM, solo si los datos las tienen) -->
+    <string name="place_plus_code">Plus Code: %1$s</string>
+    <string name="place_call_description">Llamar al %1$s</string>
+    <string name="place_website_label">Sitio web</string>
+    <string name="place_website_description">Abrir el sitio web en el navegador</string>
+    <string name="place_wheelchair_yes">Accesible en silla de ruedas</string>
+    <string name="place_wheelchair_limited">Parcialmente accesible en silla de ruedas</string>
+    <string name="place_wheelchair_no">No accesible en silla de ruedas</string>
+    <string name="place_hours">Horario: %1$s</string>
+    <string name="place_open_now">Abierto ahora</string>
+    <string name="place_closed_now">Cerrado ahora</string>
+    <string name="place_open_unknown">Abierto ahora: desconocido</string>
+    <string name="place_no_dialer">No hay ninguna aplicación de teléfono</string>
+    <string name="place_no_browser">No hay ningún navegador</string>
+
+    <!-- Búsqueda por coordenadas y Plus Codes -->
+    <string name="search_result_coordinates">Coordenadas</string>
+    <string name="search_result_plus_code">Plus Code</string>
+
+    <!-- Compartir -->
+    <string name="nav_share_eta_action">Compartir llegada</string>
+    <string name="nav_share_eta_description">Compartir la hora estimada de llegada como texto</string>
+    <string name="nav_share_eta_text">Llegaré hacia las %1$s (%2$s, faltan %3$s).</string>
+
+    <!-- Escala del mapa -->
+    <string name="map_scale_description">Escala del mapa: %1$s</string>
+    <string name="map_scale_meters">%1$d m</string>
+    <string name="map_scale_kilometers">%1$d km</string>
+</resources>

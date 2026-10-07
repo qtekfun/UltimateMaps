@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -31,6 +32,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.qtekfun.mapas.R
+import com.qtekfun.mapas.core.map.CameraState
 import com.qtekfun.mapas.ui.sheet.BottomSheet
 import com.qtekfun.mapas.ui.sheet.SheetDetent
 import com.qtekfun.mapas.ui.theme.Mapas
@@ -49,10 +51,27 @@ sealed interface Notice {
 class MapScreenState {
     var detent by mutableStateOf(SheetDetent.MEDIUM)
     var bearing by mutableFloatStateOf(0f)
+
+    /** Camera tilt in degrees, latitude of the view centre and zoom: the compass shows when tilted, the scale bar uses the other two. */
+    var tilt by mutableFloatStateOf(0f)
+    var centerLatitude by mutableDoubleStateOf(0.0)
+    var zoom by mutableDoubleStateOf(0.0)
+
+    /** The scale bar waits for the first camera report. */
+    var cameraKnown by mutableStateOf(false)
     var hasTiles by mutableStateOf(true)
     var locating by mutableStateOf(false)
     var notice by mutableStateOf<Notice?>(null)
     var aboutVisible by mutableStateOf(false)
+
+    /** Takes the camera values the controls depend on (call from the engine's camera-idle callback). */
+    fun onCamera(camera: CameraState) {
+        bearing = camera.bearing.toFloat()
+        tilt = camera.tilt.toFloat()
+        centerLatitude = camera.center.lat
+        zoom = camera.zoom
+        cameraKnown = true
+    }
 
     /** Opens the "Maps" screen (regions); set by the activity. */
     var onOpenMaps: () -> Unit = {}
@@ -105,6 +124,14 @@ fun MapScreen(
                 .windowInsetsPadding(WindowInsets.statusBars)
                 .padding(start = margin, top = 44.dp),
         )
+        if (!navigating && state.cameraKnown) ScaleBar(
+            latitude = state.centerLatitude,
+            zoom = state.zoom,
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .windowInsetsPadding(WindowInsets.statusBars)
+                .padding(start = margin, top = 100.dp),
+        )
         if (!navigating) MapButtons(
             bearingDegrees = state.bearing,
             locating = state.locating,
@@ -112,6 +139,7 @@ fun MapScreen(
             compassDescription = stringResource(R.string.map_compass),
             onLocate = onLocate,
             onResetNorth = onResetNorth,
+            tiltDegrees = state.tilt,
             modifier = Modifier
                 .align(Alignment.TopEnd)
                 .windowInsetsPadding(WindowInsets.statusBars)

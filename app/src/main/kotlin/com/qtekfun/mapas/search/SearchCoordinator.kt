@@ -3,6 +3,7 @@ package com.qtekfun.mapas.search
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import com.qtekfun.mapas.core.geo.CoordinateQuery
 import com.qtekfun.mapas.core.geo.LatLon
 import com.qtekfun.mapas.core.search.SearchEngine
 import com.qtekfun.mapas.core.search.SearchResult
@@ -29,6 +30,14 @@ class SearchState {
 
     /** null until the first scan of the installed regions has finished. */
     var regionsAvailable by mutableStateOf<Boolean?>(null)
+
+    /** The text is a position (coordinates or a Plus Code), answered without the search engine. */
+    var coordinateQuery by mutableStateOf(false)
+}
+
+/** Labels of the result row for a typed position ("Coordinates", "Plus Code"); localized by the host. */
+fun interface CoordinateLabels {
+    fun label(kind: CoordinateQuery.Kind): String
 }
 
 /** Opens the engine on top of the installed maps. Blocking and heavy: always called off the main thread. */
@@ -69,6 +78,7 @@ class SearchCoordinator(
     private val categoryOrigin: () -> LatLon? = near,
     /** Receives the positions of the category results (empty when they are cleared) to draw them on the map. */
     private val onCategoryResults: (List<LatLon>) -> Unit = {},
+    private val coordinateLabels: CoordinateLabels = CoordinateLabels { "" },
 ) {
     val state = SearchState()
 
@@ -147,6 +157,16 @@ class SearchCoordinator(
         }
         state.query = query
         job?.cancel()
+        // A typed position (coordinates, Plus Code) is answered here, offline and at once, without the engine.
+        // The map centre only completes a short Plus Code; it is not stored or logged.
+        val typed = if (query.isBlank()) null else CoordinateQuery.parse(query, near())
+        state.coordinateQuery = typed != null
+        if (typed != null) {
+            val name = typed.plusCode ?: CoordinateQuery.formatDecimal(typed.point)
+            state.results = listOf(SearchResult(name, typed.point, category = coordinateLabels.label(typed.kind).ifEmpty { null }))
+            state.status = SearchStatus.DONE
+            return
+        }
         if (query.isBlank()) {
             state.results = emptyList()
             state.status = if (state.regionsAvailable == false) SearchStatus.NO_REGIONS else SearchStatus.IDLE
