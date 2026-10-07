@@ -38,7 +38,7 @@ interface NavEnvironment {
 
 /** Computes a route for rerouting: from [from] through the remaining [via] stops to [destination]. Null = none. */
 fun interface RouteProvider {
-    suspend fun route(from: LatLon, bearingDegrees: Float?, via: List<LatLon>, destination: LatLon): RoutePlan?
+    suspend fun route(from: LatLon, bearingDegrees: Float?, via: List<LatLon>, destination: LatLon, trip: NavTrip): RoutePlan?
 }
 
 /**
@@ -90,6 +90,7 @@ class NavigationController(
     private var session: NavigationSession? = null
     private var runJob: Job? = null
     private var stopPoints: List<LatLon> = emptyList()
+    private var trip = NavTrip()
 
     /** True when [resume] would find a saved navigation (a quick look; the file is validated again by [resume]). */
     fun hasResumable(): Boolean = store.load() != null
@@ -98,10 +99,11 @@ class NavigationController(
      * Starts following [plan], [startAlongMeters] into it (0 for a new trip). Returns false, leaving everything as
      * it was, when the plan cannot be followed. Replaces any navigation in progress.
      */
-    fun start(plan: RoutePlan, startAlongMeters: Double = 0.0): Boolean {
+    fun start(plan: RoutePlan, startAlongMeters: Double = 0.0, trip: NavTrip = NavTrip()): Boolean {
         if (!plan.isFollowable()) return false
         synchronized(lock) {
             stopLocked(clearStore = false)
+            this.trip = trip
             launchLocked(plan, startAlongMeters)
         }
         return true
@@ -111,7 +113,7 @@ class NavigationController(
     fun resume(): Boolean {
         if (isActive) return true
         val saved = store.load() ?: return false
-        return start(saved.plan, saved.progressMeters)
+        return start(saved.plan, saved.progressMeters, saved.trip)
     }
 
     /** Switches to another route without ending the trip (the user chose an alternative, added a stop). */
@@ -140,7 +142,7 @@ class NavigationController(
             { from, bearing ->
                 val remaining = stopPoints.takeLast((_state.value?.stopsRemaining ?: 0).coerceAtLeast(0))
                 val destination = _route.value?.geometry?.lastOrNull() ?: plan.geometry.last()
-                provider.route(from, bearing, remaining, destination)?.withStops(remaining)
+                provider.route(from, bearing, remaining, destination, trip)?.withStops(remaining)
             }
         }
         val s = NavigationSession(plan, location, scope, config, rerouter, startAlong, clock)
@@ -148,7 +150,7 @@ class NavigationController(
         stopPoints = pointsOfStops(s.route.value)
         _route.value = s.route.value
         _state.value = s.state.value
-        store.save(s.route.value, s.state.value.traveledMeters)
+        store.save(s.route.value, s.state.value.traveledMeters, trip)
         runJob = scope.launch {
             launch { s.announcements.collect { _announcements.tryEmit(it) } }
             launch { s.events.collect { _events.tryEmit(it) } }
@@ -178,7 +180,7 @@ class NavigationController(
                 savedRevision = st.routeRevision
                 lastSaved = now
                 val progress = st.traveledMeters
-                withContext(io) { store.save(route, progress) }
+                withContext(io) { store.save(route, progress, trip) }
             }
         }
     }
