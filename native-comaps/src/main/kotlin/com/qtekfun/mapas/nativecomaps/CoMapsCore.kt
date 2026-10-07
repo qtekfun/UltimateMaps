@@ -9,7 +9,7 @@ import com.qtekfun.mapas.core.routing.RoutingProfile
 import com.qtekfun.mapas.core.search.SearchEngine
 import com.qtekfun.mapas.core.search.SearchResult
 
-/** Codigos de `routing::RouterResultCode` de CoMaps que la UI necesita distinguir. */
+/** Codes of CoMaps' `routing::RouterResultCode` that the UI needs to tell apart. */
 object RouteCode {
     const val NO_ERROR = 0
     const val CANCELLED = 1
@@ -22,9 +22,9 @@ object RouteCode {
     const val HAS_WARNINGS = 16
 
     /**
-     * Codigos propios (no vienen de CoMaps) del nucleo aislado: el proceso `:core` murio y el reintento tambien,
-     * no se pudo arrancar/conectar, o la llamada fallo por otra razon. Un tiempo agotado se devuelve como
-     * [CANCELLED] (la UI ya lo muestra como "tardo demasiado").
+     * Own codes (not coming from CoMaps) of the isolated core: the `:core` process died and so did the retry,
+     * it could not be started/connected, or the call failed for another reason. A timeout is returned as
+     * [CANCELLED] (the UI already shows it as "took too long").
      */
     const val CORE_CRASHED = 1001
     const val CORE_UNAVAILABLE = 1002
@@ -32,14 +32,14 @@ object RouteCode {
 }
 
 /**
- * Lo que el resto de la app usa del nucleo, sea el de este proceso ([CoMapsCore]) o el aislado en `:core`
- * ([com.qtekfun.mapas.nativecomaps.isolation.IsolatedCore]). Los valores por defecto viven aqui.
+ * What the rest of the app uses from the core, be it the one in this process ([CoMapsCore]) or the one isolated in `:core`
+ * ([com.qtekfun.mapas.nativecomaps.isolation.IsolatedCore]). The default values live here.
  */
 interface CoreHandle {
-    /** @throws IllegalStateException si el nucleo no arranca. En el aislado el arranque real es perezoso. */
+    /** @throws IllegalStateException if the core does not start. In the isolated one the real startup is lazy. */
     fun init(apkPath: String, mapsDir: String, tmpDir: String, locale: String = "en")
 
-    /** Re-escanea el directorio de mapas. Devuelve cuantos mapas hay registrados. */
+    /** Rescans the maps directory. Returns how many maps are registered. */
     fun refreshMaps(): Int
 
     fun searchEngine(locale: String = "en", timeoutMs: Int = 8000): SearchEngine
@@ -48,10 +48,10 @@ interface CoreHandle {
 }
 
 /**
- * Resultado detallado de una ruta: [plan] es null si no hay ruta y [code] dice por que.
- * [absentCountries] son los ids de pais de CoMaps (`Spain_Catalonia_Barcelona`) que el router echo en falta con
- * [RouteCode.NEED_MORE_MAPS]. Hoy llega vacia: `Route::GetAbsentCountries()` existe en el nucleo pero aun no esta
- * expuesta por JNI (pendiente, ver `docs/phase2/robustness.md`); el resto de la app ya la usa si viene.
+ * Detailed result of a route: [plan] is null if there is no route and [code] says why.
+ * [absentCountries] are the CoMaps country ids (`Spain_Catalonia_Barcelona`) that the router found missing with
+ * [RouteCode.NEED_MORE_MAPS]. Today it arrives empty: `Route::GetAbsentCountries()` exists in the core but is not yet
+ * exposed through JNI (pending, see `docs/phase2/robustness.md`); the rest of the app already uses it if it comes.
  */
 data class RouteOutcome(
     val code: Int,
@@ -60,24 +60,24 @@ data class RouteOutcome(
     val absentCountries: List<String> = emptyList(),
 )
 
-/** Un [RoutingEngine] que ademas explica por que no hay ruta. */
+/** A [RoutingEngine] that also explains why there is no route. */
 interface DetailedRoutingEngine : RoutingEngine {
     fun routeDetailed(request: RouteRequest): RouteOutcome
 }
 
 /**
- * Nucleo de CoMaps (busqueda + routing) como fachada Kotlin. No conoce Android ni la ubicacion ni la red:
- * se le pasan rutas de ficheros. Un solo [CoMapsCore] por proceso.
+ * CoMaps core (search + routing) as a Kotlin facade. It knows nothing about Android, location or the network:
+ * it is handed file paths. Only one [CoMapsCore] per process.
  *
- * `init(apkPath, mapsDir, ...)`: `apkPath` es el APK con `assets/` del nucleo (ver `:native-comaps`);
- * `mapsDir` contiene `<version>/<Region>.mwm`, incluido `World.mwm`.
+ * `init(apkPath, mapsDir, ...)`: `apkPath` is the APK with the core's `assets/` (see `:native-comaps`);
+ * `mapsDir` contains `<version>/<Region>.mwm`, including `World.mwm`.
  */
 class CoMapsCore internal constructor(private val bridge: NativeBridge) : CoreHandle, AutoCloseable {
     constructor() : this(NativeCore())
 
     private var initialized = false
 
-    /** @throws IllegalStateException si el nucleo no arranca (faltan datos, etc.). */
+    /** @throws IllegalStateException if the core does not start (missing data, etc.). */
     @Synchronized
     override fun init(apkPath: String, mapsDir: String, tmpDir: String, locale: String) {
         if (initialized) return
@@ -86,10 +86,10 @@ class CoMapsCore internal constructor(private val bridge: NativeBridge) : CoreHa
         initialized = true
     }
 
-    /** Re-escanea el directorio de mapas tras descargar o borrar. Devuelve cuantos mapas hay registrados. */
+    /** Rescans the maps directory after a download or delete. Returns how many maps are registered. */
     @Synchronized
     override fun refreshMaps(): Int {
-        check(initialized) { "CoMapsCore.init() no llamado" }
+        check(initialized) { "CoMapsCore.init() not called" }
         return bridge.refreshMaps()
     }
 
@@ -97,21 +97,21 @@ class CoMapsCore internal constructor(private val bridge: NativeBridge) : CoreHa
         CoMapsSearchEngine(this, locale, timeoutMs)
 
     /**
-     * [withGuidance] = false (por defecto) es la ruta de siempre, sin coste extra. Con `true`, `RoutePlan.guidance`
-     * trae maniobras, carriles y limites; si el guiado llega mal formado la ruta sigue valiendo (guiado vacio) y
-     * [RouteOutcome.guidanceError] dice por que.
+     * [withGuidance] = false (the default) is the usual route, at no extra cost. With `true`, `RoutePlan.guidance`
+     * carries maneuvers, lanes and limits; if the guidance arrives malformed the route is still valid (empty guidance) and
+     * [RouteOutcome.guidanceError] says why.
      */
     override fun routingEngine(timeoutSec: Int, withGuidance: Boolean): DetailedRoutingEngine =
         CoMapsRoutingEngine(this, timeoutSec, withGuidance)
 
     internal fun search(query: String, near: LatLon?, limit: Int, locale: String, timeoutMs: Int): List<SearchResult> {
-        check(initialized) { "CoMapsCore.init() no llamado" }
+        check(initialized) { "CoMapsCore.init() not called" }
         val raw = bridge.search(query, near != null, near?.lat ?: 0.0, near?.lon ?: 0.0, limit, timeoutMs, locale)
         return decodeSearch(raw)
     }
 
     internal fun route(request: RouteRequest, timeoutSec: Int, withGuidance: Boolean = false): RouteOutcome {
-        check(initialized) { "CoMapsCore.init() no llamado" }
+        check(initialized) { "CoMapsCore.init() not called" }
         val pts = (listOf(request.from) + request.via + request.to).flatMap { listOf(it.lat, it.lon) }
         if (withGuidance) {
             val g = bridge.routeGuidance(request.profile.toNative(), pts.toDoubleArray(), request.options.toFlags(), timeoutSec)
@@ -122,7 +122,7 @@ class CoMapsCore internal constructor(private val bridge: NativeBridge) : CoreHa
     }
 
     override fun close() {
-        // El estado global de CoMaps vive hasta el fin del proceso (singleton nativo inmortal).
+        // CoMaps' global state lives until the end of the process (immortal native singleton).
     }
 }
 
@@ -155,13 +155,13 @@ internal fun RoutingProfile.toNative(): Int = when (this) {
     RoutingProfile.BIKE -> 2
 }
 
-/** Mismos bits que `um::AvoidFlags` en C++. */
+/** Same bits as `um::AvoidFlags` in C++. */
 internal fun RouteOptions.toFlags(): Int =
     (if (avoidMotorways) 1 else 0) or (if (avoidTolls) 2 else 0) or
         (if (avoidFerries) 4 else 0) or (if (avoidUnpaved) 8 else 0)
 
 internal fun decodeSearch(raw: Array<String>): List<SearchResult> {
-    require(raw.size % 5 == 0) { "respuesta de busqueda mal formada: ${raw.size}" }
+    require(raw.size % 5 == 0) { "malformed search response: ${raw.size}" }
     return raw.toList().chunked(5).mapNotNull { (name, address, category, lat, lon) ->
         val p = LatLon.ofOrNull(lat.toDoubleOrNull() ?: return@mapNotNull null, lon.toDoubleOrNull() ?: return@mapNotNull null)
             ?: return@mapNotNull null
@@ -170,20 +170,20 @@ internal fun decodeSearch(raw: Array<String>): List<SearchResult> {
 }
 
 internal fun decodeRoute(raw: DoubleArray): RouteOutcome {
-    require(raw.size >= 3 && (raw.size - 3) % 2 == 0) { "respuesta de ruta mal formada: ${raw.size}" }
+    require(raw.size >= 3 && (raw.size - 3) % 2 == 0) { "malformed route response: ${raw.size}" }
     val code = raw[0].toInt()
     if (code != RouteCode.NO_ERROR && code != RouteCode.HAS_WARNINGS) return RouteOutcome(code, null)
     val geometry = (3 until raw.size step 2).mapNotNull { LatLon.ofOrNull(raw[it], raw[it + 1]) }
     return RouteOutcome(code, RoutePlan(geometry, raw[1], raw[2]))
 }
 
-/** Ruta + guiado. La ruta se valida igual de estricta que en [decodeRoute]; un guiado roto no tumba la ruta. */
+/** Route + guidance. The route is validated just as strictly as in [decodeRoute]; a broken guidance does not bring the route down. */
 internal fun decodeGuidedRoute(g: RawGuidedRoute): RouteOutcome {
     val base = decodeRoute(g.route)
     val plan = base.plan ?: return base
     return try {
         base.copy(plan = plan.copy(guidance = GuidanceWire.decode(g.guidance, g.names, plan.geometry.size)))
     } catch (e: IllegalArgumentException) {
-        base.copy(guidanceError = e.message ?: "guiado mal formado")
+        base.copy(guidanceError = e.message ?: "malformed guidance")
     }
 }

@@ -51,8 +51,8 @@
 #include <string>
 #include <unordered_map>
 
-// CoMaps escribe sus logs y sus CHECK/ASSERT por funciones propias; en Android hay que enchufarlas a logcat o un
-// fallo del núcleo se pierde en silencio (el proceso aborta sin mensaje). Etiqueta: UMCORE. Sin ubicaciones del usuario.
+// CoMaps writes its logs and its CHECK/ASSERT through its own functions; on Android they have to be hooked up to logcat or a
+// core failure is lost silently (the process aborts without a message). Tag: UMCORE. No user locations.
 namespace
 {
 android_LogPriority ToAndroid(base::LogLevel level)
@@ -75,7 +75,7 @@ void ForwardLog(base::LogLevel level, base::SrcPoint const & src, std::string co
 bool ForwardAssert(base::SrcPoint const & src, std::string const & msg)
 {
   __android_log_print(ANDROID_LOG_FATAL, "UMCORE", "ASSERT/CHECK failed at %s: %s", DebugPrint(src).c_str(), msg.c_str());
-  return true;  // sigue abortando: un CHECK fallido deja el núcleo en un estado desconocido
+  return true;  // keep aborting: a failed CHECK leaves the core in an unknown state
 }
 
 void InstallDiagnostics()
@@ -108,7 +108,7 @@ routing::RoutingOptions::OptionType ToOptionMask(Profile p, int32_t flags)
 {
   using O = routing::RoutingOptions;
   O::OptionType mask = 0;
-  // Autopistas y peajes solo existen en el perfil de vehiculo (kVehicleOptionsMask).
+  // Motorways and tolls only exist in the vehicle profile (kVehicleOptionsMask).
   if (p == kCar)
   {
     if (flags & kAvoidMotorway)
@@ -119,12 +119,12 @@ routing::RoutingOptions::OptionType ToOptionMask(Profile p, int32_t flags)
   if (flags & kAvoidFerry)
     mask |= O::Ferry;
   if (flags & kAvoidUnpaved)
-    mask |= O::Dirty;  // "Dirty" = sin asfaltar; "Paved" es la opcion contraria
+    mask |= O::Dirty;  // "Dirty" = unpaved; "Paved" is the opposite option
   return mask;
 }
 
-// Traduce CarDirection (coche y bici: IndexRouter usa CarDirectionsEngine para Bicycle) y PedestrianDirection (a pie)
-// al giro del cable. Devuelve -1 si no hay maniobra que mostrar (None, StayOnRoundAbout).
+// Translates CarDirection (car and bike: IndexRouter uses CarDirectionsEngine for Bicycle) and PedestrianDirection (on foot)
+// to the wire turn. Returns -1 if there is no maneuver to show (None, StayOnRoundAbout).
 int32_t WireTurnOf(routing::turns::TurnItem const & t)
 {
   using routing::turns::CarDirection;
@@ -147,7 +147,7 @@ int32_t WireTurnOf(routing::turns::TurnItem const & t)
   case CarDirection::ExitHighwayToLeft: return kTurnExitLeft;
   case CarDirection::ExitHighwayToRight: return kTurnExitRight;
   case CarDirection::None:
-  case CarDirection::StayOnRoundAbout:  // FixupCarTurns ya la borra; se ignora por si acaso
+  case CarDirection::StayOnRoundAbout:  // FixupCarTurns already removes it; ignored just in case
   default: break;
   }
   switch (t.m_pedestrianTurn)
@@ -160,8 +160,8 @@ int32_t WireTurnOf(routing::turns::TurnItem const & t)
   }
 }
 
-// Rellena out.guidance / out.guidanceNames desde route.GetRouteSegments(). Los indices de geometria son los de
-// route.GetPoly(): hay un punto mas que segmentos y la maniobra del segmento i cae en el punto i+1 (TurnItem::m_index).
+// Fills out.guidance / out.guidanceNames from route.GetRouteSegments(). The geometry indices are those of
+// route.GetPoly(): there is one more point than segments and the maneuver of segment i falls on point i+1 (TurnItem::m_index).
 void FillGuidance(routing::Route const & route, RouteOut & out)
 {
   auto const & segs = route.GetRouteSegments();
@@ -197,8 +197,8 @@ void FillGuidance(routing::Route const & route, RouteOut & out)
     bool const roundabout = wire == kTurnRoundaboutEnter || wire == kTurnRoundaboutLeave;
     maneuvers.push_back(t.m_index);
     maneuvers.push_back(wire);
-    // OJO: `m_exitNum` es uint32_t; en un ternario con `-1` C++ lo promociona todo a uint32_t y el -1 llegaba como
-    // 4294967295 (visto en el Pixel 8: «salidaRotonda no es un entero»). Convertir a double ANTES.
+    // NOTE: `m_exitNum` is uint32_t; in a ternary with `-1` C++ promotes everything to uint32_t and the -1 arrived as
+    // 4294967295 (seen on the Pixel 8: "roundaboutExit is not an integer"). Convert to double BEFORE.
     maneuvers.push_back(roundabout && t.m_exitNum > 0 ? static_cast<double>(t.m_exitNum) : -1.0);
     maneuvers.push_back(nameId);
     maneuvers.push_back(static_cast<double>(t.m_lanes.size()));
@@ -213,8 +213,8 @@ void FillGuidance(routing::Route const & route, RouteOut & out)
     ++nMan;
   }
 
-  // Limites: un tramo por racha de segmentos con el mismo limite numerico (-1 = sin dato; maxspeed none/walk tampoco
-  // es numerico). Segmento i = puntos [i, i+1]. Solo se emiten si algun segmento tiene dato.
+  // Limits: one stretch per run of segments with the same numeric limit (-1 = no data; maxspeed none/walk is not
+  // numeric either). Segment i = points [i, i+1]. Only emitted if some segment has data.
   std::vector<double> limits;
   size_t nLim = 0;
   bool anyLimit = false;
@@ -254,7 +254,7 @@ void FillGuidance(routing::Route const & route, RouteOut & out)
 
 struct Core::Impl
 {
-  std::mutex mu;  // serializa init / refresh / route (hay opciones de routing globales en settings)
+  std::mutex mu;  // serializes init / refresh / route (there are global routing options in settings)
   bool initialized = false;
   std::string locale = "en";
 
@@ -298,7 +298,7 @@ struct Core::Impl
 };
 
 Core::Core() : m_impl(new Impl) {}
-Core::~Core() = default;  // singleton inmortal: no se destruye el estado global de CoMaps
+Core::~Core() = default;  // immortal singleton: CoMaps' global state is not destroyed
 
 Core & Core::Instance()
 {
@@ -322,8 +322,8 @@ std::string Core::Init(InitParams const & p)
     InitAndroidPlatform(p.resourcesApk, p.writableDir, p.tmpDir);
     m_impl->locale = p.locale.empty() ? "en" : p.locale;
 
-    // Como hace CoMaps: fija estilo de carga y actual a la vez. `classificator::Load()` a pelo llena el clasificador del
-    // estilo de carga, pero classif() consulta el del estilo actual: si difieren, todos los tipos salen «Invalid type».
+    // As CoMaps does: sets the load style and the current one at once. A bare `classificator::Load()` fills the classificator of the
+    // load style, but classif() queries that of the current style: if they differ, every type comes out as "Invalid type".
     GetStyleReader().SetCurrentStyle(kDefaultMapStyle);
 
     m_impl->storage = std::make_unique<storage::Storage>();
@@ -441,7 +441,7 @@ std::vector<SearchHit> Core::Search(std::string const & query, bool hasPos, doub
   auto handle = m_impl->engine->Search(std::move(params));
   {
     std::unique_lock<std::mutex> lk(state->mu);
-    // margen sobre el timeout del propio motor
+    // margin over the engine's own timeout
     state->cv.wait_for(lk, std::chrono::milliseconds((timeoutMs > 0 ? timeoutMs : 8000) + 2000),
                        [&] { return state->done; });
     out = state->hits;
@@ -463,7 +463,7 @@ RouteOut Core::Route(Profile profile, std::vector<double> const & pts, int32_t a
   {
     auto const vt = ToVehicle(profile);
 
-    // Las opciones de evitar las lee IndexRouter desde settings en cada ruta.
+    // The avoid options are read by IndexRouter from settings on every route.
     routing::RoutingOptions::SaveOptionsToSettings(
         routing::RoutingOptions(ToOptionMask(profile, avoidFlags), vt));
 
