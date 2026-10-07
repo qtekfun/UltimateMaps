@@ -71,6 +71,16 @@ class AlertSoundTest {
         assertTrue(ChimeSynth.pcm(ChimeKind.CAMERA).contentEquals(ChimeSynth.pcm(ChimeKind.CAMERA)), "deterministic")
     }
 
+    @Test fun theTransitChimeRisesAndDiffersFromTheOtherTwo() {
+        val (t1, t2) = ChimeSynth.tonesHz(ChimeKind.TRANSIT)
+        assertTrue(t2 > t1, "transit chime rises")
+        for (other in listOf(ChimeKind.CAMERA, ChimeKind.INCIDENT)) {
+            val (o1, o2) = ChimeSynth.tonesHz(other)
+            assertTrue(listOf(t1, t2).none { it in listOf(o1, o2) }, "no shared pitch with $other")
+            assertTrue(!ChimeSynth.pcm(ChimeKind.TRANSIT).contentEquals(ChimeSynth.pcm(other)))
+        }
+    }
+
     @Test fun everyCategoryMapsToTheRightChime() {
         val cams = setOf(AlertCategory.FIXED_CAMERA, AlertCategory.SECTION, AlertCategory.MOBILE_ZONE)
         for (c in AlertCategory.entries) assertEquals(if (c in cams) ChimeKind.CAMERA else ChimeKind.INCIDENT, c.chimeKind, "$c")
