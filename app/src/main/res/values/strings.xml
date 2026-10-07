@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Mapas</string>
+    <string name="app_name">UltimateMaps</string>
     <string name="network_mode_offline">Offline mode: no network connections</string>
     <string name="network_connections_title">Possible connections</string>
     <string name="link_short_needs_resolve">This short link needs a network request to Google to find its destination. Resolving short links is turned off, so nothing was sent.</string>

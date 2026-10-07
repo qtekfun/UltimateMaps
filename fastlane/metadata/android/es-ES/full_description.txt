@@ -1,4 +1,4 @@
-Mapas es una app de mapas sin conexión y privada. El mapa, la búsqueda y las rutas se calculan en tu teléfono: sin tráfico en tiempo real, sin cuentas, sin anuncios, sin analítica y sin telemetría. Funciona sin Google Play Services.
+UltimateMaps es una app de mapas sin conexión y privada. El mapa, la búsqueda y las rutas se calculan en tu teléfono: sin tráfico en tiempo real, sin cuentas, sin anuncios, sin analítica y sin telemetría. Funciona sin Google Play Services.
 
 Es una versión candidata de un MVP, no una app terminada. Lo que funciona hoy:
 

@@ -1,4 +1,4 @@
-Mapas is an offline, private map app. The map, the search and the routes are all computed on your phone: no live traffic, no accounts, no ads, no analytics and no telemetry. It works without Google Play Services.
+UltimateMaps is an offline, private map app. The map, the search and the routes are all computed on your phone: no live traffic, no accounts, no ads, no analytics and no telemetry. It works without Google Play Services.
 
 This is a release candidate of an MVP, not a finished app. What works today:
 

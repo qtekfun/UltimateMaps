@@ -476,3 +476,9 @@ Format: date · decision · reason · discarded alternatives · how to revert it
 - **Discarded alternatives:** a banner for incidents in free driving (the request is about navigation); a separate voice for incidents; showing the countdown "0" (it would flash for one tick); a banner re-shown after each reroute (it would repeat the same incident).
 - **Verified (JVM and Robolectric only):** state machine (show, countdown ticks, auto-dismiss, early dismiss, queue, dedupe, reroute, direction, switches), the Compose banner and its place under the camera chip, the hazard card over the navigation sheet, and the wiring over the real navigation controller. **Not verified:** how it looks and feels on a device, whether 5 s is long enough to read at speed, real DGT data on a real route. See `docs/phase2/camera-alerts-checklist.md`.
 - **Owner to decide:** whether the camera chip should keep showing incidents too; whether five seconds suffices on motorways; whether free driving should get the same banner.
+
+## 2026-10-07 · The app is called UltimateMaps (owner)
+- **Decision:** the display name is **UltimateMaps** (app name in both languages, fastlane titles, README, PRIVACY, CLAUDE.md and the spec package title). The Spanish word "mapas" and the in-app "Maps" screen keep their normal wording.
+- **Not changed (needs the owner's decision):** the Android `applicationId` and package `com.qtekfun.mapas` (marked provisional in `app/build.gradle.kts`). Changing it means every installed test build must be uninstalled first (a new id is a different app) and touches the namespace, the Kotlin packages, the manifest, the shortcuts, the F-Droid draft and the test packages. The earlier it is done the cheaper it is. Proposed id: `com.qtekfun.ultimatemaps`.
+- **Internal names** (`MapasApp`, `Theme.Mapas`, the `Mapas` design-system object) stay for now; they are not user-visible.
+
