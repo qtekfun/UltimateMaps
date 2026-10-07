@@ -2,7 +2,9 @@
 
 Cubre RF-15 (datos) y RF-17 (pantalla de Ajustes). La capa del mapa y la ficha de gasolinera (agente F) solo consumen las interfaces de `:core-fuel`; **no se ha cambiado ninguna firma de `FuelRepository`, `FuelSettings`, `FuelSettingsStore`, `FuelType` ni `FuelStation`** (solo se añadieron tipos y funciones).
 
-## Aviso: licencia de reutilización NO verificada (bloqueo antes de anunciar la función)
+## Aviso: texto literal de la licencia NO encontrado (riesgo bajo, cubierto con atribución)
+
+> **Actualización 2026-10-07:** tras esta nota, el usuario pidió revisar el uso real y se reunió evidencia (finalidad de transparencia pública, app oficial del Ministerio, apps listadas en datos.gob.es y en Play Store, marco de la Ley 37/2007): ver `docs/decisions.md`, «Licencia de combustible». **Ya no se considera un bloqueo**; sigue sin haber texto literal de la licencia, y las tres condiciones de abajo se aplican como práctica prudente.
 
 El estudio (`verificacion-fuentes.md`, sección 1) no encontró el texto de las condiciones de reutilización del servicio REST del Ministerio (las fichas de datos.gob.es ya no existen; la cita de la Ley 37/2007 solo aparece en una ficha de terceros). **No se ha leído ninguna licencia ni norma que la fije.** Por prudencia se siguen las condiciones habituales en las apps que lo reutilizan, pero eso no sustituye a verificarlo:
 
