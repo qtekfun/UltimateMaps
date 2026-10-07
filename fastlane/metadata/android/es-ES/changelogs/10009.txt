@@ -1,0 +1,1 @@
+Versión candidata: nuevo identificador de app (UltimateMaps), rutas en transporte público con seguimiento paso a paso, rutas largas que ya se encuentran, Ajustes rediseñados, sonidos de aviso, ficha y nombres en tu idioma y distancia en la barra de estado. Solo España.
