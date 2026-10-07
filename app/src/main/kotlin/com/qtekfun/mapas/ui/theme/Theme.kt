@@ -58,7 +58,7 @@ data class MapasShapes(
 data class MapasDimens(
     val touchTarget: Dp = 44.dp,
     val screenMargin: Dp = 16.dp,
-    val sheetCollapsedHeight: Dp = 84.dp,
+    val sheetCollapsedHeight: Dp = 107.dp,
     val sheetMediumFraction: Float = 0.46f,
     val gloveTouchTarget: Dp = 56.dp,
 )

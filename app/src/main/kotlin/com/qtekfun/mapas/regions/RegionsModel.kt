@@ -20,6 +20,8 @@ data class RegionRow(
     val installedVersion: String?,
     val updateAvailable: Boolean,
     val download: DownloadState?,
+    /** Search results only: "Spain › Catalonia › Provincia de Barcelona". */
+    val path: String? = null,
 )
 
 /** Pure transformation catalog + installed + downloads -> visible rows. JVM-testable. */
@@ -50,6 +52,35 @@ object RegionsModel {
             }
         }
         walk(null, 0)
+        return out
+    }
+
+    /** Flat, ranked rows for a search [query] (see [RegionSearch.filter]); each carries its parent path. */
+    fun searchRows(
+        index: RegionSearch.Index,
+        query: String,
+        installedVersions: Map<String, String>,
+        downloads: Map<String, DownloadState>,
+    ): List<RegionRow> = RegionSearch.filter(index, query).map { e ->
+        val r = e.region
+        val iv = installedVersions[r.id]
+        RegionRow(
+            region = r, depth = 0, isGroup = e.isGroup, expanded = false,
+            downloadableCount = e.leaves.size,
+            installedCount = e.leaves.count { it.id in installedVersions },
+            totalBytes = e.leaves.sumOf { it.totalBytes },
+            installedVersion = iv,
+            updateAvailable = iv != null && r.isDownloadable && iv != r.version,
+            download = downloads[r.id],
+            path = e.path,
+        )
+    }
+
+    /** Ids of the ancestors of [id], root first (to reveal a search result in the tree). */
+    fun ancestors(catalog: RegionCatalog, id: String): List<String> {
+        val out = ArrayList<String>()
+        var cur = catalog[id]?.parentId
+        while (cur != null) { out.add(0, cur); cur = catalog[cur]?.parentId }
         return out
     }
 
