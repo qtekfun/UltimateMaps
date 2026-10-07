@@ -32,7 +32,7 @@ android {
         targetSdk = 36
         versionCode = versionCodeOf(appVersion)
         versionName = appVersion
-        ndk { abiFilters += "arm64-v8a" } // RNF-07: arm64-v8a obligatoria
+        ndk { abiFilters += "arm64-v8a" } // RNF-07: arm64-v8a is mandatory
     }
 
     // CoMaps reads the APK assets with a random-access reader: they cannot be compressed
@@ -96,14 +96,14 @@ dependencies {
     implementation(project(":core-map"))
     implementation(project(":core-search"))
     implementation(project(":core-routing"))
-    implementation(project(":core-fuel")) // gasolineras: contrato de datos (RF-15)
+    implementation(project(":core-fuel")) // gas stations: data contract (RF-15)
     implementation(project(":core-nav")) // route tracking and NavigationController (navigation service)
     implementation(project(":core-voice")) // instruction text, voice queue and navigation settings
     implementation(project(":native-comaps")) // CoMaps core (search), deferred startup; M2
-    implementation(project(":core-data")) // sitios y listas (M3)
+    implementation(project(":core-data")) // places and lists (M3)
     implementation(libs.androidx.sqlite.framework) // Android SQLite driver for :core-data (M3)
     implementation(project(":core-regions"))
-    implementation(project(":core-fuel")) // gasolineras: datos y ajustes (F2b)
+    implementation(project(":core-fuel")) // gas stations: data and settings (F2b)
 
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.compose.ui)
