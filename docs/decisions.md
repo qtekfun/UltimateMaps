@@ -239,3 +239,7 @@ Formato: fecha · decisión · motivo · alternativas descartadas · cómo rever
 - **Descartado:** emparejar con el mapa de calles (no hay datos en JVM puro; la ventana monótona + rumbo basta para bucles y solapes); proyectar siempre al segmento global más cercano (salta de paso en rutas con bucles).
 - **Medido:** ≈ 0,5-0,8 µs por fijo y 0 B asignados en `onFix` (JVM de escritorio; no es el Pixel 8). Detalle en el doc.
 - **Revertir:** `git revert` de los commits de la rama; no toca ningún otro módulo (solo `settings.gradle.kts`, `libs.versions.toml` y `LICENSES.md`).
+## 2026-10-07 · Buscador en «Mapas» y arrastre del panel (rama `feat/ui-regions-search-sheet`, sin móvil)
+- **Decisión:** la pantalla «Mapas» filtra por nombre sin mayúsculas ni acentos, con una clave normalizada por catálogo (más sinónimos en español de comunidades y países; solo nombres que existen en el catálogo publicado), resultados con ruta («Spain › Catalonia › Provincia de Barcelona»), descargables primero. El panel inferior arrastra desde cualquier zona, con `nestedScroll`, fling a 200 dp/s, 25 % del hueco, muelle 0,9/800 y acciones de TalkBack. Detalle en `docs/phase2/sheet-drag.md`.
+- **No medido:** la sensación real del arrastre (sin Pixel 8). Los valores son una estimación razonada. El catálogo real es plano (países en la raíz y 25 hijos de España), no hay niveles de continente.
+- **Alternativa descartada:** colapsar el panel con el fling sobrante de una lista (como Material): sorprende al volver arriba de una lista larga.
