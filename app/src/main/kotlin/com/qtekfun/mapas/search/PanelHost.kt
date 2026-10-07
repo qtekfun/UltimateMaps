@@ -110,6 +110,17 @@ class PanelHost(
         },
     )
 
+    /** Public-transport mode of the route panel; null when the application object is not the real one (tests). */
+    private val transitController: com.qtekfun.mapas.transit.TransitController? =
+        (activity.application as? MapasApp)?.transit?.let { repo ->
+            com.qtekfun.mapas.transit.TransitController(
+                scope = activity.lifecycleScope,
+                io = Dispatchers.IO,
+                source = repo,
+                showItinerary = { engine.showTransitItinerary(it) },
+            )
+        }
+
     val route = RoutePreviewController(
         scope = activity.lifecycleScope,
         io = Dispatchers.IO,
@@ -123,6 +134,7 @@ class PanelHost(
         mutex = coreLock,
         defaultBikeCycleways = { com.qtekfun.mapas.voice.VoiceModule.settings(activity).settings.value.bikeCycleways },
         showAlternatives = engine::showAlternativeRoutes,
+        transit = transitController,
     )
 
     /** "Start" / "Simulate" on the route card: the guided route goes through the same shared core and lock. */

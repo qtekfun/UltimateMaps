@@ -46,9 +46,13 @@ class RegionsActivity : ComponentActivity() {
             onDelete = controller::delete,
             onDismissFailure = controller::dismissFailure,
             onDismissRestored = { pendingRestore.regions = emptySet(); restoredRegions = emptySet() },
+            onTransitDownload = { id -> (application as MapasApp).transit.download(id) },
+            onTransitDelete = { id -> (application as MapasApp).transit.delete(id) },
         )
         setContent {
-            MapasTheme(darkTheme = isSystemInDarkTheme()) { RegionsScreen(controller.uiState().copy(restoredRegionIds = restoredRegions), actions) }
+            MapasTheme(darkTheme = isSystemInDarkTheme()) {
+                RegionsScreen(controller.uiState().copy(restoredRegionIds = restoredRegions, transit = (application as MapasApp).transit.rows()), actions)
+            }
         }
     }
 

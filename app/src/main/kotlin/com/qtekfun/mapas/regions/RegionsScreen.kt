@@ -65,6 +65,8 @@ data class RegionsUiState(
     val linkProblem: Boolean = false,
     /** Region ids a settings restore listed as installed on the old phone (offered for download, never downloaded alone). */
     val restoredRegionIds: Set<String> = emptySet(),
+    /** Public-transport cities of the catalog (the optional `transit` block); empty hides the section. */
+    val transit: List<com.qtekfun.mapas.transit.TransitCityRow> = emptyList(),
 )
 
 fun RegionsController.uiState() = RegionsUiState(
@@ -87,6 +89,8 @@ class RegionsActions(
     val onDismissFailure: (String) -> Unit = {},
     /** The owner dismissed the offer to download the maps listed by a settings restore. */
     val onDismissRestored: () -> Unit = {},
+    val onTransitDownload: (String) -> Unit = {},
+    val onTransitDelete: (String) -> Unit = {},
 )
 
 @Composable
@@ -136,6 +140,9 @@ fun RegionsScreen(state: RegionsUiState, actions: RegionsActions, modifier: Modi
         LazyColumn(Modifier.fillMaxSize().testTag("regions_list"), state = listState, verticalArrangement = Arrangement.spacedBy(0.dp)) {
             if (!searching) item(key = "settings") { SettingsSection(state, actions) }
             if (!searching) item(key = "restored") { RestoredRegionsOffer(state, catalog, actions) }
+            if (!searching && state.transit.isNotEmpty()) item(key = "transit") {
+                com.qtekfun.mapas.transit.TransitMapsSection(state.transit, state.offline, actions.onTransitDownload, actions.onTransitDelete)
+            }
             item(key = "status") { CatalogStatus(state, catalog, actions) }
             if (searching && rows.isEmpty() && orphans.isEmpty()) item(key = "search-empty") {
                 BasicText(

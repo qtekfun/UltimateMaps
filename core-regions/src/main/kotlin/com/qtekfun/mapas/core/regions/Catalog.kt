@@ -54,6 +54,27 @@ data class BaseMaps(val version: String, val world: RegionAsset, val worldCoasts
     val totalBytes: Long get() = world.sizeBytes + worldCoasts.sizeBytes
 }
 
+/** Rectangle (degrees) a city's transit data covers; used to pick the city of a trip. */
+data class TransitBounds(val south: Double, val west: Double, val north: Double, val east: Double) {
+    fun contains(lat: Double, lon: Double): Boolean = lat in south..north && lon in west..east
+}
+
+/**
+ * One city's public-transport timetable index (`transit-<id>.umti`, built by `:core-transit:buildTransit`). [validFrom] /
+ * [validTo] are ISO dates (`2026-10-07`): the days the timetables cover. [attribution] lines are mandatory (data licences)
+ * and are shown in the itinerary and in About. [timezone] is the IANA zone of the schedules.
+ */
+data class TransitAsset(
+    val id: String,
+    val city: String,
+    val asset: RegionAsset,
+    val validFrom: String,
+    val validTo: String,
+    val timezone: String,
+    val bounds: TransitBounds?,
+    val attribution: List<String>,
+)
+
 class CatalogException(message: String, cause: Throwable? = null) : Exception(message, cause)
 
 /** Versioned catalog of regions. Immutable. */
@@ -66,6 +87,11 @@ class RegionCatalog(
      * without it are valid; the app then simply has no camera data.
      */
     val cameras: RegionAsset? = null,
+    /**
+     * Optional public-transport indexes, one per city (see docs/phase2/transit.md). Catalogs without them are valid;
+     * the app then simply has no transit data.
+     */
+    val transit: List<TransitAsset> = emptyList(),
 ) {
     val regions: List<Region> = regions.toList()
     private val byId = this.regions.associateBy { it.id }
@@ -85,6 +111,16 @@ class RegionCatalog(
             checkAsset(it.worldCoasts, "base.worldCoasts")
         }
         cameras?.let { checkAsset(it, "cameras") }
+        require(transit.map { it.id }.toSet().size == transit.size) { "duplicate transit ids" }
+        transit.forEach { t ->
+            require(t.id.matches(ID_RE)) { "invalid transit id ${t.id}" }
+            checkAsset(t.asset, "transit ${t.id}")
+            val from = runCatching { java.time.LocalDate.parse(t.validFrom) }.getOrNull()
+            val to = runCatching { java.time.LocalDate.parse(t.validTo) }.getOrNull()
+            require(from != null && to != null && !to.isBefore(from)) { "invalid validity for transit ${t.id}" }
+            require(runCatching { java.time.ZoneId.of(t.timezone) }.isSuccess) { "invalid timezone for transit ${t.id}" }
+            require(t.attribution.isNotEmpty() && t.attribution.all { it.isNotBlank() }) { "transit ${t.id} needs an attribution" }
+        }
         this.regions.forEach { r ->
             var cur: String? = r.parentId
             var hops = 0
@@ -120,6 +156,26 @@ class RegionCatalog(
             put("worldCoasts", assetJson(base.worldCoasts))
         })
         if (cameras != null) put("cameras", assetJson(cameras))
+        if (transit.isNotEmpty()) put("transit", buildJsonArray {
+            transit.forEach { t ->
+                add(buildJsonObject {
+                    put("id", t.id)
+                    put("city", t.city)
+                    put("url", t.asset.url)
+                    put("size", t.asset.sizeBytes)
+                    put("sha256", t.asset.sha256)
+                    put("file", t.asset.fileName)
+                    put("validFrom", t.validFrom)
+                    put("validTo", t.validTo)
+                    put("timezone", t.timezone)
+                    if (t.bounds != null) put("bounds", buildJsonArray {
+                        add(JsonPrimitive(t.bounds.south)); add(JsonPrimitive(t.bounds.west))
+                        add(JsonPrimitive(t.bounds.north)); add(JsonPrimitive(t.bounds.east))
+                    })
+                    put("attribution", buildJsonArray { t.attribution.forEach { add(JsonPrimitive(it)) } })
+                })
+            }
+        })
         put("regions", buildJsonArray {
             regions.forEach { r ->
                 add(buildJsonObject {
@@ -172,6 +228,21 @@ class RegionCatalog(
                 )
             }
             val cameras = (root["cameras"] as? JsonObject)?.let { asset(it) }
+            val transit = (root["transit"] as? kotlinx.serialization.json.JsonArray)?.map { e ->
+                val o = e.jsonObject
+                TransitAsset(
+                    id = o.getValue("id").jsonPrimitive.content,
+                    city = o.getValue("city").jsonPrimitive.content,
+                    asset = asset(o),
+                    validFrom = o.getValue("validFrom").jsonPrimitive.content,
+                    validTo = o.getValue("validTo").jsonPrimitive.content,
+                    timezone = o["timezone"]?.jsonPrimitive?.content ?: "UTC",
+                    bounds = (o["bounds"] as? kotlinx.serialization.json.JsonArray)?.takeIf { it.size == 4 }?.let { b ->
+                        TransitBounds(b[0].jsonPrimitive.content.toDouble(), b[1].jsonPrimitive.content.toDouble(), b[2].jsonPrimitive.content.toDouble(), b[3].jsonPrimitive.content.toDouble())
+                    },
+                    attribution = o.getValue("attribution").jsonArray.map { it.jsonPrimitive.content },
+                )
+            } ?: emptyList()
             val regions = root.getValue("regions").jsonArray.map { e ->
                 val o = e.jsonObject
                 val assets = (o["assets"] as? JsonObject)?.let { a ->
@@ -188,7 +259,7 @@ class RegionCatalog(
                     comapsId = (o["comapsId"] as? JsonPrimitive)?.takeIf { it !is JsonNull }?.content,
                 )
             }
-            RegionCatalog(root.getValue("catalogVersion").jsonPrimitive.content, regions, baseMaps, cameras)
+            RegionCatalog(root.getValue("catalogVersion").jsonPrimitive.content, regions, baseMaps, cameras, transit)
         } catch (e: CatalogException) {
             throw e
         } catch (e: Exception) { // malformed JSON, missing fields, failed invariants
