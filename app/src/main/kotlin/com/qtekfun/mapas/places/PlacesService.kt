@@ -5,6 +5,8 @@ import com.qtekfun.mapas.core.data.ImportResult
 import com.qtekfun.mapas.core.data.Place
 import com.qtekfun.mapas.core.data.PlaceList
 import com.qtekfun.mapas.core.data.PlacesRepository
+import com.qtekfun.mapas.core.data.TakeoutImport
+import com.qtekfun.mapas.core.data.TakeoutSummary
 import com.qtekfun.mapas.core.geo.LatLon
 import com.qtekfun.mapas.core.geo.distanceTo
 import com.qtekfun.mapas.core.geo.io.GpxExporter
@@ -80,6 +82,12 @@ class DefaultList(private val repo: PlacesRepository, private val setting: LongS
     }
 }
 
+/** Result of [PlacesService.importAny]: a GPX/KML/KMZ import, or a Google Takeout export (it makes its own lists). */
+sealed interface ImportOutcome {
+    data class Geo(val result: ImportResult) : ImportOutcome
+    data class Takeout(val summary: TakeoutSummary) : ImportOutcome
+}
+
 sealed interface SaveOutcome {
     data class Saved(val placeId: Long, val listName: String, val created: Boolean) : SaveOutcome
 }
@@ -135,11 +143,48 @@ class PlacesService(private val repo: PlacesRepository, private val defaultList:
         }
     }
 
+    /**
+     * Imports whatever the user picked: GPX/KML/KMZ as before, or a Google Takeout export (a `.csv`, a `.json` or a
+     * ZIP without KML inside). Null when the file is too big, unreadable or of no known format.
+     */
+    fun importAny(input: InputStream, fileName: String?, intoList: Long?): ImportOutcome? {
+        val bytes = input.use { readBounded(it, MAX_IMPORT_BYTES + 1) }
+        if (bytes.size > MAX_IMPORT_BYTES) return null
+        if (isTakeoutFile(fileName, bytes)) {
+            val summary = try {
+                val takeout = TakeoutImport(repo)
+                if (bytes.looksLikeZip()) takeout.importZip(bytes.inputStream()) else takeout.importFile(bytes.inputStream(), fileName)
+            } catch (e: com.qtekfun.mapas.core.geo.io.GeoImportException) {
+                return null
+            }
+            return ImportOutcome.Takeout(summary)
+        }
+        return import(bytes.inputStream(), fileName, intoList)?.let { ImportOutcome.Geo(it) }
+    }
+
     /** Writes [listId] (or every place and track when null) in [format] and returns the number of places written. */
     fun export(format: GeoFormat, listId: Long?, out: OutputStream): Int {
         val exporter = if (format == GeoFormat.GPX) GpxExporter else KmlExporter
         transfer.export(exporter, out, listId)
         return repo.places(listId = listId).size
+    }
+
+    private fun ByteArray.looksLikeZip() = size >= 2 && this[0] == 'P'.code.toByte() && this[1] == 'K'.code.toByte()
+
+    private fun isTakeoutFile(fileName: String?, bytes: ByteArray): Boolean =
+        when (fileName?.substringAfterLast('.', "")?.lowercase()) {
+            "csv", "json", "geojson" -> true
+            "kmz", "gpx", "kml" -> false
+            else -> bytes.looksLikeZip() && !zipHasKml(bytes)
+        }
+
+    /** A KMZ holds a `.kml`; a Takeout archive holds CSV/JSON files instead. */
+    private fun zipHasKml(bytes: ByteArray): Boolean = try {
+        java.util.zip.ZipInputStream(bytes.inputStream()).use { zip ->
+            generateSequence { zip.nextEntry }.any { it.name.endsWith(".kml", ignoreCase = true) }
+        }
+    } catch (e: java.io.IOException) {
+        false
     }
 
     private fun readBounded(input: InputStream, max: Int): ByteArray {

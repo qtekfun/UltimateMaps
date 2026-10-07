@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Importación de Google Takeout, capa de tracks GPX, reordenar paradas -->
+    <string name="msg_takeout_imported">Takeout: %1$d listas, %2$d sitios añadidos (%3$d ya estaban), %4$d omitidos sin coordenadas</string>
+    <string name="tracks_title">Tracks en el mapa</string>
+    <string name="tracks_empty">No hay tracks importados</string>
+    <string name="track_show">Mostrar</string>
+    <string name="track_hide">Ocultar</string>
+    <string name="track_fit">Ajustar al track</string>
+    <string name="track_points">%1$d puntos</string>
+    <string name="route_stop_move_up">Subir parada</string>
+    <string name="route_stop_move_down">Bajar parada</string>
+</resources>

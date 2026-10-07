@@ -22,6 +22,7 @@ sealed interface PlacesMessage {
     data class Saved(val listName: String) : PlacesMessage
     data object Removed : PlacesMessage
     data class Imported(val result: ImportResult) : PlacesMessage
+    data class TakeoutImported(val summary: com.qtekfun.mapas.core.data.TakeoutSummary) : PlacesMessage
     data object ImportFailed : PlacesMessage
     data class Exported(val places: Int) : PlacesMessage
     data object ExportFailed : PlacesMessage
@@ -180,13 +181,18 @@ class PlacesController(
         val into = state.openList?.id
         scope.launch {
             val result = try {
-                withContext(io) { service.value.import(open(), fileName, into) }
+                withContext(io) { service.value.importAny(open(), fileName, into) }
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
                 null
             }
-            state.message = if (result == null) PlacesMessage.ImportFailed else PlacesMessage.Imported(result)
+            state.message = when (result) {
+                null -> PlacesMessage.ImportFailed
+                is ImportOutcome.Geo -> PlacesMessage.Imported(result.result)
+                is ImportOutcome.Takeout ->
+                    if (result.summary.isEmpty) PlacesMessage.ImportFailed else PlacesMessage.TakeoutImported(result.summary)
+            }
             reload()
         }
     }
