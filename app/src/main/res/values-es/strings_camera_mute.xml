@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Silencio propio de los avisos de voz de radares e incidencias -->
-    <string name="cam_voice_title">Avisos de voz de radares e incidencias</string>
-    <string name="cam_voice_body">Avisar por voz de lo que hay delante. El aviso en pantalla se muestra siempre; Silenciar de la navegación lo silencia todo.</string>
+    <!-- Silencio rápido de los avisos de radares e incidencias (sonido y voz) en la pantalla de navegación -->
     <string name="nav_ui_alerts_mute">Silenciar avisos</string>
     <string name="nav_ui_alerts_unmute">Activar avisos</string>
-    <string name="nav_ui_alerts_mute_description">Voz de radares e incidencias activada. Toca para silenciar solo esos avisos</string>
-    <string name="nav_ui_alerts_unmute_description">Voz de radares e incidencias silenciada. Toca para volver a activarla</string>
+    <string name="nav_ui_alerts_mute_description">Avisos de radares e incidencias activados. Toca para silenciar su sonido y su voz</string>
+    <string name="nav_ui_alerts_unmute_description">Avisos de radares e incidencias silenciados. Toca para volver a activar su sonido y su voz</string>
 </resources>

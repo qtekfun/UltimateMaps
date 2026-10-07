@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="live_update_title">Show distance in the status bar</string>
+    <string name="live_update_body">On Android 16 and later, the distance to the next turn appears as a chip in the status bar while you navigate. You can also turn promoted notifications off for this app in the system settings.</string>
+    <!-- Chip texts: the status bar chip fits about 7 characters. -->
+    <string name="live_update_chip_reroute">Reroute</string>
+    <string name="live_update_chip_no_signal">No GPS</string>
+</resources>

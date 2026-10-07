@@ -1,1 +1,0 @@
-Versión candidata: copia y restauración de ajustes, teléfono/web/horarios en la ficha, aviso de incidencias con cuenta atrás, silenciar la voz de radares e incidencias, y manejo de texto más seguro en el núcleo. Solo España.

@@ -1,4 +1,4 @@
-// JNI of com.qtekfun.mapas.nativecomaps.NativeCore. It only translates types; the logic is in um_core.cpp.
+// JNI of com.qtekfun.ultimatemaps.nativecomaps.NativeCore. It only translates types; the logic is in um_core.cpp.
 #include "um_core.hpp"
 
 #include <jni.h>
@@ -78,7 +78,7 @@ jstring SafeJString(JNIEnv * env, std::string const & s)
 
 extern "C"
 {
-JNIEXPORT jstring JNICALL Java_com_qtekfun_mapas_nativecomaps_NativeCore_nativeInit(
+JNIEXPORT jstring JNICALL Java_com_qtekfun_ultimatemaps_nativecomaps_NativeCore_nativeInit(
     JNIEnv * env, jobject, jstring apk, jstring writable, jstring tmp, jstring locale)
 {
   um::InitParams p;
@@ -89,7 +89,7 @@ JNIEXPORT jstring JNICALL Java_com_qtekfun_mapas_nativecomaps_NativeCore_nativeI
   return env->NewStringUTF(um::Core::Instance().Init(p).c_str());
 }
 
-JNIEXPORT jint JNICALL Java_com_qtekfun_mapas_nativecomaps_NativeCore_nativeRefreshMaps(JNIEnv *, jobject)
+JNIEXPORT jint JNICALL Java_com_qtekfun_ultimatemaps_nativecomaps_NativeCore_nativeRefreshMaps(JNIEnv *, jobject)
 {
   return um::Core::Instance().RefreshMaps();
 }
@@ -98,7 +98,7 @@ JNIEXPORT jint JNICALL Java_com_qtekfun_mapas_nativecomaps_NativeCore_nativeRefr
 // Keep in sync with SearchWire in CoMapsCore.kt (version 2; version 1 was the first five only).
 constexpr jsize kSearchStride = 9;
 
-JNIEXPORT jobjectArray JNICALL Java_com_qtekfun_mapas_nativecomaps_NativeCore_nativeSearch(
+JNIEXPORT jobjectArray JNICALL Java_com_qtekfun_ultimatemaps_nativecomaps_NativeCore_nativeSearch(
     JNIEnv * env, jobject, jstring query, jboolean hasPos, jdouble lat, jdouble lon, jint limit, jint timeoutMs,
     jstring locale, jboolean categorial)
 {
@@ -154,7 +154,7 @@ std::vector<double> ReadDoubles(JNIEnv * env, jdoubleArray a)
 extern "C"
 {
 // Returns [code, distanceM, durationS, lat0, lon0, lat1, lon1, ...].
-JNIEXPORT jdoubleArray JNICALL Java_com_qtekfun_mapas_nativecomaps_NativeCore_nativeRoute(
+JNIEXPORT jdoubleArray JNICALL Java_com_qtekfun_ultimatemaps_nativecomaps_NativeCore_nativeRoute(
     JNIEnv * env, jobject, jint profile, jdoubleArray points, jint avoidFlags, jint timeoutSec)
 {
   auto const r =
@@ -164,7 +164,7 @@ JNIEXPORT jdoubleArray JNICALL Java_com_qtekfun_mapas_nativecomaps_NativeCore_na
 
 // Like nativeRoute but with guidance. Returns Object[3]: { double[] route (same format as nativeRoute),
 // double[] guidance (see um_core.hpp; empty if none), String[] street names }.
-JNIEXPORT jobjectArray JNICALL Java_com_qtekfun_mapas_nativecomaps_NativeCore_nativeRouteGuidance(
+JNIEXPORT jobjectArray JNICALL Java_com_qtekfun_ultimatemaps_nativecomaps_NativeCore_nativeRouteGuidance(
     JNIEnv * env, jobject, jint profile, jdoubleArray points, jint avoidFlags, jint timeoutSec)
 {
   auto const r = um::Core::Instance().Route(static_cast<um::Profile>(profile), ReadDoubles(env, points), avoidFlags,

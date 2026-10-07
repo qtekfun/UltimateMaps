@@ -1,7 +1,7 @@
 # Route panel redesign: renders
 
 Renders of `RoutePanel` produced on the JVM with Robolectric native graphics and `captureToImage`
-(`app/src/test/kotlin/com/qtekfun/mapas/route/RoutePanelRenderTest.kt`, skipped unless `RENDER_ROUTE_PANEL` names the
+(`app/src/test/kotlin/com/qtekfun/ultimatemaps/route/RoutePanelRenderTest.kt`, skipped unless `RENDER_ROUTE_PANEL` names the
 output directory; `RENDER_PREFIX` is the file-name prefix). Phone width 411 dp at xxhdpi, light and dark theme.
 
 **Not measured:** the real look and feel on a device (fonts, density, touch comfort, glove mode, animation). Nothing
