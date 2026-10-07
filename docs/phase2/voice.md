@@ -1,91 +1,91 @@
-# Voz de la navegación y ajustes de navegación (agente N2, rama `feat/nav-voice`)
+# Navigation voice and navigation settings (agent N2, branch `feat/nav-voice`)
 
-Cubre la parte de voz de RF-05 y el diseño «Voz» de `docs/mapas-03-arquitectura.md` (sin GMS). Todo está probado **en la JVM
-y con Robolectric**; no se ha usado ningún dispositivo (ver «Qué no está medido»).
+Covers the voice part of RF-05 and the "Voice" design in `docs/mapas-03-arquitectura.md` (without GMS). Everything is tested **on the JVM
+and with Robolectric**; no device was used (see "What is not measured").
 
-## Piezas
+## Components
 
-| Pieza | Dónde | Qué hace |
+| Component | Where | What it does |
 |---|---|---|
-| Texto de las indicaciones | `:core-voice` (JVM) `InstructionText`, `DistanceRounding` | `Announcement` + unidades + idioma → frase (es/en). |
-| Ajustes | `:core-voice` `NavSettings`; `app/.../settings/PrefsNavSettingsStore` | Voz, solo importantes, volumen, unidades, idioma, «evitar por defecto». |
-| Cola, foco y recuperación | `:core-voice` `SpeechDirector` (implementa `VoiceGuide`) | Prioridades, ducking, reinicio del motor, plazos. Hilo único vía `Scheduler`. |
-| Motor Android | `app/.../voice/AndroidSpeechEngine`, `AndroidAudioFocus`, `HandlerScheduler` | `TextToSpeech` sin GMS, `AudioFocusRequest`, hilo principal. |
-| Guía «sin voz» | `app/.../voice/VoiceInstall`, `VoiceProblemNotice`, `VoiceProblemBanner` | Qué motor libre instalar y cómo; aviso visual de una línea. |
-| Enganche | `:core-voice` `VoiceNavigationController`; `app/.../voice/VoiceModule` | Se suscribe a la navegación y habla. |
-| Ajustes (UI) | `app/.../settings/NavigationSettingsSection.kt` | Sección «Navegación» en `SettingsScreen`. |
+| Text of the instructions | `:core-voice` (JVM) `InstructionText`, `DistanceRounding` | `Announcement` + units + language → sentence (es/en). |
+| Settings | `:core-voice` `NavSettings`; `app/.../settings/PrefsNavSettingsStore` | Voice, important only, volume, units, language, "avoid by default". |
+| Queue, focus and recovery | `:core-voice` `SpeechDirector` (implements `VoiceGuide`) | Priorities, ducking, engine restart, deadlines. Single thread via `Scheduler`. |
+| Android engine | `app/.../voice/AndroidSpeechEngine`, `AndroidAudioFocus`, `HandlerScheduler` | `TextToSpeech` without GMS, `AudioFocusRequest`, main thread. |
+| "No voice" guide | `app/.../voice/VoiceInstall`, `VoiceProblemNotice`, `VoiceProblemBanner` | Which free engine to install and how; one-line visual notice. |
+| Wiring | `:core-voice` `VoiceNavigationController`; `app/.../voice/VoiceModule` | Subscribes to navigation and speaks. |
+| Settings (UI) | `app/.../settings/NavigationSettingsSection.kt` | "Navigation" section in `SettingsScreen`. |
 
-## Texto de las indicaciones
+## Text of the instructions
 
-Frases (idéntico en `InstructionTextTest`, que cubre los 18 `TurnType` con y sin calle, es/en):
+Sentences (identical in `InstructionTextTest`, which covers the 18 `TurnType` with and without a street, es/en). The spoken Spanish strings are quoted literally, with an English gloss:
 
-- `FAR`/`NEAR`: «En 300 metros, gira a la izquierda en Calle de Alcalá». `NOW`: «Ahora, gira a la derecha».
-- Rotonda: «En la rotonda, toma la segunda salida hacia Avenida…» (sin «Ahora»: la rotonda es la señal); salidas ordinales hasta la décima, después «la salida número 11»; sin salida conocida, «entra en la rotonda».
-- Llegada: «Has llegado a tu destino» (con lado: «…, a la izquierda»); avisando de lejos: «En 300 metros, llegarás a tu destino» / «tu destino estará a la derecha».
-- Mensajes sueltos: «Recalculando», «Has salido de la ruta», «Parada alcanzada».
-- Calle ausente (`null`, vacía o el literal `"null"` que el núcleo produjo en la primera prueba real, ver `docs/decisions.md`): se omite. «Nullarbor Road» sí se dice.
-- Giros suaves («gira ligeramente»), cerrados («gira cerrado»), cambio de sentido con lado, salida de autovía («toma la salida de la derecha hacia…»), incorporación.
-- Carriles: «Mantente en el carril de la izquierda / en los dos carriles de la derecha / en el carril central / en el segundo carril por la izquierda», **solo en avisos `NEAR`** (de lejos es pronto y en `NOW` ya no hay tiempo) y solo si dice algo (varios carriles, algunos recomendados, contiguos).
-- Un aviso `FAR`/`NEAR` con la maniobra a menos de 20 m dice «Ahora».
+- `FAR`/`NEAR`: "En 300 metros, gira a la izquierda en Calle de Alcalá" (In 300 metres, turn left onto Calle de Alcalá). `NOW`: "Ahora, gira a la derecha" (Now, turn right).
+- Roundabout: "En la rotonda, toma la segunda salida hacia Avenida…" (At the roundabout, take the second exit towards Avenida…) (without "Ahora": the roundabout is the cue); ordinal exits up to the tenth, then "la salida número 11" (exit number 11); with no known exit, "entra en la rotonda" (enter the roundabout).
+- Arrival: "Has llegado a tu destino" (You have arrived at your destination) (with side: "…, a la izquierda"); announcing from afar: "En 300 metros, llegarás a tu destino" (In 300 metres, you will arrive at your destination) / "tu destino estará a la derecha" (your destination will be on the right).
+- Standalone messages: "Recalculando" (Recalculating), "Has salido de la ruta" (You have left the route), "Parada alcanzada" (Stop reached).
+- Missing street (`null`, empty or the literal `"null"` that the core produced in the first real test, see `docs/decisions.md`): omitted. "Nullarbor Road" is spoken.
+- Slight turns ("gira ligeramente"), sharp turns ("gira cerrado"), U-turn with side, motorway exit ("toma la salida de la derecha hacia…"), merge.
+- Lanes: "Mantente en el carril de la izquierda / en los dos carriles de la derecha / en el carril central / en el segundo carril por la izquierda" (Stay in the left lane / in the two right lanes / in the middle lane / in the second lane from the left), **only in `NEAR` announcements** (from afar it is too early and at `NOW` there is no time left) and only if it says something (several lanes, some recommended, contiguous).
+- A `FAR`/`NEAR` announcement with the maneuver less than 20 m away says "Ahora" (Now).
 
-**Redondeo de distancias** (`DistanceRounding`): métrico: desde 950 m en km (medios km hasta 10 km, enteros después: «1 kilómetro», «1,5 kilómetros»); por debajo, centenas desde 150 m (900 … 200), luego 100, 50 y decenas bajo 35 m. Imperial: millas desde ~950 ft (décimas de milla bajo 1 mi → «0,5 millas», medias después), pies por debajo con la misma escalera (800, 500, 300, 100, 50 ft). `UnitsPref.AUTO` usa la región del dispositivo (US, GB, LR, MM y territorios de EE. UU. → imperial). Decimal con coma en español y punto en inglés.
+**Distance rounding** (`DistanceRounding`): metric: from 950 m in km (half km up to 10 km, whole numbers after: "1 kilómetro", "1,5 kilómetros"); below that, hundreds from 150 m (900 … 200), then 100, 50 and tens below 35 m. Imperial: miles from ~950 ft (tenths of a mile below 1 mi → "0,5 millas", halves after), feet below with the same ladder (800, 500, 300, 100, 50 ft). `UnitsPref.AUTO` uses the device region (US, GB, LR, MM and US territories → imperial). Decimal comma in Spanish and point in English.
 
-**Solo avisos importantes** (`isImportant`): giros, giros cerrados, cambios de sentido, salidas, rotondas y llegada; fuera «sigue recto», curvas suaves, incorporaciones y salir de rotonda, y todo `FAR` salvo salidas y rotondas.
+**Important announcements only** (`isImportant`): turns, sharp turns, U-turns, exits, roundabouts and arrival; left out are "keep straight", slight bends, merges and leaving a roundabout, and every `FAR` except exits and roundabouts.
 
-## Cola de voz (`SpeechDirector`)
+## Voice queue (`SpeechDirector`)
 
-- `URGENT` (aviso «ahora», llegada, probar voz): vacía la cola, interrumpe lo que suena y habla de inmediato.
-- `NORMAL` (aviso cercano, recálculo, parada): espera su turno; sustituye al pendiente con la misma `key`; descarta los `LOW` pendientes e interrumpe uno `LOW` que esté sonando (el aviso lejano caduca en cuanto toca el cercano).
-- `LOW` (aviso lejano): una sola plaza; el nuevo sustituye al viejo, así no se acumulan.
-- Caducidad: `URGENT` 10 s, `NORMAL` 15 s, `LOW` 8 s en cola; como mucho 4 pendientes. «Gira a la izquierda» dicho tarde es peor que el silencio.
-- Los callbacks del motor llegan en hilos de binder: el director los reenvía a su hilo (el principal) y descarta los de un motor ya reemplazado o de un enunciado interrumpido (ids).
-- **Enfoque de audio:** `AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK` con `USAGE_ASSISTANCE_NAVIGATION_GUIDANCE` + `CONTENT_TYPE_SPEECH` (Context7, guía de audio focus de Android: la música de otras apps baja de volumen mientras hablamos y vuelve al abandonar). Se abandona 700 ms después de la última frase para que dos avisos seguidos no hagan «saltar» la música. Si otra app lo quita (llamada, alarma), se calla; si se deniega al pedirlo (llamada en curso), el aviso se descarta en vez de hablar encima.
-- **Volumen:** `KEY_PARAM_VOLUME` (0–1, relativo al flujo) con la preferencia (25/50/75/100 %), y atributos de navegación para que los botones de volumen del sistema lo gobiernen. **Pendiente para N1:** `setVolumeControlStream(AudioManager.STREAM_MUSIC)` en la actividad de navegación para que los botones lo afecten con la pantalla encendida (no lo toco: es la UI de navegación).
-- **Idioma:** cada `Utterance` lleva su idioma; el motor cambia (`setLanguage`) solo si hace falta. `Auto` = idioma de la app (es → español, resto → inglés).
+- `URGENT` ("now" announcement, arrival, test voice): empties the queue, interrupts what is playing and speaks immediately.
+- `NORMAL` (near announcement, reroute, stop): waits its turn; replaces the pending one with the same `key`; discards pending `LOW` ones and interrupts a `LOW` that is playing (the far announcement expires as soon as the near one is due).
+- `LOW` (far announcement): a single slot; the new one replaces the old one, so they do not pile up.
+- Expiry: `URGENT` 10 s, `NORMAL` 15 s, `LOW` 8 s in the queue; at most 4 pending. "Turn left" said late is worse than silence.
+- Engine callbacks arrive on binder threads: the director forwards them to its thread (the main one) and discards those from an already replaced engine or from an interrupted utterance (ids).
+- **Audio focus:** `AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK` with `USAGE_ASSISTANCE_NAVIGATION_GUIDANCE` + `CONTENT_TYPE_SPEECH` (Context7, Android's audio focus guide: other apps' music drops in volume while we speak and comes back when we abandon focus). It is abandoned 700 ms after the last sentence so that two announcements in a row do not make the music "jump". If another app takes it away (call, alarm), it goes quiet; if it is denied when requested (call in progress), the announcement is dropped instead of speaking over it.
+- **Volume:** `KEY_PARAM_VOLUME` (0–1, relative to the stream) with the preference (25/50/75/100 %), and navigation attributes so that the system volume buttons govern it. **Pending for N1:** `setVolumeControlStream(AudioManager.STREAM_MUSIC)` in the navigation activity so that the buttons affect it with the screen on (I do not touch it: it is the navigation UI).
+- **Language:** each `Utterance` carries its language; the engine switches (`setLanguage`) only if needed. `Auto` = app language (es → Spanish, anything else → English).
 
-## Sin motor TTS (frecuente sin GMS)
+## No TTS engine (common without GMS)
 
-- `AndroidSpeechEngine` usa el motor predeterminado del sistema (nada de Google Play Services). **Hace falta `<queries><intent><action android:name="android.intent.action.TTS_SERVICE"/></intent></queries>`** en el manifiesto: desde Android 11 (visibilidad de paquetes, Context7) sin eso la app no ve ningún motor y `TextToSpeech` falla aunque haya varios. Ya está añadido y un test lo vigila.
-- Estados (`VoiceStatus`): `NoEngine` (no hay ninguno instalado: `onInit` falla y ningún paquete declara el servicio), `LanguageMissing(lang)` (ningún motor tiene datos del idioma; antes de rendirse prueba los demás motores instalados), `Failed` (el motor no arranca o se cae repetidamente) y `Ready`. La navegación **sigue sin voz** en todos los casos; el aviso visual es `VoiceProblemBanner` (una línea, para la pantalla de navegación) y `VoiceProblemNotice` (la guía completa, en Ajustes).
-- **Camino en F-Droid** (comprobado en las fichas de f-droid.org el 2026-10-07; no se enlaza a ninguna tienda propietaria):
-  - **RHVoice** `com.github.olga_yakovleva.rhvoice.android` (GPL-3.0+; español e inglés; voces grabadas, más naturales). F-Droid lo marca «promueve complementos no libres» (algunas voces tienen licencia no libre).
-  - **eSpeak NG** `com.reecedunn.espeak` (GPL-3.0+; más de 100 idiomas, voz robótica, ~9 MB, sin permisos ni descargas; en F-Droid su ficha se llama «eSpeak»).
-  - **SherpaTTS** `org.woheller69.ttsengine` (GPL-3.0; voces neuronales Piper, las más naturales; 86 MB y descarga el modelo una vez desde Hugging Face, F-Droid lo marca como servicio de red no libre; Android 10+).
-  - Los botones abren `https://f-droid.org/packages/<id>/` (el cliente de F-Droid atiende esos enlaces; si no está, el navegador). La app no hace ninguna conexión por su cuenta. Luego el usuario elige el motor en Ajustes de Android → «Salida de texto a voz» (botón «Abrir ajustes de texto a voz», intent `com.android.settings.TTS_SETTINGS`, con respaldo a los ajustes generales) y pulsa «Reintentar».
-  - Falta de datos de idioma: botón «Instalar datos de voz» (`ACTION_INSTALL_TTS_DATA`).
-  - LineageOS suele traer Pico TTS (`com.svox.pico`) de serie; el director lo usa si es el predeterminado o si es otro motor instalado con el idioma. *No verificado en un dispositivo.*
-- **Robustez** (todo en `SpeechDirectorTest` con tiempo virtual): el motor que no responde a `onInit` en 10 s se reinicia; un error fatal (`ERROR_SERVICE`), un `speak` rechazado o dos enunciados seguidos sin «fin» (plazo `5 s + 100 ms/carácter`, máx. 30 s) lo recrean con espera creciente (0,5 s, 1 s, 2 s…); el enunciado interrumpido se reintenta si sigue vigente; más de 3 reinicios en un minuto → `Failed` y silencio hasta `retry`. No hay bucle de reinicios cuando no hay motor (solo el usuario puede arreglarlo; `prepare` lo vuelve a comprobar al empezar otra navegación).
+- `AndroidSpeechEngine` uses the system's default engine (no Google Play Services). **The manifest needs `<queries><intent><action android:name="android.intent.action.TTS_SERVICE"/></intent></queries>`**: since Android 11 (package visibility, Context7) without it the app sees no engine and `TextToSpeech` fails even if there are several. It is already added and a test guards it.
+- States (`VoiceStatus`): `NoEngine` (none installed: `onInit` fails and no package declares the service), `LanguageMissing(lang)` (no engine has data for the language; before giving up it tries the other installed engines), `Failed` (the engine does not start or crashes repeatedly) and `Ready`. Navigation **carries on without voice** in every case; the visual notice is `VoiceProblemBanner` (one line, for the navigation screen) and `VoiceProblemNotice` (the full guide, in Settings).
+- **F-Droid path** (checked on the f-droid.org listings on 2026-10-07; no link to any proprietary store):
+  - **RHVoice** `com.github.olga_yakovleva.rhvoice.android` (GPL-3.0+; Spanish and English; recorded voices, more natural). F-Droid flags it "promotes non-free add-ons" (some voices have a non-free licence).
+  - **eSpeak NG** `com.reecedunn.espeak` (GPL-3.0+; more than 100 languages, robotic voice, ~9 MB, no permissions or downloads; on F-Droid its listing is called "eSpeak").
+  - **SherpaTTS** `org.woheller69.ttsengine` (GPL-3.0; Piper neural voices, the most natural; 86 MB and downloads the model once from Hugging Face, F-Droid flags it as a non-free network service; Android 10+).
+  - The buttons open `https://f-droid.org/packages/<id>/` (the F-Droid client handles those links; if it is not installed, the browser). The app makes no connection on its own. Then the user picks the engine in Android Settings → "Text-to-speech output" ("Salida de texto a voz") (button "Open text-to-speech settings" ("Abrir ajustes de texto a voz"), intent `com.android.settings.TTS_SETTINGS`, falling back to the general settings) and presses "Retry" ("Reintentar").
+  - Missing language data: button "Install voice data" ("Instalar datos de voz") (`ACTION_INSTALL_TTS_DATA`).
+  - LineageOS usually ships Pico TTS (`com.svox.pico`) by default; the director uses it if it is the default or if it is another installed engine with the language. *Not verified on a device.*
+- **Robustness** (all in `SpeechDirectorTest` with virtual time): an engine that does not respond to `onInit` within 10 s is restarted; a fatal error (`ERROR_SERVICE`), a rejected `speak` or two consecutive utterances without an "end" (deadline `5 s + 100 ms/character`, max. 30 s) recreate it with growing back-off (0.5 s, 1 s, 2 s…); the interrupted utterance is retried if it is still valid; more than 3 restarts in a minute → `Failed` and silence until `retry`. There is no restart loop when there is no engine (only the user can fix it; `prepare` checks again when another navigation starts).
 
-## Ajustes de navegación
+## Navigation settings
 
-Sección «Navegación» en `SettingsScreen` (tras Gasolineras; solo se muestra si `SettingsEnv.navigation != null`, que pone `SettingsActivity`): guía por voz, solo avisos importantes, volumen, idioma de la voz (Auto/es/en), unidades (Automáticas/km/mi), «Probar voz» (dice una frase real con las unidades, idioma y volumen elegidos, aunque la voz esté apagada, y muestra la guía si falla) y «Evitar por defecto» (autopistas, peajes, ferris, sin asfaltar). Almacén `PrefsNavSettingsStore` (`mapas_nav`), normalizado al leer y escribir; valores por defecto: voz activada, 100 %, unidades por región, idioma de la app, **nada evitado**. `NavSettings.routeOptions()` los convierte en `RouteOptions` para que la pantalla de ruta (otro agente) empiece desde ellos.
+"Navigation" section in `SettingsScreen` (after Gas stations; only shown if `SettingsEnv.navigation != null`, which `SettingsActivity` sets): voice guidance, important announcements only, volume, voice language (Auto/es/en), units (Automatic/km/mi), "Test voice" (says a real sentence with the chosen units, language and volume, even if the voice is off, and shows the guide if it fails) and "Avoid by default" (motorways, tolls, ferries, unpaved). Store `PrefsNavSettingsStore` (`mapas_nav`), normalised on read and write; default values: voice on, 100 %, units by region, app language, **nothing avoided**. `NavSettings.routeOptions()` converts them into `RouteOptions` so that the route screen (another agent) starts from them.
 
-Cambios en código ajeno: en `SettingsScreen.kt` solo se subió a `internal` la visibilidad de los 5 componentes (`SectionTitle`, `Card`, `TextButton`, `SwitchRow`, `ChoiceRow`), se añadió el parámetro `navigation` (con valor por defecto) a `SettingsEnv` y una línea que dibuja la sección; en `SettingsActivity` una línea. También `app/build.gradle.kts` (una dependencia), `AndroidManifest.xml` (`<queries>`) y `settings.gradle.kts` (una línea: `include(":core-voice")`). **`core-nav` no se tocó.**
+Changes in code owned by others: in `SettingsScreen.kt` only the visibility of the 5 components (`SectionTitle`, `Card`, `TextButton`, `SwitchRow`, `ChoiceRow`) was raised to `internal`, the `navigation` parameter (with a default value) was added to `SettingsEnv` and one line that draws the section; in `SettingsActivity` one line. Also `app/build.gradle.kts` (one dependency), `AndroidManifest.xml` (`<queries>`) and `settings.gradle.kts` (one line: `include(":core-voice")`). **`core-nav` was not touched.**
 
-## Cómo conectarlo (N1 / coordinador)
+## How to wire it up (N1 / coordinator)
 
-`VoiceNavigationController` solo necesita tres flujos de `NavigationController` (`announcements`, `events`, `state`), que ya existen:
+`VoiceNavigationController` only needs three flows from `NavigationController` (`announcements`, `events`, `state`), which already exist:
 
 ```kotlin
-// NavigationService.onStartCommand, tras comprobar que hay navegación activa (start o resume):
-VoiceModule.attach(app)            // idempotente
-// NavigationService.shutDown() / onDestroy(), y al terminar la navegación desde la UI:
-VoiceModule.detach()               // calla; si el último estado fue ARRIVED, deja acabar «Has llegado a tu destino»
+// NavigationService.onStartCommand, after checking that there is an active navigation (start or resume):
+VoiceModule.attach(app)            // idempotent
+// NavigationService.shutDown() / onDestroy(), and when navigation ends from the UI:
+VoiceModule.detach()               // goes quiet; if the last state was ARRIVED, lets "Has llegado a tu destino" finish
 ```
 
-Para evitar perder el primer aviso, `attach` debe ejecutarse antes de que el seguimiento emita (`announcements` no tiene repetición); lo natural es en `NavigationService` justo después de `controller.start/resume` (los avisos llegan al cabo de ≥ 1 tick). En la pantalla de navegación: `VoiceProblemBanner(VoiceModule.guide(ctx).status.collectAsState().value, onClick = { abrir Ajustes })`. Qué dice el controlador: cada `Announcement` (FAR → `LOW`, NEAR → `NORMAL`, NOW → `URGENT`); «Has salido de la ruta» + «Recalculando» al pasar a `OFF_ROUTE`/`REROUTING` (como mucho una vez cada 20 s: un recálculo fallido ciclaba cada ~8 s); «Parada alcanzada» (`StopReached`; `StopSkipped` calla); «Has llegado a tu destino» al pasar a `ARRIVED` si no se acaba de decir con la maniobra de llegada; si la navegación termina a medias, calla.
+To avoid losing the first announcement, `attach` must run before following emits (`announcements` has no replay); the natural place is in `NavigationService` right after `controller.start/resume` (announcements arrive after ≥ 1 tick). On the navigation screen: `VoiceProblemBanner(VoiceModule.guide(ctx).status.collectAsState().value, onClick = { open Settings })`. What the controller says: each `Announcement` (FAR → `LOW`, NEAR → `NORMAL`, NOW → `URGENT`); "Has salido de la ruta" + "Recalculando" when switching to `OFF_ROUTE`/`REROUTING` (at most once every 20 s: a failed reroute cycled every ~8 s); "Parada alcanzada" (`StopReached`; `StopSkipped` stays quiet); "Has llegado a tu destino" when switching to `ARRIVED` if it has not just been said with the arrival maneuver; if navigation ends midway, it goes quiet.
 
-## Qué no está medido (sin dispositivo)
+## What is not measured (no device)
 
-- **La calidad de la voz** (naturalidad, pronunciación de nombres de calle, velocidad) depende del motor del usuario: no medida ni evaluable en la JVM. Las frases se han revisado como texto.
-- **El comportamiento real del enfoque de audio**: que la música baje y vuelva, cómo reaccionan Spotify, Bluetooth/coche o las llamadas; los 700 ms de retención y la política «descartar si se deniega» son decisiones razonadas, no probadas. Robolectric solo comprueba que se pide con los atributos y el tipo correctos, y que se abandona.
-- **Motores reales**: `ShadowTextToSpeech` es un motor falso; no se ha probado con RHVoice, eSpeak NG, SherpaTTS ni Pico, ni el reinicio con un servicio TTS que muere de verdad (en JVM se simula con `onError(ERROR_SERVICE)`), ni cuánto tarda `onInit` (el plazo de 10 s es una estimación), ni que el cliente de F-Droid atienda los enlaces `f-droid.org/packages`.
-- **Latencia** del primer aviso (el motor arranca con `prepare` al empezar la navegación, pero no se ha medido).
-- **Botones de volumen** con la pantalla de navegación encendida (falta `setVolumeControlStream` en esa actividad, ver arriba).
+- **Voice quality** (naturalness, pronunciation of street names, speed) depends on the user's engine: not measured and cannot be evaluated on the JVM. The sentences were reviewed as text.
+- **Real audio focus behaviour**: that the music drops and comes back, how Spotify, Bluetooth/car or calls react; the 700 ms hold and the "drop if denied" policy are reasoned decisions, not tested. Robolectric only checks that it is requested with the right attributes and type, and that it is abandoned.
+- **Real engines**: `ShadowTextToSpeech` is a fake engine; it was not tested with RHVoice, eSpeak NG, SherpaTTS or Pico, nor the restart with a TTS service that really dies (on the JVM it is simulated with `onError(ERROR_SERVICE)`), nor how long `onInit` takes (the 10 s deadline is an estimate), nor that the F-Droid client handles `f-droid.org/packages` links.
+- **Latency** of the first announcement (the engine starts with `prepare` when navigation begins, but it has not been measured).
+- **Volume buttons** with the navigation screen on (`setVolumeControlStream` is missing in that activity, see above).
 
-## Alternativas descartadas
+## Discarded alternatives
 
-- Una voz propia empaquetada (eSpeak NG/Piper dentro del APK): pesa decenas de MB y duplica algo que el sistema ya ofrece; sigue siendo opción si el 100 % sin motor resulta frecuente (ver arquitectura).
-- Voz pregrabada por maniobra: no cubre nombres de calle.
-- Hablar siempre aunque se deniegue el foco: es hablar encima de una llamada.
-- Poner la interfaz `VoiceGuide` y la cola en `:app`: no se podrían probar en la JVM con tiempo virtual (ahí están los tests de recuperación); en `:app` quedan solo las clases que tocan Android.
+- A bundled voice of our own (eSpeak NG/Piper inside the APK): weighs tens of MB and duplicates something the system already offers; still an option if 100 % without an engine turns out to be common (see architecture).
+- Pre-recorded voice per maneuver: does not cover street names.
+- Always speaking even if focus is denied: it means speaking over a call.
+- Putting the `VoiceGuide` interface and the queue in `:app`: they could not be tested on the JVM with virtual time (that is where the recovery tests are); only the classes that touch Android stay in `:app`.
