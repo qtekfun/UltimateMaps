@@ -562,3 +562,8 @@ Format: date · decision · reason · discarded alternatives · how to revert it
 - **Decision:** restore `TransitBuildCli.kt` (package renamed to `com.qtekfun.ultimatemaps`), force-added, and narrow the ignore rules to the module build outputs (`/build/` and `/*/build/`). No other ignored source files were found.
 - **Verified:** `scripts/build-transit.sh scripts/transit/madrid.json` runs locally on the six real feeds and writes `transit-madrid.umti` (3,431,742 bytes) and its sidecar.
 
+## 2026-10-07 · CI added (owner approved, modelled on ultimatedeck)
+- **Decision:** `.github/workflows/ci.yml` runs on every pull request and on pushes to `master` with two jobs. `core`: the no-proprietary-dependencies check, then the tests of the pure-JVM modules (`:core-*`). `app`: the CoMaps submodule and `scripts/comaps-prepare.sh`, the Python script tests, then `./gradlew test :app:lintFossDebug`. Pinned actions as in ultimatedeck. The old template `mapas-ci.yml` (for `main`) is removed.
+- **Merging rule from the owner:** merge a pull request only when its checks are green. Protecting `master` with required checks is the owner's step (repository settings).
+- **Not covered:** the native build (`assembleFossDebug`, NDK) and instrumented tests; add them when the runner time allows.
+
