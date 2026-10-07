@@ -92,18 +92,23 @@ class NavigationController(
     private var stopPoints: List<LatLon> = emptyList()
     private var trip = NavTrip()
 
+    /** False while a simulated trip runs: nothing is saved, so a simulation can never be resumed as a real trip. */
+    @Volatile private var persist = true
+
     /** True when [resume] would find a saved navigation (a quick look; the file is validated again by [resume]). */
     fun hasResumable(): Boolean = store.load() != null
 
     /**
      * Starts following [plan], [startAlongMeters] into it (0 for a new trip). Returns false, leaving everything as
-     * it was, when the plan cannot be followed. Replaces any navigation in progress.
+     * it was, when the plan cannot be followed. Replaces any navigation in progress. With [persist] false (route
+     * simulation) nothing is written to the store and any saved real trip is left alone.
      */
-    fun start(plan: RoutePlan, startAlongMeters: Double = 0.0, trip: NavTrip = NavTrip()): Boolean {
+    fun start(plan: RoutePlan, startAlongMeters: Double = 0.0, trip: NavTrip = NavTrip(), persist: Boolean = true): Boolean {
         if (!plan.isFollowable()) return false
         synchronized(lock) {
             stopLocked(clearStore = false)
             this.trip = trip
+            this.persist = persist
             launchLocked(plan, startAlongMeters)
         }
         return true
@@ -130,7 +135,7 @@ class NavigationController(
         runJob = null
         session?.close()
         session = null
-        if (clearStore) store.clear()
+        if (clearStore && persist) store.clear()
         _state.value = null
         _route.value = null
         _problem.value = null
@@ -150,7 +155,8 @@ class NavigationController(
         stopPoints = pointsOfStops(s.route.value)
         _route.value = s.route.value
         _state.value = s.state.value
-        store.save(s.route.value, s.state.value.traveledMeters, trip)
+        // A simulated trip replaces whatever was saved: after it, "resume" must not offer the old real one.
+        if (persist) store.save(s.route.value, s.state.value.traveledMeters, trip) else store.clear()
         runJob = scope.launch {
             launch { s.announcements.collect { _announcements.tryEmit(it) } }
             launch { s.events.collect { _events.tryEmit(it) } }
@@ -170,6 +176,7 @@ class NavigationController(
                 _route.value = route
                 stopPoints = pointsOfStops(route)
             }
+            if (!persist) return@collect
             if (st.status == NavStatus.ARRIVED) {
                 withContext(io) { store.clear() }
                 return@collect
