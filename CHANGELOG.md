@@ -4,6 +4,10 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 
 ## [Unreleased]
 
+### Fixed
+
+- Navigation location: on Android 12 and later the app now asks for high-accuracy updates explicitly. It used the legacy request, which for the fused provider is a low-power one, a likely cause of the repeated "no GPS signal, estimated position" while driving (not yet confirmed on a drive).
+
 ## [0.1.0-rc.6] - pending
 
 ### Added
