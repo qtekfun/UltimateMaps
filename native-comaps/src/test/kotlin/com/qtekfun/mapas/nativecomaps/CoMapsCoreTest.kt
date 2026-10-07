@@ -15,7 +15,7 @@ internal class FakeBridge : NativeBridge {
     var initError = ""
     var lastRoute: Triple<Int, List<Double>, Int>? = null
     var routeReply = doubleArrayOf(0.0, 1500.0, 120.0, 40.0, -3.0, 40.1, -3.1)
-    var searchReply = arrayOf("Cafe Central", "Calle Mayor 1", "cafe", "40.4168", "-3.7038")
+    var searchReply = arrayOf("Cafe Central", "Calle Mayor 1", "cafe", "40.4168", "-3.7038", "", "", "", "")
     var plainSearches = 0
     var categorySearches = 0
     var lastCategoryQuery: String? = null
