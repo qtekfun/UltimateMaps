@@ -1,5 +1,5 @@
 // On-device gesture injector (local timing, no wireless-adb jitter).
-// Compilar: $NDK/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android30-clang -O2 touchinj.c -o touchinj -lm
+// Build: $NDK/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android30-clang -O2 touchinj.c -o touchinj -lm
 // Usage: touchinj <pan|zoom|rotate> <seconds> [hz=120]    writes to /dev/input/event3 (goodix_ts0, protocol B)
 #include <fcntl.h>
 #include <linux/input.h>
