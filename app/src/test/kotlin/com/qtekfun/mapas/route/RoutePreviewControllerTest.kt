@@ -108,7 +108,7 @@ class RoutePreviewControllerTest {
             RouteCode.START_NOT_FOUND to RouteError.START_NOT_FOUND,
             RouteCode.END_NOT_FOUND to RouteError.END_NOT_FOUND,
             RouteCode.ROUTE_NOT_FOUND to RouteError.ROUTE_NOT_FOUND,
-            RouteCode.INTERMEDIATE_NOT_FOUND to RouteError.ROUTE_NOT_FOUND,
+            RouteCode.INTERMEDIATE_NOT_FOUND to RouteError.STOP_NOT_FOUND,
             RouteCode.CANCELLED to RouteError.TIMEOUT,
             RouteCode.INTERNAL_ERROR to RouteError.INTERNAL,
             99 to RouteError.INTERNAL,

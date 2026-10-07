@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Route stops and petrol-station card (RF-15) -->
+    <string name="route_stops_title">Stops (%1$d of %2$d)</string>
+    <string name="route_stop_up">Move %1$s up</string>
+    <string name="route_stop_down">Move %1$s down</string>
+    <string name="route_stop_remove">Remove %1$s from the route</string>
+    <string name="route_stops_limit">Up to %1$d stops. Remove one to add another.</string>
+    <string name="route_err_stop">A stop is not on a road in the downloaded maps. Remove it or choose another.</string>
+    <string name="fuel_category">Petrol station</string>
+    <string name="fuel_card_close">Close</string>
+    <string name="fuel_go">Go</string>
+    <string name="fuel_add_stop">Add stop</string>
+    <string name="fuel_save">Save</string>
+    <string name="fuel_saved">Saved</string>
+    <string name="fuel_schedule">Hours: %1$s</string>
+    <string name="fuel_prices_title">Prices</string>
+    <string name="fuel_price_on_map">%1$s (on the map)</string>
+    <string name="fuel_updated_now">updated just now</string>
+    <string name="fuel_updated_min">updated %1$d min ago</string>
+    <string name="fuel_updated_h">updated %1$d h ago</string>
+    <string name="fuel_updated_d">updated %1$d d ago</string>
+    <string name="fuel_updated_unknown">update time unknown</string>
+    <string name="fuel_stop_duplicate">This station is already a stop on the route.</string>
+    <string name="fuel_stop_is_destination">This station is the destination of the route.</string>
+    <string name="fuel_stop_limit">The route already has %1$d stops. Remove one first.</string>
+    <string name="fuel_stop_no_route">Start a route first to add a stop.</string>
+    <string name="fuel_source">Source: Ministry for the Ecological Transition and the Demographic Challenge</string>
+    <string name="fuel_source_with_date">%1$s · %2$s</string>
+    <string name="fuel_price_note">Price published by the Ministry; unofficial. Check it at the pump.</string>
+</resources>

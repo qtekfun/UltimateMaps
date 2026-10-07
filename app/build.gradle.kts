@@ -96,6 +96,7 @@ dependencies {
     implementation(project(":core-map"))
     implementation(project(":core-search"))
     implementation(project(":core-routing"))
+    implementation(project(":core-fuel")) // gasolineras: contrato de datos (RF-15)
     implementation(project(":native-comaps")) // núcleo de CoMaps (búsqueda), arranque diferido; M2
     implementation(project(":core-data")) // sitios y listas (M3)
     implementation(libs.androidx.sqlite.framework) // driver SQLite de Android para :core-data (M3)
