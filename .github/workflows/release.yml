@@ -1,0 +1,65 @@
+# Compila el APK de release firmado para un tag de versión (vX.Y.Z o vX.Y.Z-rc.N) y lo publica como
+# GitHub Release, con las notas de esa versión sacadas de CHANGELOG.md. Ver RELEASING.md.
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          # Cuando el núcleo nativo entre en el APK de release (M2), hará falta
+          # `submodules: recursive` y `scripts/comaps-prepare.sh` (ver RELEASING.md).
+
+      - uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
+
+      - name: Comprobar que el tag coincide con appVersion
+        run: |
+          version=$(grep '^appVersion=' gradle.properties | cut -d= -f2)
+          test "v$version" = "$GITHUB_REF_NAME" || { echo "El tag $GITHUB_REF_NAME no coincide con appVersion $version"; exit 1; }
+
+      - name: Comprobar que hay notas de esta versión en CHANGELOG.md
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          awk -v v="$version" '$0 ~ "^## \\[" v "\\]" {found=1; next} found && /^## \[/ {exit} found {print}' CHANGELOG.md > notes.md
+          test -s notes.md || { echo "CHANGELOG.md no tiene notas para $version"; exit 1; }
+
+      - name: Comprobar, compilar y firmar el APK de release
+        env:
+          UM_KEYSTORE_BASE64: ${{ secrets.UM_KEYSTORE_BASE64 }}
+          UM_KEYSTORE_PASSWORD: ${{ secrets.UM_KEYSTORE_PASSWORD }}
+          UM_KEY_ALIAS: ${{ secrets.UM_KEY_ALIAS }}
+          UM_KEY_PASSWORD: ${{ secrets.UM_KEY_PASSWORD }}
+        run: |
+          # Sin clave no se publica nada: un APK sin firmar no se puede actualizar sobre otro firmado.
+          test -n "$UM_KEYSTORE_BASE64" || { echo "Falta el secreto UM_KEYSTORE_BASE64"; exit 1; }
+          export UM_KEYSTORE_FILE="$RUNNER_TEMP/release.jks"
+          echo "$UM_KEYSTORE_BASE64" | base64 -d > "$UM_KEYSTORE_FILE"
+          ./gradlew test :app:lintFossRelease :app:assembleFossRelease
+          rm -f "$UM_KEYSTORE_FILE"
+
+      - name: Publicar la GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          apk="UltimateMaps-$version.apk"
+          cp app/build/outputs/apk/foss/release/app-foss-release.apk "$apk"
+          sha256sum "$apk" > "$apk.sha256"
+          prerelease=""
+          case "$version" in *-rc.*) prerelease="--prerelease" ;; esac
+          gh release create "$GITHUB_REF_NAME" "$apk" "$apk.sha256" --title "Mapas $version" --notes-file notes.md $prerelease
