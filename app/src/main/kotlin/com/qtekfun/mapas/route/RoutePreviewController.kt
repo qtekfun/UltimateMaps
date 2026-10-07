@@ -41,6 +41,23 @@ sealed interface RouteOrigin {
     data class Picked(val point: LatLon, val label: String?) : RouteOrigin
 }
 
+/**
+ * The one extra restriction an alternative route was calculated with. The CoMaps core has no alternative-route search,
+ * so an alternative is the best route under the user's options plus this one (see `docs/phase2/categories-alternatives.md`).
+ */
+enum class AlternativeKind { AVOID_MOTORWAYS, AVOID_TOLLS, AVOID_UNPAVED, AVOID_FERRIES }
+
+/** A route calculated with one more restriction than the main one; [options] are the full options it was made with. */
+data class RouteAlternative(
+    val kind: AlternativeKind,
+    val options: RouteOptions,
+    val geometry: List<LatLon>,
+    val distanceMeters: Double,
+    val durationSeconds: Double,
+)
+
+enum class AlternativesStatus { NONE, FINDING, DONE }
+
 /** Observable state of the route preview. Written from the main thread only. */
 class RouteState {
     var active by mutableStateOf(false)
@@ -58,6 +75,17 @@ class RouteState {
 
     /** The next search result or map tap becomes the origin. */
     var pickingOrigin by mutableStateOf(false)
+
+    /** Main route figures, kept while another route is selected so the alternatives can show their difference. */
+    var baseDistanceMeters by mutableStateOf(0.0)
+    var baseDurationSeconds by mutableStateOf(0.0)
+
+    /** Routes found under one more restriction, on request (see [RoutePreviewController.findAlternatives]). */
+    var alternatives by mutableStateOf<List<RouteAlternative>>(emptyList())
+    var alternativesStatus by mutableStateOf(AlternativesStatus.NONE)
+
+    /** Index into [alternatives] of the selected route; null means the main route. [distanceMeters] follows it. */
+    var selectedAlternative by mutableStateOf<Int?>(null)
 }
 
 /** Opens the routing engine on top of the installed maps. Blocking and heavy: always called off the main thread. */
@@ -92,10 +120,15 @@ class RoutePreviewController(
     private val log: RouteLog,
     private val mutex: Mutex = Mutex(),
     private val timeoutMs: Long = TIMEOUT_MS,
+    /** Draws the routes that are not selected (lighter); an empty list removes them. */
+    private val showAlternatives: (List<List<LatLon>>) -> Unit = {},
 ) {
     val state = RouteState()
 
     private var job: Job? = null
+    private var altJob: Job? = null
+    private var mainPlan: RoutePlan? = null
+    private var mainRequest: RouteRequest? = null
 
     @Volatile private var engine: DetailedRoutingEngine? = null
 
@@ -147,8 +180,79 @@ class RoutePreviewController(
         compute()
     }
 
+    /**
+     * Looks for up to [MAX_ALTERNATIVES] routes that differ from the main one by one extra restriction
+     * ([alternativeKinds]), one after another in the background, and draws them lighter. Each one is a full route
+     * calculation under the shared core lock, so it is on request and not automatic. Failed or identical routes are dropped.
+     */
+    fun findAlternatives() {
+        val base = mainRequest ?: return
+        val main = mainPlan ?: return
+        if (!state.active || state.status != RouteStatus.DONE || state.alternativesStatus != AlternativesStatus.NONE) return
+        val kinds = alternativeKinds(base.profile, base.options)
+        state.alternativesStatus = AlternativesStatus.FINDING
+        altJob = scope.launch {
+            val found = mutableListOf<RouteAlternative>()
+            for (kind in kinds) {
+                val options = base.options.withAvoiding(kind)
+                val request = base.copy(options = options)
+                val work = async(io) { mutex.withLock { runNative(request) } }
+                val native = try {
+                    withTimeoutOrNull(timeoutMs) { work.await() }
+                } catch (e: CancellationException) {
+                    work.cancel()
+                    throw e
+                }
+                if (native == null) {
+                    work.cancel()
+                    continue
+                }
+                val plan = (native as? Native.Done)?.outcome?.plan ?: continue
+                if (plan.geometry.size < 2) continue
+                if (plan.geometry == main.geometry || found.any { it.geometry == plan.geometry }) continue
+                found += RouteAlternative(kind, options, plan.geometry, plan.distanceMeters, plan.durationSeconds)
+                state.alternatives = found.toList()
+                redrawAlternatives()
+            }
+            state.alternativesStatus = AlternativesStatus.DONE
+        }
+    }
+
+    /** Selects the alternative at [index], or the main route with null; the map and the figures follow. */
+    fun selectAlternative(index: Int?) {
+        val main = mainPlan ?: return
+        if (!state.active || state.status != RouteStatus.DONE) return
+        val alt = index?.let { state.alternatives.getOrNull(it) }
+        if (index != null && alt == null) return
+        state.selectedAlternative = index
+        state.distanceMeters = alt?.distanceMeters ?: main.distanceMeters
+        state.durationSeconds = alt?.durationSeconds ?: main.durationSeconds
+        showRoute(alt?.geometry ?: main.geometry)
+        redrawAlternatives()
+    }
+
+    private fun redrawAlternatives() {
+        val selected = state.selectedAlternative
+        val lines = buildList {
+            if (selected != null) mainPlan?.let { add(it.geometry) }
+            state.alternatives.forEachIndexed { i, a -> if (i != selected) add(a.geometry) }
+        }
+        showAlternatives(lines)
+    }
+
+    private fun resetAlternatives() {
+        altJob?.cancel()
+        mainPlan = null
+        mainRequest = null
+        state.alternatives = emptyList()
+        state.alternativesStatus = AlternativesStatus.NONE
+        state.selectedAlternative = null
+        showAlternatives(emptyList())
+    }
+
     fun close() {
         job?.cancel()
+        resetAlternatives()
         state.active = false
         state.destination = null
         state.stops = emptyList()
@@ -208,11 +312,13 @@ class RoutePreviewController(
             RouteOrigin.Current -> userLocation()
             is RouteOrigin.Picked -> o.point
         } ?: return null
-        return RouteRequest(from, to.point, via = state.stops.map { it.point }, profile = state.profile, options = state.options)
+        val options = state.selectedAlternative?.let { state.alternatives.getOrNull(it)?.options } ?: state.options
+        return RouteRequest(from, to.point, via = state.stops.map { it.point }, profile = state.profile, options = options)
     }
 
     private fun compute() {
         job?.cancel()
+        resetAlternatives()
         val to = state.destination ?: return
         val from = when (val o = state.origin) {
             RouteOrigin.Current -> userLocation()
@@ -247,7 +353,7 @@ class RoutePreviewController(
                 is Native.Done -> {
                     val plan = native.outcome.plan
                     if (plan != null && plan.geometry.size >= 2) {
-                        finish(profile, stops, clock() - t0, plan, null)
+                        finish(profile, stops, clock() - t0, plan, null, request)
                     } else {
                         finish(profile, stops, clock() - t0, null, errorFor(native.outcome))
                     }
@@ -258,11 +364,17 @@ class RoutePreviewController(
         }
     }
 
-    private fun finish(profile: RoutingProfile, stops: Int, millis: Long, plan: RoutePlan?, error: RouteError?) {
+    private fun finish(
+        profile: RoutingProfile, stops: Int, millis: Long, plan: RoutePlan?, error: RouteError?, request: RouteRequest? = null,
+    ) {
         log.computed(profile, millis, error?.name?.lowercase() ?: "ok", stops)
         if (plan != null) {
             state.distanceMeters = plan.distanceMeters
             state.durationSeconds = plan.durationSeconds
+            state.baseDistanceMeters = plan.distanceMeters
+            state.baseDurationSeconds = plan.durationSeconds
+            mainPlan = plan
+            mainRequest = request
             state.status = RouteStatus.DONE
             showRoute(plan.geometry)
         } else {
@@ -300,6 +412,26 @@ class RoutePreviewController(
     companion object {
         /** Generous because the spike measured ~18 s for a long route; the R12 target is 2 s. */
         const val TIMEOUT_MS = 30_000L
+
+        /** Extra routes offered besides the main one. */
+        const val MAX_ALTERNATIVES = 2
+
+        /** The restrictions to try, in order: the ones that apply to [profile] and the user has not turned on yet. */
+        fun alternativeKinds(profile: RoutingProfile, options: RouteOptions): List<AlternativeKind> {
+            val candidates = if (profile == RoutingProfile.CAR) {
+                listOf(AlternativeKind.AVOID_MOTORWAYS to options.avoidMotorways, AlternativeKind.AVOID_TOLLS to options.avoidTolls)
+            } else {
+                listOf(AlternativeKind.AVOID_UNPAVED to options.avoidUnpaved, AlternativeKind.AVOID_FERRIES to options.avoidFerries)
+            }
+            return candidates.filter { !it.second }.map { it.first }.take(MAX_ALTERNATIVES)
+        }
+
+        private fun RouteOptions.withAvoiding(kind: AlternativeKind) = when (kind) {
+            AlternativeKind.AVOID_MOTORWAYS -> copy(avoidMotorways = true)
+            AlternativeKind.AVOID_TOLLS -> copy(avoidTolls = true)
+            AlternativeKind.AVOID_UNPAVED -> copy(avoidUnpaved = true)
+            AlternativeKind.AVOID_FERRIES -> copy(avoidFerries = true)
+        }
 
         /** Intermediate stops allowed (the native router does one leg per stop, so the time grows with them). */
         const val MAX_STOPS = 5
