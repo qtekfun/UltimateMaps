@@ -52,6 +52,7 @@
 #include <map>
 #include <memory>
 #include <mutex>
+#include <cstdio>
 #include <set>
 #include <string>
 #include <unordered_map>
@@ -257,8 +258,25 @@ void FillGuidance(routing::Route const & route, RouteOut & out)
 }
 }  // namespace
 
+namespace
+{
+routing::RoutePerfConfig ToPerfConfig(int32_t flags)
+{
+  static constexpr uint32_t kCandidates[] = {15, 8, 5, 3};
+  static constexpr uint32_t kTimeoutsMs[] = {30000, 10000, 5000, 2000};
+  routing::RoutePerfConfig c;
+  c.m_leapsMaxVertices = kCandidates[(flags & kPerfCandMask) >> kPerfCandShift];
+  c.m_leapsTimeoutMs = kTimeoutsMs[(flags & kPerfTimeoutMask) >> kPerfTimeoutShift];
+  c.m_pruneCandidates = (flags & kPerfPruneCandidates) != 0;
+  c.m_persistGraphs = (flags & kPerfPersistGraphs) != 0;
+  return c;
+}
+}  // namespace
+
 struct Core::Impl
 {
+  int32_t perfFlags = 0;  // see PerfFlags; 0 = stock behaviour
+  std::string lastStats;  // timing split of the last route
   std::mutex mu;  // serializes init / refresh / route (there are global routing options in settings)
   bool initialized = false;
   std::string locale = "en";
@@ -549,6 +567,14 @@ RouteOut Core::Route(Profile profile, std::vector<double> const & pts, int32_t a
     for (size_t i = 0; i + 1 < pts.size(); i += 2)
       mercatorPts.push_back(mercator::FromLatLon(pts[i], pts[i + 1]));
 
+    // Applied on EVERY route (also with 0) so a stale switch can never leak into the app.
+    routing::SetRoutePerfConfig(ToPerfConfig(m_impl->perfFlags));
+    routing::ResetRoutePerfStats();
+    std::unique_ptr<base::ScopedLogLevelChanger> quiet;
+    if (m_impl->perfFlags & kPerfQuietLog)
+      quiet = std::make_unique<base::ScopedLogLevelChanger>(base::LERROR);
+    auto const t0 = std::chrono::steady_clock::now();
+
     routing::RouterDelegate delegate;
     if (timeoutSec > 0)
       delegate.SetTimeout(static_cast<uint32_t>(timeoutSec));
@@ -557,6 +583,20 @@ RouteOut Core::Route(Profile profile, std::vector<double> const & pts, int32_t a
     auto const code = router.CalculateRoute(routing::Checkpoints(std::move(mercatorPts)), m2::PointD::Zero(),
                                             false /* adjust */, delegate, route);
     router.SetGuides({});
+    quiet.reset();
+    {
+      auto const st = routing::GetRoutePerfStats();
+      auto const totalMs =
+          std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - t0).count();
+      char buf[320];
+      std::snprintf(buf, sizeof(buf),
+                    "perf=%d engine_mode=%d total_ms=%lld leaps_ms=%u leaps_routes=%u candidates=%u candidates_ms=%u "
+                    "legs_pruned=%u final_ms=%u subroutes=%u subroutes_cached=%u graphs_reused=%d",
+                    m_impl->perfFlags, st.m_mode, static_cast<long long>(totalMs), st.m_leapsMs, st.m_leapsRoutes,
+                    st.m_candidates, st.m_candidatesMs, st.m_legsPruned, st.m_finalMs, st.m_subRoutesComputed,
+                    st.m_subRoutesCached, st.m_graphsReused ? 1 : 0);
+      m_impl->lastStats = buf;
+    }
     out.code = static_cast<int32_t>(code);
     if (cycleLevel == kCycleLevelOnly)
     {
@@ -597,6 +637,18 @@ RouteOut Core::Route(Profile profile, std::vector<double> const & pts, int32_t a
     out.code = static_cast<int32_t>(routing::RouterResultCode::InternalError);
   }
   return out;
+}
+
+void Core::SetPerfMode(int32_t flags)
+{
+  std::lock_guard<std::mutex> lock(m_impl->mu);
+  m_impl->perfFlags = flags;
+}
+
+std::string Core::LastRouteStats()
+{
+  std::lock_guard<std::mutex> lock(m_impl->mu);
+  return m_impl->lastStats;
 }
 
 void Core::Shutdown() {}

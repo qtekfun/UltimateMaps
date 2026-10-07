@@ -94,6 +94,17 @@ JNIEXPORT jint JNICALL Java_com_qtekfun_ultimatemaps_nativecomaps_NativeCore_nat
   return um::Core::Instance().RefreshMaps();
 }
 
+// Debug bench only: performance switches for the next routes (0 = stock behaviour) and the timing split of the last one.
+JNIEXPORT void JNICALL Java_com_qtekfun_ultimatemaps_nativecomaps_NativeCore_nativeSetPerfMode(JNIEnv *, jobject, jint flags)
+{
+  um::Core::Instance().SetPerfMode(flags);
+}
+
+JNIEXPORT jstring JNICALL Java_com_qtekfun_ultimatemaps_nativecomaps_NativeCore_nativeLastRouteStats(JNIEnv * env, jobject)
+{
+  return SafeJString(env, um::Core::Instance().LastRouteStats());
+}
+
 // Returns kSearchStride strings per result: name, address, category, lat, lon, phone, website, wheelchair, opening hours.
 // Keep in sync with SearchWire in CoMapsCore.kt (version 2; version 1 was the first five only).
 constexpr jsize kSearchStride = 9;
