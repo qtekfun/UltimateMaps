@@ -53,7 +53,7 @@ def read_poly(path):
 
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--pmtiles", required=True, help="binario go-pmtiles")
+    ap.add_argument("--pmtiles", required=True, help="go-pmtiles binary")
     ap.add_argument("--source", required=True)
     ap.add_argument("--out", required=True)
     ap.add_argument("--prefix", default="Spain_")
@@ -65,7 +65,7 @@ def main(argv=None):
     for cid in ids:
         dest = os.path.join(a.out, slug(cid) + ".pmtiles")
         if os.path.exists(dest):
-            print("ya existe", dest)
+            print("already exists", dest)
             continue
         gj = os.path.join(a.out, "." + slug(cid) + ".geojson")
         with open(gj, "w") as f:
@@ -74,7 +74,7 @@ def main(argv=None):
         r = subprocess.run([a.pmtiles, "extract", a.source, tmp, "--region=" + gj], capture_output=True, text=True)
         os.remove(gj)
         if r.returncode != 0:
-            print("FALLO", cid, r.stderr[-300:], file=sys.stderr)
+            print("FAILED", cid, r.stderr[-300:], file=sys.stderr)
             continue
         os.replace(tmp, dest)
         print("ok", cid, os.path.getsize(dest))

@@ -15,7 +15,7 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 C="$ROOT/third_party/comaps"
 cd "$C"
 
-echo "== submodulos necesarios (sin glfw, imgui, freetype, harfbuzz, vulkan, googletest...)"
+echo "== required submodules (without glfw, imgui, freetype, harfbuzz, vulkan, googletest...)"
 git submodule update --init --recursive --depth 1 -- \
   3party/boost 3party/expat 3party/jansson/jansson 3party/pugixml/pugixml 3party/protobuf/protobuf \
   3party/icu/icu 3party/glm 3party/fast_double_parser 3party/utfcpp 3party/glaze 3party/just_gtfs \
@@ -31,7 +31,7 @@ set +u
 source ./tools/unix/activate_venv.sh
 set -u
 
-echo "== cadenas json y categorias"
+echo "== json strings and categories"
 ./tools/unix/generate_json_strings.sh
 ./tools/unix/generate_categories.sh
 
@@ -57,4 +57,4 @@ python3 tools/kothic/src/libkomwm.py --txt \
   -p data/styles/vehicle/include/
 python3 tools/python/transit/transit_colors_export.py data/colors.txt > /dev/null
 
-echo "Listo. Comprueba: ls data/classificator.txt data/categories.txt libs/platform/localized_types_map.cpp"
+echo "Done. Check: ls data/classificator.txt data/categories.txt libs/platform/localized_types_map.cpp"
