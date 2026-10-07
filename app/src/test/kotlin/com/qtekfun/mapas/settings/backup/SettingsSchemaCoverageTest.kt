@@ -8,6 +8,7 @@ import com.qtekfun.mapas.recording.PrefsRecordingSettings
 import com.qtekfun.mapas.regions.RegionsController
 import com.qtekfun.mapas.search.CoMapsSearchBackend
 import com.qtekfun.mapas.search.PrefsHistorySettings
+import com.qtekfun.mapas.search.PrefsPlaceLanguageStore
 import com.qtekfun.mapas.settings.PrefsNavSettingsStore
 import com.qtekfun.mapas.transit.follow.PrefsTransitTripSettings
 import org.junit.Test
@@ -38,6 +39,7 @@ class SettingsSchemaCoverageTest {
         addAll(keysOf(PrefsCameraSettingsStore::class.java, PrefsCameraSettingsStore.PREFS))
         addAll(keysOf(PrefsHistorySettings::class.java, PrefsHistorySettings.PREFS))
         addAll(keysOf(PrefsRecordingSettings::class.java, PrefsRecordingSettings.PREFS))
+        addAll(keysOf(PrefsPlaceLanguageStore::class.java, PrefsPlaceLanguageStore.PREFS))
         addAll(keysOf(SharedNavUiPrefs::class.java, SharedNavUiPrefs.PREFS))
         addAll(keysOf(RegionsController::class.java, RegionsController.PREFS))
         addAll(keysOf(PrefsPendingRestore::class.java, PrefsPendingRestore.PREFS))
@@ -82,7 +84,7 @@ class SettingsSchemaCoverageTest {
             .toSortedSet()
         val expected = sortedSetOf(
             "AndroidNavServiceControl.kt", "AndroidPlaces.kt", "AndroidSettingsStorage.kt", "CoMapsSearchBackend.kt", "MapasApp.kt",
-            "PendingRestore.kt", "PrefsCameraSettingsStore.kt", "PrefsCameraStateStore.kt", "PrefsFuelSettingsStore.kt",
+            "PendingRestore.kt", "PlaceLanguage.kt", "PrefsCameraSettingsStore.kt", "PrefsCameraStateStore.kt", "PrefsFuelSettingsStore.kt",
             "PrefsNavSettingsStore.kt", "RecordingController.kt", "RegionsController.kt", "SearchHistory.kt", "TransitTripSettings.kt",
         )
         assertEquals(expected, found, "a new SharedPreferences file needs a SettingsSchema entry or an exclusion, then add its file here")

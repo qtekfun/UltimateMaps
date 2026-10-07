@@ -46,6 +46,10 @@ object RegionSearch {
         "Saudi Arabia" to "Arabia Saudí", "Iceland" to "Islandia", "Lithuania" to "Lituania",
     ).mapKeys { normalize(it.key) }
 
+    /** Searchable text of a region: every name the catalog has (any language) plus the aliases of its English segments. */
+    internal fun ownKey(region: Region): String =
+        normalize((listOf(ownKey(region.name)) + region.names.values).joinToString(" "))
+
     /** Searchable text of one node: its own name plus Spanish aliases of each name segment. */
     internal fun ownKey(name: String): String {
         val extra = segments(name).mapNotNull { SPANISH[normalize(it)] }
@@ -64,12 +68,15 @@ object RegionSearch {
         val isGroup: Boolean,
     )
 
-    /** Precomputed once per catalog; filtering it is a linear scan over strings. */
-    class Index(val catalog: RegionCatalog) {
+    /**
+     * Precomputed once per catalog; filtering it is a linear scan over strings. Paths and sort order use the names in
+     * [language] (`es`) when the catalog has them; the search matches the names of every language.
+     */
+    class Index(val catalog: RegionCatalog, val language: String = "en") {
         val entries: List<Entry>
 
         init {
-            val kids = catalog.regions.groupBy { it.parentId }
+            val kids = catalog.regions.filterNot { it.isBaseFile }.groupBy { it.parentId }
             val leavesOf = HashMap<String, List<Region>>()
             fun leaves(r: Region): List<Region> = leavesOf.getOrPut(r.id) {
                 if (r.isDownloadable) listOf(r) else kids[r.id].orEmpty().flatMap { leaves(it) }
@@ -77,10 +84,11 @@ object RegionSearch {
             val out = ArrayList<Entry>(catalog.regions.size)
             fun walk(parent: Region?, parentKey: String, parentPath: List<String>) {
                 for (r in kids[parent?.id].orEmpty()) {
-                    val own = ownKey(r.name)
-                    val path = parentPath + segments(r.name)
+                    val own = ownKey(r)
+                    val shown = r.displayName(language)
+                    val path = parentPath + segments(shown)
                     out += Entry(
-                        r, own, parentKey, path.joinToString(" › "), normalize(r.name),
+                        r, own, parentKey, path.joinToString(" › "), normalize(shown),
                         leaves(r), kids[r.id].orEmpty().isNotEmpty(),
                     )
                     walk(r, (parentKey + " " + own).trim(), path)

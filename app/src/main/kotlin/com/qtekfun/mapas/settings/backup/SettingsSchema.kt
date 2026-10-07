@@ -8,6 +8,7 @@ import com.qtekfun.mapas.core.fuel.FuelSettings
 import com.qtekfun.mapas.core.fuel.FuelTypes
 import com.qtekfun.mapas.core.fuel.MIN_REFRESH_MINUTES
 import com.qtekfun.mapas.core.routing.BikeCycleways
+import com.qtekfun.mapas.core.search.PlaceLanguagePref
 import com.qtekfun.mapas.core.voice.NavSettings
 import com.qtekfun.mapas.core.voice.UnitsPref
 import com.qtekfun.mapas.core.voice.VoiceLanguagePref
@@ -16,6 +17,7 @@ import com.qtekfun.mapas.nav.SharedNavUiPrefs
 import com.qtekfun.mapas.recording.PrefsRecordingSettings
 import com.qtekfun.mapas.regions.RegionsController
 import com.qtekfun.mapas.search.PrefsHistorySettings
+import com.qtekfun.mapas.search.PrefsPlaceLanguageStore
 import com.qtekfun.mapas.settings.PrefsNavSettingsStore
 import com.qtekfun.mapas.transit.follow.PrefsTransitTripSettings
 
@@ -84,6 +86,7 @@ object SettingsSchema {
     const val GROUP_HISTORY = "history"
     const val GROUP_RECORDING = "recording"
     const val GROUP_REGIONS = "regions"
+    const val GROUP_PLACE_LANGUAGE = "place_language"
 
     private fun bool(group: String, prefs: String, key: String, default: Boolean, policy: RestorePolicy = RestorePolicy.DIRECT) =
         SettingSpec(group, prefs, key, SettingType.BOOLEAN, default, policy)
@@ -159,6 +162,12 @@ object SettingsSchema {
 
         // Search history switch (not the history itself).
         bool(GROUP_HISTORY, PrefsHistorySettings.PREFS, PrefsHistorySettings.KEY_ENABLED, true),
+
+        // Language of place information (names, address, categories) in search results and the place card.
+        enum(
+            GROUP_PLACE_LANGUAGE, PrefsPlaceLanguageStore.PREFS, PrefsPlaceLanguageStore.KEY_PREFERENCE, PlaceLanguagePref.AUTO,
+            PlaceLanguagePref.entries.map { it.name },
+        ),
 
         // Track recording switch (not the tracks).
         bool(GROUP_RECORDING, PrefsRecordingSettings.PREFS, PrefsRecordingSettings.KEY_ENABLED, false),
