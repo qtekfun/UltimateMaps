@@ -26,6 +26,7 @@ import com.qtekfun.mapas.map.PrefsCameraStateStore
 import com.qtekfun.mapas.ui.MapScreen
 import com.qtekfun.mapas.ui.MapScreenState
 import com.qtekfun.mapas.ui.Notice
+import com.qtekfun.mapas.search.PanelHost
 import com.qtekfun.mapas.ui.theme.MapasTheme
 
 class MainActivity : ComponentActivity() {
@@ -34,6 +35,7 @@ class MainActivity : ComponentActivity() {
     private lateinit var engine: MapLibreEngine
     private lateinit var location: AndroidLocationSource
     private var centerOnNextFix = false
+    private lateinit var panel: PanelHost
 
     private val permissionLauncher = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { grants ->
         if (grants.values.any { it }) startLocation() else state.notice = Notice.LocationDenied
@@ -53,13 +55,14 @@ class MainActivity : ComponentActivity() {
             onCameraIdle = { state.bearing = it.bearing.toFloat() },
         )
         lifecycle.addObserver(engine)
+        panel = PanelHost(this, engine, state)
         state.bearing = engine.cameraState().bearing.toFloat()
 
         setContent {
             val dark = isSystemInDarkTheme()
             LaunchedEffect(dark) { engine.setTheme(if (dark) MapTheme.DARK else MapTheme.LIGHT) }
             MapasTheme(darkTheme = dark) {
-                MapScreen(state = state, onLocate = ::onLocate, onResetNorth = engine::resetNorth) {
+                MapScreen(state = state, onLocate = ::onLocate, onResetNorth = engine::resetNorth, sheetPanel = { panel.Content() }) {
                     AndroidView(factory = { engine.view }, modifier = Modifier.fillMaxSize())
                 }
             }
@@ -76,7 +79,13 @@ class MainActivity : ComponentActivity() {
     override fun onStart() {
         super.onStart()
         state.hasTiles = files.pmtiles() != null
+        panel.onStart()
         if (state.locating && hasLocationPermission()) startLocation()
+    }
+
+    override fun onDestroy() {
+        panel.onDestroy()
+        super.onDestroy()
     }
 
     override fun onStop() {
@@ -126,6 +135,7 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun onFix(point: LatLon) {
+        panel.userLocation = point
         engine.showUserLocation(point)
         if (centerOnNextFix) {
             centerOnNextFix = false

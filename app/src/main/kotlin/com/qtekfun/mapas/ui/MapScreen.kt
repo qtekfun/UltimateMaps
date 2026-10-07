@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
@@ -59,6 +60,7 @@ fun MapScreen(
     onLocate: () -> Unit,
     onResetNorth: () -> Unit,
     modifier: Modifier = Modifier,
+    sheetPanel: (@Composable () -> Unit)? = null,
     mapContent: @Composable () -> Unit,
 ) {
     val statusTop = WindowInsets.statusBars
@@ -106,7 +108,7 @@ fun MapScreen(
             topInset = topPadding + 64.dp,
             modifier = Modifier.fillMaxSize(),
         ) {
-            SheetContent(state)
+            SheetContent(state, sheetPanel)
         }
 
         if (state.aboutVisible) AboutDialog(onDismiss = { state.aboutVisible = false })
@@ -114,13 +116,23 @@ fun MapScreen(
 }
 
 @Composable
-private fun SheetContent(state: MapScreenState) {
+private fun SheetContent(state: MapScreenState, panel: (@Composable () -> Unit)?) {
     Column(
         Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
             .windowInsetsPadding(WindowInsets.navigationBars),
     ) {
+        if (panel != null) {
+            // Search, place card and lists live in their own panel (see the search and places packages).
+            state.notice?.let { n ->
+                val (title, body) = noticeText(n)
+                InfoCard(title, body, "card_notice")
+                Spacer(Modifier.height(8.dp))
+            }
+            Box(Modifier.weight(1f).imePadding()) { panel() }
+            return@Column
+        }
         BasicText(
             text = stringResource(R.string.app_name),
             style = Mapas.typography.largeTitle.copy(color = Mapas.colors.label),

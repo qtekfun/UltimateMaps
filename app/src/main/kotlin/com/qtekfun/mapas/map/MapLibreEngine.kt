@@ -49,6 +49,7 @@ class MapLibreEngine(
     private var loadedTheme: MapTheme? = null
     private var pendingUser: LatLon? = null
     private var pendingPin: LatLon? = null
+    private var pendingMarkers: List<LatLon> = emptyList()
     private var pendingCamera: CameraState? = null
     private var lastIdle: CameraState
     private var closed = false
@@ -56,6 +57,7 @@ class MapLibreEngine(
     // Sources belong to one style: they are recreated on every style load (day/night switch).
     private var userSource: GeoJsonSource? = null
     private var pinSource: GeoJsonSource? = null
+    private var markersSource: GeoJsonSource? = null
 
     /** The view to host. Created with the saved camera so the first frame already shows the last state. */
     val view: MapView
@@ -125,6 +127,21 @@ class MapLibreEngine(
         pushOverlay(pinSource, point)
     }
 
+    override fun showMarkers(points: List<LatLon>) {
+        pendingMarkers = points
+        pushMarkers()
+    }
+
+    private fun pushMarkers() {
+        val source = markersSource ?: return
+        if (map == null) return
+        source.setGeoJson(
+            org.maplibre.geojson.FeatureCollection.fromFeatures(
+                pendingMarkers.map { Feature.fromGeometry(Point.fromLngLat(it.lon, it.lat)) },
+            ),
+        )
+    }
+
     // --- Style ---
 
     private fun loadStyle() {
@@ -149,6 +166,12 @@ class MapLibreEngine(
             val pin = GeoJsonSource(PIN_SOURCE).also { pinSource = it }
             style.addSource(user)
             style.addSource(pin)
+            style.addSource(GeoJsonSource(MARKERS_SOURCE).also { markersSource = it })
+            style.addLayer(
+                CircleLayer(MARKERS_LAYER, MARKERS_SOURCE).withProperties(
+                    circleRadius(6f), circleColor(MARKER_COLOR), circleStrokeColor(WHITE), circleStrokeWidth(2f),
+                ),
+            )
             style.addLayer(
                 CircleLayer(PIN_LAYER, PIN_SOURCE).withProperties(
                     circleRadius(8f), circleColor(PIN_COLOR), circleStrokeColor(WHITE), circleStrokeWidth(2.5f),
@@ -161,6 +184,7 @@ class MapLibreEngine(
             )
             pushOverlay(userSource, pendingUser)
             pushOverlay(pinSource, pendingPin)
+            pushMarkers()
         }
     }
 
@@ -216,6 +240,9 @@ class MapLibreEngine(
         const val USER_LAYER = "mapas-user"
         const val PIN_SOURCE = "mapas-pin-src"
         const val PIN_LAYER = "mapas-pin"
+        const val MARKERS_SOURCE = "mapas-saved-src"
+        const val MARKERS_LAYER = "mapas-saved"
+        const val MARKER_COLOR = 0xFFFF9500.toInt()
         const val USER_COLOR = 0xFF007AFF.toInt()
         const val PIN_COLOR = 0xFFFF3B30.toInt()
         const val WHITE = 0xFFFFFFFF.toInt()

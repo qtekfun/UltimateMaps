@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Búsqueda (M2) -->
+    <string name="search_hint">Buscar lugares y direcciones</string>
+    <string name="search_preparing">Preparando la búsqueda sin conexión…</string>
+    <string name="search_searching">Buscando…</string>
+    <string name="search_no_results">Sin resultados</string>
+    <string name="search_error">La búsqueda ha fallado. Inténtalo de nuevo.</string>
+    <string name="search_no_regions_title">No hay regiones instaladas</string>
+    <string name="search_no_regions_body">Descarga una región para buscar sin conexión.</string>
+    <string name="tab_search">Buscar</string>
+    <string name="tab_lists">Listas</string>
+
+    <!-- Ficha del lugar -->
+    <string name="place_save">Guardar</string>
+    <string name="place_saved">Guardado</string>
+    <string name="place_route">Ruta</string>
+    <string name="place_share">Compartir</string>
+    <string name="place_close">Cerrar</string>
+    <string name="msg_route_soon">La vista previa de rutas llegará pronto.</string>
+
+    <!-- Sitios guardados (M3) -->
+    <string name="list_favorites">Favoritos</string>
+    <string name="lists_title">Listas</string>
+    <string name="lists_back">Todas las listas</string>
+    <string name="lists_empty">Aún no hay sitios guardados</string>
+    <string name="lists_new_hint">Nombre de la nueva lista</string>
+    <string name="lists_create">Crear</string>
+    <plurals name="lists_place_count">
+        <item quantity="one">%d sitio</item>
+        <item quantity="other">%d sitios</item>
+    </plurals>
+    <string name="list_filter_hint">Buscar en esta lista</string>
+    <string name="list_empty_filter">Ningún sitio coincide</string>
+    <string name="list_sort_distance">Por distancia</string>
+    <string name="list_sort_name">Por nombre</string>
+    <string name="list_import">Importar</string>
+    <string name="list_export_gpx">Exportar GPX</string>
+    <string name="list_export_kml">Exportar KML</string>
+    <string name="list_delete">Borrar lista</string>
+    <string name="msg_saved">Guardado en %1$s</string>
+    <string name="msg_removed">Quitado de los sitios guardados</string>
+    <string name="msg_imported">Importados %1$d sitios (%2$d ya estaban) y %3$d tracks</string>
+    <string name="msg_import_failed">No se pudo leer ese archivo</string>
+    <string name="msg_exported">Exportados %1$d sitios</string>
+    <string name="msg_export_failed">No se pudo escribir el archivo</string>
+</resources>
