@@ -100,8 +100,20 @@ class TransitController(
     private val source: TransitSource,
     private val clock: TransitClock = TransitClock.System,
     private val showItinerary: (List<TransitMapLeg>) -> Unit = {},
+    /** Starts the step-by-step follower on an itinerary; null hides the Start button (no follower available). */
+    private val onStartTrip: ((Itinerary, ZoneId) -> Boolean)? = null,
 ) {
     val state = TransitState()
+
+    /** The itinerary card offers a Start button. */
+    val canStartTrip: Boolean get() = onStartTrip != null
+
+    /** Starts following the selected itinerary step by step. False when there is none or it has no vehicle leg. */
+    fun startTrip(): Boolean {
+        val trip = state.current ?: return false
+        if (trip.isWalkOnly) return false
+        return onStartTrip?.invoke(trip, state.zone) ?: false
+    }
 
     private var job: Job? = null
     private var lastOrigin: LatLon? = null

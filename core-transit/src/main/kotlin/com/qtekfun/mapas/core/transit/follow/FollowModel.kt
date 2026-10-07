@@ -78,6 +78,8 @@ data class FollowState(
     val planMinutes: Int = 0,
     val connection: ConnectionStatus? = null,
     val connectionMarginSec: Int? = null,
+    /** Short name of the line whose boarding [connection] is about. */
+    val connectionLine: String? = null,
     /** True while walking or riding towards the first/next boarding after a stop in the same station (no walk leg). */
     val changeHere: Boolean = false,
     /** The Re-plan button is offered: off the plan, or the next departure is out of reach. */
