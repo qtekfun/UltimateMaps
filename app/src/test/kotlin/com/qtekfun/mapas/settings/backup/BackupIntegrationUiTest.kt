@@ -65,14 +65,14 @@ class BackupInSettingsScreenTest {
     )
 
     @Test fun theSectionIsInTheSettingsScreenAndWorks() {
-        rule.setContent { MapasTheme(darkTheme = false) { SettingsScreen(env(true), onBack = {}) } }
+        rule.setContent { MapasTheme(darkTheme = false) { SettingsScreen(env(true), onBack = {}, initialCategory = "data") } }
         rule.onNodeWithTag("backup_export").performScrollTo().assertIsDisplayed()
         rule.onNodeWithTag("backup_import").performScrollTo().performClick()
         assertEquals(listOf("import"), log)
     }
 
     @Test fun withoutTheEnvironmentTheSectionIsHidden() {
-        rule.setContent { MapasTheme(darkTheme = false) { SettingsScreen(env(false), onBack = {}) } }
+        rule.setContent { MapasTheme(darkTheme = false) { SettingsScreen(env(false), onBack = {}, initialCategory = "data") } }
         assertEquals(0, rule.onAllNodesWithTag("backup_card").fetchSemanticsNodes().size)
     }
 
@@ -89,7 +89,7 @@ class BackupInSettingsScreenTest {
             store, manager, policy, offline = { false }, setOffline = {}, catalogUrl = { "" }, openMaps = {},
             history = history, backup = BackupSettingsEnv(state, {}, {}, {}, {}, {}),
         )
-        rule.setContent { MapasTheme(darkTheme = false) { SettingsScreen(e, onBack = {}) } }
+        rule.setContent { MapasTheme(darkTheme = false) { SettingsScreen(e, onBack = {}, initialCategory = "data") } }
         rule.onNodeWithTag("history_switch").performScrollTo().assertIsDisplayed()
         enabled = false // what a restore did behind the screen's back
         state.revision++
