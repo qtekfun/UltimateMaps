@@ -195,3 +195,11 @@ Formato: fecha · decisión · motivo · alternativas descartadas · cómo rever
 - **No se hizo:** quitar los logs del historial (exigiría reescribirlo: «Cuándo preguntar» nº 5). Quedan solo en local las ramas `spike/*` y `feat/*`.
 - **Pendiente del usuario:** protección de `master` y CI (sin checks, las PR no se mergean solas); los secretos `UM_*`.
 - **Desde ahora:** una rama y una PR por tarea; esta misma entrada va por PR.
+
+## 2026-10-07 · Error mío: el catálogo publicado no traía `World.mwm`; corregido
+- **Síntoma (reportado por el usuario con la pre-release `test-v0.1.0-rc.1`):** descargó una región desde la app (la descarga y el dibujado funcionan) pero la búsqueda decía «no hay mapas, descarga uno».
+- **Causa:** el núcleo exige `World.mwm` en `maps-core/<versión>/`, que baja el bloque `base` del catálogo. El `catalog.json` de la release `data-261004-20261006` se generó **antes** de que existiera ese bloque y no se regeneró al integrar la rama que lo añadió (lo había apuntado como laguna nº 2 y se me pasó). Sin `base`, la app nunca descarga `World`.
+- **Corrección:** catálogo regenerado con `--base-dir` (solo cambia el bloque `base`; las 1.303 regiones son idénticas; hashes de World iguales a `SHA256SUMS`) y reemplazado en la release (`gh release upload --clobber`). La URL `…/releases/latest/download/catalog.json` tardó unos 90 s en servir la copia nueva por caché.
+- **Qué debe hacer quien ya tiene una región instalada:** la app solo baja `World` al **instalar** una región cuando aún no lo tiene; una región ya instalada no lo dispara. Basta descargar cualquier otra región (p. ej. Ceuta, 1,5 MB, + 62 MB de World) o borrar y volver a bajar la región.
+- **Salvaguarda:** `scripts/gen-region-catalog.py` avisa ahora si hay regiones descargables pero no `--base-dir`.
+- **Lo que no detectaron los tests:** ninguno cubría «catálogo real publicado → buscar»; el circuito descarga → enlace → búsqueda no se probó de punta a punta con la release real. Pendiente (con el teléfono, cuando el usuario lo permita).

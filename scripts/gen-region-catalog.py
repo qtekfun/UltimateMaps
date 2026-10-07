@@ -210,6 +210,9 @@ def main(argv=None):
     else:
         with open(a.output, "w", encoding="utf-8") as f:
             f.write(text)
+    if "base" not in cat and any("assets" in r for r in cat["regions"]):
+        print("AVISO: el catálogo tiene regiones descargables pero NO el bloque `base` (World.mwm y WorldCoasts.mwm): "
+              "la app las descargará, pero la búsqueda dirá «no hay mapas». Pasa --base-dir.", file=sys.stderr)
     n = len(cat["regions"])
     d = sum(1 for r in cat["regions"] if "assets" in r)
     print(f"{n} regiones, {d} descargables", file=sys.stderr)
