@@ -1,0 +1,148 @@
+--- a/libs/routing_common/bicycle_model.hpp
++++ b/libs/routing_common/bicycle_model.hpp
+@@ -4,6 +4,23 @@
+ 
+ namespace routing
+ {
++/// UltimateMaps patch: how strongly bicycle routing prefers cycle infrastructure.
++/// Cycle infrastructure = highway=cycleway or hwtag=yesbicycle (cycleway=lane/track, bicycle=yes/designated, ...).
++/// See docs/phase2/bike-cycleways.md.
++enum class BicycleCycleInfra : int
++{
++  Off = 0,             // stock CoMaps behaviour
++  Prefer = 1,          // non-infrastructure roads weigh less
++  StronglyPrefer = 2,  // non-infrastructure roads weigh much less
++  Only = 3             // non-infrastructure roads (except ferries) are not routable
++};
++
++/// Process-wide, read when a road geometry is loaded (once per route). Thread-safe.
++void SetBicycleCycleInfra(BicycleCycleInfra level);
++BicycleCycleInfra GetBicycleCycleInfra();
++
++/// Weight factor (0 < f <= 1) applied to roads that are not cycle infrastructure. 1.0 for Off and Only.
++double BicycleCycleInfraWeightFactor(BicycleCycleInfra level);
+ 
+ class BicycleModel : public VehicleModel
+ {
+@@ -15,6 +32,7 @@
+   /// VehicleModelInterface overrides:
+   SpeedKMpH GetSpeed(FeatureTypes const & types, SpeedParams const & speedParams) const override;
+   bool IsOneWay(FeatureTypes const & types) const override;
++  bool IsRoad(FeatureTypes const & types) const override;
+   SpeedKMpH const & GetOffroadSpeed() const override;
+ 
+   static BicycleModel const & AllLimitsInstance();
+@@ -26,6 +44,11 @@
+   // Returns true if the road is explicitly set oneway for bicycles.
+   bool IsBicycleOnedir(feature::TypesHolder const & types) const;
+ 
++  /// @return true for highway=cycleway or hwtag=yesbicycle.
++  bool IsCycleInfra(FeatureTypes const & types) const;
++  bool IsFerry(FeatureTypes const & types) const;
++
++  uint32_t m_cyclewayType = 0;
+   uint32_t m_bidirBicycleType = 0;
+   uint32_t m_onedirBicycleType = 0;
+ };
+--- a/libs/routing_common/bicycle_model.cpp
++++ b/libs/routing_common/bicycle_model.cpp
+@@ -5,6 +5,8 @@
+ 
+ #include "base/assert.hpp"
+ 
++#include <atomic>
++
+ namespace bicycle_model
+ {
+ using namespace routing;
+@@ -180,10 +182,39 @@
+     /// @todo(pastk): this heuristic is controversial, maybe remove completely?
+     {{"hwtag", "nocycleway"}, {0.95, 0.95}},
+ };
++
++// UltimateMaps: weight factors for roads that are not cycle infrastructure. Starting values to tune on real routes
++// (not measured). They only lower weights, so the A* heuristic (max model speed) stays admissible.
++double constexpr kPreferNonInfraFactor = 0.8;
++double constexpr kStronglyPreferNonInfraFactor = 0.5;
++
++std::atomic<int> g_cycleInfraLevel{static_cast<int>(routing::BicycleCycleInfra::Off)};
+ }  // namespace bicycle_model
+ 
+ namespace routing
+ {
++void SetBicycleCycleInfra(BicycleCycleInfra level)
++{
++  bicycle_model::g_cycleInfraLevel.store(static_cast<int>(level), std::memory_order_relaxed);
++}
++
++BicycleCycleInfra GetBicycleCycleInfra()
++{
++  return static_cast<BicycleCycleInfra>(bicycle_model::g_cycleInfraLevel.load(std::memory_order_relaxed));
++}
++
++double BicycleCycleInfraWeightFactor(BicycleCycleInfra level)
++{
++  switch (level)
++  {
++  case BicycleCycleInfra::Prefer: return bicycle_model::kPreferNonInfraFactor;
++  case BicycleCycleInfra::StronglyPrefer: return bicycle_model::kStronglyPreferNonInfraFactor;
++  case BicycleCycleInfra::Off:
++  case BicycleCycleInfra::Only: break;
++  }
++  return 1.0;
++}
++
+ BicycleModel::BicycleModel() : BicycleModel(bicycle_model::kDefaultOptions) {}
+ 
+ BicycleModel::BicycleModel(VehicleModel::LimitsInitList const & limits)
+@@ -201,6 +232,7 @@
+   std::vector<std::string> hwtagYesBicycle = {"hwtag", "yesbicycle"};
+ 
+   auto const & cl = classif();
++  m_cyclewayType = cl.GetTypeByPath({"highway", "cycleway"});
+   m_noType = cl.GetTypeByPath({"hwtag", "nobicycle"});
+   m_yesType = cl.GetTypeByPath(hwtagYesBicycle);
+   m_bidirBicycleType = cl.GetTypeByPath({"hwtag", "bidir_bicycle"});
+@@ -227,9 +259,41 @@
+   return types.Has(m_onedirBicycleType);
+ }
+ 
++bool BicycleModel::IsCycleInfra(FeatureTypes const & types) const
++{
++  for (uint32_t t : types)
++  {
++    ftype::TruncValue(t, 2);
++    if (t == m_cyclewayType || t == m_yesType)
++      return true;
++  }
++  return false;
++}
++
++bool BicycleModel::IsFerry(FeatureTypes const & types) const
++{
++  auto const hw = GetHighwayType(types);
++  return hw && *hw == HighwayType::RouteFerry;
++}
++
+ SpeedKMpH BicycleModel::GetSpeed(FeatureTypes const & types, SpeedParams const & speedParams) const
+ {
+-  return GetTypeSpeedImpl(types, speedParams, false /* isCar */);
++  auto speed = GetTypeSpeedImpl(types, speedParams, false /* isCar */);
++
++  // Only the weight is scaled: the ETA must stay realistic.
++  double const factor = BicycleCycleInfraWeightFactor(GetBicycleCycleInfra());
++  if (factor < 1.0 && !IsCycleInfra(types) && !IsFerry(types))
++    speed.m_weight *= factor;
++  return speed;
++}
++
++bool BicycleModel::IsRoad(FeatureTypes const & types) const
++{
++  if (!VehicleModel::IsRoad(types))
++    return false;
++  if (GetBicycleCycleInfra() != BicycleCycleInfra::Only)
++    return true;
++  return IsCycleInfra(types) || IsFerry(types);
+ }
+ 
+ bool BicycleModel::IsOneWay(FeatureTypes const & types) const
