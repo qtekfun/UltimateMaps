@@ -47,7 +47,7 @@ android {
 // Datos de runtime del nucleo, con lista blanca. Quedan FUERA a proposito:
 //  - fonts/ (incluye 06_code2000.ttf, shareware, incompatible con GPLv3),
 //  - symbols/, symbols-svg/, search-icons/, styles/ (iconos Entypo CC BY-SA 3.0 y datos de render),
-//  - drules_proto*.bin salvo drules_proto_walking_light.bin (el arranque del nucleo lo exige), vulkan_shaders/ (solo los usa el render, que es de MapLibre).
+//  - drules_proto*.bin salvo drules_proto_default_light.bin (el arranque del nucleo lo exige), vulkan_shaders/ (solo los usa el render, que es de MapLibre).
 // Los ficheros generados (classificator.txt, categories.txt, ...) los produce scripts/comaps-prepare.sh.
 abstract class PrepareComapsAssets @Inject constructor(private val fs: FileSystemOperations) : DefaultTask() {
     @get:InputDirectory
@@ -69,7 +69,7 @@ abstract class PrepareComapsAssets @Inject constructor(private val fs: FileSyste
                     "categories.txt", "categories_brands.txt", "classificator.txt", "types.txt", "visibility.txt",
                     "colors.txt", "patterns.txt", "countries.txt", "countries_meta.txt", "countries-strings/**",
                     "editor.config", "icudt75l.dat", "languages.txt", "mapcss-mapping.csv", "packed_polygons.bin",
-                    "subtypes.csv", "transit_colors.txt", "drules_proto_walking_light.bin",
+                    "subtypes.csv", "transit_colors.txt", "drules_proto_default_light.bin",
                 )
                 exclude("fonts/**", "symbols/**", "symbols-svg/**", "search-icons/**", "styles/**", "**/*code2000*", "**/*ntypo*")
             }

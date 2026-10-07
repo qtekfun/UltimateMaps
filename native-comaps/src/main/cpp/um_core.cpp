@@ -1,5 +1,7 @@
 #include "um_core.hpp"
 
+#include <android/log.h>
+
 #include "um_platform.hpp"
 
 #include "routing/checkpoints.hpp"
@@ -24,6 +26,7 @@
 
 #include "indexer/categories_holder.hpp"
 #include "indexer/classificator_loader.hpp"
+#include "indexer/map_style_reader.hpp"
 #include "indexer/data_source.hpp"
 
 #include "platform/local_country_file.hpp"
@@ -45,6 +48,44 @@
 #include <memory>
 #include <mutex>
 #include <set>
+
+// CoMaps escribe sus logs y sus CHECK/ASSERT por funciones propias; en Android hay que enchufarlas a logcat o un
+// fallo del núcleo se pierde en silencio (el proceso aborta sin mensaje). Etiqueta: UMCORE. Sin ubicaciones del usuario.
+namespace
+{
+android_LogPriority ToAndroid(base::LogLevel level)
+{
+  switch (level)
+  {
+  case base::LDEBUG: return ANDROID_LOG_DEBUG;
+  case base::LINFO: return ANDROID_LOG_INFO;
+  case base::LWARNING: return ANDROID_LOG_WARN;
+  case base::LERROR: return ANDROID_LOG_ERROR;
+  default: return ANDROID_LOG_FATAL;
+  }
+}
+
+void ForwardLog(base::LogLevel level, base::SrcPoint const & src, std::string const & msg)
+{
+  __android_log_print(ToAndroid(level), "UMCORE", "%s: %s", DebugPrint(src).c_str(), msg.c_str());
+}
+
+bool ForwardAssert(base::SrcPoint const & src, std::string const & msg)
+{
+  __android_log_print(ANDROID_LOG_FATAL, "UMCORE", "ASSERT/CHECK failed at %s: %s", DebugPrint(src).c_str(), msg.c_str());
+  return true;  // sigue abortando: un CHECK fallido deja el núcleo en un estado desconocido
+}
+
+void InstallDiagnostics()
+{
+  static bool done = false;
+  if (done)
+    return;
+  done = true;
+  base::SetLogMessageFn(&ForwardLog);
+  base::SetAssertFunction(&ForwardAssert);
+}
+}  // namespace
 
 namespace um
 {
@@ -145,12 +186,15 @@ std::string Core::Init(InitParams const & p)
   std::lock_guard<std::mutex> lock(m_impl->mu);
   if (m_impl->initialized)
     return {};
+  InstallDiagnostics();
   try
   {
     InitAndroidPlatform(p.resourcesApk, p.writableDir, p.tmpDir);
     m_impl->locale = p.locale.empty() ? "en" : p.locale;
 
-    classificator::Load();
+    // Como hace CoMaps: fija estilo de carga y actual a la vez. `classificator::Load()` a pelo llena el clasificador del
+    // estilo de carga, pero classif() consulta el del estilo actual: si difieren, todos los tipos salen «Invalid type».
+    GetStyleReader().SetCurrentStyle(kDefaultMapStyle);
 
     m_impl->storage = std::make_unique<storage::Storage>();
     m_impl->infoGetter = storage::CountryInfoReader::CreateCountryInfoGetter(GetPlatform());
