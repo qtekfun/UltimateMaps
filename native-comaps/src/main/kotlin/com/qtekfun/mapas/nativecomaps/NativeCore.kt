@@ -8,7 +8,7 @@ internal class NativeCore : NativeBridge {
     external fun nativeInit(apk: String, writableDir: String, tmpDir: String, locale: String): String
     external fun nativeRefreshMaps(): Int
     external fun nativeSearch(
-        query: String, hasPos: Boolean, lat: Double, lon: Double, limit: Int, timeoutMs: Int, locale: String,
+        query: String, hasPos: Boolean, lat: Double, lon: Double, limit: Int, timeoutMs: Int, locale: String, categorial: Boolean,
     ): Array<String>
     external fun nativeRoute(profile: Int, points: DoubleArray, avoidFlags: Int, timeoutSec: Int): DoubleArray
 
@@ -22,7 +22,11 @@ internal class NativeCore : NativeBridge {
 
     override fun search(
         query: String, hasPos: Boolean, lat: Double, lon: Double, limit: Int, timeoutMs: Int, locale: String,
-    ): Array<String> = nativeSearch(query, hasPos, lat, lon, limit, timeoutMs, locale)
+    ): Array<String> = nativeSearch(query, hasPos, lat, lon, limit, timeoutMs, locale, false)
+
+    override fun searchCategory(
+        query: String, hasPos: Boolean, lat: Double, lon: Double, limit: Int, timeoutMs: Int, locale: String,
+    ): Array<String> = nativeSearch(query, hasPos, lat, lon, limit, timeoutMs, locale, true)
 
     override fun route(profile: Int, points: DoubleArray, avoidFlags: Int, timeoutSec: Int): DoubleArray =
         nativeRoute(profile, points, avoidFlags, timeoutSec)
@@ -55,6 +59,11 @@ internal interface NativeBridge {
     fun search(
         query: String, hasPos: Boolean, lat: Double, lon: Double, limit: Int, timeoutMs: Int, locale: String,
     ): Array<String>
+
+    /** Same as [search] but a pure category request (the query is a category name). Default: a plain search. */
+    fun searchCategory(
+        query: String, hasPos: Boolean, lat: Double, lon: Double, limit: Int, timeoutMs: Int, locale: String,
+    ): Array<String> = search(query, hasPos, lat, lon, limit, timeoutMs, locale)
 
     /** `[code, distanciaM, duracionS, lat0, lon0, ...]`. */
     fun route(profile: Int, points: DoubleArray, avoidFlags: Int, timeoutSec: Int): DoubleArray

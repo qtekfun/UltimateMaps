@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="category_pharmacy">Farmacia</string>
+    <string name="category_supermarket">Supermercado</string>
+    <string name="category_restaurant">Restaurante</string>
+    <string name="category_cafe">Cafetería</string>
+    <string name="category_fuel">Gasolinera</string>
+    <string name="category_atm">Cajero</string>
+    <string name="category_hospital">Hospital</string>
+    <string name="category_parking">Aparcamiento</string>
+    <string name="category_lodging">Alojamiento</string>
+    <string name="category_toilets">Aseos</string>
+
+    <string name="category_query_pharmacy">farmacia</string>
+    <string name="category_query_supermarket">supermercado</string>
+    <string name="category_query_restaurant">restaurante</string>
+    <string name="category_query_cafe">cafetería</string>
+    <string name="category_query_fuel">gasolinera</string>
+    <string name="category_query_atm">cajero automático</string>
+    <string name="category_query_hospital">hospital</string>
+    <string name="category_query_parking">aparcamiento</string>
+    <string name="category_query_lodging">hotel</string>
+    <string name="category_query_toilets">aseo</string>
+
+    <string name="category_distance_note">Las distancias son en línea recta desde tu ubicación o el centro del mapa.</string>
+    <string name="category_none">No se ha encontrado nada cerca en los mapas descargados.</string>
+    <string name="category_chip_description">Explorar %1$s cerca</string>
+</resources>
