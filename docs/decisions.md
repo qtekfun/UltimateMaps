@@ -203,3 +203,9 @@ Formato: fecha · decisión · motivo · alternativas descartadas · cómo rever
 - **Qué debe hacer quien ya tiene una región instalada:** la app solo baja `World` al **instalar** una región cuando aún no lo tiene; una región ya instalada no lo dispara. Basta descargar cualquier otra región (p. ej. Ceuta, 1,5 MB, + 62 MB de World) o borrar y volver a bajar la región.
 - **Salvaguarda:** `scripts/gen-region-catalog.py` avisa ahora si hay regiones descargables pero no `--base-dir`.
 - **Lo que no detectaron los tests:** ninguno cubría «catálogo real publicado → buscar»; el circuito descarga → enlace → búsqueda no se probó de punta a punta con la release real. Pendiente (con el teléfono, cuando el usuario lo permita).
+
+## 2026-10-07 · Guiado (maniobras, carriles, límites) desde el núcleo, sin ejecutar
+- **Decisión:** `Route(..., withGuidance)` + `nativeRouteGuidance` (JNI nuevo; `nativeRoute` intacto) + `GuidanceWire` en Kotlin; `routingEngine(withGuidance = false)` por defecto, así la vista previa no cambia. Detalle, formato y lo no verificado en `docs/phase2/maneuvers.md`.
+- **Hallazgos:** bici usa `CarDirectionsEngine` (no `PedestrianDirection`); límite por segmento sí existe pero solo se rellena en coche; no hay MERGE, ARRIVE_LEFT/RIGHT ni salida (DEPART) en el núcleo.
+- **Estado:** compila y enlaza; no ejecutado (sin dispositivo). `Guidance.kt` no se tocó.
+- **Alternativa descartada:** codificar el guiado dentro de `nativeRoute` (rompe el formato y obliga a pagar el coste siempre).
