@@ -18,7 +18,8 @@ val INCIDENT_REFRESH_CHOICES_MINUTES = listOf(5, 10, 30, 60)
  * - [incidentsEnabled]: accidents, closures, slow traffic, obstacles, bad weather (live feed, explicit opt-in).
  * - [v16Enabled]: stopped vehicles with a connected V16 beacon (same live feed).
  * - [roadworksEnabled]: also show roadworks (only with [incidentsEnabled]); there can be hundreds.
- * - [voiceEnabled]: speak the alerts (the visual chip is unaffected); default on.
+ * - [cameraAlertMode] / [incidentAlertMode]: how each category is announced (chime, voice or only the visual chip).
+ * - [alertsMuted]: the quick mute of the navigation screen; silences both categories without changing their modes.
  * - [acknowledged]: the user read and accepted the notice about camera data (required for the two camera switches).
  */
 data class CameraSettings(
@@ -30,16 +31,23 @@ data class CameraSettings(
     /** Warn about a camera only when the known limit is exceeded (cameras with an unknown limit always warn). */
     val warnOnlyIfSpeeding: Boolean = false,
     val acknowledged: Boolean = false,
+    /** How speed cameras, sections and mobile zones are announced; the chip shows in every mode. A chime by default. */
+    val cameraAlertMode: AlertSoundMode = AlertSoundMode.SOUND,
+    /** How incidents (V16, roadworks, weather included) are announced; the chip or banner shows in every mode. */
+    val incidentAlertMode: AlertSoundMode = AlertSoundMode.SOUND,
     /**
-     * Speak the alerts (cameras, zones, incidents). Its own switch, independent of the navigation Mute: the chip shows
-     * either way, and the navigation Mute still silences everything. On by default (it matters only while a category is on).
+     * The quick mute (navigation screen button): both categories stay silent while it is on, the chosen modes are kept
+     * and take effect again when it is turned off. Independent of the navigation Mute, which still silences everything.
      */
-    val voiceEnabled: Boolean = true,
+    val alertsMuted: Boolean = false,
     val incidentRefreshMinutes: Int = 10,
 ) {
     val anyCamera: Boolean get() = fixedEnabled || mobileZonesEnabled
     val anyIncident: Boolean get() = incidentsEnabled || v16Enabled
     val anything: Boolean get() = anyCamera || anyIncident
+
+    /** The mode of the category [c] belongs to. */
+    fun modeFor(c: AlertCategory): AlertSoundMode = if (c.isCamera) cameraAlertMode else incidentAlertMode
 
     /** The incident kinds the map shows and the warner may announce. */
     fun incidentKinds(): Set<IncidentKind> = buildSet {
