@@ -187,6 +187,10 @@ class PanelHost(
         onOpened = { screen.notice = null; screen.detent = SheetDetent.MEDIUM },
         // "Go" replaces the destination: the running navigation ends and the route preview takes over.
         beforeGo = { navScreen?.takeIf { it.ui.value.active }?.stop() },
+        // "Add stop" while navigating re-plans the trip in progress instead of editing a preview.
+        navigating = { navigating },
+        navStops = navScreen?.let { n -> { point -> n.addStop(point) } },
+        scope = activity.lifecycleScope,
     )
 
     private val fuelLayer = FuelMapLayer(
