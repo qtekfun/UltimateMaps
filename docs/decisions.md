@@ -282,3 +282,8 @@ Formato: fecha · decisión · motivo · alternativas descartadas · cómo rever
 - **Confirmado:** límites de velocidad solo en coche (bici y a pie: 0 tramos), como había leído el agente A en el código.
 - **Observaciones sin resolver:** carriles vacíos en estas rutas urbanas (no se ha probado una ruta de autovía); la ruta en bici empieza con un `U_TURN_RIGHT` en la Puerta del Sol que habría que verificar sobre el terreno; los nombres sin calle salen como `null`.
 - **Medido en esta misma sesión (build de depuración nativa, no representativo de release):** búsqueda 308-3344 ms (n=12), ruta urbana en coche 3,2 km en 244 ms, a pie 454 ms, en bici 391 ms; Madrid–Barcelona sigue dando `ROUTE_NOT_FOUND` (código 8) en 449-590 ms con 7 regiones.
+
+## 2026-10-07 · Gasolineras probadas de punta a punta en el Pixel 8
+- **Resultado:** Ajustes → activar (diálogo) → descarga real de GLP y gasóleo A → precio sobre la gasolinera → ficha → Ir → ruta → Añadir parada → ruta recalculada con la parada (15,3 km, 452 ms). Evidencia en `docs/phase7/device-test/` (8 capturas y README).
+- **Lo que no se probó:** gasolina 95 (índice grande), quitar/reordenar paradas, guardar, modo sin red bloqueando la descarga, actualización en segundo plano, y el coste real con miles de estaciones.
+- **Detalle de UI a pulir:** la nota «Lugar · Abierto desde un enlace de mapa» se queda sobre el panel de ruta.
