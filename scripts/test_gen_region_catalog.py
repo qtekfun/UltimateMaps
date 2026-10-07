@@ -84,6 +84,18 @@ class GenCatalogTest(unittest.TestCase):
             self.assertEqual("WorldCoasts.mwm", b["worldCoasts"]["file"])
         self.assertNotIn("base", gen.build(COUNTRIES, catalog_version="t"))
 
+    def test_optional_cameras_block(self):
+        with tempfile.TemporaryDirectory() as t:
+            f = os.path.join(t, "speedcams-es.bin")
+            put(f, b"c" * 11)
+            c = gen.build(COUNTRIES, catalog_version="t", cameras_file=f, cameras_base="https://x/rel")["cameras"]
+            self.assertEqual("https://x/rel/speedcams-es.bin", c["url"])
+            self.assertEqual(11, c["size"])
+            self.assertEqual(hashlib.sha256(b"c" * 11).hexdigest(), c["sha256"])
+            self.assertEqual("speedcams-es.bin", c["file"])
+            self.assertNotIn("cameras", gen.build(COUNTRIES, catalog_version="t", cameras_file=os.path.join(t, "nope.bin"), cameras_base="https://x"))
+        self.assertNotIn("cameras", gen.build(COUNTRIES, catalog_version="t"))
+
     def test_size_mismatch_with_countries_txt_is_skipped(self):
         with tempfile.TemporaryDirectory() as t:
             os.makedirs(os.path.join(t, "pm"))
