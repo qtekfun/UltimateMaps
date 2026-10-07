@@ -15,7 +15,10 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.qtekfun.mapas.R
+import com.qtekfun.mapas.core.fuel.FuelStation
 import com.qtekfun.mapas.core.search.SearchResult
+import com.qtekfun.mapas.fuel.FuelCardState
+import com.qtekfun.mapas.fuel.FuelStationCard
 import com.qtekfun.mapas.places.ListsPanel
 import com.qtekfun.mapas.places.GeoFormat
 import com.qtekfun.mapas.places.PanelButton
@@ -31,6 +34,18 @@ import com.qtekfun.mapas.places.subtitleOf
 import com.qtekfun.mapas.route.RoutePanel
 import com.qtekfun.mapas.route.RoutePreviewController
 import com.qtekfun.mapas.ui.theme.Mapas
+
+/** What the sheet needs to show the petrol-station card; built by [PanelHost]. */
+class FuelCardHost(
+    val state: FuelCardState,
+    val mapFuelId: () -> String?,
+    val fuelName: (String) -> String,
+    val updatedMillis: () -> Long?,
+    val now: () -> Long,
+    val onGo: (FuelStation) -> Unit,
+    val onAddStop: (FuelStation) -> Unit,
+    val onSave: (FuelStation) -> Unit,
+)
 
 /** Callbacks of the panel that need the activity or the map. */
 class PanelActions(
@@ -56,10 +71,19 @@ fun SheetPanel(
     actions: PanelActions,
     modifier: Modifier = Modifier,
     route: RoutePreviewController? = null,
+    fuel: FuelCardHost? = null,
 ) {
     val card = places.state.card
     Column(modifier.fillMaxWidth().testTag("sheet_panel")) {
-        if (route != null && route.state.active) {
+        if (fuel != null && fuel.state.station != null) {
+            // Over the route panel too: "Add stop" needs the card while a route is active.
+            FuelStationCard(
+                state = fuel.state, mapFuelId = fuel.mapFuelId(), fuelName = fuel.fuelName,
+                updatedMillis = fuel.updatedMillis(), nowMillis = fuel.now(),
+                routeActive = route?.state?.active == true,
+                onGo = fuel.onGo, onAddStop = fuel.onAddStop, onSave = fuel.onSave,
+            )
+        } else if (route != null && route.state.active) {
             RoutePanel(route, actions.onUseLocation, originSearch = { SearchPane(search, actions, Modifier) })
         } else if (card != null) {
             PlaceCard(

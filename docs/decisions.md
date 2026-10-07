@@ -270,3 +270,7 @@ Formato: fecha · decisión · motivo · alternativas descartadas · cómo rever
 - **Cambios fuera de `:core-fuel`:** `DefaultNetworkPolicy.removeEndpoint` (`:core-net`), `implementation(project(":core-fuel"))` en `app/build.gradle.kts`, un engranaje en `MapScreen`/`MapControls` y una línea en `MainActivity`.
 - **Límites:** las preferencias no entran en copia (no hay exportación y `allowBackup=false`); el host se lista como propósito `OTHER`; nombres de combustible solo en español; sin medir en dispositivo.
 - **Alternativa descartada:** descargar el fichero nacional (12 MB, un solo combustible interesa) o filtrar por provincia (revela la zona).
+## 2026-10-07 · Gasolineras en el mapa, ficha y paradas de ruta (rama `feat/fuel-map-route`)
+- **Decisión:** el precio del combustible elegido se dibuja con una `SymbolLayer` alimentada por `FuelMapLayer` (consulta al terminar el gesto, con antirrebote, fuera del hilo principal, solo si cambia el resultado); las más baratas se distinguen por forma y tamaño, no solo por color. La ruta admite hasta 5 paradas (`addStop/removeStop/moveStop`) y el núcleo ya enruta por checkpoints, así que no se encadenan tramos. Atribución del Ministerio y nota «no oficial» siempre bajo los precios de la ficha.
+- **Alternativa descartada:** una capa por combustible o un `Marker` de vista por estación (asignaciones por fotograma y coste de vistas); encadenar tramos en Kotlin (el núcleo ya lo hace).
+- **No medido:** apariencia y fluidez en el móvil. Detalle en `docs/phase7/fuel-map.md`.

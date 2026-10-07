@@ -4,9 +4,18 @@ import android.content.Intent
 import android.net.Uri
 import androidx.activity.ComponentActivity
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.lifecycle.lifecycleScope
+import com.qtekfun.mapas.R
+import com.qtekfun.mapas.core.fuel.FuelRepository
+import com.qtekfun.mapas.core.fuel.FuelSettingsStore
 import com.qtekfun.mapas.core.geo.LatLon
+import com.qtekfun.mapas.fuel.FuelCardController
+import com.qtekfun.mapas.fuel.FuelCardState
+import com.qtekfun.mapas.map.FuelMapLayer
+import com.qtekfun.mapas.map.NoFuelData
+import com.qtekfun.mapas.map.StaticFuelSettings
 import com.qtekfun.mapas.core.map.CameraState
 import com.qtekfun.mapas.core.map.MapEngine
 import com.qtekfun.mapas.places.DocumentLaunchers
@@ -38,6 +47,11 @@ class PanelHost(
     private val engine: MapEngine,
     private val screen: MapScreenState,
     regions: InstalledRegions = DirectoryInstalledRegions(File(activity.filesDir, "maps-core")),
+    /** Petrol-station data and settings; empty / switched off until the data module is wired in. */
+    private val fuelRepository: FuelRepository = NoFuelData,
+    private val fuelSettings: FuelSettingsStore = StaticFuelSettings(),
+    /** Display name of a fuel id, for the station card. */
+    private val fuelName: (String) -> String = { it },
 ) {
     /** Last known user position, in memory only; used to sort saved places by distance. */
     var userLocation: LatLon? = null
@@ -84,6 +98,23 @@ class PanelHost(
         onMarkers = engine::showMarkers,
     )
 
+    val fuelCard = FuelCardController(
+        repository = fuelRepository,
+        route = route,
+        places = places,
+        card = FuelCardState(),
+        category = { activity.getString(R.string.fuel_category) },
+        onOpened = { screen.notice = null; screen.detent = SheetDetent.MEDIUM },
+    )
+
+    private val fuelLayer = FuelMapLayer(
+        scope = activity.lifecycleScope,
+        io = Dispatchers.Default,
+        repository = fuelRepository,
+        settings = fuelSettings.settings,
+        render = engine::showFuel,
+    )
+
     private val documents: DocumentLaunchers = DocumentLaunchers(
         activity,
         onImport = { uri -> places.import({ input(uri) }, documents.displayName(uri)) },
@@ -98,6 +129,7 @@ class PanelHost(
     }
 
     fun onDestroy() {
+        fuelLayer.stop()
         search.close()
         route.close()
     }
@@ -107,6 +139,9 @@ class PanelHost(
 
     init {
         engine.setMapTapListener { route.pickOrigin(it, null) }
+        engine.setFuelTapListener(fuelCard::onStationTap)
+        engine.setViewportListener(fuelLayer::onViewport)
+        fuelLayer.start()
     }
 
     private fun show(info: PlaceInfo) {
@@ -143,7 +178,17 @@ class PanelHost(
             onOpenMaps = { screen.onOpenMaps() },
             onUseLocation = { route.useCurrentLocation(); onRequestLocation() },
         )
-        SheetPanel(search, places, actions, route = route)
+        val fuel = remember {
+            FuelCardHost(
+                state = fuelCard.card,
+                mapFuelId = { fuelSettings.settings.value.mapFuel },
+                fuelName = fuelName,
+                updatedMillis = { fuelRepository.lastUpdateMillis.value },
+                now = System::currentTimeMillis,
+                onGo = fuelCard::go, onAddStop = fuelCard::addStop, onSave = fuelCard::save,
+            )
+        }
+        SheetPanel(search, places, actions, route = route, fuel = fuel)
     }
 
     private companion object {

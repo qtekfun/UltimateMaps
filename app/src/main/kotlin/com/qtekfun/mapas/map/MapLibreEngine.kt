@@ -33,7 +33,26 @@ import org.maplibre.android.style.layers.PropertyFactory.circleRadius
 import org.maplibre.android.style.layers.PropertyFactory.circleStrokeColor
 import org.maplibre.android.style.layers.PropertyFactory.circleStrokeWidth
 import org.maplibre.android.style.sources.GeoJsonSource
+import android.graphics.RectF
+import com.qtekfun.mapas.core.map.FuelPin
+import com.qtekfun.mapas.core.map.GeoBounds
+import org.maplibre.android.style.expressions.Expression
+import org.maplibre.android.style.layers.PropertyFactory.iconAllowOverlap
+import org.maplibre.android.style.layers.PropertyFactory.iconAnchor
+import org.maplibre.android.style.layers.PropertyFactory.iconImage
+import org.maplibre.android.style.layers.PropertyFactory.symbolSortKey
+import org.maplibre.android.style.layers.PropertyFactory.textAnchor
+import org.maplibre.android.style.layers.PropertyFactory.textColor
+import org.maplibre.android.style.layers.PropertyFactory.textField
+import org.maplibre.android.style.layers.PropertyFactory.textFont
+import org.maplibre.android.style.layers.PropertyFactory.textHaloColor
+import org.maplibre.android.style.layers.PropertyFactory.textHaloWidth
+import org.maplibre.android.style.layers.PropertyFactory.textOffset
+import org.maplibre.android.style.layers.PropertyFactory.textOptional
+import org.maplibre.android.style.layers.PropertyFactory.textSize
+import org.maplibre.android.style.layers.SymbolLayer
 import org.maplibre.geojson.Feature
+import org.maplibre.geojson.FeatureCollection
 import org.maplibre.geojson.Point
 
 /**
@@ -67,6 +86,10 @@ class MapLibreEngine(
     private var routeFit = false
     private var tapListener: ((LatLon) -> Unit)? = null
     private var routeSource: GeoJsonSource? = null
+    private var pendingFuel: List<FuelPin> = emptyList()
+    private var fuelSource: GeoJsonSource? = null
+    private var fuelTapListener: ((String) -> Unit)? = null
+    private var viewportListener: ((GeoBounds, Double) -> Unit)? = null
 
     // Sources belong to one style: they are recreated on every style load (day/night switch).
     private var userSource: GeoJsonSource? = null
@@ -171,7 +194,101 @@ class MapLibreEngine(
         tapListener = listener
     }
 
+    // --- Petrol stations (RF-15) ---
+
+    override fun showFuel(pins: List<FuelPin>) {
+        pendingFuel = pins
+        pushFuel()
+    }
+
+    override fun setFuelTapListener(listener: ((String) -> Unit)?) {
+        fuelTapListener = listener
+    }
+
+    override fun setViewportListener(listener: ((GeoBounds, Double) -> Unit)?) {
+        viewportListener = listener
+        dispatchViewport()
+    }
+
+    private fun pushFuel() {
+        val source = fuelSource ?: return
+        if (map == null) return
+        source.setGeoJson(
+            FeatureCollection.fromFeatures(
+                pendingFuel.map {
+                    Feature.fromGeometry(Point.fromLngLat(it.point.lon, it.point.lat)).apply {
+                        addStringProperty(FUEL_ID, it.id)
+                        addStringProperty(FUEL_LABEL, it.label)
+                        addBooleanProperty(FUEL_CHEAP, it.cheap)
+                        addNumberProperty(FUEL_RANK, it.rank)
+                    }
+                },
+            ),
+        )
+    }
+
+    private fun addFuelLayer(style: Style, dark: Boolean) {
+        val res = view.resources
+        val d = res.displayMetrics
+        style.addImage(FuelIcons.NORMAL, FuelIcons.render(false, dark, d.density, d.densityDpi))
+        style.addImage(FuelIcons.CHEAP, FuelIcons.render(true, dark, d.density, d.densityDpi))
+        style.addSource(GeoJsonSource(FUEL_SOURCE).also { fuelSource = it })
+        val cheap = Expression.get(FUEL_CHEAP)
+        style.addLayer(
+            SymbolLayer(FUEL_LAYER, FUEL_SOURCE).withProperties(
+                iconImage(Expression.switchCase(cheap, Expression.literal(FuelIcons.CHEAP), Expression.literal(FuelIcons.NORMAL))),
+                iconAllowOverlap(true), // the badge always shows; only the price text yields to collisions
+                iconAnchor(Property.ICON_ANCHOR_CENTER),
+                textField(Expression.get(FUEL_LABEL)),
+                textFont(arrayOf("Noto Sans Medium")),
+                textSize(Expression.switchCase(cheap, Expression.literal(15f), Expression.literal(12f))),
+                textAnchor(Property.TEXT_ANCHOR_TOP),
+                textOffset(arrayOf(0f, 1.1f)),
+                textOptional(true),
+                textColor(if (dark) 0xFFF2F2F7.toInt() else 0xFF1C1C1E.toInt()),
+                textHaloColor(if (dark) 0xFF1C1C1E.toInt() else WHITE),
+                textHaloWidth(2f),
+                symbolSortKey(Expression.get(FUEL_RANK)),
+            ),
+        )
+        pushFuel()
+    }
+
+    /** Station under the finger: icon or price within a 48 dp square, unless a saved marker sits right under it. */
+    private fun fuelAt(m: MapLibreMap, p: LatLng): String? {
+        val listener = fuelTapListener ?: return null
+        if (fuelSource == null || pendingFuel.isEmpty()) return null
+        val d = view.resources.displayMetrics.density
+        val at = m.projection.toScreenLocation(p)
+        fun box(halfDp: Float) = RectF(at.x - halfDp * d, at.y - halfDp * d, at.x + halfDp * d, at.y + halfDp * d)
+        val hits = m.queryRenderedFeatures(box(FUEL_TOUCH_DP / 2), FUEL_LAYER)
+        if (hits.isEmpty()) return null
+        val tight = box(TIGHT_DP)
+        if (m.queryRenderedFeatures(tight, MARKERS_LAYER, PIN_LAYER, USER_LAYER).isNotEmpty() &&
+            m.queryRenderedFeatures(tight, FUEL_LAYER).isEmpty()
+        ) {
+            return null // the finger is on another marker, not on a station
+        }
+        val best = hits.minByOrNull { f ->
+            val g = f.geometry() as? Point
+            if (g == null) Double.MAX_VALUE else (g.latitude() - p.latitude).let { a -> a * a } + (g.longitude() - p.longitude).let { a -> a * a }
+        }
+        val id = best?.getStringProperty(FUEL_ID) ?: return null
+        listener(id)
+        return id
+    }
+
+    private fun dispatchViewport() {
+        val l = viewportListener ?: return
+        val m = map ?: return
+        val r = runCatching { m.projection.visibleRegion.latLngBounds }.getOrNull() ?: return
+        if (r.longitudeWest > r.longitudeEast) return
+        l(GeoBounds(r.latitudeSouth, r.longitudeWest, r.latitudeNorth, r.longitudeEast), m.cameraPosition.zoom)
+    }
+
     private fun handleTap(p: LatLng): Boolean {
+        val m = map
+        if (m != null && fuelAt(m, p) != null) return true
         val listener = tapListener ?: return false
         listener(LatLon.ofOrNull(p.latitude, p.longitude) ?: return false)
         return true
@@ -250,6 +367,7 @@ class MapLibreEngine(
             val user = GeoJsonSource(USER_SOURCE).also { userSource = it }
             val pin = GeoJsonSource(PIN_SOURCE).also { pinSource = it }
             addRouteLayer(style) // below the markers, pin and user dots
+            addFuelLayer(style, wanted == MapTheme.DARK)
             style.addSource(user)
             style.addSource(pin)
             style.addSource(GeoJsonSource(MARKERS_SOURCE).also { markersSource = it })
@@ -271,6 +389,7 @@ class MapLibreEngine(
             pushOverlay(userSource, pendingUser)
             pushOverlay(pinSource, pendingPin)
             pushMarkers()
+            dispatchViewport() // the first station draw (a new style has no camera-idle of its own)
         }
     }
 
@@ -288,6 +407,7 @@ class MapLibreEngine(
         lastIdle = state
         store.save(state)
         onCameraIdle(state)
+        dispatchViewport()
     }
 
     // --- Lifecycle ---
@@ -331,6 +451,14 @@ class MapLibreEngine(
         const val MARKERS_LAYER = "mapas-saved"
         const val ROUTE_SOURCE = "mapas-route-src"
         const val ROUTE_LAYER = "mapas-route"
+        const val FUEL_SOURCE = "mapas-fuel-src"
+        const val FUEL_LAYER = "mapas-fuel"
+        const val FUEL_ID = "id"
+        const val FUEL_LABEL = "label"
+        const val FUEL_CHEAP = "cheap"
+        const val FUEL_RANK = "rank"
+        const val FUEL_TOUCH_DP = 48f
+        const val TIGHT_DP = 14f
         const val ROUTE_COLOR = 0xFF0A84FF.toInt()
         const val MARKER_COLOR = 0xFFFF9500.toInt()
         const val USER_COLOR = 0xFF007AFF.toInt()
