@@ -69,7 +69,7 @@ class NavigationService : Service() {
             shutDown()
             return START_NOT_STICKY
         }
-        if (!enterForeground(NavNotificationTexts.of(this, controller.state.value, controller.problem.value))) {
+        if (!enterForeground(NavNotificationTexts.of(this, controller.state.value, controller.problem.value, units = distanceUnits()))) {
             stopSelf()
             return START_NOT_STICKY
         }
@@ -94,7 +94,7 @@ class NavigationService : Service() {
                 val arrived = state.status == NavStatus.ARRIVED
                 val minGap = if (environment.isPowerSaveMode()) 5_000L else 1_000L
                 if (throttle.shouldPost(now, minGap, key = "${state.status}|$problem|${state.nextManeuver?.maneuver?.geometryIndex}", force = arrived)) {
-                    val content = NavNotificationTexts.of(this@NavigationService, state, problem)
+                    val content = NavNotificationTexts.of(this@NavigationService, state, problem, units = distanceUnits())
                     val plan = liveUpdatePlan(state, problem)
                     // Redraw only when something shown changed (the chip text in particular).
                     if (dedupe.shouldPost(content.title, content.text, plan, force = arrived)) {
@@ -138,6 +138,9 @@ class NavigationService : Service() {
         scope.cancel()
         super.onDestroy()
     }
+
+    /** The distance units of the Settings switch, the same ones the status-bar chip uses. */
+    private fun distanceUnits() = VoiceModule.settings(this).settings.value.units.resolve(Locale.getDefault())
 
     /** The chip and progress for the promoted (Android 16+) notification, or null to keep it a normal one. */
     private fun liveUpdatePlan(state: NavState?, problem: NavProblem?): LiveUpdatePlan? {

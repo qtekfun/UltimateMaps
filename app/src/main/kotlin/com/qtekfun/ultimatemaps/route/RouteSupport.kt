@@ -5,11 +5,27 @@ import android.util.Log
 import com.qtekfun.ultimatemaps.core.routing.RoutingProfile
 import com.qtekfun.ultimatemaps.search.CoMapsSearchBackend
 import com.qtekfun.ultimatemaps.search.CoreMaps
+import com.qtekfun.ultimatemaps.core.voice.DistanceUnits
 import java.util.Locale
 import kotlin.math.roundToInt
 
 /** Distance and duration texts of the route card (locale-aware decimal separator, metric units). */
 object RouteFormat {
+    /** [distance] in the chosen [units]: feet below 1000 ft, then miles (one decimal below 100 mi). Metric is the default. */
+    fun distance(meters: Double, locale: Locale, units: DistanceUnits): String {
+        if (units == DistanceUnits.METRIC) return distance(meters, locale)
+        val feet = meters.coerceAtLeast(0.0) * FEET_PER_METER
+        val miles = meters.coerceAtLeast(0.0) / METERS_PER_MILE
+        return when {
+            feet < 1000 -> "${(feet / 10).roundToInt() * 10} ft"
+            miles < 100 -> String.format(locale, "%.1f mi", miles)
+            else -> String.format(locale, "%d mi", miles.roundToInt())
+        }
+    }
+
+    private const val FEET_PER_METER = 3.28084
+    private const val METERS_PER_MILE = 1609.344
+
     fun distance(meters: Double, locale: Locale): String = when {
         meters < 1000 -> "${(meters / 10).roundToInt() * 10} m"
         meters < 100_000 -> String.format(locale, "%.1f km", meters / 1000)

@@ -35,6 +35,15 @@ class NavServiceTest {
         assertEquals("12.4 km · 18 min", c.text)
     }
 
+    @Test fun theNotificationFollowsTheImperialUnitsSetting() {
+        val next = ManeuverInfo(Maneuver(5, TurnType.RIGHT, "Calle Mayor"), 300.0)
+        val c = NavNotificationTexts.of(
+            context, state(NavStatus.ON_ROUTE, next), null, Locale.ENGLISH, com.qtekfun.ultimatemaps.core.voice.DistanceUnits.IMPERIAL,
+        )
+        assertTrue(c.title.contains("980 ft") && !c.title.contains(" m "), c.title) // 300 m = 984 ft
+        assertEquals("7.7 mi · 18 min", c.text) // 12.4 km = 7.7 mi
+    }
+
     @Test fun statusAndProblemsHaveTheirOwnTexts() {
         assertEquals("You have arrived", NavNotificationTexts.of(context, state(NavStatus.ARRIVED), null).title)
         assertEquals("Waiting for GPS signal…", NavNotificationTexts.of(context, state(NavStatus.NO_SIGNAL), null).title)
