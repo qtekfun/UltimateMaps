@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Settings: section -->
+    <string name="cam_title">Speed cameras and traffic</string>
+    <string name="cam_intro">All of this is optional and off by default. Cameras come from a small file in the map data release; traffic incidents are downloaded live, only when you turn them on. Your position is never sent anywhere.</string>
+
+    <string name="cam_fixed_title">Fixed speed cameras</string>
+    <string name="cam_fixed_body">Fixed cameras and average-speed sections, on the map and as an alert ahead.</string>
+    <string name="cam_mobile_title">Mobile-radar zones</string>
+    <string name="cam_mobile_body">Roads where the DGT says mobile radars may operate. Shown as stretches of road, never as points.</string>
+    <string name="cam_incidents_title">Traffic incidents</string>
+    <string name="cam_incidents_body">Accidents, closures, slow traffic, obstacles and bad weather (DGT, live).</string>
+    <string name="cam_v16_title">V16 beacons</string>
+    <string name="cam_v16_body">Stopped vehicles with a connected V16 beacon (DGT, live).</string>
+    <string name="cam_roadworks_title">Include roadworks</string>
+    <string name="cam_roadworks_body">There can be hundreds at any time.</string>
+    <string name="cam_only_speeding_title">Warn only if speeding</string>
+    <string name="cam_only_speeding_body">For cameras with a known limit, stay quiet while you are under it. Cameras with an unknown limit always warn.</string>
+
+    <!-- Settings: legal note and acknowledgement dialog -->
+    <string name="cam_legal_note">Mobile-radar zones are only the stretches the DGT publishes; the exact position of a mobile control is not published and is never shown. Alerts are informational and can be wrong or out of date. Check the traffic rules where you drive; you are responsible for how you drive.</string>
+    <string name="cam_confirm_title">Speed camera data</string>
+    <string name="cam_confirm_body">This turns on a warning about speed cameras.\n\n- Fixed cameras and average-speed sections come from the DGT (CC BY) and OpenStreetMap (ODbL). The DGT list says where a camera may be, not that it is switched on.\n- Mobile-radar zones are stretches of road published by the DGT. The app has no live data, no police controls and no user reports, and it never will.\n- The file comes from the map data server you chose; nothing about your position is sent.\n- Warnings are informational and may be wrong or out of date. Check the traffic rules where you drive.</string>
+    <string name="cam_confirm_yes">I understand, turn on</string>
+    <string name="cam_confirm_no">Cancel</string>
+    <string name="cam_incidents_confirm_title">Traffic data</string>
+    <string name="cam_incidents_confirm_body">This downloads the DGT national traffic file (about 200 KB, compressed) from nap.dgt.es when you turn it on, when you press Update now and when the app opens with old data. The whole country is downloaded and filtered on your phone: your position and route are never sent. Offline mode blocks it.</string>
+    <string name="cam_incidents_confirm_offline">Offline mode is on: nothing is downloaded until you turn it off.</string>
+
+    <!-- Settings: data card -->
+    <string name="cam_data_title">Data</string>
+    <string name="cam_data_cameras_never">Camera data: not downloaded yet.</string>
+    <string name="cam_data_cameras">Camera data: %1$d fixed cameras, %2$d average-speed sections, %3$d mobile-radar zones (%4$d drawable). File from %5$s.</string>
+    <string name="cam_data_incidents_never">Traffic data: not downloaded yet.</string>
+    <string name="cam_data_incidents">Traffic data: %1$d active records, downloaded %2$s.</string>
+    <string name="cam_refresh_title">Refresh traffic data every</string>
+    <string name="cam_refresh_minutes">%1$d minutes</string>
+    <string name="cam_refresh_hour">1 hour</string>
+    <string name="cam_update_now">Update now</string>
+    <string name="cam_update_running">Updating...</string>
+    <string name="cam_update_ok">Updated.</string>
+    <string name="cam_update_error">Could not update (%1$s). The previous data is kept.</string>
+    <string name="cam_err_offline">offline mode is on</string>
+    <string name="cam_err_not_allowed">connection not allowed</string>
+    <string name="cam_err_network">network error</string>
+    <string name="cam_err_timeout">timeout</string>
+    <string name="cam_err_server">the server failed</string>
+    <string name="cam_err_too_large">file too large</string>
+    <string name="cam_err_invalid">invalid data</string>
+    <string name="cam_err_no_catalog">the map catalog has no camera file; open Maps and refresh it</string>
+
+    <!-- Connection list -->
+    <string name="conn_purpose_traffic">Traffic incidents (DGT)</string>
+
+    <!-- Map cards -->
+    <string name="cam_card_fixed_title">Possible fixed speed camera</string>
+    <string name="cam_card_section_title">Average-speed section</string>
+    <string name="cam_card_zone_title">Mobile radars may operate on this stretch</string>
+    <string name="cam_card_road">Road: %1$s</string>
+    <string name="cam_card_limit">Enforced limit: %1$d km/h</string>
+    <string name="cam_card_limit_unknown">Speed limit: not published</string>
+    <string name="cam_card_km">Kilometre %1$s to %2$s</string>
+    <string name="cam_card_zone_note">Published by the DGT as a stretch of road, not as a position. A device may or may not be there, and the drawn line is approximate.</string>
+    <string name="cam_card_fixed_note">The source says where a camera may be, not that it is switched on.</string>
+    <string name="cam_card_data_date">Camera file from %1$s</string>
+    <string name="inc_card_v16">Stopped vehicle with a V16 beacon</string>
+    <string name="inc_card_accident">Accident</string>
+    <string name="inc_card_closure">Road or carriageway closed</string>
+    <string name="inc_card_congestion">Slow traffic</string>
+    <string name="inc_card_obstacle">Obstacle on the road</string>
+    <string name="inc_card_weather">Weather or road conditions</string>
+    <string name="inc_card_roadworks">Roadworks</string>
+    <string name="inc_card_place">%1$s (%2$s)</string>
+    <string name="inc_card_since">Since %1$s</string>
+    <string name="inc_card_until">Until %1$s</string>
+    <string name="inc_card_downloaded">Traffic data downloaded %1$s. It may have changed since.</string>
+    <string name="hazard_card_close">Close</string>
+</resources>

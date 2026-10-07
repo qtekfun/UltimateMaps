@@ -69,6 +69,8 @@ class SettingsEnv(
     val navigation: NavigationSettingsEnv? = null,
     /** Search history section (on/off and clear); null hides it. */
     val history: HistorySettingsEnv? = null,
+    /** Speed cameras and traffic section; null hides it. */
+    val cameras: CamerasSettingsEnv? = null,
 )
 
 /** The first Settings screen: Privacy (offline mode, region catalog, possible connections) and Petrol stations. */
@@ -101,6 +103,7 @@ fun SettingsScreen(env: SettingsEnv, onBack: () -> Unit, modifier: Modifier = Mo
             BasicText(stringResource(R.string.settings_title), style = Mapas.typography.largeTitle.copy(color = Mapas.colors.label))
             PrivacySection(env, settings, offline)
             FuelSection(env, settings, offline)
+            env.cameras?.let { CamerasSection(it) }
             env.navigation?.let { NavigationSection(it) }
             env.history?.let { HistorySection(it) }
             Spacer(Modifier.height(32.dp))
@@ -164,6 +167,7 @@ private fun purposeLabel(p: ConnectionPurpose) = stringResource(
         ConnectionPurpose.SHORT_LINK_RESOLVE -> R.string.conn_purpose_short_link
         ConnectionPurpose.MAP_DOWNLOAD -> R.string.conn_purpose_map_download
         ConnectionPurpose.SYNC_WEBDAV -> R.string.conn_purpose_sync
+        ConnectionPurpose.TRAFFIC_INCIDENTS -> R.string.conn_purpose_traffic
         ConnectionPurpose.OTHER -> R.string.conn_purpose_other
     },
 )

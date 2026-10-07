@@ -60,6 +60,18 @@ data class FuelPin(val id: String, val point: LatLon, val label: String, val che
 /** One imported GPX track (or route) drawn as a line: [segments] are drawn separately, [color] is ARGB. */
 class TrackLine(val id: Long, val segments: List<List<LatLon>>, val color: Int)
 
+/** What a camera or traffic marker is. The engine must tell kinds apart by SHAPE as well as colour. */
+enum class HazardKind { FIXED_CAMERA, SECTION, V16, ACCIDENT, CLOSURE, CONGESTION, OBSTACLE, WEATHER, ROADWORKS }
+
+/** One speed-camera or traffic marker. [id] is opaque to the engine (it hands it back on a tap). */
+data class HazardPin(val id: String, val point: LatLon, val kind: HazardKind)
+
+/**
+ * A stretch drawn as a line: a mobile-radar ZONE (published as a road and kilometre range, so [zone] is true and the
+ * line is dashed and rough), an average-speed section or an incident stretch ([zone] false).
+ */
+data class HazardLine(val id: String, val points: List<LatLon>, val zone: Boolean)
+
 /** Minimal map-engine contract; the concrete engine (spike option A/B/C) lives behind it. */
 interface MapEngine : AutoCloseable {
     /** Moves the camera. Must be cheap: it can be called on every gesture frame. */
@@ -127,6 +139,14 @@ interface MapEngine : AutoCloseable {
 
     /** Reports taps on a station (its id), before [setMapTapListener]; null removes the listener. */
     fun setFuelTapListener(listener: ((String) -> Unit)?) {}
+
+    // --- Speed cameras and traffic incidents (optional layers) ---
+
+    /** Draws exactly these markers and lines (cameras, zones, incidents); empty lists remove them. Never called per frame. */
+    fun showHazards(pins: List<HazardPin>, lines: List<HazardLine>) {}
+
+    /** Reports taps on a hazard marker or line (its id), after stations and before [setMapTapListener]; null removes it. */
+    fun setHazardTapListener(listener: ((String) -> Unit)?) {}
 
     /** Reports the visible rectangle and zoom when a camera gesture or animation ends (never per frame); null removes it. */
     fun setViewportListener(listener: ((GeoBounds, Double) -> Unit)?) {}
