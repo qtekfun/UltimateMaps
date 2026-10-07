@@ -3,7 +3,7 @@
     <!-- Home, Work and parked car -->
     <string name="quick_home">Home</string>
     <string name="quick_work">Work</string>
-    <string name="quick_park">Park here</string>
+    <string name="quick_park">Park</string>
     <string name="quick_parked">Parked car</string>
     <string name="quick_sos">SOS</string>
     <string name="quick_park_again">Mark here again</string>

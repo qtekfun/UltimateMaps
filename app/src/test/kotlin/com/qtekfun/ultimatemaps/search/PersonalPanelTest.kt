@@ -85,7 +85,7 @@ class PersonalPanelTest {
         rule.onNodeWithTag("quick_work").assertIsDisplayed()
         rule.onNodeWithTag("quick_parking").assertIsDisplayed()
         rule.onNodeWithTag("quick_sos").assertIsDisplayed()
-        rule.onNodeWithText("Park here").assertIsDisplayed()
+        rule.onNodeWithText("Park").assertIsDisplayed()
     }
 
     @Test fun anEmptyHomeChipExplainsHowToSetIt() {
