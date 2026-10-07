@@ -61,10 +61,15 @@ class CoreHost(private val core: CoreHandle, private val maxParked: Int = 4) {
                 if (!initialized) return errorReply(CoreProtocol.ERR_NOT_INITIALIZED, "not initialized")
                 ok(CoreProtocol.write { it.writeInt(core.refreshMaps()) })
             }
-            CoreProtocol.OP_SEARCH -> {
+            CoreProtocol.OP_SEARCH, CoreProtocol.OP_SEARCH_CATEGORY -> {
                 if (!initialized) return errorReply(CoreProtocol.ERR_NOT_INITIALIZED, "not initialized")
                 val a = CoreProtocol.decodeSearch(payload)
-                val results = core.searchEngine(a.locale, a.timeoutMs).search(a.query, a.near, a.limit)
+                val engine = core.searchEngine(a.locale, a.timeoutMs)
+                val results = if (op == CoreProtocol.OP_SEARCH_CATEGORY) {
+                    engine.searchCategory(a.query, a.near, a.limit)
+                } else {
+                    engine.search(a.query, a.near, a.limit)
+                }
                 respond(CoreProtocol.encodeSearchResults(results))
             }
             CoreProtocol.OP_ROUTE -> {
@@ -104,7 +109,7 @@ class CoreHost(private val core: CoreHandle, private val maxParked: Int = 4) {
         )
     }
 
-    private fun optionsOf(f: Int) = com.qtekfun.mapas.core.routing.RouteOptions(f and 1 != 0, f and 2 != 0, f and 4 != 0, f and 8 != 0)
+    private fun optionsOf(f: Int) = com.qtekfun.mapas.core.routing.RouteOptions.fromFlags(f)
 
     /** Number of replies parked and not yet fetched (tests and diagnostics). */
     val parkedCount: Int get() = synchronized(lock) { parked.size }

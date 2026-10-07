@@ -366,11 +366,13 @@ def load_osm(json_files, geojsonseq_files):
                 tags = ft.get("properties") or {}
                 if g.get("type") != "Point":
                     continue
-                osm_id = str(ft.get("id", ft.get("properties", {}).get("@id", "")))
+                lon, lat = g["coordinates"][:2]
+                # `osmium export` adds no feature id unless asked (--add-unique-id): key on the position then, never
+                # on an empty id (every node would look like a duplicate of the first one).
+                osm_id = str(ft.get("id") or tags.get("@id") or f"{lat:.7f},{lon:.7f}")
                 if osm_id in seen:
                     continue
                 seen.add(osm_id)
-                lon, lat = g["coordinates"][:2]
                 if not osm_is_fixed(tags) or not valid_pos(lat, lon):
                     dropped += 1
                     continue

@@ -40,10 +40,10 @@ JNIEXPORT jint JNICALL Java_com_qtekfun_mapas_nativecomaps_NativeCore_nativeRefr
 // Returns 5 strings per result: name, address, category, lat, lon.
 JNIEXPORT jobjectArray JNICALL Java_com_qtekfun_mapas_nativecomaps_NativeCore_nativeSearch(
     JNIEnv * env, jobject, jstring query, jboolean hasPos, jdouble lat, jdouble lon, jint limit, jint timeoutMs,
-    jstring locale)
+    jstring locale, jboolean categorial)
 {
-  auto const hits =
-      um::Core::Instance().Search(ToStd(env, query), hasPos, lat, lon, limit, timeoutMs, ToStd(env, locale));
+  auto const hits = um::Core::Instance().Search(ToStd(env, query), hasPos, lat, lon, limit, timeoutMs, ToStd(env, locale),
+                                                categorial == JNI_TRUE);
   jclass strCls = env->FindClass("java/lang/String");
   jobjectArray arr = env->NewObjectArray(static_cast<jsize>(hits.size() * 5), strCls, nullptr);
   jsize i = 0;

@@ -5,6 +5,7 @@ import android.content.Context
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
+import android.location.LocationRequest
 import android.os.Build
 import android.os.Bundle
 import android.os.Looper
@@ -39,6 +40,7 @@ class AndroidLocationSource(
     private val intervalMillis: Long = 1000L,
 ) : LocationSource {
     private val lm = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+    private val mainExecutor = androidx.core.content.ContextCompat.getMainExecutor(context)
     private var active: LocationListener? = null
 
     @SuppressLint("NewApi") // guarded by sdkInt (injectable for tests); lint cannot see through the field
@@ -70,10 +72,28 @@ class AndroidLocationSource(
             override fun onProviderDisabled(provider: String) {}
         }
         try {
-            for (p in providers()) lm.requestLocationUpdates(p, intervalMillis, 0f, l, Looper.getMainLooper())
+            for (p in providers()) request(p, l)
             active = l
         } catch (_: SecurityException) {
             lm.removeUpdates(l)
+        }
+    }
+
+    /**
+     * API 31+: ask for high accuracy explicitly. The provider-string overload does not: for the fused provider it
+     * is a low-power request, so fixes come less often and less accurate, and the navigation follower then sees gaps
+     * ("no GPS signal, estimated position"). Below 31 the GPS provider is used and the old call is already precise.
+     */
+    @SuppressLint("MissingPermission", "NewApi")
+    private fun request(provider: String, listener: LocationListener) {
+        if (sdkInt >= Build.VERSION_CODES.S) {
+            val request = LocationRequest.Builder(intervalMillis)
+                .setQuality(LocationRequest.QUALITY_HIGH_ACCURACY)
+                .setMinUpdateIntervalMillis(intervalMillis)
+                .build()
+            lm.requestLocationUpdates(provider, request, mainExecutor, listener)
+        } else {
+            lm.requestLocationUpdates(provider, intervalMillis, 0f, listener, Looper.getMainLooper())
         }
     }
 

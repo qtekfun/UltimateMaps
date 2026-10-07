@@ -2,8 +2,12 @@ package com.qtekfun.mapas.core.voice
 
 import kotlinx.coroutines.flow.StateFlow
 
-/** URGENT interrupts whatever is being said and clears the queue; NORMAL waits its turn; LOW never piles up. */
-enum class VoicePriority { URGENT, NORMAL, LOW }
+/**
+ * URGENT interrupts whatever is being said and clears the queue; NORMAL waits its turn; LOW never piles up; ADVISORY is
+ * for information that must never get in the way of a driving instruction (camera and incident alerts): it waits
+ * behind every instruction, never interrupts or discards one, and is itself dropped or interrupted by them.
+ */
+enum class VoicePriority { URGENT, NORMAL, LOW, ADVISORY }
 
 /**
  * One thing to say. [key] replaces a pending utterance with the same key (so "recalculating" is never said
@@ -22,6 +26,7 @@ data class Utterance(
             VoicePriority.URGENT -> 10_000L
             VoicePriority.NORMAL -> 15_000L
             VoicePriority.LOW -> 8_000L
+            VoicePriority.ADVISORY -> 6_000L
         }
     }
 }

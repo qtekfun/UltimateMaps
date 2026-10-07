@@ -124,6 +124,18 @@ interface MapEngine : AutoCloseable {
     /** Removes the route line. */
     fun clearRoute() {}
 
+    /**
+     * Draws [routes] as lighter lines under the route line (the alternatives not currently selected); an empty list
+     * removes them. Never called per frame.
+     */
+    fun showAlternativeRoutes(routes: List<List<LatLon>>) {}
+
+    /**
+     * Shows exactly these category results as pins (separate from the saved markers); an empty list hides them. With
+     * [fit] the camera frames them above the bottom sheet.
+     */
+    fun showCategoryPins(points: List<LatLon>, fit: Boolean = false) {}
+
     /** Reports taps on the bare map (to pick a route origin); null removes the listener. Never called per frame. */
     fun setMapTapListener(listener: ((LatLon) -> Unit)?) {}
 

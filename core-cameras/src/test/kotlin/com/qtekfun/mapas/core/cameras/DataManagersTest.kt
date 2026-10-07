@@ -147,6 +147,46 @@ class DataManagersTest {
         } finally { srv.stop() }
     }
 
+    @Test fun anOldCachedCatalogWithoutTheCameraBlockIsRefreshedBeforeTheLookup() = runBlocking {
+        val bytes = sample()
+        val srv = Server { _, _ -> Triple(200, bytes, emptyMap()) }
+        try {
+            val store = InMemoryCameraSettingsStore(CameraSettings())
+            val policy = DefaultNetworkPolicy(listOf(AllowedEndpoint("127.0.0.1", CAMERA_DATA_PURPOSE, enabled = true)))
+            var asset: CameraAsset? = null // the cached catalog predates the `cameras` block
+            val syncs = ArrayList<Boolean>()
+            val manager = CameraDataManager(
+                store, policy, { asset }, tmp(), BoundedHttp(policy, CAMERA_DATA_PURPOSE, allowInsecure = true, maxBytes = CameraFile.MAX_BYTES.toLong()),
+                io = Dispatchers.Unconfined, scope = CoroutineScope(Dispatchers.Unconfined),
+                syncCatalog = { force -> syncs += force; asset = CameraAsset(srv.base + "/speedcams-es.bin", bytes.size.toLong(), sha(bytes)) },
+            )
+            manager.start()
+            store.update { camsOn }
+            assertNull(manager.refresh(CameraTrigger.ENABLED), "the file was found only because the catalog was refreshed first")
+            assertEquals(2, manager.repository.data.fixed.size)
+            assertEquals(listOf(true), syncs, "turning the switch on forces the refresh")
+            assertNull(manager.refresh(CameraTrigger.FOREGROUND))
+            assertEquals(listOf(true, false), syncs, "a plain foreground only asks, the app decides whether to fetch")
+            policy.offlineMode = true
+            manager.refresh(CameraTrigger.USER)
+            assertEquals(2, syncs.size, "offline mode: the catalog is not even attempted")
+        } finally { srv.stop() }
+    }
+
+    @Test fun aFailingCatalogSyncFallsBackToTheCachedCatalog() = runBlocking {
+        val bytes = sample()
+        val srv = Server { _, _ -> Triple(200, bytes, emptyMap()) }
+        try {
+            val env = CamEnv(srv, camsOn, bytes)
+            val m = CameraDataManager(
+                env.store, env.policy, { env.asset }, env.dir, BoundedHttp(env.policy, CAMERA_DATA_PURPOSE, allowInsecure = true, maxBytes = CameraFile.MAX_BYTES.toLong()),
+                io = Dispatchers.Unconfined, scope = CoroutineScope(Dispatchers.Unconfined), syncCatalog = { error("catalog server down") },
+            )
+            assertNull(m.refresh(CameraTrigger.USER))
+            assertEquals(2, m.repository.data.fixed.size)
+        } finally { srv.stop() }
+    }
+
     // ------------------------------------------------------------------ incidents
 
     private val feedXml = """<?xml version="1.0" encoding="UTF-8"?>

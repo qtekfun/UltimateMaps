@@ -9,11 +9,15 @@ import com.qtekfun.mapas.core.data.SpecialPlace
 import com.qtekfun.mapas.core.data.SpecialSlot
 import com.qtekfun.mapas.core.data.TakeoutImport
 import com.qtekfun.mapas.core.data.TrackInfo
+import com.qtekfun.mapas.core.data.record.RECORDED_TRACK_NOTES
+import com.qtekfun.mapas.core.data.record.TrackStore
+import com.qtekfun.mapas.core.data.record.asTrackStore
 import com.qtekfun.mapas.core.data.TakeoutSummary
 import com.qtekfun.mapas.core.geo.LatLon
 import com.qtekfun.mapas.core.geo.distanceTo
 import com.qtekfun.mapas.core.geo.io.GpxExporter
 import com.qtekfun.mapas.core.geo.io.KmlExporter
+import com.qtekfun.mapas.core.search.PlaceExtras
 import com.qtekfun.mapas.core.search.SearchResult
 import java.io.InputStream
 import java.io.OutputStream
@@ -21,9 +25,16 @@ import java.net.URLEncoder
 import kotlin.math.roundToLong
 
 /** What the place card shows: a search result, or a saved place re-opened from a list. */
-data class PlaceInfo(val name: String, val point: LatLon, val address: String? = null, val category: String? = null)
+data class PlaceInfo(
+    val name: String,
+    val point: LatLon,
+    val address: String? = null,
+    val category: String? = null,
+    /** Phone, website, wheelchair and opening hours when the map data has them (null otherwise). */
+    val extras: PlaceExtras? = null,
+)
 
-fun SearchResult.toPlaceInfo() = PlaceInfo(name, point, address, category)
+fun SearchResult.toPlaceInfo() = PlaceInfo(name, point, address, category, extras)
 
 /** A row of a list screen. [distanceMeters] is null when the position of reference is unknown. */
 data class PlaceRow(val place: Place, val distanceMeters: Double?)
@@ -160,6 +171,14 @@ class PlacesService(private val repo: PlacesRepository, private val defaultList:
 
     /** Imported GPX tracks and routes (without geometry), newest first. */
     fun tracks(): List<TrackInfo> = repo.tracks().sortedByDescending { it.createdAt }
+
+    /** Where the track recorder stores finished recordings. */
+    fun trackStore(): TrackStore = repo.asTrackStore()
+
+    fun deleteTrack(id: Long): Boolean = repo.deleteTrack(id)
+
+    /** Deletes every recorded track (imported ones stay); returns how many. */
+    fun deleteRecordedTracks(): Int = repo.tracks().filter { it.notes == RECORDED_TRACK_NOTES }.count { repo.deleteTrack(it.id) }
 
     /** The geometry of track [id] as plain points, or null when it no longer exists. */
     fun trackSegments(id: Long): List<List<LatLon>>? =

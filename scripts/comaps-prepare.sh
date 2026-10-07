@@ -57,4 +57,20 @@ python3 tools/kothic/src/libkomwm.py --txt \
   -p data/styles/vehicle/include/
 python3 tools/python/transit/transit_colors_export.py data/colors.txt > /dev/null
 
+# Project patches to the CoMaps core (native-comaps/patches/*.patch), applied idempotently: a patch that is
+# already applied (it reverses cleanly) is skipped; one that neither applies nor reverses fails the script.
+echo "== project patches"
+for patch in "$ROOT"/native-comaps/patches/*.patch; do
+  [ -e "$patch" ] || continue
+  if git apply --check "$patch" 2>/dev/null; then
+    git apply "$patch"
+    echo "applied $(basename "$patch")"
+  elif git apply --check -R "$patch" 2>/dev/null; then
+    echo "already applied: $(basename "$patch")"
+  else
+    echo "ERROR: $(basename "$patch") neither applies nor is already applied; the submodule diverged" >&2
+    exit 1
+  fi
+done
+
 echo "Done. Check: ls data/classificator.txt data/categories.txt libs/platform/localized_types_map.cpp"

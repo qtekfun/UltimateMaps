@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.width
@@ -75,6 +76,8 @@ class NavActions(
     val onExit: () -> Unit = {},
     val onResume: () -> Unit = {},
     val onDiscard: () -> Unit = {},
+    /** Shares the estimated arrival as plain text through the system share sheet (no server, no live tracking). */
+    val onShareEta: () -> Unit = {},
 )
 
 /** The instruction of a maneuver ("Turn left onto Calle de Alcalá"), shared by the banner and the tests. */
@@ -123,6 +126,7 @@ private fun BoxScope.Driving(ui: NavUi, nav: NavState, actions: NavActions) {
     Column(Modifier.align(Alignment.TopCenter).fillMaxWidth()) {
         Banner(ui, nav)
         StatusStrip(ui)
+        com.qtekfun.mapas.cameras.CameraAlertBanner(Modifier.padding(horizontal = 12.dp, vertical = 6.dp).align(Alignment.CenterHorizontally), glove = ui.glove)
         // Without a text-to-speech engine (frequent without Google) the trip goes on silently: say so, and where to fix it.
         VoiceProblemBanner(voiceStatus, onClick = { context.startActivity(Intent(context, SettingsActivity::class.java)) })
     }
@@ -363,11 +367,28 @@ private fun BottomPanel(ui: NavUi, nav: NavState, actions: NavActions) {
                 modifier = Modifier.testTag("nav_remaining"),
             )
             // ODbL: the attribution stays visible while navigating.
-            BasicText(
-                stringResource(R.string.attribution_osm),
-                style = Mapas.typography.caption.copy(color = c.onPanelSecondary),
-                modifier = Modifier.testTag("nav_attribution"),
-            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                BasicText(
+                    stringResource(R.string.attribution_osm),
+                    style = Mapas.typography.caption.copy(color = c.onPanelSecondary),
+                    modifier = Modifier.weight(1f, fill = false).testTag("nav_attribution"),
+                )
+                if (ui.etaMillis > 0) {
+                    val shareDescription = stringResource(R.string.nav_share_eta_description)
+                    BasicText(
+                        stringResource(R.string.nav_share_eta_action),
+                        style = Mapas.typography.caption.copy(color = c.onPanel, fontWeight = FontWeight.SemiBold),
+                        modifier = Modifier
+                            .padding(start = 8.dp)
+                            .clickable(role = Role.Button, onClick = actions.onShareEta)
+                            .semantics { contentDescription = shareDescription }
+                            .heightIn(min = 40.dp)
+                            .padding(horizontal = 8.dp)
+                            .wrapContentHeight(Alignment.CenterVertically)
+                            .testTag("nav_share_eta"),
+                    )
+                }
+            }
         }
         NavButton(
             stringResource(R.string.nav_ui_stop), actions.onStop,

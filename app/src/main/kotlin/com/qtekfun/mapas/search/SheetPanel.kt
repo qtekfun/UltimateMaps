@@ -55,7 +55,7 @@ class FuelCardHost(
     val onGo: (FuelStation) -> Unit,
     val onAddStop: (FuelStation) -> Unit,
     val onSave: (FuelStation) -> Unit,
-    /** True while a navigation is running: "Add stop" is not offered (it edits a route preview, not the trip in progress). */
+    /** True while a navigation is running: "Add stop" then adds to the trip in progress (see `FuelCardController`). */
     val navigating: () -> Boolean = { false },
 )
 
@@ -70,6 +70,11 @@ class PanelActions(
     val onFocusField: () -> Unit,
     val onOpenMaps: () -> Unit = {},
     val onUseLocation: () -> Unit = {},
+    /** A category chip was tapped (the host raises the sheet so the list is visible). */
+    val onCategoryOpened: () -> Unit = {},
+    /** Opens the dialer with a `tel:` URI / the browser with an `https:` link from the place card. */
+    val onDial: (String) -> Unit = {},
+    val onOpenWebsite: (String) -> Unit = {},
 )
 
 /**
@@ -103,11 +108,11 @@ fun SheetPanel(
             FuelStationCard(
                 state = fuel.state, mapFuelId = fuel.mapFuelId(), fuelName = fuel.fuelName,
                 updatedMillis = fuel.updatedMillis(), nowMillis = fuel.now(),
-                routeActive = route?.state?.active == true && !fuel.navigating(),
+                routeActive = route?.state?.active == true || fuel.navigating(),
                 onGo = fuel.onGo, onAddStop = fuel.onAddStop, onSave = fuel.onSave,
             )
         } else if (route != null && route.state.active) {
-            RoutePanel(route, actions.onUseLocation, originSearch = { SearchPane(search, actions, Modifier) }, navStart = navStart)
+            RoutePanel(route, actions.onUseLocation, originSearch = { SearchPane(search, actions, Modifier, categories = false) }, navStart = navStart)
         } else if (card != null) {
             PlaceCard(
                 info = card,
@@ -118,6 +123,8 @@ fun SheetPanel(
                 onClose = places::closeCard,
                 onSetHome = quick?.let { q -> { q.setFromCard(SpecialSlot.HOME, card) } },
                 onSetWork = quick?.let { q -> { q.setFromCard(SpecialSlot.WORK, card) } },
+                onDial = actions.onDial,
+                onOpenWebsite = actions.onOpenWebsite,
             )
         } else {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -186,6 +193,8 @@ private fun SearchPane(
     search: SearchCoordinator,
     actions: PanelActions,
     modifier: Modifier,
+    /** The category chips under the field; off while a route origin is being picked. */
+    categories: Boolean = true,
     /** Extra rows shown while the query is empty (quick places, recent searches). */
     whenEmpty: LazyListScope.() -> Unit = {},
 ) {
@@ -199,6 +208,10 @@ private fun SearchPane(
             tag = "search_input",
         )
         Spacer(Modifier.height(8.dp))
+        if (categories) {
+            CategoryRow(search, onOpened = actions.onCategoryOpened)
+            Spacer(Modifier.height(8.dp))
+        }
         when {
             state.regionsAvailable == false || state.status == SearchStatus.NO_REGIONS -> NoRegions()
             state.status == SearchStatus.PREPARING -> PanelNote(stringResource(R.string.search_preparing), "search_status")
@@ -206,12 +219,18 @@ private fun SearchPane(
                 PanelNote(stringResource(R.string.search_searching), "search_status")
             state.status == SearchStatus.ERROR -> PanelNote(stringResource(R.string.search_error), "search_status")
             state.status == SearchStatus.DONE && state.results.isEmpty() ->
-                PanelNote(stringResource(R.string.search_no_results), "search_status")
+                PanelNote(
+                    stringResource(if (state.category != null) R.string.category_none else R.string.search_no_results),
+                    "search_status",
+                )
         }
         LazyColumn(Modifier.fillMaxWidth().testTag("search_results")) {
-            if (state.query.isBlank()) whenEmpty()
+            if (state.query.isBlank() && state.category == null) whenEmpty()
             items(state.results) { r ->
-                PanelRow(r.name, subtitleOf(r.category, r.address), null, { actions.onPickResult(r) }, tag = "search_result")
+                PanelRow(r.name, subtitleOf(r.category, r.address), distanceText(r), { actions.onPickResult(r) }, tag = "search_result")
+            }
+            if (state.category != null && state.results.isNotEmpty()) {
+                item(key = "category_note") { PanelNote(stringResource(R.string.category_distance_note), "category_note") }
             }
         }
     }

@@ -18,7 +18,9 @@ import com.qtekfun.mapas.fuel.PrefsFuelSettingsStore
 import com.qtekfun.mapas.cameras.AlertNavSink
 import com.qtekfun.mapas.cameras.CameraAlerts
 import com.qtekfun.mapas.cameras.PrefsCameraSettingsStore
+import com.qtekfun.mapas.core.cameras.AlertBannerTracker
 import com.qtekfun.mapas.core.cameras.AlertVoice
+import com.qtekfun.mapas.core.cameras.ManeuverGuard
 import com.qtekfun.mapas.core.cameras.CameraAsset
 import com.qtekfun.mapas.core.cameras.CameraDataManager
 import com.qtekfun.mapas.core.cameras.CameraSettingsStore
@@ -36,6 +38,14 @@ import com.qtekfun.mapas.nav.SharedNavUiPrefs
 import com.qtekfun.mapas.nav.SimulationAwareEnvironment
 import com.qtekfun.mapas.nav.SwitchableLocationSource
 import com.qtekfun.mapas.regions.CoreLinks
+import com.qtekfun.mapas.core.data.record.FileTrackJournal
+import com.qtekfun.mapas.core.data.record.TrackRecorder
+import com.qtekfun.mapas.places.openPlacesService
+import com.qtekfun.mapas.recording.PrefsRecordingSettings
+import com.qtekfun.mapas.recording.RecordingController
+import com.qtekfun.mapas.recording.TapLocationSource
+import java.text.DateFormat
+import java.util.Date
 import com.qtekfun.mapas.regions.RegionsController
 import com.qtekfun.mapas.voice.VoiceNavSink
 import kotlinx.coroutines.CoroutineScope
@@ -82,7 +92,7 @@ class MapasApp : Application() {
      * `cameras` entry through [networkPolicy], cached, and absent-tolerant. Nothing is downloaded when it is created.
      */
     val cameraData: CameraDataManager by lazy {
-        CameraDataManager(cameraSettings, policy, ::cameraAsset, File(filesDir, "cameras"))
+        CameraDataManager(cameraSettings, policy, ::cameraAsset, File(filesDir, "cameras"), syncCatalog = { force -> regions.syncCatalog(force) })
     }
 
     private fun cameraAsset(): CameraAsset? =
@@ -93,9 +103,17 @@ class MapasApp : Application() {
         IncidentDataManager(cameraSettings, policy, policy::addEndpoint, policy::removeEndpoint, IncidentCache(File(filesDir, "incidents")))
     }
 
+    /** The visual alert ahead (chip on the map and the navigation screen); created with the app so the screens can observe it before any switch is on. */
+    val alertBanner = AlertBannerTracker()
+
     /** Alerts ahead (cameras, zones, incidents): route-based while navigating, free-driving while the app is on screen. */
     val cameraAlerts: CameraAlerts by lazy {
-        val voice by lazy { AlertVoice(VoiceModule.guide(this), VoiceModule.settings(this).settings) }
+        val voice by lazy {
+            AlertVoice(
+                VoiceModule.guide(this), VoiceModule.settings(this).settings,
+                maneuverImminent = { navigation.state.value?.let { ManeuverGuard.blocksVoice(it.nextManeuver?.distanceMeters, it.speedMps) } ?: false },
+            )
+        }
         CameraAlerts(
             scope = CoroutineScope(SupervisorJob() + Dispatchers.Default),
             settings = cameraSettings,
@@ -108,6 +126,7 @@ class MapasApp : Application() {
                     checkSelfPermission(android.Manifest.permission.ACCESS_COARSE_LOCATION) == android.content.pm.PackageManager.PERMISSION_GRANTED
             },
             onAlert = { voice.onAlert(it) },
+            banner = alertBanner,
         )
     }
 
@@ -125,6 +144,11 @@ class MapasApp : Application() {
         cameraAlerts.onForeground(startedActivities > 0)
     }
 
+    /** The location permission was answered or the switches changed outside the camera settings: re-evaluates the free-driving alerts. */
+    fun refreshCameraAlerts() {
+        if (alertsStarted) cameraAlerts.refreshFree()
+    }
+
     /**
      * The one navigation in progress (see `docs/phase2/robustness.md`). It lives in the main process, outlives the
      * activity, and is kept running by [com.qtekfun.mapas.nav.NavigationService]. Its saved state is private and
@@ -133,10 +157,30 @@ class MapasApp : Application() {
     val navigation: NavigationController by lazy {
         NavigationController(
             scope = CoroutineScope(SupervisorJob() + Dispatchers.Default),
-            location = navLocation,
+            location = TapLocationSource(navLocation) { fix -> if (!navLocation.isSimulated) recording.onFix(fix) },
             store = NavStateStore(File(noBackupFilesDir, "navigation/state.bin")),
             environment = SimulationAwareEnvironment(AndroidNavEnvironment(this), navLocation),
             routes = CoreRouteProvider(this),
+        )
+    }
+
+    /**
+     * Track recording (RF-08 follow-up): fixes come from the map screen and from the navigation (which keeps running
+     * in the foreground service), the points go to a private journal that is stored as a track on Stop. See
+     * `docs/decisions.md`.
+     */
+    val recording: RecordingController by lazy {
+        val places = lazy { openPlacesService(this) }
+        RecordingController(
+            scope = CoroutineScope(SupervisorJob() + Dispatchers.Default),
+            serial = Dispatchers.IO.limitedParallelism(1),
+            recorder = TrackRecorder(
+                journal = FileTrackJournal(File(noBackupFilesDir, "recording/current.journal")),
+                store = { name, notes, segments, createdAt -> places.value.trackStore().save(name, notes, segments, createdAt) },
+                name = { start -> getString(R.string.recording_track_name, DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT).format(Date(start))) },
+            ),
+            settings = PrefsRecordingSettings(this),
+            admin = { places.value.deleteRecordedTracks() },
         )
     }
 
@@ -178,6 +222,8 @@ class MapasApp : Application() {
         cameraData.start()
         incidents.start()
         ensureCameraAlerts()
+        // Points an interrupted recording left in its journal become a track (off the main thread, on the recorder's queue).
+        recording.recoverInterrupted()
         registerActivityLifecycleCallbacks(object : ActivityLifecycleCallbacks {
             override fun onActivityStarted(activity: Activity) {
                 // The app came to the foreground (first started activity): refresh only if enabled and data older than the TTL.

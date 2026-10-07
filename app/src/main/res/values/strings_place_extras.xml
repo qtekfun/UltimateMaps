@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Place card extras (OSM tags, shown only when the data has them) -->
+    <string name="place_plus_code">Plus Code: %1$s</string>
+    <string name="place_call_description">Call %1$s</string>
+    <string name="place_website_label">Website</string>
+    <string name="place_website_description">Open the website in your browser</string>
+    <string name="place_wheelchair_yes">Wheelchair accessible</string>
+    <string name="place_wheelchair_limited">Partly wheelchair accessible</string>
+    <string name="place_wheelchair_no">Not wheelchair accessible</string>
+    <string name="place_hours">Hours: %1$s</string>
+    <string name="place_open_now">Open now</string>
+    <string name="place_closed_now">Closed now</string>
+    <string name="place_open_unknown">Open now: unknown</string>
+    <string name="place_no_dialer">No phone app found</string>
+    <string name="place_no_browser">No browser found</string>
+
+    <!-- Search by coordinates and Plus Codes -->
+    <string name="search_result_coordinates">Coordinates</string>
+    <string name="search_result_plus_code">Plus Code</string>
+
+    <!-- Sharing -->
+    <string name="nav_share_eta_action">Share ETA</string>
+    <string name="nav_share_eta_description">Share your estimated arrival as text</string>
+    <string name="nav_share_eta_text">I will arrive at about %1$s (%2$s, %3$s to go).</string>
+
+    <!-- Map scale bar -->
+    <string name="map_scale_description">Map scale: %1$s</string>
+    <string name="map_scale_meters">%1$d m</string>
+    <string name="map_scale_kilometers">%1$d km</string>
+</resources>

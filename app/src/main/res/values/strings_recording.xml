@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Track recording -->
+    <string name="recording_title">Track recording</string>
+    <string name="recording_switch_title">Allow track recording</string>
+    <string name="recording_switch_body">Adds a Start recording button to the Tracks list. The trip is saved as a track on this device only and nothing is sent anywhere. Points are kept while the app is open or while you navigate.</string>
+    <string name="recording_delete_all">Delete recorded tracks</string>
+    <string name="recording_deleted">Recorded tracks deleted.</string>
+    <string name="recording_idle">Not recording</string>
+    <string name="recording_start">Start recording</string>
+    <string name="recording_stop">Stop and save</string>
+    <string name="recording_status_on">Recording · %1$d points · %2$s</string>
+    <string name="recording_status_paused">Paused, you have stopped · %1$d points · %2$s</string>
+    <string name="recording_note">Recording continues while the app is open or while you navigate, and pauses by itself when you stop moving.</string>
+    <string name="recording_saved">Track saved. You can show it on the map or export it as GPX.</string>
+    <string name="recording_too_short">Nothing to save: the recording was too short.</string>
+    <string name="recording_failed">The track could not be saved. The points are kept and saved the next time you start.</string>
+    <string name="recording_could_not_start">Could not start: an earlier recording is still waiting to be saved.</string>
+    <string name="recording_track_name">Recorded %1$s</string>
+    <string name="track_delete">Delete</string>
+</resources>

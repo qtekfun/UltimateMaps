@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="route_alt_find">Ver alternativas</string>
+    <string name="route_alt_finding">Buscando alternativas…</string>
+    <string name="route_alt_none">No hay otra ruta distinta con otras restricciones.</string>
+    <string name="route_alt_title">Rutas (cada alternativa evita un tipo de vía más)</string>
+    <string name="route_alt_main">Tu ruta</string>
+    <string name="route_alt_same_time">mismo tiempo</string>
+    <string name="route_alt_avoid_motorways">Sin autopistas</string>
+    <string name="route_alt_avoid_tolls">Sin peajes</string>
+    <string name="route_alt_avoid_unpaved">Sin caminos sin asfaltar</string>
+    <string name="route_alt_avoid_ferries">Sin ferris</string>
+</resources>

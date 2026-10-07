@@ -105,6 +105,11 @@ class MapLibreEngine(
     private var routeFit = false
     private var tapListener: ((LatLon) -> Unit)? = null
     private var routeSource: GeoJsonSource? = null
+    private var pendingAlternatives: List<List<LatLon>> = emptyList()
+    private var alternativesSource: GeoJsonSource? = null
+    private var pendingCategory: List<LatLon> = emptyList()
+    private var categoryFit = false
+    private var categorySource: GeoJsonSource? = null
     private var pendingTracks: List<TrackLine> = emptyList()
     private var tracksSource: GeoJsonSource? = null
     private var pendingFuel: List<FuelPin> = emptyList()
@@ -316,6 +321,48 @@ class MapLibreEngine(
     }
 
     override fun clearRoute() = showRoute(emptyList(), fit = false)
+
+    override fun showAlternativeRoutes(routes: List<List<LatLon>>) {
+        pendingAlternatives = routes
+        pushAlternatives()
+    }
+
+    private fun pushAlternatives() {
+        val source = alternativesSource ?: return
+        if (map == null) return
+        val lines = pendingAlternatives.filter { it.size >= 2 }
+        if (lines.isEmpty()) {
+            source.setGeoJson(EMPTY_COLLECTION)
+            return
+        }
+        source.setGeoJson(
+            Feature.fromGeometry(
+                org.maplibre.geojson.MultiLineString.fromLngLats(lines.map { l -> l.map { Point.fromLngLat(it.lon, it.lat) } }),
+            ),
+        )
+    }
+
+    override fun showCategoryPins(points: List<LatLon>, fit: Boolean) {
+        pendingCategory = points
+        categoryFit = fit
+        pushCategory()
+    }
+
+    private fun pushCategory() {
+        val source = categorySource ?: return
+        if (map == null) return
+        source.setGeoJson(
+            org.maplibre.geojson.FeatureCollection.fromFeatures(
+                pendingCategory.map { Feature.fromGeometry(Point.fromLngLat(it.lon, it.lat)) },
+            ),
+        )
+        if (categoryFit && pendingCategory.isNotEmpty()) {
+            categoryFit = false
+            val d = view.resources.displayMetrics.density
+            // The bottom sheet covers roughly the lower half of the screen while the results are listed.
+            if (pendingCategory.size >= 2) fitPoints(pendingCategory, (40 * d).toInt(), (80 * d).toInt(), (40 * d).toInt(), (300 * d).toInt(), 600)
+        }
+    }
 
     override fun frameRoute(points: List<LatLon>, padding: CameraPadding) {
         if (points.size < 2) return
@@ -543,6 +590,16 @@ class MapLibreEngine(
     private fun addRouteLayer(style: Style, dark: Boolean) {
         val source = GeoJsonSource(ROUTE_SOURCE).also { routeSource = it }
         style.addSource(source)
+        // Alternatives first so they stay under the selected route: the same blue, lighter.
+        val altSource = GeoJsonSource(ALTERNATIVES_SOURCE).also { alternativesSource = it }
+        style.addSource(altSource)
+        style.addLayer(
+            LineLayer(ALTERNATIVES_LAYER, ALTERNATIVES_SOURCE).withProperties(
+                lineColor(ROUTE_COLOR), lineWidth(routeWidth(-1f)), lineOpacity(ALTERNATIVES_OPACITY),
+                lineCap(Property.LINE_CAP_ROUND), lineJoin(Property.LINE_JOIN_ROUND),
+            ),
+        )
+        pushAlternatives()
         // Readable when tilted: the width grows with the zoom and a casing separates it from roads and buildings.
         style.addLayer(
             LineLayer(ROUTE_CASING_LAYER, ROUTE_SOURCE).withProperties(
@@ -611,6 +668,13 @@ class MapLibreEngine(
                     circleRadius(6f), circleColor(MARKER_COLOR), circleStrokeColor(WHITE), circleStrokeWidth(2f),
                 ),
             )
+            style.addSource(GeoJsonSource(CATEGORY_SOURCE).also { categorySource = it })
+            style.addLayer(
+                CircleLayer(CATEGORY_LAYER, CATEGORY_SOURCE).withProperties(
+                    circleRadius(7f), circleColor(CATEGORY_COLOR), circleStrokeColor(WHITE), circleStrokeWidth(2f),
+                ),
+            )
+            pushCategory()
             style.addLayer(
                 CircleLayer(PARKING_LAYER, PARKING_SOURCE).withProperties(
                     circleRadius(8f), circleColor(PARKING_COLOR), circleStrokeColor(WHITE), circleStrokeWidth(3f),
@@ -708,6 +772,12 @@ class MapLibreEngine(
         const val PARKING_LAYER = "mapas-parking"
         const val MARKERS_SOURCE = "mapas-saved-src"
         const val MARKERS_LAYER = "mapas-saved"
+        const val ALTERNATIVES_SOURCE = "mapas-route-alt-src"
+        const val ALTERNATIVES_LAYER = "mapas-route-alt"
+        const val ALTERNATIVES_OPACITY = 0.45f
+        const val CATEGORY_SOURCE = "mapas-category-src"
+        const val CATEGORY_LAYER = "mapas-category"
+        const val CATEGORY_COLOR = 0xFF34C759.toInt()
         const val ROUTE_SOURCE = "mapas-route-src"
         const val ROUTE_LAYER = "mapas-route"
         const val ROUTE_CASING_LAYER = "mapas-route-casing"

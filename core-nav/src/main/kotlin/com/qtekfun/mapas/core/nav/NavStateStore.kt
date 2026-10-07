@@ -46,7 +46,7 @@ class NavStateStore(
             out.writeLong(clock())
             out.writeDouble(progressMeters)
             out.writeByte(trip.profile.ordinal)
-            out.writeByte(flags(trip.options))
+            out.writeByte(trip.options.toFlags())
             RoutePlanCodec.write(out, plan)
             out.flush()
             fos.fd.sync()
@@ -67,7 +67,7 @@ class NavStateStore(
                 val savedAt = input.readLong()
                 val progress = input.readDouble()
                 val profile = RoutingProfile.entries.getOrNull(input.readUnsignedByte()) ?: throw IOException("bad profile")
-                val options = options(input.readUnsignedByte())
+                val options = RouteOptions.fromFlags(input.readUnsignedByte())
                 val plan = RoutePlanCodec.read(input)
                 PersistedNav(plan, progress, savedAt, NavTrip(profile, options))
             }
@@ -95,11 +95,6 @@ class NavStateStore(
         private const val MAGIC = 0x554D4E56 // "UMNV"
         private const val FORMAT = 2
         private const val CLOCK_SLACK_MILLIS = 60_000L
-
-        private fun flags(o: RouteOptions) =
-            (if (o.avoidMotorways) 1 else 0) or (if (o.avoidTolls) 2 else 0) or (if (o.avoidFerries) 4 else 0) or (if (o.avoidUnpaved) 8 else 0)
-
-        private fun options(f: Int) = RouteOptions(f and 1 != 0, f and 2 != 0, f and 4 != 0, f and 8 != 0)
 
         /** A trip is not resumed after this long: the user is surely somewhere else by then. */
         const val DEFAULT_MAX_AGE_MILLIS = 3 * 60 * 60 * 1000L
