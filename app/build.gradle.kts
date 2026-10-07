@@ -23,11 +23,11 @@ fun versionCodeOf(version: String): Int {
 val releaseKeystore: String? = System.getenv("UM_KEYSTORE_FILE")
 
 android {
-    namespace = "com.qtekfun.mapas"
+    namespace = "com.qtekfun.ultimatemaps"
     compileSdk = 37
 
     defaultConfig {
-        applicationId = "com.qtekfun.mapas" // provisional
+        applicationId = "com.qtekfun.ultimatemaps"
         minSdk = 26
         targetSdk = 36
         versionCode = versionCodeOf(appVersion)

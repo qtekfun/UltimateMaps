@@ -1,7 +1,7 @@
 # Settings hub: renders
 
 Renders produced on the JVM with Robolectric native graphics and `captureToImage`
-(`app/src/test/kotlin/com/qtekfun/mapas/settings/SettingsRenderTest.kt`, skipped unless `RENDER_SETTINGS_HUB` names the
+(`app/src/test/kotlin/com/qtekfun/ultimatemaps/settings/SettingsRenderTest.kt`, skipped unless `RENDER_SETTINGS_HUB` names the
 output directory). Phone width 411 dp at xxhdpi, light and dark. The status bar is not simulated.
 
 **Not measured:** real look and feel on a device (fonts, touch comfort, TalkBack, animation). Nothing here comes from a phone.

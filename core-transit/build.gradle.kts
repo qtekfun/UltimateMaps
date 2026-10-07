@@ -26,7 +26,7 @@ tasks.register<JavaExec>("transitBench") {
     group = "verification"
     description = "Builds the Madrid index from real GTFS feeds and measures queries."
     classpath = sourceSets["test"].runtimeClasspath
-    mainClass.set("com.qtekfun.mapas.core.transit.bench.TransitBenchKt")
+    mainClass.set("com.qtekfun.ultimatemaps.core.transit.bench.TransitBenchKt")
     maxHeapSize = "3g"
     providers.gradleProperty("transitDebug").orNull?.let { systemProperty("transit.debug", it) }
     args(providers.gradleProperty("transitData").orElse("").get())
@@ -40,7 +40,7 @@ tasks.register<JavaExec>("buildTransit") {
     group = "build"
     description = "Turns GTFS zips into the binary transit index and its metadata sidecar."
     classpath = sourceSets["main"].runtimeClasspath
-    mainClass.set("com.qtekfun.mapas.core.transit.build.TransitBuildCliKt")
+    mainClass.set("com.qtekfun.ultimatemaps.core.transit.build.TransitBuildCliKt")
     maxHeapSize = "3g"
     fun prop(name: String) = providers.gradleProperty(name).orNull
     val extra = buildList {

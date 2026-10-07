@@ -8,7 +8,7 @@ val comapsData = rootProject.layout.projectDirectory.dir("third_party/comaps/dat
 val comapsAssets = layout.buildDirectory.dir("generated/comaps-assets")
 
 android {
-    namespace = "com.qtekfun.mapas.nativecomaps"
+    namespace = "com.qtekfun.ultimatemaps.nativecomaps"
     compileSdk = 36
     ndkVersion = "28.2.13676358"
 
