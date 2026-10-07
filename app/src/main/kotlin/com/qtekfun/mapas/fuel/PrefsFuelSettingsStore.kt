@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import com.qtekfun.mapas.core.fuel.FuelSettings
 import com.qtekfun.mapas.core.fuel.FuelSettingsStore
 import com.qtekfun.mapas.core.fuel.normalized
+import com.qtekfun.mapas.settings.backup.SettingsReloadable
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -13,11 +14,17 @@ import kotlinx.coroutines.flow.StateFlow
  * damaged or hand-edited file can never give inconsistent settings (for instance a map fuel that is not downloaded).
  * Off by default.
  */
-class PrefsFuelSettingsStore(private val prefs: SharedPreferences) : FuelSettingsStore {
+class PrefsFuelSettingsStore(private val prefs: SharedPreferences) : FuelSettingsStore, SettingsReloadable {
     constructor(context: Context) : this(context.getSharedPreferences(PREFS, Context.MODE_PRIVATE))
 
     private val state = MutableStateFlow(read())
     override val settings: StateFlow<FuelSettings> = state
+
+    /** Re-reads the file (after a settings restore wrote to it behind this store's back). */
+    @Synchronized
+    override fun reload() {
+        state.value = read()
+    }
 
     @Synchronized
     override fun update(transform: (FuelSettings) -> FuelSettings) {
