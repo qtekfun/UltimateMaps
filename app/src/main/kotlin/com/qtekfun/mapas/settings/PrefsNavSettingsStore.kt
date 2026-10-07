@@ -42,6 +42,7 @@ class PrefsNavSettingsStore(private val prefs: SharedPreferences) : NavSettingsS
             .putString(KEY_BIKE_CYCLEWAYS, next.bikeCycleways.name)
             .putBoolean(KEY_VIEW_3D, next.view3d)
             .putBoolean(KEY_BUILDINGS_3D, next.buildings3d)
+            .putBoolean(KEY_LIVE_UPDATE_CHIP, next.liveUpdateChip)
             .apply()
         state.value = next
     }
@@ -61,6 +62,7 @@ class PrefsNavSettingsStore(private val prefs: SharedPreferences) : NavSettingsS
             bikeCycleways = enumValue(KEY_BIKE_CYCLEWAYS, d.bikeCycleways),
             view3d = bool(KEY_VIEW_3D, d.view3d),
             buildings3d = bool(KEY_BUILDINGS_3D, d.buildings3d),
+            liveUpdateChip = bool(KEY_LIVE_UPDATE_CHIP, d.liveUpdateChip),
         ).normalized()
     }
 
@@ -83,5 +85,6 @@ class PrefsNavSettingsStore(private val prefs: SharedPreferences) : NavSettingsS
         const val KEY_BIKE_CYCLEWAYS = "bike_cycleways"
         const val KEY_VIEW_3D = "view_3d"
         const val KEY_BUILDINGS_3D = "buildings_3d"
+        const val KEY_LIVE_UPDATE_CHIP = "live_update_chip"
     }
 }

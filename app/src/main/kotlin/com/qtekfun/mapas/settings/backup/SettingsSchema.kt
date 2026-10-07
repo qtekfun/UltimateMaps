@@ -126,6 +126,7 @@ object SettingsSchema {
         enum(GROUP_NAVIGATION, navPrefs, PrefsNavSettingsStore.KEY_BIKE_CYCLEWAYS, nav.bikeCycleways, BikeCycleways.entries.map { it.name }),
         bool(GROUP_NAVIGATION, navPrefs, PrefsNavSettingsStore.KEY_VIEW_3D, nav.view3d),
         bool(GROUP_NAVIGATION, navPrefs, PrefsNavSettingsStore.KEY_BUILDINGS_3D, nav.buildings3d),
+        bool(GROUP_NAVIGATION, navPrefs, PrefsNavSettingsStore.KEY_LIVE_UPDATE_CHIP, nav.liveUpdateChip),
         bool(GROUP_NAVIGATION_UI, SharedNavUiPrefs.PREFS, SharedNavUiPrefs.KEY_GLOVE, false),
 
         // Petrol stations: the switch needs consent (it starts downloads); the rest is plain preference.
