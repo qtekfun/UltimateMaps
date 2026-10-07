@@ -148,3 +148,9 @@ Formato: fecha · decisión · motivo · alternativas descartadas · cómo rever
 - **Métrica:** logcat `UMSTYLE` en cada carga de estilo: `sources`, `layers`, `template_layers`, `skipped`, `json_kb`, `build_ms`, `style_load_ms` (sin rutas ni ubicaciones). Fluidez con N regiones: no medida.
 - **Recarga:** `refreshTilesIfChanged` compara una firma (ruta + tamaño + mtime de cada PMTiles) en lugar de la primera ruta; al volver de «Mapas» (`onStart`) se recarga si se instaló, borró o reemplazó una región. No hace falta reiniciar.
 - **Tests:** `MultiRegionStyleTest` (Robolectric): 0, 1, N regiones, ids únicos, ninguna fuente sin definir ni sin usar, tope y escape de rutas.
+
+## 2026-10-07 · Release de datos publicada y verificada (parcialmente)
+- **Estado:** `data-261004-20261006` publicada (no borrador): 54 ficheros, 4,40 GB, en `https://github.com/qtekfun/UltimateMaps-data/releases/tag/data-261004-20261006`.
+- **Verificado con descargas reales (curl y urllib):** el catálogo estable `…/releases/latest/download/catalog.json` responde 200 y es byte a byte idéntico al local; `Range` devuelve 206 con los bytes correctos (inicio y a mitad de un PMTiles de Madrid); descargas completas de Canarias, Ceuta, La Rioja y Melilla (render y search, 8 ficheros): tamaño y SHA-256 coinciden con el catálogo.
+- **Dato para la lista blanca de red:** la descarga de un asset hace 302 desde `github.com` a **`release-assets.githubusercontent.com`** (URL firmada con caducidad corta). Hay que permitir ambos hosts (agente `feat/mvp-regions-core-link`).
+- **No verificado:** los otros 21 pares de ficheros, `World.mwm` y `WorldCoasts.mwm` (están subidos y con hash en `SHA256SUMS`, no re-descargados), ni cuota o límites de ancho de banda de GitHub para tráfico real de usuarios.
