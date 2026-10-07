@@ -35,8 +35,10 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -256,10 +258,13 @@ private fun StatusStrip(ui: NavUi) {
             .padding(horizontal = 12.dp, vertical = 8.dp)
             .clip(RoundedCornerShape(12.dp))
             .background(bg)
-            .padding(horizontal = 14.dp, vertical = 8.dp)
-            .testTag("nav_status"),
+            .padding(horizontal = 14.dp, vertical = 8.dp),
     ) {
-        BasicText(text, style = Mapas.typography.callout.copy(color = c.onStatus, fontWeight = FontWeight.SemiBold), maxLines = 2)
+        BasicText(
+            text, style = Mapas.typography.callout.copy(color = c.onStatus, fontWeight = FontWeight.SemiBold), maxLines = 2,
+            // A change of situation is announced by the screen reader without taking the focus.
+            modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite }.testTag("nav_status"),
+        )
     }
 }
 
