@@ -10,7 +10,7 @@ import kotlin.test.assertFailsWith
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
-private class FakeBridge : NativeBridge {
+internal class FakeBridge : NativeBridge {
     var initError = ""
     var lastRoute: Triple<Int, List<Double>, Int>? = null
     var routeReply = doubleArrayOf(0.0, 1500.0, 120.0, 40.0, -3.0, 40.1, -3.1)
@@ -25,6 +25,14 @@ private class FakeBridge : NativeBridge {
     override fun route(profile: Int, points: DoubleArray, avoidFlags: Int, timeoutSec: Int): DoubleArray {
         lastRoute = Triple(profile, points.toList(), avoidFlags)
         return routeReply
+    }
+
+    var guidedReply = RawGuidedRoute(routeReply, DoubleArray(0), emptyArray())
+    var guidedCalls = 0
+
+    override fun routeGuidance(profile: Int, points: DoubleArray, avoidFlags: Int, timeoutSec: Int): RawGuidedRoute {
+        guidedCalls++
+        return guidedReply
     }
 }
 

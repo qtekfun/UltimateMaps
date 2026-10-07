@@ -35,7 +35,25 @@ struct RouteOut
   std::vector<double> latLon;  // lat0, lon0, lat1, lon1, ...
   double distanceMeters = 0;
   double durationSeconds = 0;
+
+  // Guiado (solo si se pidio): vacio = no solicitado. Formato en docs/phase2/maneuvers.md y en `GuidanceWire` (Kotlin):
+  //   [version, nManiobras, nLimites,
+  //    por maniobra: indiceGeometria, giro(WireTurn), salidaRotonda(-1 = no), indiceNombre(-1 = no), nCarriles,
+  //                  por carril: mascaraLaneWay, recomendado(0/1),
+  //    por limite: desde, hasta, kmh(-1 = sin dato)]
+  // Todo entero, exacto en double. `guidanceNames` es la tabla de calles a la que apunta indiceNombre.
+  std::vector<double> guidance;
+  std::vector<std::string> guidanceNames;
 };
+
+// Codigos de giro del cable; mismo orden y valores que `TurnType` de :core-routing (los traduce Kotlin con un `when`).
+enum WireTurn : int32_t
+{
+  kTurnDepart = 0, kTurnStraight, kTurnSlightRight, kTurnRight, kTurnSharpRight, kTurnSlightLeft, kTurnLeft,
+  kTurnSharpLeft, kTurnUTurnLeft, kTurnUTurnRight, kTurnRoundaboutEnter, kTurnRoundaboutLeave, kTurnExitLeft,
+  kTurnExitRight, kTurnMerge, kTurnArrive, kTurnArriveLeft, kTurnArriveRight,
+};
+constexpr int32_t kGuidanceWireVersion = 1;
 
 struct InitParams
 {
@@ -60,7 +78,9 @@ public:
   std::vector<SearchHit> Search(std::string const & query, bool hasPos, double lat, double lon, int limit,
                                 int timeoutMs, std::string const & locale);
 
-  RouteOut Route(Profile profile, std::vector<double> const & latLonPoints, int32_t avoidFlags, int timeoutSec);
+  // withGuidance = false deja la ruta exactamente como antes (sin coste extra).
+  RouteOut Route(Profile profile, std::vector<double> const & latLonPoints, int32_t avoidFlags, int timeoutSec,
+                 bool withGuidance = false);
 
   void Shutdown();
 
