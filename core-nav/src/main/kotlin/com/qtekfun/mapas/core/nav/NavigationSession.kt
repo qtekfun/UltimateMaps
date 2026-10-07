@@ -95,6 +95,15 @@ class NavigationSession(
         inbox.trySend(Wake)
     }
 
+    /**
+     * Asks the location source to start again (the permission came back, the GPS was switched on). Safe to call at
+     * any time; does nothing when the session is not started.
+     */
+    fun restartLocation() {
+        if (loop == null) return
+        location.start { fix -> inbox.trySend(fix) }
+    }
+
     /** Stops following: no more fixes, and any running reroute is cancelled. The last [state] stays. */
     fun stop() {
         location.stop()

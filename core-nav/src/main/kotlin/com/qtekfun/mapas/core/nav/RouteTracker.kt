@@ -35,7 +35,8 @@ class RouteTracker(
     private val mAnnounced = IntArray(maneuvers.size) { -1 }
     // Stops at the very start are not stops (a round trip would "reach" one on the first fix).
     private val stopAlong: DoubleArray = plan.guidance.stops.map { geometry.alongOfIndex(it) }.filter { it > 1.0 }.sorted().toDoubleArray()
-    private var nextStop = 0
+    // Resuming mid-route: the stops already passed are neither reported nor counted.
+    private var nextStop = stopAlong.count { it <= progressAtStart(startAlongMeters) }
     private val limitBySegment = IntArray(geometry.size - 1) { -1 }.also { limits ->
         for (l in plan.guidance.speedLimits) {
             val from = l.startIndex.coerceIn(0, limits.size - 1)
@@ -43,6 +44,8 @@ class RouteTracker(
             for (s in from until to) limits[s] = l.kmh ?: -1
         }
     }
+
+    private fun progressAtStart(start: Double) = if (start.isFinite()) start.coerceIn(0.0, geometry.totalMeters) else 0.0
 
     var status = NavStatus.ON_ROUTE
         private set
