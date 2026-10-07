@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hub_navigation_title">Navegación y voz</string>
+    <string name="hub_navigation_keywords">voz unidades ruta evitar autopistas peajes ferris 3d edificios bici ciclovías barra de estado distancia chip actualización en vivo sonido volumen idioma kilómetros millas</string>
+    <string name="hub_navigation_voice_on">Voz: %1$s, %2$d %%</string>
+    <string name="hub_navigation_voice_off">Voz: desactivada</string>
+    <string name="hub_alerts_title">Alertas</string>
+    <string name="hub_alerts_keywords">radares cámaras velocidad tráfico incidencias obras avisos sonido silencio</string>
+    <string name="hub_alerts_summary">Radares: %1$s · Tráfico: %2$s</string>
+    <string name="hub_fuel_keywords">gasolina gasóleo diésel combustible precios gasolineras</string>
+    <string name="hub_fuel_off">Desactivadas</string>
+    <string name="hub_fuel_no_fuel">Activadas, sin combustible elegido</string>
+    <plurals name="hub_fuel_count">
+        <item quantity="one">%d combustible</item>
+        <item quantity="other">%d combustibles</item>
+    </plurals>
+    <string name="hub_fuel_summary">%1$s, %2$s en el mapa</string>
+    <string name="hub_network_title">Mapas y red</string>
+    <string name="hub_network_keywords">sin conexión offline privacidad conexiones internet catálogo servidor regiones descarga</string>
+    <string name="hub_network_summary">Modo sin conexión: %1$s</string>
+    <string name="hub_data_title">Datos</string>
+    <string name="hub_data_keywords">historial búsquedas recientes grabación de rutas copia de seguridad restaurar exportar importar borrar</string>
+    <string name="hub_data_searches">Búsquedas: %1$s</string>
+    <string name="hub_data_recording">Grabación: %1$s</string>
+    <string name="hub_about_title">Acerca de</string>
+    <string name="hub_about_keywords">versión licencia atribución openstreetmap código fuente créditos</string>
+    <string name="hub_about_summary">Versión %1$s</string>
+    <string name="hub_about_summary_plain">Licencia y atribuciones</string>
+    <string name="hub_on">activado</string>
+    <string name="hub_off">desactivado</string>
+
+    <string name="hub_search_hint">Buscar en los ajustes</string>
+    <string name="hub_search_none">Ningún ajuste coincide.</string>
+
+    <string name="hub_group_voice">Voz</string>
+    <string name="hub_group_display">Unidades y vista del mapa</string>
+    <string name="hub_group_route">Ruta por defecto</string>
+    <string name="hub_group_cameras">Radares</string>
+    <string name="hub_group_incidents">Incidencias de tráfico</string>
+    <string name="hub_group_maps">Mapas</string>
+    <string name="hub_advanced">Avanzado</string>
+    <string name="hub_advanced_open">Desplegado</string>
+    <string name="hub_advanced_closed">Plegado</string>
+
+    <string name="hub_privacy_note">Esta app no tiene analíticas ni informes de fallos. Abajo se listan todas las conexiones posibles, y el modo sin conexión las bloquea todas.</string>
+
+    <string name="hub_about_version_title">Versión</string>
+    <string name="hub_about_license_title">Licencia</string>
+    <string name="hub_about_license_body">Software libre bajo la Licencia Pública General de GNU v3 (GPLv3).</string>
+    <string name="hub_about_source">Código fuente: github.com/qtekfun/UltimateMaps</string>
+</resources>

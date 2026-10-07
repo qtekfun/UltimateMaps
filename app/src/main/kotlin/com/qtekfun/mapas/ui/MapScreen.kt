@@ -116,21 +116,13 @@ fun MapScreen(
                 .windowInsetsPadding(WindowInsets.statusBars)
                 .padding(start = margin, top = 8.dp),
         )
-        if (!navigating) SettingsGear(
-            description = stringResource(R.string.settings_open),
-            onClick = state.onOpenSettings,
-            modifier = Modifier
-                .align(Alignment.TopStart)
-                .windowInsetsPadding(WindowInsets.statusBars)
-                .padding(start = margin, top = 44.dp),
-        )
         if (!navigating && state.cameraKnown) ScaleBar(
             latitude = state.centerLatitude,
             zoom = state.zoom,
             modifier = Modifier
                 .align(Alignment.TopStart)
                 .windowInsetsPadding(WindowInsets.statusBars)
-                .padding(start = margin, top = 100.dp),
+                .padding(start = margin, top = 44.dp),
         )
         if (!navigating) MapButtons(
             bearingDegrees = state.bearing,
@@ -140,6 +132,8 @@ fun MapScreen(
             onLocate = onLocate,
             onResetNorth = onResetNorth,
             tiltDegrees = state.tilt,
+            settingsDescription = stringResource(R.string.settings_open),
+            onSettings = state.onOpenSettings,
             modifier = Modifier
                 .align(Alignment.TopEnd)
                 .windowInsetsPadding(WindowInsets.statusBars)

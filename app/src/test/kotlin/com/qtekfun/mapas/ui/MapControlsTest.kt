@@ -1,6 +1,7 @@
 package com.qtekfun.mapas.ui
 
 import androidx.compose.ui.semantics.SemanticsProperties
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.semantics.getOrNull
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
@@ -81,6 +82,54 @@ class MapControlsTest {
         assertEquals(12f, state.tilt)
         assertEquals(40.5, state.centerLatitude)
         assertEquals(14.5, state.zoom)
+    }
+
+    // ---- settings button in the right-hand column -------------------------------------------------------------
+
+    private fun bounds(tag: String) = rule.onNodeWithTag(tag).fetchSemanticsNode().boundsInRoot
+
+    @Test fun theSettingsButtonSitsInTheRightColumnUnderLocateAndCompass() {
+        var opened = 0
+        val state = MapScreenState().apply { onOpenSettings = { opened++ }; onCamera(CameraState(LatLon(0.0, 0.0), 12.0, bearing = 40.0)) }
+        rule.setContent { MapasTheme(darkTheme = false) { MapScreen(state, onLocate = {}, onResetNorth = {}) {} } }
+        val locate = bounds("btn_locate")
+        val compass = bounds("btn_compass")
+        val settings = bounds("btn_settings")
+        assertTrue(locate.bottom <= compass.top && compass.bottom <= settings.top, "order: locate, compass, settings")
+        assertEquals(locate.left, settings.left, 0.5f) // one column, same width
+        assertEquals(locate.right, settings.right, 0.5f)
+        assertEquals(locate.width, settings.width, 0.5f) // same chip size
+        // The attribution stays top-left with nothing under it but the scale bar, which does not touch any button.
+        val attribution = bounds("attribution")
+        assertTrue(attribution.right < settings.left && attribution.top < settings.bottom)
+        val scale = bounds("map_scale")
+        assertTrue(scale.left >= attribution.left - 0.5f && scale.top >= attribution.bottom, "the scale bar is under the attribution")
+        assertTrue(scale.right < settings.left, "the scale bar does not collide with the right column")
+        rule.onNodeWithTag("btn_settings").performClick()
+        assertEquals(1, opened)
+    }
+
+    @Test fun withoutTheCompassTheSettingsButtonIsRightUnderLocateAndKeepsItsDescription() {
+        val state = MapScreenState().apply { onCamera(CameraState(LatLon(0.0, 0.0), 12.0)) }
+        rule.setContent { MapasTheme(darkTheme = false) { MapScreen(state, onLocate = {}, onResetNorth = {}) {} } }
+        rule.onNodeWithTag("btn_compass").assertDoesNotExist()
+        val locate = bounds("btn_locate")
+        val settings = bounds("btn_settings")
+        assertTrue(settings.top >= locate.bottom && settings.top - locate.bottom < locate.height, "only a small gap")
+        assertEquals("Settings", rule.onNodeWithTag("btn_settings").fetchSemanticsNode().config.getOrNull(SemanticsProperties.ContentDescription)?.single())
+    }
+
+    @Test fun gloveModeGrowsEveryButtonOfTheColumnTo56dp() {
+        val state = MapScreenState().apply { onCamera(CameraState(LatLon(0.0, 0.0), 12.0, bearing = 40.0)) }
+        rule.setContent { MapasTheme(darkTheme = false, gloveMode = true) { MapScreen(state, onLocate = {}, onResetNorth = {}) {} } }
+        val dp56 = with(rule.density) { 56.dp.toPx() }
+        listOf("btn_locate", "btn_compass", "btn_settings").forEach { assertEquals(dp56, bounds(it).height, 0.5f, it) }
+    }
+
+    @Test fun noSettingsButtonWhileNavigating() {
+        val state = MapScreenState()
+        rule.setContent { MapasTheme(darkTheme = false) { MapScreen(state, onLocate = {}, onResetNorth = {}, navigating = true) {} } }
+        rule.onNodeWithTag("btn_settings").assertDoesNotExist()
     }
 
     // ---- scale maths ---------------------------------------------------------------------------------------

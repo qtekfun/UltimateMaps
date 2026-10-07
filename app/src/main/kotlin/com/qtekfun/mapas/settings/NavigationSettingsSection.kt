@@ -49,7 +49,7 @@ fun NavigationSection(env: NavigationSettingsEnv) {
     // Starting the engine here (it is not spoken yet) tells the user about a missing engine before the first trip.
     LaunchedEffect(Unit) { env.guide.prepare(s.voiceLanguage.resolve(env.locale())) }
 
-    SectionTitle(stringResource(R.string.nav_settings_title))
+    SectionTitle(stringResource(R.string.hub_group_voice))
     Card("nav_voice_card") {
         SwitchRow(
             title = stringResource(R.string.nav_voice_title),
@@ -94,18 +94,6 @@ fun NavigationSection(env: NavigationSettingsEnv) {
         }
     }
     Spacer(Modifier.height(10.dp))
-    Card("nav_units_card") {
-        BasicText(stringResource(R.string.nav_units_title), style = Mapas.typography.body.copy(color = Mapas.colors.label))
-        UnitsPref.entries.forEach { u ->
-            val label = when (u) {
-                UnitsPref.AUTO -> R.string.nav_units_auto
-                UnitsPref.METRIC -> R.string.nav_units_metric
-                UnitsPref.IMPERIAL -> R.string.nav_units_imperial
-            }
-            ChoiceRow(stringResource(label), s.units == u, radio = true, tag = "nav_units_${u.name.lowercase()}") { env.store.update { it.copy(units = u) } }
-        }
-    }
-    Spacer(Modifier.height(10.dp))
     Card("nav_test_card") {
         TextButton(stringResource(R.string.nav_test_voice), "nav_test_voice") { testVoice(env, s) }
         when (status) {
@@ -118,6 +106,18 @@ fun NavigationSection(env: NavigationSettingsEnv) {
             else -> Unit
         }
         VoiceProblemNotice(status, onRetry = { env.guide.retry(s.voiceLanguage.resolve(env.locale())) })
+    }
+    SectionTitle(stringResource(R.string.hub_group_display))
+    Card("nav_units_card") {
+        BasicText(stringResource(R.string.nav_units_title), style = Mapas.typography.body.copy(color = Mapas.colors.label))
+        UnitsPref.entries.forEach { u ->
+            val label = when (u) {
+                UnitsPref.AUTO -> R.string.nav_units_auto
+                UnitsPref.METRIC -> R.string.nav_units_metric
+                UnitsPref.IMPERIAL -> R.string.nav_units_imperial
+            }
+            ChoiceRow(stringResource(label), s.units == u, radio = true, tag = "nav_units_${u.name.lowercase()}") { env.store.update { it.copy(units = u) } }
+        }
     }
     Spacer(Modifier.height(10.dp))
     Card("nav_view_card") {
@@ -170,6 +170,7 @@ fun NavigationSection(env: NavigationSettingsEnv) {
         }
     }
     Spacer(Modifier.height(10.dp))
+    SectionTitle(stringResource(R.string.hub_group_route))
     Card("nav_avoid_card") {
         BasicText(stringResource(R.string.nav_avoid_title), style = Mapas.typography.body.copy(color = Mapas.colors.label))
         BasicText(stringResource(R.string.nav_avoid_body), style = Mapas.typography.callout.copy(color = Mapas.colors.secondaryLabel))
