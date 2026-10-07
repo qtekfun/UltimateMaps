@@ -15,6 +15,8 @@
     <!-- Turn-by-turn navigation keeps reading the location with the screen off: foreground service of type location. -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <!-- Android 16+: lets the navigation notification be promoted to a Live Update (status bar chip). Normal permission, no prompt. -->
+    <uses-permission android:name="android.permission.POST_PROMOTED_NOTIFICATIONS" />
 
     <!--
         Package visibility (Android 11+): without this the app cannot see any text-to-speech engine and
@@ -125,6 +127,12 @@
         <!-- Navigation in the background: a foreground service of type location (Android 14+: needs the permission above). -->
         <service
             android:name=".nav.NavigationService"
+            android:exported="false"
+            android:foregroundServiceType="location" />
+
+        <!-- Step-by-step public-transport trip in the background: same foreground type as the navigation. -->
+        <service
+            android:name=".transit.follow.TransitTripService"
             android:exported="false"
             android:foregroundServiceType="location" />
     </application>

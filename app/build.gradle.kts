@@ -23,11 +23,11 @@ fun versionCodeOf(version: String): Int {
 val releaseKeystore: String? = System.getenv("UM_KEYSTORE_FILE")
 
 android {
-    namespace = "com.qtekfun.mapas"
+    namespace = "com.qtekfun.ultimatemaps"
     compileSdk = 37
 
     defaultConfig {
-        applicationId = "com.qtekfun.mapas" // provisional
+        applicationId = "com.qtekfun.ultimatemaps"
         minSdk = 26
         targetSdk = 36
         versionCode = versionCodeOf(appVersion)
@@ -81,6 +81,8 @@ android {
 
     testOptions {
         unitTests.isIncludeAndroidResources = true
+        // Robolectric's Android 16 (SDK 36) environment reaches into java.base internals (FileDescriptor, shared memory).
+        unitTests.all { it.jvmArgs("--add-exports=java.base/jdk.internal.access=ALL-UNNAMED") }
     }
 
     lint {
@@ -97,6 +99,7 @@ dependencies {
     implementation(project(":core-search"))
     implementation(project(":core-routing"))
     implementation(project(":core-fuel")) // gas stations: data contract (RF-15)
+    implementation(project(":core-transit")) // public-transport timetables: index, planner, data manager
     implementation(project(":core-cameras")) // optional speed-camera and traffic layers, warner
     implementation(project(":core-nav")) // route tracking and NavigationController (navigation service)
     implementation(project(":core-voice")) // instruction text, voice queue and navigation settings
@@ -117,6 +120,7 @@ dependencies {
     testImplementation(platform(libs.androidx.compose.bom))
     testImplementation(libs.androidx.compose.ui.test.junit4)
     testImplementation(kotlin("test-junit"))
+    testImplementation(libs.kotlinx.coroutines.test) // virtual time for the transit trip host tests
     debugImplementation(platform(libs.androidx.compose.bom))
     debugImplementation(libs.androidx.compose.ui.test.manifest)
 }

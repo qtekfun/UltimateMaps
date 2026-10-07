@@ -1,1 +1,0 @@
-Release candidate: backup and restore of settings, place phone/website/hours, incident banner with countdown, separate voice mute for camera and incident alerts, safer text handling in the core. Spain only.

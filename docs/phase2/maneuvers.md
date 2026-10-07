@@ -74,5 +74,5 @@ Validation in `GuidanceWire.decode` (`:native-comaps`): version, header, bounded
 - That `FillGuidance` does not trigger any core `CHECK` with real routes (`GetClosestStreetNameAfterIdx` does `m_poly.GetIterToIndex`; it is only called with `m_index < number of segments`).
 - That the maneuver indices land on the right point on the real geometry (deduced from the code, not from a route).
 - How many real routes carry lanes (depends on OSM having `turn:lanes` on that road) and the quality of the names (`m_name` is the default name, not the localised one).
-- The real cost: expected to be negligible. Measure with `CoreBenchActivity` (`am start -n com.qtekfun.mapas/.bench.CoreBenchActivity --ez guidance true`, tag `UMBENCH`): it dumps, per profile, `plain_ms` versus `guided_ms`, the number of maneuvers/limits and each maneuver with its lanes.
+- The real cost: expected to be negligible. Measure with `CoreBenchActivity` (`am start -n com.qtekfun.ultimatemaps/.bench.CoreBenchActivity --ez guidance true`, tag `UMBENCH`): it dumps, per profile, `plain_ms` versus `guided_ms`, the number of maneuvers/limits and each maneuver with its lanes.
 - `kmh` for `none`/`walk` and for limits in mph (the conversion is done by the core, `GetSpeedKmPH`).

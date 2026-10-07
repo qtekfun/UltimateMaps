@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Language of place information (Settings) -->
+    <string name="locale_title">Language of place information</string>
+    <string name="locale_body">Names, addresses and categories in search results and place cards. The map labels are not affected.</string>
+    <string name="locale_auto">Automatic (app language)</string>
+    <string name="locale_es">Spanish</string>
+    <string name="locale_en">English</string>
+    <string name="locale_local">Local names</string>
+    <string name="locale_local_note">Names are shown as written locally (for example Catalan, Basque or Galician); categories use the app language.</string>
+</resources>

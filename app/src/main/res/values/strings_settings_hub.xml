@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Hub rows: title, words the search also matches, and the one-line summary of the current state -->
+    <string name="hub_navigation_title">Navigation and voice</string>
+    <string name="hub_navigation_keywords">voice units route avoid motorways tolls ferries 3d buildings bike cycleways status bar distance chip live update sound volume language kilometers miles</string>
+    <string name="hub_navigation_voice_on">Voice: %1$s, %2$d %%</string>
+    <string name="hub_navigation_voice_off">Voice: off</string>
+    <string name="hub_alerts_title">Alerts</string>
+    <string name="hub_alerts_keywords">speed cameras traffic incidents roadworks warnings sound silent radar</string>
+    <string name="hub_alerts_summary">Cameras: %1$s · Traffic: %2$s</string>
+    <string name="hub_fuel_keywords">petrol gas diesel gasoline fuel prices stations</string>
+    <string name="hub_fuel_off">Off</string>
+    <string name="hub_fuel_no_fuel">On, no fuel chosen</string>
+    <plurals name="hub_fuel_count">
+        <item quantity="one">%d fuel</item>
+        <item quantity="other">%d fuels</item>
+    </plurals>
+    <string name="hub_fuel_summary">%1$s, %2$s on the map</string>
+    <string name="hub_network_title">Maps and network</string>
+    <string name="hub_network_keywords">offline privacy connections internet catalog server regions download</string>
+    <string name="hub_network_summary">Offline mode: %1$s</string>
+    <string name="hub_data_title">Data</string>
+    <string name="hub_data_keywords">history recent searches track recording backup restore export import delete clear</string>
+    <string name="hub_data_searches">Searches: %1$s</string>
+    <string name="hub_data_recording">Recording: %1$s</string>
+    <string name="hub_about_title">About</string>
+    <string name="hub_about_keywords">version licence license attribution openstreetmap source code credits</string>
+    <string name="hub_about_summary">Version %1$s</string>
+    <string name="hub_about_summary_plain">Licence and attributions</string>
+    <string name="hub_on">on</string>
+    <string name="hub_off">off</string>
+
+    <string name="hub_search_hint">Search settings</string>
+    <string name="hub_search_none">No settings match.</string>
+
+    <!-- Group headings inside the category screens -->
+    <string name="hub_group_voice">Voice</string>
+    <string name="hub_group_display">Units and map view</string>
+    <string name="hub_group_route">Route defaults</string>
+    <string name="hub_group_cameras">Speed cameras</string>
+    <string name="hub_group_incidents">Traffic incidents</string>
+    <string name="hub_group_maps">Maps</string>
+    <string name="hub_advanced">Advanced</string>
+    <string name="hub_advanced_open">Expanded</string>
+    <string name="hub_advanced_closed">Collapsed</string>
+
+    <string name="hub_privacy_note">This app has no analytics or crash reporting. Every possible connection is listed below, and offline mode blocks all of them.</string>
+
+    <!-- About -->
+    <string name="hub_about_version_title">Version</string>
+    <string name="hub_about_license_title">Licence</string>
+    <string name="hub_about_license_body">Free software under the GNU General Public License v3 (GPLv3).</string>
+    <string name="hub_about_source">Source code: github.com/qtekfun/UltimateMaps</string>
+</resources>
