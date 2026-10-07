@@ -3,6 +3,25 @@ plugins {
     alias(libs.plugins.kotlin.compose)
 }
 
+/**
+ * La versión vive en un solo sitio, `appVersion` en gradle.properties (SemVer, o `-rc.N`). El versionCode
+ * se deriva de ella, sin depender de fechas ni de la máquina (builds reproducibles):
+ * X.Y.Z-rc.N -> (X*10000 + Y*100 + Z) * 100 + N, y 99 para una versión final, que así ordena después de sus rc.
+ */
+val appVersion = providers.gradleProperty("appVersion").get()
+
+fun versionCodeOf(version: String): Int {
+    val match = Regex("""(\d+)\.(\d+)\.(\d+)(?:-rc\.(\d+))?""").matchEntire(version)
+        ?: error("appVersion debe ser X.Y.Z o X.Y.Z-rc.N: $version")
+    val (major, minor, patch, rc) = match.destructured
+    require(minor.toInt() < 100 && patch.toInt() < 100 && (rc.isEmpty() || rc.toInt() in 1..98))
+    val base = major.toInt() * 10_000 + minor.toInt() * 100 + patch.toInt()
+    return base * 100 + (rc.toIntOrNull() ?: 99)
+}
+
+/** Firma de release desde el entorno (secretos de CI); sin ella, el APK de release queda sin firmar. */
+val releaseKeystore: String? = System.getenv("UM_KEYSTORE_FILE")
+
 android {
     namespace = "com.qtekfun.mapas"
     compileSdk = 37
@@ -11,8 +30,8 @@ android {
         applicationId = "com.qtekfun.mapas" // provisional
         minSdk = 26
         targetSdk = 36
-        versionCode = 1
-        versionName = "0.1.0"
+        versionCode = versionCodeOf(appVersion)
+        versionName = appVersion
         ndk { abiFilters += "arm64-v8a" } // RNF-07: arm64-v8a obligatoria
     }
 
@@ -20,6 +39,32 @@ android {
     // (ver docs/phase1/native-core.md). Solo afecta a las extensiones del nucleo.
     androidResources {
         noCompress += listOf("txt", "bin", "json", "config", "csv", "mwm", "dat")
+    }
+
+    signingConfigs {
+        if (releaseKeystore != null) {
+            create("release") {
+                storeFile = file(releaseKeystore)
+                storePassword = System.getenv("UM_KEYSTORE_PASSWORD")
+                keyAlias = System.getenv("UM_KEY_ALIAS")
+                keyPassword = System.getenv("UM_KEY_PASSWORD")
+            }
+        }
+    }
+
+    // Builds reproducibles (F-Droid): sin el bloque cifrado de dependencias de Google en el APK.
+    dependenciesInfo {
+        includeInApk = false
+        includeInBundle = false
+    }
+
+    buildTypes {
+        release {
+            signingConfig = signingConfigs.findByName("release")
+            // El commit de git no entra en el APK: una compilación desde un tarball debe coincidir.
+            vcsInfo.include = false
+            // Sin minificar de momento: JNI (:native-comaps) y MapLibre aún no se han probado minificados.
+        }
     }
 
     flavorDimensions += "dist"
