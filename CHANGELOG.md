@@ -4,9 +4,9 @@ Los cambios relevantes se listan aquí. El formato sigue [Keep a Changelog](http
 
 ## [Unreleased]
 
-## [0.1.0-rc.1] - pendiente
+## [0.1.0-rc.2] - pendiente
 
-Primera versión candidata: un MVP en desarrollo (ver `docs/mvp-plan.md`), no una app terminada. Solo España.
+Primera versión candidata publicada (la `rc.1` solo existió como pre-release de prueba): un MVP en desarrollo (ver `docs/mvp-plan.md`), no una app terminada. Solo España.
 
 ### Añadido
 
