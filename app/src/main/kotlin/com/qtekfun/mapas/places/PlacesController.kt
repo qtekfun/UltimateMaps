@@ -42,6 +42,9 @@ class PlacesState {
     var query by mutableStateOf("")
     var byDistance by mutableStateOf(true)
     var message by mutableStateOf<PlacesMessage?>(null)
+
+    /** True while the open list is being customised (emoji, colour, notes). */
+    var editingList by mutableStateOf(false)
 }
 
 /**
@@ -124,6 +127,7 @@ class PlacesController(
     }
 
     fun openList(list: PlaceList?) {
+        state.editingList = false
         state.openList = list
         state.message = null
         state.query = ""
@@ -141,6 +145,21 @@ class PlacesController(
     }
 
     fun createList(name: String) = mutate { service.value.createList(name) }
+
+    fun startEditingList() {
+        if (state.openList != null) state.editingList = true
+    }
+
+    fun cancelEditingList() {
+        state.editingList = false
+    }
+
+    /** Saves the editor of the open list; [ListStyle] cleans the values on the way in. */
+    fun saveListStyle(edit: ListEdit) {
+        val list = state.openList ?: return
+        state.editingList = false
+        mutate { service.value.customiseList(list.id, edit.name, edit.emoji, edit.color, edit.notes) }
+    }
 
     fun deleteList(list: PlaceList) {
         if (state.openList?.id == list.id) state.openList = null

@@ -45,13 +45,27 @@ fun ListsPanel(
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 PanelButton(stringResource(R.string.lists_back), { controller.openList(null) }, tag = "lists_back")
                 BasicText(
-                    open.name,
+                    listTitle(open.name, open.icon),
                     style = Mapas.typography.title.copy(color = Mapas.colors.label),
                     modifier = Modifier.weight(1f).testTag("list_title"),
                     maxLines = 1,
                 )
+                if (!state.editingList) {
+                    PanelButton(stringResource(R.string.list_customize), controller::startEditingList, tag = "list_customize")
+                }
+            }
+            if (!open.notes.isNullOrBlank() && !state.editingList) {
+                BasicText(
+                    open.notes!!,
+                    style = Mapas.typography.callout.copy(color = Mapas.colors.secondaryLabel),
+                    modifier = Modifier.testTag("list_notes"),
+                )
             }
             Spacer(Modifier.height(8.dp))
+            if (state.editingList) {
+                ListStyleEditor(open, controller::saveListStyle, controller::cancelEditingList, onFocus)
+                return@Column
+            }
             PanelTextField(
                 state.query, controller::setQuery, stringResource(R.string.list_filter_hint),
                 onFocus = onFocus, imeAction = ImeAction.Done, tag = "list_filter",
@@ -99,8 +113,9 @@ private fun ColumnScope.Overview(controller: PlacesController, onImport: () -> U
     LazyColumn(Modifier.weight(1f, fill = false).fillMaxWidth()) {
         items(state.lists, key = { it.id }) { list ->
             PanelRow(
-                title = list.name,
-                subtitle = null,
+                title = listTitle(list.name, list.icon),
+                subtitle = list.notes?.takeIf { it.isNotBlank() },
+                leadingColor = list.color,
                 trailing = pluralStringResource(R.plurals.lists_place_count, list.placeCount, list.placeCount),
                 onClick = { controller.openList(list) },
                 tag = "list_row",
@@ -136,3 +151,6 @@ private fun Actions(controller: PlacesController, onImport: () -> Unit, onExport
         PanelButton(stringResource(R.string.list_delete), { controller.deleteList(open) }, Modifier.fillMaxWidth(), tag = "list_delete")
     }
 }
+
+/** The list name with its emoji in front, when it has one. */
+internal fun listTitle(name: String, icon: String?): String = ListStyle.displayEmoji(icon)?.let { "$it $name" } ?: name

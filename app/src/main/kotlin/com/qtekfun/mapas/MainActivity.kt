@@ -91,13 +91,17 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-        if (savedInstanceState == null) handleLink(intent)
+        if (savedInstanceState == null) {
+            handleLink(intent)
+            panel.handleShortcut(intent?.action)
+        }
     }
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         setIntent(intent)
         handleLink(intent)
+        panel.handleShortcut(intent.action)
     }
 
     override fun onStart() {

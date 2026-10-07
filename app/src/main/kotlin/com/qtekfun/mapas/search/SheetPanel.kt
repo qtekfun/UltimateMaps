@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.BasicText
@@ -19,7 +20,12 @@ import com.qtekfun.mapas.core.fuel.FuelStation
 import com.qtekfun.mapas.core.search.SearchResult
 import com.qtekfun.mapas.fuel.FuelCardState
 import com.qtekfun.mapas.fuel.FuelStationCard
+import androidx.compose.foundation.lazy.LazyListScope
+import com.qtekfun.mapas.core.data.SpecialSlot
 import com.qtekfun.mapas.places.ListsPanel
+import com.qtekfun.mapas.places.QuickPlacesController
+import com.qtekfun.mapas.places.QuickPlacesRow
+import com.qtekfun.mapas.places.quickMessageText
 import com.qtekfun.mapas.places.GeoFormat
 import com.qtekfun.mapas.places.PanelButton
 import com.qtekfun.mapas.places.PanelMode
@@ -74,6 +80,11 @@ fun SheetPanel(
     route: RoutePreviewController? = null,
     fuel: FuelCardHost? = null,
     navStart: NavStartHost? = null,
+    /** Home, Work and parked car chips and the "set as Home/Work" buttons of the place card; null hides them. */
+    quick: QuickPlacesController? = null,
+    /** Recent searches under the search field while it is empty; null hides them. */
+    history: SearchHistory? = null,
+    onEmergency: () -> Unit = {},
 ) {
     val card = places.state.card
     Column(modifier.fillMaxWidth().testTag("sheet_panel")) {
@@ -95,6 +106,8 @@ fun SheetPanel(
                 onRoute = { actions.onRoute(card) },
                 onShare = { actions.onShare(card) },
                 onClose = places::closeCard,
+                onSetHome = quick?.let { q -> { q.setFromCard(SpecialSlot.HOME, card) } },
+                onSetWork = quick?.let { q -> { q.setFromCard(SpecialSlot.WORK, card) } },
             )
         } else {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -113,7 +126,12 @@ fun SheetPanel(
             }
             Spacer(Modifier.height(8.dp))
             if (places.state.mode == PanelMode.SEARCH) {
-                SearchPane(search, actions, Modifier.weight(1f, fill = false))
+                SearchPane(search, actions, Modifier.weight(1f, fill = false)) {
+                    if (quick != null) item(key = "quick_places") {
+                        QuickPlacesRow(quick, onGo = actions.onRoute, onEmergency = onEmergency, modifier = Modifier.padding(bottom = 8.dp))
+                    }
+                    if (history != null) recentSearchItems(history) { search.onQueryChange(it); actions.onFocusField() }
+                }
             } else {
                 ListsPanel(places, actions.onShowSaved, actions.onImport, actions.onExport, actions.onFocusField, Modifier.weight(1f, fill = false))
             }
@@ -124,6 +142,14 @@ fun SheetPanel(
                 messageText(it),
                 style = Mapas.typography.callout.copy(color = Mapas.colors.secondaryLabel),
                 modifier = Modifier.testTag("panel_message"),
+            )
+        }
+        quick?.state?.message?.let {
+            Spacer(Modifier.height(6.dp))
+            BasicText(
+                quickMessageText(it),
+                style = Mapas.typography.callout.copy(color = Mapas.colors.secondaryLabel),
+                modifier = Modifier.testTag("quick_message"),
             )
         }
     }
@@ -142,7 +168,13 @@ private fun messageText(m: PlacesMessage): String = when (m) {
 }
 
 @Composable
-private fun SearchPane(search: SearchCoordinator, actions: PanelActions, modifier: Modifier) {
+private fun SearchPane(
+    search: SearchCoordinator,
+    actions: PanelActions,
+    modifier: Modifier,
+    /** Extra rows shown while the query is empty (quick places, recent searches). */
+    whenEmpty: LazyListScope.() -> Unit = {},
+) {
     val state = search.state
     Column(modifier) {
         PanelTextField(
@@ -163,6 +195,7 @@ private fun SearchPane(search: SearchCoordinator, actions: PanelActions, modifie
                 PanelNote(stringResource(R.string.search_no_results), "search_status")
         }
         LazyColumn(Modifier.fillMaxWidth().testTag("search_results")) {
+            if (state.query.isBlank()) whenEmpty()
             items(state.results) { r ->
                 PanelRow(r.name, subtitleOf(r.category, r.address), null, { actions.onPickResult(r) }, tag = "search_result")
             }
