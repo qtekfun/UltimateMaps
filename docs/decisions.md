@@ -251,3 +251,15 @@ Formato: fecha · decisión · motivo · alternativas descartadas · cómo rever
 - **Motivo de aislar el núcleo:** ya abortó el proceso entero en el Pixel 8 (SIGABRT por un `CHECK` de CoMaps); en carretera sería perder la navegación.
 - **Compilación nativa serializada** entre agentes con `flock /tmp/claude-1000/native-build.lock` (poca RAM; una compilación nativa a la vez).
 - **Sigue abierto:** licencia de reutilización del servicio de combustible sin verificar (bloquea anunciar la función, no desarrollarla).
+
+## 2026-10-07 · Licencia de combustible: el usuario indica que no habrá problema; la evidencia lo apoya, con atribución obligatoria
+- **Petición del usuario:** «Lo de las licencias no creo que haya nada. Revisa gasolineras España en PlayStore que lo usa».
+- **Evidencia encontrada (búsqueda web del 2026-10-07):**
+  - El Ministerio (MITECO) publica los precios por obligación legal, **«para incrementar la transparencia … y mejorar la información a los ciudadanos sobre sus precios»** (Orden ITC/2308/2007; `energia.gob.es/risp/faq`, hoy `miteco.gob.es/.../hidrocarburos-nuevos-combustibles/risp.html`).
+  - El Ministerio ofrece el servicio público sin clave y tiene **su propia app oficial** en Play Store (`es.gob.geogasolineras`) y el Geoportal con descarga de ficheros.
+  - El catálogo oficial **datos.gob.es** lista como «aplicaciones» que reutilizan el dato a Precioil.es, Fuelconomy, Gasolineras Baratas (Mobilendo) y eGasolineras, enlazando el conjunto de datos como fuente.
+  - En **Google Play** lo usan apps como «Gasolineras España», «Octana», «RepostaYA» y «RadarGasolina», todas citando al Ministerio como fuente.
+  - Un aviso legal de una de ellas (Rastreoil) resume el marco: datos «reutilizados conforme a la **Ley 37/2007**, de reutilización de la información del sector público», indicando la fecha de la última actualización y sin carácter oficial.
+- **Lo que NO se encontró:** el **texto literal de la licencia** del conjunto de datos. La ficha de datos.gob.es y la página del catálogo de la sede electrónica (`sede.minetur.gob.es/.../precios-carburantes`) devuelven **404**. Por tanto, no hay una licencia leída en la fuente primaria; hay uso público generalizado y finalidad de información al ciudadano.
+- **Decisión:** el riesgo pasa de «bloqueo antes de anunciar» a **riesgo bajo que se cubre con atribución**: citar al Ministerio como fuente, mostrar la fecha de la última actualización, no alterar el sentido de los datos y no presentarlos como oficiales («precio publicado por el Ministerio»). Los agentes E y F lo implementan (Ajustes, ficha de la gasolinera, `PRIVACY.md`). Las condiciones exactas son una inferencia de la práctica de otras apps y del régimen general de la Ley 37/2007, no una cita de la licencia.
+- **Sigue siendo prudente** (no obligatorio): si algún día se quiere certeza jurídica, escribir al Ministerio; no bloquea el desarrollo ni, a juicio del usuario, la publicación.
