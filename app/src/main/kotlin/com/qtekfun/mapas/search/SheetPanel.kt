@@ -70,6 +70,9 @@ class PanelActions(
     val onFocusField: () -> Unit,
     val onOpenMaps: () -> Unit = {},
     val onUseLocation: () -> Unit = {},
+    /** Opens the dialer with a `tel:` URI / the browser with an `https:` link from the place card. */
+    val onDial: (String) -> Unit = {},
+    val onOpenWebsite: (String) -> Unit = {},
 )
 
 /**
@@ -118,6 +121,8 @@ fun SheetPanel(
                 onClose = places::closeCard,
                 onSetHome = quick?.let { q -> { q.setFromCard(SpecialSlot.HOME, card) } },
                 onSetWork = quick?.let { q -> { q.setFromCard(SpecialSlot.WORK, card) } },
+                onDial = actions.onDial,
+                onOpenWebsite = actions.onOpenWebsite,
             )
         } else {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {

@@ -10,6 +10,7 @@ import androidx.lifecycle.lifecycleScope
 import com.qtekfun.mapas.R
 import com.qtekfun.mapas.core.fuel.FuelRepository
 import com.qtekfun.mapas.core.fuel.FuelSettingsStore
+import com.qtekfun.mapas.core.geo.CoordinateQuery
 import com.qtekfun.mapas.core.geo.LatLon
 import com.qtekfun.mapas.cameras.HazardCardController
 import com.qtekfun.mapas.cameras.HazardCardState
@@ -25,8 +26,8 @@ import com.qtekfun.mapas.core.map.CameraState
 import com.qtekfun.mapas.core.map.MapEngine
 import com.qtekfun.mapas.places.DocumentLaunchers
 import com.qtekfun.mapas.places.GeoFormat
-import com.qtekfun.mapas.places.GeoShare
 import com.qtekfun.mapas.places.PlaceInfo
+import com.qtekfun.mapas.places.PlaceShare
 import com.qtekfun.mapas.places.PanelMode
 import com.qtekfun.mapas.places.PlacesController
 import com.qtekfun.mapas.places.QuickPlacesController
@@ -96,6 +97,12 @@ class PanelHost(
         clock = ::elapsedMillis,
         log = LogcatSearchLog,
         mutex = coreLock,
+        coordinateLabels = CoordinateLabels { kind ->
+            activity.getString(
+                if (kind == CoordinateQuery.Kind.DECIMAL || kind == CoordinateQuery.Kind.DMS) R.string.search_result_coordinates
+                else R.string.search_result_plus_code,
+            )
+        },
     )
 
     val route = RoutePreviewController(
@@ -286,7 +293,8 @@ class PanelHost(
 
     /** A search result: the route origin while one is being picked, otherwise the place card. */
     private fun pick(result: SearchResult) {
-        history.record(search.state.query)
+        // A typed position is not a search worth remembering (and would store a location in the history).
+        if (!search.state.coordinateQuery) history.record(search.state.query)
         quick.dismissMessage()
         if (route.state.pickingOrigin) route.pickOrigin(result.point, result.name) else show(result.toPlaceInfo())
     }
@@ -294,8 +302,21 @@ class PanelHost(
     private fun share(info: PlaceInfo) {
         val send = Intent(Intent.ACTION_SEND)
             .setType("text/plain")
-            .putExtra(Intent.EXTRA_TEXT, "${info.name}\n${GeoShare.uri(info.point, info.name)}")
+            .putExtra(Intent.EXTRA_TEXT, PlaceShare.text(info))
         activity.startActivity(Intent.createChooser(send, null))
+    }
+
+    /** Opens the dialer with the number filled in; the user presses call (no permission, nothing is dialled). */
+    private fun dial(uri: String) = openExternal(Intent(Intent.ACTION_DIAL, Uri.parse(uri)), R.string.place_no_dialer)
+
+    private fun openWebsite(uri: String) = openExternal(Intent(Intent.ACTION_VIEW, Uri.parse(uri)), R.string.place_no_browser)
+
+    private fun openExternal(intent: Intent, missing: Int) {
+        try {
+            activity.startActivity(intent)
+        } catch (_: android.content.ActivityNotFoundException) {
+            android.widget.Toast.makeText(activity, missing, android.widget.Toast.LENGTH_SHORT).show()
+        }
     }
 
     @Composable
@@ -311,6 +332,8 @@ class PanelHost(
             onFocusField = { screen.detent = SheetDetent.FULL },
             onOpenMaps = { screen.onOpenMaps() },
             onUseLocation = { route.useCurrentLocation(); onRequestLocation() },
+            onDial = ::dial,
+            onOpenWebsite = ::openWebsite,
         )
         val fuel = remember {
             FuelCardHost(

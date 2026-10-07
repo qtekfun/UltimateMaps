@@ -86,6 +86,7 @@ class CoordinateQueryTest {
     fun fullPlusCodes() {
         val p = assertNotNull(CoordinateQuery.parse("8FVC2222+22"))
         assertEquals(Kind.PLUS_CODE, p.kind)
+        assertEquals("8FVC2222+22", p.plusCode)
         assertEquals(47.0000625, p.point.lat, 1e-9)
         assertEquals(8.0000625, p.point.lon, 1e-9)
         assertEquals(Kind.PLUS_CODE, CoordinateQuery.parse("8fvc2222+22")?.kind)
@@ -99,6 +100,8 @@ class CoordinateQueryTest {
         no("9QCJ+2VX")
         val p = assertNotNull(CoordinateQuery.parse("9QCJ+2VX", LatLon(51.3701125, -1.217765625)))
         assertEquals(Kind.PLUS_CODE_SHORT, p.kind)
+        assertEquals("9C3W9QCJ+2VX", p.plusCode)
+        assertNull(CoordinateQuery.parse("40.4168, -3.7038")?.plusCode)
         assertEquals(OpenLocationCode.decode("9C3W9QCJ+2VX").center.lat, p.point.lat, 1e-9)
         assertEquals(OpenLocationCode.decode("9C3W9QCJ+2VX").center.lon, p.point.lon, 1e-9)
         no("+2VX", LatLon(51.37, -1.21)) // too short to be told from other text
