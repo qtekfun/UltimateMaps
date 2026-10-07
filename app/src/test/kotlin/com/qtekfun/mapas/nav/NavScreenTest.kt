@@ -3,6 +3,7 @@ package com.qtekfun.mapas.nav
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.test.assertContentDescriptionEquals
 import androidx.compose.ui.test.assertHeightIsAtLeast
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.semantics.getOrNull
@@ -41,6 +42,7 @@ class NavScreenTest {
 
     private val actions = NavActions(
         onStop = { calls += "stop" }, onRecenter = { calls += "recenter" }, onGlove = { calls += "glove:$it" },
+        onView3d = { calls += "view3d:$it" }, onOverview = { calls += "overview" },
         onFaster = { calls += "faster" }, onSlower = { calls += "slower" }, onExit = { calls += "exit" },
         onResume = { calls += "resume" }, onDiscard = { calls += "discard" },
     )
@@ -221,6 +223,44 @@ class NavScreenTest {
         }
         rule.onNodeWithTag("nav_glove").performClick()
         assertEquals(listOf("glove:false"), calls) // the toggle asks for the opposite of the current mode
+    }
+
+    @Test fun `the 2D 3D toggle shows the current mode, describes it, and asks for the opposite`() {
+        show(driving().copy(view3d = true))
+        assertEquals("3D", text("nav_view_toggle"))
+        rule.onNodeWithTag("nav_view_toggle").assertContentDescriptionEquals("3D view on. Switch to the flat 2D view")
+        rule.onNodeWithTag("nav_view_toggle").performClick()
+        ui = driving().copy(view3d = false)
+        rule.waitForIdle()
+        assertEquals("2D", text("nav_view_toggle"))
+        rule.onNodeWithTag("nav_view_toggle").assertContentDescriptionEquals("Flat 2D view on. Switch to the 3D view")
+        rule.onNodeWithTag("nav_view_toggle").performClick()
+        assertEquals(listOf("view3d:false", "view3d:true"), calls)
+    }
+
+    @Test fun `the 2D 3D toggle and the route overview button are at least 56 dp in glove mode`() {
+        show(driving(glove = true))
+        for (t in listOf("nav_view_toggle", "nav_overview")) rule.onNodeWithTag(t).assertHeightIsAtLeast(56.dp).assertWidthIsAtLeast(56.dp)
+        ui = driving(glove = false)
+        rule.waitForIdle()
+        for (t in listOf("nav_view_toggle", "nav_overview")) rule.onNodeWithTag(t).assertHeightIsAtLeast(48.dp).assertWidthIsAtLeast(48.dp)
+    }
+
+    @Test fun `the overview button asks for the overview and is hidden while it is shown`() {
+        show(driving())
+        rule.onNodeWithTag("nav_overview").assertContentDescriptionEquals("Show the whole remaining route for a moment")
+        rule.onNodeWithTag("nav_overview").performClick()
+        assertEquals(listOf("overview"), calls)
+        ui = driving(following = false).copy(overview = true)
+        rule.waitForIdle()
+        rule.onNodeWithTag("nav_overview").assertDoesNotExist()
+        rule.onNodeWithTag("nav_recenter").assertIsDisplayed()
+    }
+
+    @Test @Config(sdk = [34], qualifiers = "es-rES-w411dp-h891dp-xxhdpi")
+    fun `the toggle is described in Spanish`() {
+        show(driving().copy(view3d = true))
+        rule.onNodeWithTag("nav_view_toggle").assertContentDescriptionEquals("Vista 3D activada. Cambiar a la vista plana 2D")
     }
 
     @Test fun `night and day themes both draw the screen`() {

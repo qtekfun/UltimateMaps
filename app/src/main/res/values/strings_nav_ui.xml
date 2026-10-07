@@ -30,6 +30,13 @@
     <string name="nav_ui_sim_speed">%1$d km/h</string>
     <string name="nav_ui_sim_faster">Faster</string>
     <string name="nav_ui_sim_slower">Slower</string>
+    <!-- 3D view, overview -->
+    <string name="nav_ui_view_3d">3D</string>
+    <string name="nav_ui_view_2d">2D</string>
+    <string name="nav_ui_view3d_on_description">3D view on. Switch to the flat 2D view</string>
+    <string name="nav_ui_view2d_on_description">Flat 2D view on. Switch to the 3D view</string>
+    <string name="nav_ui_overview">Route</string>
+    <string name="nav_ui_overview_description">Show the whole remaining route for a moment</string>
     <!-- Arrival summary -->
     <string name="nav_ui_summary_title">You have arrived</string>
     <string name="nav_ui_summary_body">%1$s in %2$s</string>

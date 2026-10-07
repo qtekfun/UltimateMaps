@@ -114,6 +114,26 @@ fun NavigationSection(env: NavigationSettingsEnv) {
         VoiceProblemNotice(status, onRetry = { env.guide.retry(s.voiceLanguage.resolve(env.locale())) })
     }
     Spacer(Modifier.height(10.dp))
+    Card("nav_view_card") {
+        SwitchRow(
+            title = stringResource(R.string.nav_view3d_title),
+            body = stringResource(R.string.nav_view3d_body),
+            checked = s.view3d,
+            tag = "nav_view3d_switch",
+            onChange = { on -> env.store.update { it.copy(view3d = on) } },
+        )
+        if (s.view3d) {
+            Spacer(Modifier.height(10.dp))
+            SwitchRow(
+                title = stringResource(R.string.nav_buildings3d_title),
+                body = stringResource(R.string.nav_buildings3d_body),
+                checked = s.buildings3d,
+                tag = "nav_buildings3d_switch",
+                onChange = { on -> env.store.update { it.copy(buildings3d = on) } },
+            )
+        }
+    }
+    Spacer(Modifier.height(10.dp))
     Card("nav_avoid_card") {
         BasicText(stringResource(R.string.nav_avoid_title), style = Mapas.typography.body.copy(color = Mapas.colors.label))
         BasicText(stringResource(R.string.nav_avoid_body), style = Mapas.typography.callout.copy(color = Mapas.colors.secondaryLabel))
