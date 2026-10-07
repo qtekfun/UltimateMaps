@@ -102,7 +102,7 @@ class MainActivity : ComponentActivity() {
             MapasTheme(darkTheme = dark) {
                 MapScreen(
                     state = state, onLocate = ::onLocate, onResetNorth = engine::resetNorth, sheetPanel = { panel.Content() },
-                    navigating = navUi.active, navSheet = panel.fuelCardOpen, overlay = {
+                    navigating = navUi.active, navSheet = panel.cardOverNavigation, overlay = {
                         navHost.Overlay(dark)
                         // Driving without a navigation: the same alert, under the map controls (the navigation screen draws its own).
                         if (!navUi.active) CameraAlertBanner(Modifier.align(Alignment.TopCenter).windowInsetsPadding(WindowInsets.statusBars).padding(top = 96.dp))
