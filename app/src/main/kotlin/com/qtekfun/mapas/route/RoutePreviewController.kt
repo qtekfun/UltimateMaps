@@ -16,6 +16,7 @@ import com.qtekfun.mapas.nativecomaps.RouteOutcome
 import com.qtekfun.mapas.places.PlaceInfo
 import com.qtekfun.mapas.search.CoreMaps
 import com.qtekfun.mapas.search.InstalledRegions
+import com.qtekfun.mapas.transit.TransitController
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
@@ -68,6 +69,9 @@ class RouteState {
     var stops by mutableStateOf<List<PlaceInfo>>(emptyList())
     var origin by mutableStateOf<RouteOrigin>(RouteOrigin.Current)
     var profile by mutableStateOf(RoutingProfile.CAR)
+
+    /** The fourth travel mode, public transport: the route panel shows the transit section instead of a route. */
+    var transitMode by mutableStateOf(false)
     var options by mutableStateOf(RouteOptions())
     var status by mutableStateOf(RouteStatus.IDLE)
     var error by mutableStateOf<RouteError?>(null)
@@ -125,6 +129,8 @@ class RoutePreviewController(
     private val defaultBikeCycleways: () -> BikeCycleways = { BikeCycleways.OFF },
     /** Draws the routes that are not selected (lighter); an empty list removes them. */
     private val showAlternatives: (List<List<LatLon>>) -> Unit = {},
+    /** Public-transport planner for the "Transit" mode; null hides that mode. */
+    val transit: TransitController? = null,
 ) {
     val state = RouteState()
 
@@ -257,6 +263,7 @@ class RoutePreviewController(
 
     fun close() {
         job?.cancel()
+        transit?.clear()
         resetAlternatives()
         state.active = false
         state.destination = null
@@ -268,8 +275,22 @@ class RoutePreviewController(
     }
 
     fun setProfile(profile: RoutingProfile) {
-        if (state.profile == profile) return
+        val leavingTransit = state.transitMode
+        if (state.profile == profile && !leavingTransit) return
+        state.transitMode = false
         state.profile = profile
+        if (leavingTransit) transit?.clear()
+        if (state.active) compute()
+    }
+
+    /** Switches to (or, with false, away from) the public-transport mode; leaving it restores the last profile's route. */
+    fun setTransitMode(on: Boolean) {
+        if (transit == null || state.transitMode == on) return
+        if (!on) {
+            setProfile(state.profile)
+            return
+        }
+        state.transitMode = true
         if (state.active) compute()
     }
 
@@ -304,7 +325,9 @@ class RoutePreviewController(
 
     /** A location fix arrived: retries when the route was waiting for the current position. */
     fun onUserLocation() {
-        if (state.active && state.origin == RouteOrigin.Current && state.status == RouteStatus.NEEDS_ORIGIN) compute()
+        val waiting = state.status == RouteStatus.NEEDS_ORIGIN ||
+            (state.transitMode && transit?.state?.phase == com.qtekfun.mapas.transit.TransitPhase.NEEDS_ORIGIN)
+        if (state.active && state.origin == RouteOrigin.Current && waiting) compute()
     }
 
     /**
@@ -331,6 +354,12 @@ class RoutePreviewController(
         }
         clearRoute()
         state.error = null
+        if (state.transitMode && transit != null) {
+            // Public transport has its own planner and result; the car/walk/bike route state stays idle.
+            state.status = RouteStatus.IDLE
+            transit.plan(from, to.point)
+            return
+        }
         if (from == null) {
             state.status = RouteStatus.NEEDS_ORIGIN
             return

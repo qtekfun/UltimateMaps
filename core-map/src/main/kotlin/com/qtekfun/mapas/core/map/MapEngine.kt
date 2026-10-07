@@ -72,6 +72,9 @@ data class HazardPin(val id: String, val point: LatLon, val kind: HazardKind)
  */
 data class HazardLine(val id: String, val points: List<LatLon>, val zone: Boolean)
 
+/** One leg of a public-transport itinerary on the map: [color] is ARGB (the line colour), walking legs are [dashed]. */
+class TransitMapLeg(val points: List<LatLon>, val color: Int, val dashed: Boolean)
+
 /** Minimal map-engine contract; the concrete engine (spike option A/B/C) lives behind it. */
 interface MapEngine : AutoCloseable {
     /** Moves the camera. Must be cheap: it can be called on every gesture frame. */
@@ -135,6 +138,12 @@ interface MapEngine : AutoCloseable {
      * [fit] the camera frames them above the bottom sheet.
      */
     fun showCategoryPins(points: List<LatLon>, fit: Boolean = false) {}
+
+    /**
+     * Draws a public-transport itinerary: each leg as a line in its own colour, walking legs dashed; an empty list removes
+     * it. With [fit] the camera frames the whole itinerary above the bottom sheet. Never called per frame.
+     */
+    fun showTransitItinerary(legs: List<TransitMapLeg>, fit: Boolean = true) {}
 
     /** Reports taps on the bare map (to pick a route origin); null removes the listener. Never called per frame. */
     fun setMapTapListener(listener: ((LatLon) -> Unit)?) {}

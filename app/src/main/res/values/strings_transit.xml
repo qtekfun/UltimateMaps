@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Route panel: fourth travel mode -->
+    <string name="route_profile_transit">Transit</string>
+    <string name="transit_group_departure">Departure</string>
+    <string name="transit_depart_now">Leave now</string>
+    <string name="transit_depart_later">Leave at</string>
+    <string name="transit_time_earlier">Earlier by 15 minutes</string>
+    <string name="transit_time_later">Later by 15 minutes</string>
+    <string name="transit_day_earlier">Previous day</string>
+    <string name="transit_day_later">Next day</string>
+
+    <string name="transit_computing">Looking for connections…</string>
+    <string name="transit_needs_origin">Waiting for your location. Choose a starting point or turn on location.</string>
+    <string name="transit_err_no_data">No public transport data is installed and the map server lists none. Open Maps to look for it.</string>
+    <string name="transit_err_not_downloaded">The %1$s timetables are not downloaded yet. Download them in Maps, under Public transport.</string>
+    <string name="transit_err_outside">The public transport timetables do not cover this trip.</string>
+    <string name="transit_err_expired">The timetables expired on %1$s, so trips after that date are not planned. Choose an earlier date or update the data in Maps.</string>
+    <string name="transit_err_not_yet">The timetables start on %1$s. Choose a later date.</string>
+    <string name="transit_err_no_route">No connection found at that time. Try another time.</string>
+    <string name="transit_err_internal">The timetable file could not be read. Delete it and download it again in Maps.</string>
+
+    <!-- Itinerary list -->
+    <string name="transit_direct">Direct</string>
+    <plurals name="transit_transfers">
+        <item quantity="one">%d transfer</item>
+        <item quantity="other">%d transfers</item>
+    </plurals>
+    <string name="transit_walk_only">Walk only</string>
+    <string name="transit_times">%1$s – %2$s</string>
+    <string name="transit_walking">%1$s walking</string>
+    <string name="transit_option_description">Option %1$d: %2$s, arriving %3$s, %4$s, %5$s</string>
+    <string name="transit_chip_walk">Walk</string>
+
+    <!-- Itinerary card -->
+    <string name="transit_back">Back to options</string>
+    <string name="transit_card_summary">%1$s, leaving %2$s, arriving %3$s</string>
+    <string name="transit_place_destination">your destination</string>
+    <string name="transit_leg_walk">Walk %1$s to %2$s</string>
+    <string name="transit_leg_towards">Towards %1$s</string>
+    <string name="transit_leg_board">Board at %1$s</string>
+    <string name="transit_leg_alight">Get off at %1$s</string>
+    <plurals name="transit_leg_stops">
+        <item quantity="one">%d stop</item>
+        <item quantity="other">%d stops</item>
+    </plurals>
+
+    <!-- Honesty and data -->
+    <string name="transit_theoretical_note">Times are theoretical, taken from the published timetables. They do not include delays, cancellations or real-time information.</string>
+    <string name="transit_valid_range">Timetables valid from %1$s to %2$s.</string>
+    <string name="transit_unverified">Part of this data could not be checked against its calendar.</string>
+    <string name="transit_link_description">Open %1$s</string>
+
+    <!-- About -->
+    <string name="transit_about_title">Public transport data</string>
+
+    <!-- Maps screen: section -->
+    <string name="transit_maps_title">Public transport</string>
+    <string name="transit_maps_intro">Timetables for theoretical routes. A city is downloaded only when you press Download; all planning happens on your phone and no position is sent.</string>
+    <string name="transit_maps_valid">Valid %1$s to %2$s</string>
+    <string name="transit_maps_expired">Expired on %1$s: the published data is out of date</string>
+    <string name="transit_maps_update_available">A newer file is available</string>
+    <string name="transit_maps_installed">Installed</string>
+    <string name="transit_maps_download">Download</string>
+    <string name="transit_maps_update">Update</string>
+    <string name="transit_maps_delete">Delete</string>
+    <string name="transit_maps_downloading">Downloading…</string>
+    <string name="transit_fail_offline">Offline mode is on: nothing was downloaded.</string>
+    <string name="transit_fail_not_allowed">This server is not allowed by the connection list.</string>
+    <string name="transit_fail_network">The download failed. Try again later.</string>
+    <string name="transit_fail_integrity">The file did not match the catalog and was discarded.</string>
+    <string name="transit_fail_invalid">The file is not a valid timetable index.</string>
+    <string name="transit_fail_expired">The published timetables have already expired.</string>
+    <string name="transit_fail_cancelled">The download was cancelled.</string>
+</resources>

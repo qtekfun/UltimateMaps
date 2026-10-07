@@ -99,6 +99,19 @@ class MapasApp : Application() {
     private fun cameraAsset(): CameraAsset? =
         (regions.catalogState as? CatalogState.Loaded)?.catalog?.cameras?.let { CameraAsset(it.url, it.sizeBytes, it.sha256) }
 
+    /**
+     * Public-transport timetables (theoretical routes): per-city indexes listed in the catalog's optional `transit` block,
+     * downloaded only when the user presses Download in Maps, through [networkPolicy]. Absent-tolerant.
+     */
+    val transit: com.qtekfun.mapas.transit.TransitRepository by lazy {
+        val io = java.util.concurrent.Executors.newSingleThreadExecutor { r -> Thread(r, "transit-io").also { it.isDaemon = true } }
+        com.qtekfun.mapas.transit.TransitRepository(
+            manager = com.qtekfun.mapas.core.transit.TransitDataManager(File(filesDir, "transit"), policy, { java.time.LocalDate.now() }),
+            catalogAssets = { (regions.catalogState as? CatalogState.Loaded)?.catalog?.transit.orEmpty() },
+            io = io,
+        ).also { io.execute { it.refresh() } }
+    }
+
     /** Live traffic incidents and V16 beacons: explicit opt-in, one national file through [networkPolicy], cached with a TTL. */
     val incidents: IncidentDataManager by lazy {
         IncidentDataManager(cameraSettings, policy, policy::addEndpoint, policy::removeEndpoint, IncidentCache(File(filesDir, "incidents")))
