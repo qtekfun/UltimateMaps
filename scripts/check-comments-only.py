@@ -19,7 +19,7 @@ import io
 import tokenize
 
 C_LIKE = {".kt", ".kts", ".java", ".cpp", ".hpp", ".h", ".c", ".cc", ".mjs", ".js", ".gradle"}
-HASH_LIKE = {".sh", ".cmake", ".properties", ".yml", ".yaml", ".toml", ".txt"}
+HASH_LIKE = {".sh", ".cmake", ".properties", ".yml", ".yaml", ".toml"}
 XML_LIKE = {".xml"}
 PLACEHOLDER = "\0S"
 
