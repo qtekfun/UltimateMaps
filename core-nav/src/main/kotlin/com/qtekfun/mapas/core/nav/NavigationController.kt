@@ -1,6 +1,7 @@
 package com.qtekfun.mapas.core.nav
 
 import com.qtekfun.mapas.core.geo.LatLon
+import com.qtekfun.mapas.core.geo.distanceTo
 import com.qtekfun.mapas.core.map.LocationSource
 import com.qtekfun.mapas.core.routing.RoutePlan
 import kotlinx.coroutines.CancellationException
@@ -17,6 +18,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.concurrent.atomic.AtomicBoolean
 
 /** Why the follower cannot get positions right now, as far as the platform can tell. */
 enum class NavProblem {
@@ -125,6 +127,71 @@ class NavigationController(
     fun replaceRoute(plan: RoutePlan) {
         if (!plan.isFollowable()) return
         synchronized(lock) { session?.replaceRoute(plan) }
+    }
+
+    private val adding = AtomicBoolean(false)
+
+    /**
+     * Adds [point] as an intermediate stop of the trip in progress. The route is planned again from the current
+     * position through the stops still ahead (with the new one inserted where it costs the least detour, see
+     * [StopInsertion.insertionIndex]) to the same destination, and the follower switches to it without restarting:
+     * the session, the service, the voice and the camera all go on. A stop behind the user or off the route simply
+     * makes the new route turn around or leave it. If no usable route is found (or none passes through every stop)
+     * the old route stays untouched and the result is [AddStopResult.NO_ROUTE]. One request at a time
+     * ([AddStopResult.BUSY]). Cancelling the caller abandons the calculation. Positions are only used for the
+     * request, never stored or logged.
+     */
+    suspend fun addStop(point: LatLon): AddStopOutcome {
+        val provider = routes ?: return AddStopOutcome(AddStopResult.NO_ROUTE)
+        if (!point.lat.isFinite() || !point.lon.isFinite()) return AddStopOutcome(AddStopResult.NO_ROUTE)
+        val s: NavigationSession
+        val st: NavState
+        val route: RoutePlan
+        val remaining: List<LatLon>
+        val tripNow: NavTrip
+        synchronized(lock) {
+            s = session ?: return AddStopOutcome(AddStopResult.NOT_NAVIGATING)
+            st = _state.value ?: return AddStopOutcome(AddStopResult.NOT_NAVIGATING)
+            route = _route.value ?: return AddStopOutcome(AddStopResult.NOT_NAVIGATING)
+            remaining = stopPoints.takeLast(st.stopsRemaining.coerceAtLeast(0))
+            tripNow = trip
+        }
+        if (st.status == NavStatus.ARRIVED) return AddStopOutcome(AddStopResult.NOT_NAVIGATING)
+        if (!adding.compareAndSet(false, true)) return AddStopOutcome(AddStopResult.BUSY)
+        try {
+            if (remaining.size >= StopInsertion.MAX_STOPS) return AddStopOutcome(AddStopResult.LIMIT)
+            val destination = route.geometry.last()
+            if (point.distanceTo(destination) <= StopInsertion.SAME_PLACE_METERS) return AddStopOutcome(AddStopResult.SAME_AS_DESTINATION)
+            if (remaining.any { point.distanceTo(it) <= StopInsertion.SAME_PLACE_METERS }) return AddStopOutcome(AddStopResult.DUPLICATE)
+            val fix = location.lastKnown()
+            val from = fix?.point ?: st.position
+            val bearing = fix?.bearingDegrees
+            val via = remaining.toMutableList().also { it.add(StopInsertion.insertionIndex(from, remaining, destination, point), point) }
+            val found = try {
+                provider.route(from, bearing, via, destination, tripNow)
+            } catch (e: CancellationException) {
+                throw e
+            } catch (_: Exception) {
+                null
+            }
+            val plan = found?.takeIf { it.isFollowable() && it.geometry.size >= 2 }?.withStops(via)
+            val first = plan?.geometry?.firstOrNull()
+            val last = plan?.geometry?.lastOrNull()
+            if (plan == null || first == null || last == null ||
+                first.distanceTo(from) > config.reroute.maxStartDistanceMeters ||
+                last.distanceTo(destination) > config.reroute.maxEndDistanceMeters ||
+                plan.guidance.stops.size != via.size // the new route does not pass through every stop: do not follow it
+            ) {
+                return AddStopOutcome(AddStopResult.NO_ROUTE)
+            }
+            synchronized(lock) {
+                if (session !== s) return AddStopOutcome(AddStopResult.NOT_NAVIGATING) // the trip ended meanwhile
+                s.replaceRoute(plan)
+            }
+            return AddStopOutcome(AddStopResult.ADDED, plan)
+        } finally {
+            adding.set(false)
+        }
     }
 
     /** Ends the navigation: no more fixes, no saved state. Safe when idle. */
