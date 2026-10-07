@@ -67,6 +67,8 @@ class SettingsEnv(
     val openMaps: () -> Unit,
     /** Navigation section (voice and route defaults); null hides it. */
     val navigation: NavigationSettingsEnv? = null,
+    /** Search history section (on/off and clear); null hides it. */
+    val history: HistorySettingsEnv? = null,
 )
 
 /** The first Settings screen: Privacy (offline mode, region catalog, possible connections) and Petrol stations. */
@@ -100,6 +102,7 @@ fun SettingsScreen(env: SettingsEnv, onBack: () -> Unit, modifier: Modifier = Mo
             PrivacySection(env, settings, offline)
             FuelSection(env, settings, offline)
             env.navigation?.let { NavigationSection(it) }
+            env.history?.let { HistorySection(it) }
             Spacer(Modifier.height(32.dp))
         }
     }

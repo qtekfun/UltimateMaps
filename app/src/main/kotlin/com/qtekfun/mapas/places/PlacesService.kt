@@ -5,6 +5,8 @@ import com.qtekfun.mapas.core.data.ImportResult
 import com.qtekfun.mapas.core.data.Place
 import com.qtekfun.mapas.core.data.PlaceList
 import com.qtekfun.mapas.core.data.PlacesRepository
+import com.qtekfun.mapas.core.data.SpecialPlace
+import com.qtekfun.mapas.core.data.SpecialSlot
 import com.qtekfun.mapas.core.geo.LatLon
 import com.qtekfun.mapas.core.geo.distanceTo
 import com.qtekfun.mapas.core.geo.io.GpxExporter
@@ -114,6 +116,37 @@ class PlacesService(private val repo: PlacesRepository, private val defaultList:
 
     fun deleteList(id: Long): Boolean = repo.deleteList(id)
 
+    /**
+     * Applies the editor of a list: [name] blank keeps the old one; [emoji] must be a symbol (else it is cleared);
+     * [notes] are trimmed and capped. Returns false when the list no longer exists.
+     */
+    fun customiseList(id: Long, name: String?, emoji: String?, color: Int?, notes: String?): Boolean {
+        val current = repo.getList(id) ?: return false
+        return repo.updateList(
+            current.copy(
+                name = ListStyle.normalizeName(name) ?: current.name,
+                icon = ListStyle.normalizeEmoji(emoji),
+                color = color,
+                notes = ListStyle.normalizeNotes(notes),
+            ),
+        )
+    }
+
+    // --- Home, Work and the parked car (outside the lists) ---
+
+    fun special(slot: SpecialSlot): SpecialPlace? = repo.special(slot)
+    fun setSpecial(slot: SpecialSlot, name: String, point: LatLon) = repo.setSpecial(slot, name, point)
+    fun clearSpecial(slot: SpecialSlot): Boolean = repo.clearSpecial(slot)
+
+    // --- Recent searches (text only) ---
+
+    fun recentSearches(limit: Int = RECENT_SHOWN): List<String> = repo.recentSearches(limit)
+    fun addSearch(query: String) = repo.addSearch(query)
+    fun clearSearches() = repo.clearSearches()
+
+    /** Releases the database; only for short-lived services (the Settings screen). */
+    fun close() = repo.close()
+
     fun removeFromList(listId: Long, placeId: Long) = repo.removeFromList(listId, placeId)
 
     /** Places of [listId] (all when null) matching [query]; by distance from [near] or by name. */
@@ -155,6 +188,7 @@ class PlacesService(private val repo: PlacesRepository, private val defaultList:
 
     private companion object {
         const val SAME_PLACE_METERS = 5.0
+        const val RECENT_SHOWN = 8
         const val MAX_IMPORT_BYTES = 32 * 1024 * 1024
     }
 }

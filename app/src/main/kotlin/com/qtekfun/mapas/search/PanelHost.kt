@@ -22,7 +22,12 @@ import com.qtekfun.mapas.places.DocumentLaunchers
 import com.qtekfun.mapas.places.GeoFormat
 import com.qtekfun.mapas.places.GeoShare
 import com.qtekfun.mapas.places.PlaceInfo
+import com.qtekfun.mapas.places.PanelMode
 import com.qtekfun.mapas.places.PlacesController
+import com.qtekfun.mapas.places.QuickPlacesController
+import com.qtekfun.mapas.emergency.EmergencyActivity
+import com.qtekfun.mapas.shortcuts.AppShortcuts
+import com.qtekfun.mapas.shortcuts.ShortcutTarget
 import com.qtekfun.mapas.places.openPlacesService
 import com.qtekfun.mapas.places.toPlaceInfo
 import com.qtekfun.mapas.core.search.SearchResult
@@ -65,6 +70,7 @@ class PanelHost(
         set(value) {
             field = value
             route.onUserLocation()
+            quick.onUserLocation()
         }
 
     /** Asks the activity for the location permission and a fix (used by the route preview). */
@@ -115,12 +121,33 @@ class PanelHost(
         )
     }
 
+    private val placesService = lazy { openPlacesService(activity) }
+
     val places = PlacesController(
         scope = activity.lifecycleScope,
         io = Dispatchers.IO,
-        service = lazy { openPlacesService(activity) },
+        service = placesService,
         near = { userLocation ?: engine.cameraState().center },
         onMarkers = engine::showMarkers,
+    )
+
+    /** Home, Work and the parked car (on this device only). */
+    val quick = QuickPlacesController(
+        scope = activity.lifecycleScope,
+        io = Dispatchers.IO,
+        service = placesService,
+        location = { userLocation },
+        requestLocation = { onRequestLocation() },
+        onParking = engine::showParking,
+        parkingName = { activity.getString(R.string.parking_name) },
+    )
+
+    /** Recent searches; remembered only while the Settings switch is on. */
+    val history = SearchHistory(
+        scope = activity.lifecycleScope,
+        io = Dispatchers.IO,
+        service = placesService,
+        settings = PrefsHistorySettings(activity),
     )
 
     val fuelCard = FuelCardController(
@@ -151,7 +178,29 @@ class PanelHost(
         search.refreshRegions()
         route.invalidate()
         places.reload()
+        quick.refresh()
+        history.refresh()
     }
+
+    /** A launcher shortcut (see `AppShortcuts`) asked for a screen; unknown actions are ignored. */
+    fun handleShortcut(action: String?) {
+        when (AppShortcuts.parse(action) ?: return) {
+            ShortcutTarget.SEARCH -> {
+                places.closeCard()
+                places.showMode(PanelMode.SEARCH)
+                screen.detent = SheetDetent.FULL
+            }
+            ShortcutTarget.SAVED -> {
+                places.closeCard()
+                places.showMode(PanelMode.LISTS)
+                screen.detent = SheetDetent.FULL
+            }
+            ShortcutTarget.MAPS -> screen.onOpenMaps()
+            ShortcutTarget.EMERGENCY -> openEmergency()
+        }
+    }
+
+    fun openEmergency() = activity.startActivity(Intent(activity, EmergencyActivity::class.java))
 
     fun onDestroy() {
         fuelLayer.stop()
@@ -184,6 +233,8 @@ class PanelHost(
 
     /** A search result: the route origin while one is being picked, otherwise the place card. */
     private fun pick(result: SearchResult) {
+        history.record(search.state.query)
+        quick.dismissMessage()
         if (route.state.pickingOrigin) route.pickOrigin(result.point, result.name) else show(result.toPlaceInfo())
     }
 
@@ -227,7 +278,10 @@ class PanelHost(
                 )
             }
         }
-        SheetPanel(search, places, actions, route = route, fuel = fuel, navStart = navStart)
+        SheetPanel(
+            search, places, actions, route = route, fuel = fuel, navStart = navStart,
+            quick = quick, history = history, onEmergency = ::openEmergency,
+        )
     }
 
     private companion object {

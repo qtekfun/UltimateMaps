@@ -97,7 +97,11 @@ fun PanelTextField(
 
 /** Two-line row: [title] and an optional secondary line, plus a trailing text. */
 @Composable
-fun PanelRow(title: String, subtitle: String?, trailing: String?, onClick: () -> Unit, tag: String? = null) {
+fun PanelRow(
+    title: String, subtitle: String?, trailing: String?, onClick: () -> Unit, tag: String? = null,
+    /** A colour dot before the title (the colour of a customised list). */
+    leadingColor: Int? = null,
+) {
     Row(
         Modifier
             .fillMaxWidth()
@@ -107,6 +111,10 @@ fun PanelRow(title: String, subtitle: String?, trailing: String?, onClick: () ->
             .let { if (tag != null) it.testTag(tag) else it },
         verticalAlignment = Alignment.CenterVertically,
     ) {
+        if (leadingColor != null) {
+            ColorDot(leadingColor)
+            Spacer(Modifier.width(8.dp))
+        }
         Column(Modifier.weight(1f)) {
             BasicText(title, style = Mapas.typography.body.copy(color = Mapas.colors.label), maxLines = 1)
             if (!subtitle.isNullOrEmpty()) {
@@ -142,6 +150,9 @@ fun PlaceCard(
     onRoute: () -> Unit,
     onShare: () -> Unit,
     onClose: () -> Unit,
+    /** "Set as Home" / "Set as Work"; a null callback hides its button. */
+    onSetHome: (() -> Unit)? = null,
+    onSetWork: (() -> Unit)? = null,
 ) {
     Column(Modifier.fillMaxWidth().testTag("place_card")) {
         Row(verticalAlignment = Alignment.Top) {
@@ -175,6 +186,13 @@ fun PlaceCard(
             )
             PanelButton(stringResource(R.string.place_route), onRoute, Modifier.weight(1f), tag = "place_route")
             PanelButton(stringResource(R.string.place_share), onShare, Modifier.weight(1f), tag = "place_share")
+        }
+        if (onSetHome != null || onSetWork != null) {
+            Spacer(Modifier.height(8.dp))
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                if (onSetHome != null) PanelButton(stringResource(R.string.place_set_home), onSetHome, Modifier.weight(1f), tag = "place_set_home")
+                if (onSetWork != null) PanelButton(stringResource(R.string.place_set_work), onSetWork, Modifier.weight(1f), tag = "place_set_work")
+            }
         }
     }
 }

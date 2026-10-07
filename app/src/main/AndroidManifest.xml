@@ -47,6 +47,8 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <!-- Launcher app shortcuts (search, saved places, maps, emergency) -->
+            <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts" />
 
             <!-- RF-11: geo: URIs -->
             <intent-filter>
@@ -107,6 +109,12 @@
             android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize|keyboard|keyboardHidden|uiMode|density"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
+
+        <!-- Emergency screen: coordinates on screen, a dial button for 112 (ACTION_DIAL, no call permission) and a share button -->
+        <activity
+            android:name=".emergency.EmergencyActivity"
+            android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize|keyboard|keyboardHidden|uiMode|density"
+            android:exported="false" />
 
         <!-- Region downloads keep running with the screen off: foreground service of type dataSync (Android 14+) -->
         <service
