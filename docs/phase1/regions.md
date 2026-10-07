@@ -36,7 +36,7 @@ Opción C: cada región son **dos descargas** (PMTiles para el render, `.mwm` de
 
 **PMTiles.** No hay catálogo oficial por región: se generan extractos (`pmtiles extract` de un build mundial de Protomaps o los nuestros) alineados con los límites de las regiones de CoMaps. Cada extracto -> `render` con `url`, `size` (tamaño del fichero), `sha256` (`sha256sum`) y `file` `<id>.pmtiles`. Misma `version` que el `.mwm` hermano (mismo corte de OSM) para que la actualización sea coherente.
 
-El generador del catálogo (script fuera de la app) debe unir ambos por `id` y emitir este JSON; no existe aún (pendiente).
+El generador existe: `scripts/gen-region-catalog.py` (ver `docs/decisions.md`, 2026-10-07: campos reales de `countries.txt`: `id`, `v`, `s`, `sha1_base64`, `g`; ids propios en slug + `comapsId`). Une ambos por id, calcula SHA-256 de los ficheros y solo marca descargable una hoja con los dos.
 
 ## Qué falta para un espejo propio
 
@@ -44,4 +44,4 @@ El generador del catálogo (script fuera de la app) debe unir ambos por `id` y e
 2. Generador de catálogo (arriba) y de los PMTiles por región.
 3. **Para el núcleo de CoMaps (no implementado, solo documentado):** `countries.txt` se verifica con Ed25519 contra `COUNTRIES_TXT_SIGNATURE_HEX` de `private.h`; un servidor propio exige **nuestro par de claves** y recompilar con nuestra clave pública y nuestros `METASERVER_URL`/`DEFAULT_URLS_JSON` (`private.h`). Alternativa sin recompilar: reflejar ficheros oficiales con su firma. La clave privada no se guarda en el repo. Además CoMaps comprueba SHA-1, no SHA-256: unificar en SHA-256 es tocar C++ (2-3 días según el spike). En la opción C la app verifica SHA-256 de nuestro catálogo antes de entregar los `.mwm` al motor, así que el SHA-1 interno queda como segunda comprobación o se desactiva al recompilar.
 4. Decidir si el catálogo propio también se firma (p. ej. Ed25519 de nuestra clave) para no depender solo de TLS.
-5. Integrar en `:app`: servicio en primer plano para descargas largas, UI jerárquica y proveedor de `StorageLocation`.
+5. ~~Integrar en `:app`~~ Hecho (M1): `app/.../regions` (pantalla «Mapas», `RegionsController`, `RegionDownloadService`, `RegionStorage`). Falta probarlo en el móvil.

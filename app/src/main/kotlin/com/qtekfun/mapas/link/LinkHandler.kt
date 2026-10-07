@@ -18,6 +18,9 @@ sealed interface LinkOutcome {
     data object Unrecognized : LinkOutcome
 }
 
+/** The pin the map must show after this outcome: the place, or none (never the pin of a previous link). */
+fun LinkOutcome.pinPoint(): LatLon? = (this as? LinkOutcome.ShowPlace)?.point
+
 /**
  * Interprets a link with [MapLinkParser]. Short links are never resolved here: that path stays disabled
  * (it would have to be authorised by `NetworkPolicy` with `SHORT_LINK_RESOLVE` and opted into by the user),

@@ -101,4 +101,15 @@ class DefaultNetworkPolicyTest {
         val fields = ConnectionRecord::class.java.declaredFields.map { it.name }.toSet()
         assertEquals(setOf("timestampMillis", "host", "purpose", "allowed"), fields)
     }
+
+    @Test fun endpointAddedAtRunTimeIsAllowedOnlyForItsPurposeAndListed() {
+        val p = policy()
+        assertFalse(p.authorize("Maps.Example.org", ConnectionPurpose.MAP_DOWNLOAD).isAllowed)
+        p.addEndpoint(AllowedEndpoint("Maps.Example.org", ConnectionPurpose.MAP_DOWNLOAD, enabled = true))
+        assertTrue(p.authorize("maps.example.org", ConnectionPurpose.MAP_DOWNLOAD).isAllowed)
+        assertFalse(p.authorize("maps.example.org", ConnectionPurpose.OTHER).isAllowed)
+        assertEquals(1, p.possibleConnections().count { it.host == "maps.example.org" })
+        p.offlineMode = true
+        assertFalse(p.authorize("maps.example.org", ConnectionPurpose.MAP_DOWNLOAD).isAllowed)
+    }
 }

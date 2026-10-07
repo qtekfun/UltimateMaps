@@ -52,6 +52,9 @@ class MapScreenState {
     var locating by mutableStateOf(false)
     var notice by mutableStateOf<Notice?>(null)
     var aboutVisible by mutableStateOf(false)
+
+    /** Opens the "Maps" screen (regions); set by the activity. */
+    var onOpenMaps: () -> Unit = {}
 }
 
 @Composable
@@ -153,12 +156,19 @@ private fun SheetContent(state: MapScreenState, panel: (@Composable () -> Unit)?
         }
         Spacer(Modifier.height(12.dp))
         if (!state.hasTiles) InfoCard(stringResource(R.string.no_maps_title), stringResource(R.string.no_maps_body), "card_no_maps")
+        MapsEntryRow(state)
         state.notice?.let { n ->
             Spacer(Modifier.height(8.dp))
             val (title, body) = noticeText(n)
             InfoCard(title, body, "card_notice")
         }
     }
+}
+
+@Composable
+private fun MapsEntryRow(state: MapScreenState) {
+    Spacer(Modifier.height(8.dp))
+    com.qtekfun.mapas.regions.MapsEntry(onClick = state.onOpenMaps)
 }
 
 @Composable

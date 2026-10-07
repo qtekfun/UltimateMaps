@@ -1,0 +1,209 @@
+{
+ "schema": 1,
+ "catalogVersion": "2026-10-07",
+ "regions": [
+  {
+   "id": "andorra",
+   "comapsId": "Andorra",
+   "name": "Andorra",
+   "parent": null,
+   "version": "261004"
+  },
+  {
+   "id": "spain",
+   "comapsId": "Spain",
+   "name": "Spain",
+   "parent": null,
+   "version": "261004"
+  },
+  {
+   "id": "spain_andalusia_granada",
+   "comapsId": "Spain_Andalusia_Granada",
+   "name": "Andalusia - Granada",
+   "parent": "spain",
+   "version": "261004"
+  },
+  {
+   "id": "spain_andalusia_sevilla",
+   "comapsId": "Spain_Andalusia_Sevilla",
+   "name": "Andalusia - Sevilla",
+   "parent": "spain",
+   "version": "261004"
+  },
+  {
+   "id": "spain_aragon",
+   "comapsId": "Spain_Aragon",
+   "name": "Aragon",
+   "parent": "spain",
+   "version": "261004"
+  },
+  {
+   "id": "spain_balearic-islands",
+   "comapsId": "Spain_Balearic Islands",
+   "name": "Balearic Islands",
+   "parent": "spain",
+   "version": "261004"
+  },
+  {
+   "id": "spain_basque-country",
+   "comapsId": "Spain_Basque Country",
+   "name": "Basque Country",
+   "parent": "spain",
+   "version": "261004"
+  },
+  {
+   "id": "spain_canary-islands",
+   "comapsId": "Spain_Canary Islands",
+   "name": "Canary Islands",
+   "parent": "spain",
+   "version": "261004"
+  },
+  {
+   "id": "spain_cantabria",
+   "comapsId": "Spain_Cantabria",
+   "name": "Cantabria",
+   "parent": "spain",
+   "version": "261004"
+  },
+  {
+   "id": "spain_castile-and-leon_west",
+   "comapsId": "Spain_Castile and Leon_West",
+   "name": "Castile and Leon - West",
+   "parent": "spain",
+   "version": "261004"
+  },
+  {
+   "id": "spain_castile-and-leon_east",
+   "comapsId": "Spain_Castile and Leon_East",
+   "name": "Castile and Leon - East",
+   "parent": "spain",
+   "version": "261004"
+  },
+  {
+   "id": "spain_castile-la-mancha",
+   "comapsId": "Spain_Castile-La Mancha",
+   "name": "Castile-La Mancha",
+   "parent": "spain",
+   "version": "261004"
+  },
+  {
+   "id": "spain_catalonia_provincia-de-barcelona",
+   "comapsId": "Spain_Catalonia_Provincia de Barcelona",
+   "name": "Catalonia - Provincia de Barcelona",
+   "parent": "spain",
+   "version": "261004"
+  },
+  {
+   "id": "spain_catalonia_provincia-de-girona",
+   "comapsId": "Spain_Catalonia_Provincia de Girona",
+   "name": "Catalonia - Provincia de Girona",
+   "parent": "spain",
+   "version": "261004"
+  },
+  {
+   "id": "spain_catalonia_provincia-de-lleida",
+   "comapsId": "Spain_Catalonia_Provincia de Lleida",
+   "name": "Catalonia - Provincia de Lleida",
+   "parent": "spain",
+   "version": "261004"
+  },
+  {
+   "id": "spain_catalonia_provincia-de-tarragona",
+   "comapsId": "Spain_Catalonia_Provincia de Tarragona",
+   "name": "Catalonia - Provincia de Tarragona",
+   "parent": "spain",
+   "version": "261004"
+  },
+  {
+   "id": "spain_ceuta",
+   "comapsId": "Spain_Ceuta",
+   "name": "Ceuta",
+   "parent": "spain",
+   "version": "261004"
+  },
+  {
+   "id": "spain_community-of-madrid",
+   "comapsId": "Spain_Community of Madrid",
+   "name": "Community of Madrid",
+   "parent": "spain",
+   "version": "261004",
+   "assets": {
+    "render": {
+     "url": "https://maps.example.org/pm/spain_community-of-madrid.pmtiles",
+     "size": 20,
+     "sha256": "89116b646a27d97440d04e73e008efdbf80fe502915a8960bdb85d7cac270fec",
+     "file": "spain_community-of-madrid.pmtiles"
+    },
+    "search": {
+     "url": "https://maps.example.org/mwm/Spain_Community%20of%20Madrid.mwm",
+     "size": 10,
+     "sha256": "07b38fdf1dd1dc4b16b90cc0ab4260d0c41676d5176b10515d1ca53388f3c512",
+     "file": "spain_community-of-madrid.mwm"
+    }
+   }
+  },
+  {
+   "id": "spain_comunidad-foral-de-navarra",
+   "comapsId": "Spain_Comunidad Foral de Navarra",
+   "name": "Comunidad Foral de Navarra",
+   "parent": "spain",
+   "version": "261004"
+  },
+  {
+   "id": "spain_extremadura",
+   "comapsId": "Spain_Extremadura",
+   "name": "Extremadura",
+   "parent": "spain",
+   "version": "261004"
+  },
+  {
+   "id": "spain_galicia_north",
+   "comapsId": "Spain_Galicia_North",
+   "name": "Galicia - North",
+   "parent": "spain",
+   "version": "261004"
+  },
+  {
+   "id": "spain_galicia_south",
+   "comapsId": "Spain_Galicia_South",
+   "name": "Galicia - South",
+   "parent": "spain",
+   "version": "261004"
+  },
+  {
+   "id": "spain_la-rioja",
+   "comapsId": "Spain_La Rioja",
+   "name": "La Rioja",
+   "parent": "spain",
+   "version": "261004"
+  },
+  {
+   "id": "spain_melilla",
+   "comapsId": "Spain_Melilla",
+   "name": "Melilla",
+   "parent": "spain",
+   "version": "261004"
+  },
+  {
+   "id": "spain_principado-de-asturias",
+   "comapsId": "Spain_Principado de Asturias",
+   "name": "Principado de Asturias",
+   "parent": "spain",
+   "version": "261004"
+  },
+  {
+   "id": "spain_region-de-murcia",
+   "comapsId": "Spain_Region de Murcia",
+   "name": "Region de Murcia",
+   "parent": "spain",
+   "version": "261004"
+  },
+  {
+   "id": "spain_valencian-community",
+   "comapsId": "Spain_Valencian Community",
+   "name": "Valencian Community",
+   "parent": "spain",
+   "version": "261004"
+  }
+ ]
+}

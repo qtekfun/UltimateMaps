@@ -22,7 +22,7 @@
 
     <string name="search_placeholder">Search (coming soon)</string>
     <string name="no_maps_title">No maps yet</string>
-    <string name="no_maps_body">Downloading regions is coming soon. Until then the map shows only the background.</string>
+    <string name="no_maps_body">Download a region from Maps to see the map. Until then it shows only the background.</string>
 
     <string name="notice_link_title">Map link</string>
     <string name="notice_search_title">Search: %1$s</string>
@@ -32,4 +32,57 @@
     <string name="notice_location_title">Location</string>
     <string name="location_permission_denied">Location permission was denied. Enable it in the system settings to see where you are.</string>
     <string name="location_unavailable">No location provider is available on this device.</string>
+
+    <!-- Maps screen (regions) -->
+    <string name="regions_title">Maps</string>
+    <string name="maps_entry_title">Maps</string>
+    <string name="maps_entry_body">Download and manage regions</string>
+    <string name="offline_title">Offline mode</string>
+    <string name="offline_body">No connections at all, not even for downloads.</string>
+    <string name="server_title">Map server</string>
+    <string name="server_hint">https://example.org/maps/catalog.json</string>
+    <string name="server_save">Save and refresh</string>
+    <string name="server_invalid">Enter a valid https:// address.</string>
+    <string name="server_none_title">No map server configured</string>
+    <string name="server_none_body">Maps are downloaded only from a server you choose. Enter the address of a catalog above. Nothing is contacted until you do.</string>
+    <string name="storage_title">Storage</string>
+    <string name="storage_internal">Internal storage</string>
+    <string name="storage_card">SD card</string>
+    <string name="storage_free">%1$s free of %2$s</string>
+    <string name="storage_card_warning">Maps on a card may not draw on some devices.</string>
+    <string name="catalog_loading">Loading catalog…</string>
+    <string name="catalog_error_offline">Offline mode is on, so the catalog was not requested. Turn it off to refresh.</string>
+    <string name="catalog_error_denied">This server is not allowed for downloads.</string>
+    <string name="catalog_error_network">Could not load the catalog. Check your connection.</string>
+    <string name="catalog_error_invalid">The server returned an invalid catalog.</string>
+    <string name="catalog_stale">Showing the saved list. It could not be refreshed.</string>
+    <string name="catalog_empty">The catalog has no regions.</string>
+    <string name="region_download">Download</string>
+    <string name="region_pause">Pause</string>
+    <string name="region_resume">Resume</string>
+    <string name="region_cancel">Cancel</string>
+    <string name="region_delete">Delete</string>
+    <string name="region_update">Update</string>
+    <string name="region_retry">Retry</string>
+    <string name="region_unavailable">Not available yet</string>
+    <string name="region_queued">Waiting…</string>
+    <string name="region_progress">%1$d %% of %2$s</string>
+    <string name="region_paused">Paused at %1$d %%</string>
+    <string name="region_group_summary">%1$d of %2$d installed · %3$s</string>
+    <string name="region_installed_size">Installed · %1$s</string>
+    <string name="region_update_available">Update available · %1$s</string>
+    <string name="regions_installed_other">Installed (not in the list)</string>
+    <string name="fail_offline">Offline mode is on: nothing was downloaded.</string>
+    <string name="fail_not_allowed">This server is not allowed for downloads.</string>
+    <string name="fail_no_space">Not enough space: needs %1$s, %2$s free.</string>
+    <string name="fail_network">Download interrupted. Retry to continue where it stopped.</string>
+    <string name="fail_corrupt">The file failed verification and was discarded. Retry.</string>
+    <string name="delete_title">Delete %1$s?</string>
+    <string name="delete_body">This frees %1$s. You can download it again later.</string>
+    <string name="regions_channel_name">Map downloads</string>
+    <string name="regions_notification_title">Downloading maps</string>
+    <string name="regions_notification_progress">%1$d %% of %2$s</string>
+    <string name="regions_notification_waiting">Starting…</string>
+    <string name="regions_notification_queued">%1$d more waiting</string>
+    <string name="regions_pause">Pause</string>
 </resources>
