@@ -28,12 +28,23 @@ enum class RestoreMode {
  */
 class BackupService(private val repo: PlacesRepository) {
 
-    fun write(out: OutputStream) {
+    /**
+     * Writes the backup. [extraEntries] (file name to bytes) are added to the same ZIP after the places entry, so one
+     * file can carry more than the places (the app adds its settings snapshot). [restore] ignores every entry it does
+     * not know, so a ZIP with extras is still a valid places backup and the format version does not change.
+     */
+    fun write(out: OutputStream, extraEntries: Map<String, ByteArray> = emptyMap()) {
+        require(ENTRY !in extraEntries) { "$ENTRY is reserved for the places data" }
         val doc = repo.transaction { snapshot() }
         ZipOutputStream(out).use { zip ->
             zip.putNextEntry(ZipEntry(ENTRY))
             zip.write(JSON.encodeToString(BackupDoc.serializer(), doc).toByteArray(Charsets.UTF_8))
             zip.closeEntry()
+            for ((name, bytes) in extraEntries) {
+                zip.putNextEntry(ZipEntry(name))
+                zip.write(bytes)
+                zip.closeEntry()
+            }
         }
     }
 

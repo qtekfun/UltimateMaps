@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import com.qtekfun.mapas.core.cameras.CameraSettings
 import com.qtekfun.mapas.core.cameras.CameraSettingsStore
 import com.qtekfun.mapas.core.cameras.normalized
+import com.qtekfun.mapas.settings.backup.SettingsReloadable
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -12,11 +13,17 @@ import kotlinx.coroutines.flow.StateFlow
  * [CameraSettingsStore] over SharedPreferences (`mapas_cameras`). Every value is normalized on the way in and out, so a
  * damaged or hand-edited file can never turn a camera layer on without the acknowledgement. Everything is off by default.
  */
-class PrefsCameraSettingsStore(private val prefs: SharedPreferences) : CameraSettingsStore {
+class PrefsCameraSettingsStore(private val prefs: SharedPreferences) : CameraSettingsStore, SettingsReloadable {
     constructor(context: Context) : this(context.getSharedPreferences(PREFS, Context.MODE_PRIVATE))
 
     private val state = MutableStateFlow(read())
     override val settings: StateFlow<CameraSettings> = state
+
+    /** Re-reads the file (after a settings restore wrote to it behind this store's back). */
+    @Synchronized
+    override fun reload() {
+        state.value = read()
+    }
 
     @Synchronized
     override fun update(transform: (CameraSettings) -> CameraSettings) {
