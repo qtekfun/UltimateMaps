@@ -6,6 +6,7 @@ import androidx.compose.runtime.setValue
 import com.qtekfun.mapas.core.data.TrackInfo
 import com.qtekfun.mapas.core.geo.LatLon
 import com.qtekfun.mapas.core.map.TrackLine
+import com.qtekfun.mapas.recording.RecordingPanel
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
@@ -31,6 +32,8 @@ class TrackLayerController(
     private val service: Lazy<PlacesService>,
     private val render: (List<TrackLine>) -> Unit,
     private val fit: (List<LatLon>) -> Unit,
+    /** Start / Stop recording shown at the top of the tracks list; null where recording does not exist. */
+    val recording: RecordingPanel? = null,
 ) {
     val state = TrackLayerState()
     private val loaded = HashMap<Long, TrackLine>()
@@ -47,6 +50,27 @@ class TrackLayerController(
                 state.visible = kept
                 push()
             }
+        }
+    }
+
+    /** Deletes track [id] (one tap) and removes it from the map and the list. */
+    fun delete(id: Long) {
+        scope.launch {
+            val ok = try {
+                withContext(io) { service.value.deleteTrack(id) }
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                false
+            }
+            if (ok) {
+                loaded.remove(id)
+                if (id in state.visible) {
+                    state.visible -= id
+                    push()
+                }
+            }
+            refresh()
         }
     }
 

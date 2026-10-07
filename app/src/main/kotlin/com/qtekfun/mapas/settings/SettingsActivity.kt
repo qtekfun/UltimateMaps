@@ -33,6 +33,7 @@ class SettingsActivity : ComponentActivity() {
             cameras = CamerasSettingsEnv(
                 app.cameraSettings, app.cameraData, app.incidents, offline = { regions.offline }, onChanged = app::ensureCameraAlerts,
             ),
+            recording = RecordingSettingsEnv(app.recording),
         )
         setContent {
             MapasTheme(darkTheme = isSystemInDarkTheme()) { SettingsScreen(env, onBack = ::finish) }

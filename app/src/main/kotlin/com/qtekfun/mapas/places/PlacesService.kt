@@ -9,6 +9,9 @@ import com.qtekfun.mapas.core.data.SpecialPlace
 import com.qtekfun.mapas.core.data.SpecialSlot
 import com.qtekfun.mapas.core.data.TakeoutImport
 import com.qtekfun.mapas.core.data.TrackInfo
+import com.qtekfun.mapas.core.data.record.RECORDED_TRACK_NOTES
+import com.qtekfun.mapas.core.data.record.TrackStore
+import com.qtekfun.mapas.core.data.record.asTrackStore
 import com.qtekfun.mapas.core.data.TakeoutSummary
 import com.qtekfun.mapas.core.geo.LatLon
 import com.qtekfun.mapas.core.geo.distanceTo
@@ -160,6 +163,14 @@ class PlacesService(private val repo: PlacesRepository, private val defaultList:
 
     /** Imported GPX tracks and routes (without geometry), newest first. */
     fun tracks(): List<TrackInfo> = repo.tracks().sortedByDescending { it.createdAt }
+
+    /** Where the track recorder stores finished recordings. */
+    fun trackStore(): TrackStore = repo.asTrackStore()
+
+    fun deleteTrack(id: Long): Boolean = repo.deleteTrack(id)
+
+    /** Deletes every recorded track (imported ones stay); returns how many. */
+    fun deleteRecordedTracks(): Int = repo.tracks().filter { it.notes == RECORDED_TRACK_NOTES }.count { repo.deleteTrack(it.id) }
 
     /** The geometry of track [id] as plain points, or null when it no longer exists. */
     fun trackSegments(id: Long): List<List<LatLon>>? =

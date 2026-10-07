@@ -36,6 +36,14 @@ import com.qtekfun.mapas.nav.SharedNavUiPrefs
 import com.qtekfun.mapas.nav.SimulationAwareEnvironment
 import com.qtekfun.mapas.nav.SwitchableLocationSource
 import com.qtekfun.mapas.regions.CoreLinks
+import com.qtekfun.mapas.core.data.record.FileTrackJournal
+import com.qtekfun.mapas.core.data.record.TrackRecorder
+import com.qtekfun.mapas.places.openPlacesService
+import com.qtekfun.mapas.recording.PrefsRecordingSettings
+import com.qtekfun.mapas.recording.RecordingController
+import com.qtekfun.mapas.recording.TapLocationSource
+import java.text.DateFormat
+import java.util.Date
 import com.qtekfun.mapas.regions.RegionsController
 import com.qtekfun.mapas.voice.VoiceNavSink
 import kotlinx.coroutines.CoroutineScope
@@ -133,10 +141,30 @@ class MapasApp : Application() {
     val navigation: NavigationController by lazy {
         NavigationController(
             scope = CoroutineScope(SupervisorJob() + Dispatchers.Default),
-            location = navLocation,
+            location = TapLocationSource(navLocation) { fix -> if (!navLocation.isSimulated) recording.onFix(fix) },
             store = NavStateStore(File(noBackupFilesDir, "navigation/state.bin")),
             environment = SimulationAwareEnvironment(AndroidNavEnvironment(this), navLocation),
             routes = CoreRouteProvider(this),
+        )
+    }
+
+    /**
+     * Track recording (RF-08 follow-up): fixes come from the map screen and from the navigation (which keeps running
+     * in the foreground service), the points go to a private journal that is stored as a track on Stop. See
+     * `docs/decisions.md`.
+     */
+    val recording: RecordingController by lazy {
+        val places = lazy { openPlacesService(this) }
+        RecordingController(
+            scope = CoroutineScope(SupervisorJob() + Dispatchers.Default),
+            serial = Dispatchers.IO.limitedParallelism(1),
+            recorder = TrackRecorder(
+                journal = FileTrackJournal(File(noBackupFilesDir, "recording/current.journal")),
+                store = { name, notes, segments, createdAt -> places.value.trackStore().save(name, notes, segments, createdAt) },
+                name = { start -> getString(R.string.recording_track_name, DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT).format(Date(start))) },
+            ),
+            settings = PrefsRecordingSettings(this),
+            admin = { places.value.deleteRecordedTracks() },
         )
     }
 
@@ -178,6 +206,8 @@ class MapasApp : Application() {
         cameraData.start()
         incidents.start()
         ensureCameraAlerts()
+        // Points an interrupted recording left in its journal become a track (off the main thread, on the recorder's queue).
+        recording.recoverInterrupted()
         registerActivityLifecycleCallbacks(object : ActivityLifecycleCallbacks {
             override fun onActivityStarted(activity: Activity) {
                 // The app came to the foreground (first started activity): refresh only if enabled and data older than the TTL.

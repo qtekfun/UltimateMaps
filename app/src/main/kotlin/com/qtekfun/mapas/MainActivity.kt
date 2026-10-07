@@ -168,7 +168,10 @@ class MainActivity : ComponentActivity() {
     private fun startLocation() {
         state.locating = true
         location.lastKnown()?.let { onFix(it.point) }
-        location.start { fix -> onFix(fix.point) }
+        location.start { fix ->
+            (application as MapasApp).recording.onFix(fix) // only queued while a recording is running
+            onFix(fix.point)
+        }
     }
 
     private fun onFix(point: LatLon) {
