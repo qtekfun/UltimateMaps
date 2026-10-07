@@ -1,86 +1,86 @@
-# 06 · Playbook de Claude Code (autonomía con guardarraíles)
+# 06 · Claude Code playbook (autonomy with guardrails)
 
-Objetivo: que Claude Code trabaje sin pedirte aprobación por cada cambio, y se detenga solo en lo que de verdad importa. Datos comprobados en la documentación oficial el 2026-10-06 (code.claude.com/docs: permisos, ajustes y memoria).
+Goal: have Claude Code work without asking you for approval on every change, and stop only for what really matters. Data checked against the official documentation on 2026-10-06 (code.claude.com/docs: permissions, settings and memory).
 
-## Qué hay que copiar al repositorio
+## What to copy into the repository
 
-| Archivo del paquete | Destino en el repo | Para qué |
+| Package file | Destination in the repo | Purpose |
 | --- | --- | --- |
-| `mapas-CLAUDE.md` | `CLAUDE.md` | Decisiones inamovibles, protocolo de decisiones y cuándo preguntar |
-| `mapas-claude-settings.json` | `.claude/settings.json` | Reglas de permisos compartidas del proyecto |
-| `mapas-ci.yml` | `.github/workflows/ci.yml` | CI mínimo: la puerta que decide si una PR se puede mergear |
+| `mapas-CLAUDE.md` | `CLAUDE.md` | Immovable decisions, decision protocol and when to ask |
+| `mapas-claude-settings.json` | `.claude/settings.json` | Shared project permission rules |
+| `mapas-ci.yml` | `.github/workflows/ci.yml` | Minimal CI: the gate that decides whether a PR can be merged |
 
-Los ajustes personales (por ejemplo, tus propias aprobaciones) van en `.claude/settings.local.json`, que Claude Code mantiene fuera de git.
+Personal settings (for example, your own approvals) go in `.claude/settings.local.json`, which Claude Code keeps out of git.
 
-## Tres niveles de autonomía
+## Three levels of autonomy
 
-| Nivel | Cómo se activa | Qué hace | Cuándo usarlo |
+| Level | How it is enabled | What it does | When to use it |
 | --- | --- | --- | --- |
-| **1. Edición automática + lista de permitidos** (recomendado de partida) | Ya viene en `mapas-claude-settings.json` (`defaultMode: acceptEdits`) | Acepta ediciones de archivos y `mkdir`, `touch`, `mv`, `cp` en el directorio de trabajo; los comandos de la lista `allow` no piden permiso | Desarrollo normal |
-| **2. Modo `auto`** | Lanzar con `claude --permission-mode auto` o fijarlo en `~/.claude/settings.json` | Funciona sin avisos rutinarios; un clasificador en segundo plano revisa que los comandos y las peticiones de red sean coherentes con lo que pediste. Depende de que tu plan o sesión lo tenga disponible | Cuando el nivel 1 siga pidiendo demasiadas confirmaciones |
-| **3. `bypassPermissions`** | `claude --permission-mode bypassPermissions` o en tus ajustes de usuario | Se salta los avisos, incluso en rutas protegidas como `.git` y `.claude` | Solo dentro de una máquina virtual o contenedor aislado, sin acceso a nada que importe |
+| **1. Auto-accept edits + allowlist** (recommended to start) | Already included in `mapas-claude-settings.json` (`defaultMode: acceptEdits`) | Accepts file edits and `mkdir`, `touch`, `mv`, `cp` in the working directory; commands in the `allow` list do not ask for permission | Normal development |
+| **2. `auto` mode** | Launch with `claude --permission-mode auto` or set it in `~/.claude/settings.json` | Works without routine prompts; a background classifier checks that commands and network requests are consistent with what you asked for. Depends on your plan or session having it available | When level 1 still asks for too many confirmations |
+| **3. `bypassPermissions`** | `claude --permission-mode bypassPermissions` or in your user settings | Skips the prompts, even on protected paths such as `.git` and `.claude` | Only inside an isolated virtual machine or container, with no access to anything that matters |
 
-## Cosas importantes de las docs
+## Important points from the docs
 
-1. **Aprobar la confianza del proyecto una vez.** Las reglas `allow` del `.claude/settings.json` de un proyecto solo se aplican después de aceptar el diálogo de confianza del directorio. Las reglas `deny` y `ask` se aplican siempre.
-2. **`auto` y `bypassPermissions` no funcionan desde los ajustes del proyecto.** Hay que ponerlos en `~/.claude/settings.json` o pasarlos con `--permission-mode`. Por eso el archivo del paquete usa `acceptEdits`.
-3. **Orden de evaluación:** primero `deny`, luego `ask`, luego `allow`. Una regla `allow` no puede hacer una excepción a un `deny`.
-4. **Sintaxis de reglas Bash:** el `*` va después del subcomando (`Bash(git commit *)`); el espacio antes del `*` forma parte de la regla (`Bash(ls *)` no cubre `lsof`).
-5. **Las reglas de Bash no son una frontera de seguridad.** Por ejemplo, `Bash(git push origin main *)` no detiene `git -C . push origin main`. Para garantías reales, usa la protección de rama de GitHub (ver más abajo), el sandbox o un hook `PreToolUse`.
-6. **`CLAUDE.md` es contexto, no un mecanismo de bloqueo.** Lo que no debe pasar nunca va en `deny`; lo que debe decidir Claude va en `CLAUDE.md`.
-7. **`CLAUDE.md` debería ocupar menos de unas 200 líneas** para que se siga bien. El del paquete cumple esa pauta.
+1. **Approve the project's trust once.** The `allow` rules in a project's `.claude/settings.json` only apply after accepting the directory trust dialog. `deny` and `ask` rules always apply.
+2. **`auto` and `bypassPermissions` do not work from project settings.** They must be set in `~/.claude/settings.json` or passed with `--permission-mode`. That is why the package file uses `acceptEdits`.
+3. **Evaluation order:** `deny` first, then `ask`, then `allow`. An `allow` rule cannot make an exception to a `deny`.
+4. **Bash rule syntax:** the `*` goes after the subcommand (`Bash(git commit *)`); the space before the `*` is part of the rule (`Bash(ls *)` does not cover `lsof`).
+5. **Bash rules are not a security boundary.** For example, `Bash(git push origin main *)` does not stop `git -C . push origin main`. For real guarantees, use GitHub branch protection (see below), the sandbox or a `PreToolUse` hook.
+6. **`CLAUDE.md` is context, not a blocking mechanism.** What must never happen goes in `deny`; what Claude should decide goes in `CLAUDE.md`.
+7. **`CLAUDE.md` should be under about 200 lines** so that it is followed well. The one in the package meets that guideline.
 
-## Qué está permitido, preguntado y bloqueado en el archivo del paquete
+## What is allowed, asked and blocked in the package file
 
-- **Permitido sin preguntar:** `./gradlew`, `gradle`, git (`add`, `commit`, `switch`, `checkout -b`, `branch`, `stash`, `merge`, `submodule`, `tag`, `fetch`, `pull` y `push` de ramas), `gh` para PR (`create`, `view`, `list`, `status`, `diff`, `checks`, `comment`, `merge`), ejecuciones de CI (`gh run list/view/watch`) e incidencias (`gh issue create/list/view/comment`), `adb` de desarrollo (instalar, logcat, `dumpsys`, `am start`, `input`, `push`, `pull`), `cmake`, `ninja`, `sdkmanager`, scripts del repo (`./scripts/*`, `python3 scripts/*`), `pmtiles`, `zip`/`unzip`/`tar`, búsqueda web y lectura de documentación de dominios técnicos concretos.
-- **Pregunta antes de ejecutar:** `git reset --hard`, `git clean`, `git rebase`, `gh api`, `gh repo`, `gh secret`, `gh release`, `curl`, `wget`, `rm -rf`, y cambios en `LICENSE` y en `.github/workflows/`.
-- **Bloqueado siempre:** `sudo`, el push forzado (`--force`, `-f`, `--force-with-lease`, `+rama`), el push directo a `main`, `gh pr merge --admin`, `gh repo delete`, y la lectura de `.env`, `keystore.properties`, `*.jks`, `*.keystore`, `*.p12`, `~/.ssh` y `~/.gnupg`.
+- **Allowed without asking:** `./gradlew`, `gradle`, git (`add`, `commit`, `switch`, `checkout -b`, `branch`, `stash`, `merge`, `submodule`, `tag`, `fetch`, `pull` and `push` of branches), `gh` for PRs (`create`, `view`, `list`, `status`, `diff`, `checks`, `comment`, `merge`), CI runs (`gh run list/view/watch`) and issues (`gh issue create/list/view/comment`), development `adb` (install, logcat, `dumpsys`, `am start`, `input`, `push`, `pull`), `cmake`, `ninja`, `sdkmanager`, repo scripts (`./scripts/*`, `python3 scripts/*`), `pmtiles`, `zip`/`unzip`/`tar`, web search and reading documentation from specific technical domains.
+- **Asks before running:** `git reset --hard`, `git clean`, `git rebase`, `gh api`, `gh repo`, `gh secret`, `gh release`, `curl`, `wget`, `rm -rf`, and changes to `LICENSE` and to `.github/workflows/`.
+- **Always blocked:** `sudo`, force push (`--force`, `-f`, `--force-with-lease`, `+branch`), direct push to `main`, `gh pr merge --admin`, `gh repo delete`, and reading `.env`, `keystore.properties`, `*.jks`, `*.keystore`, `*.p12`, `~/.ssh` and `~/.gnupg`.
 
-**Si `curl` y `wget` te interrumpen demasiado** (por ejemplo, al descargar mapas), muévelos a `allow`, o mejor, activa el sandbox y permite solo los dominios que necesites (Codeberg, GitHub, el CDN de mapas y los repositorios de Maven/Google).
+**If `curl` and `wget` interrupt you too much** (for example, when downloading maps), move them to `allow`, or better, enable the sandbox and allow only the domains you need (Codeberg, GitHub, the maps CDN and the Maven/Google repositories).
 
-## Protocolo de decisiones
+## Decision protocol
 
-- Ante una duda, Claude decide con el criterio más razonable y lo registra en `docs/decisions.md` (fecha, decisión, motivo, alternativa descartada).
-- Solo se detiene en los cinco casos de «Cuándo preguntar» de `CLAUDE.md`: licencia o dependencia propietaria, cambio de decisiones inamovibles, cambio de A/B/C ya decidido, acciones irreversibles o con coste, y tocar lo que decide si algo se mergea (workflows de CI, protección de rama, permisos del repo).
-- Tú revisas el `decisions.md` y las PR ya mergeadas cuando quieras, no en cada paso.
+- When in doubt, Claude decides using the most reasonable judgment and records it in `docs/decisions.md` (date, decision, reason, discarded alternative).
+- It stops only in the five "When to ask" cases in `CLAUDE.md`: a proprietary license or dependency, a change to the immovable decisions, a change to an already decided A/B/C, irreversible or costly actions, and touching what decides whether something gets merged (CI workflows, branch protection, repo permissions).
+- You review `decisions.md` and the already merged PRs whenever you want, not at every step.
 
-## Push, PR y merge automático
+## Push, PR and automatic merge
 
-Flujo: rama por tarea → push → `gh pr create` → esperar checks → si todos pasan, merge con squash y borrado de la rama. El detalle está en `CLAUDE.md` (sección «Flujo de ramas y PR»).
+Flow: branch per task → push → `gh pr create` → wait for checks → if all pass, squash merge and delete the branch. The details are in `CLAUDE.md` (section "Branch and PR flow").
 
-**Lo que hace falta preparar una vez en GitHub** (para que «si pasan, que mergee» sea cierto y no solo una intención):
+**What needs to be set up once on GitHub** (so that "if they pass, merge" is true and not just an intention):
 
-1. **Copiar `mapas-ci.yml`** como `.github/workflows/ci.yml` y empujarlo. Sin CI, no hay checks y el merge no tendría ninguna condición.
-2. **Proteger `main`** (Settings → Branches o Rulesets): exigir PR antes de mergear, exigir que el check `build` pase, bloquear los pushes forzados y activar «no permitir saltarse estas reglas» (también para administradores).
-3. **Activar «Allow auto-merge» y «Automatically delete head branches»** en Settings → General. Así `gh pr merge --auto --squash` deja la PR programada y GitHub la mergea solo cuando el check termina en verde.
-4. **Autenticar `gh`** con `gh auth login`. Lo más seguro es un token de acceso fino limitado a este repositorio, con permisos de lectura y escritura sobre contenido y PR (y sobre workflows si Claude Code debe poder cambiarlos), y sin permisos de administración del repo [comprueba los nombres exactos de los permisos al crearlo].
+1. **Copy `mapas-ci.yml`** as `.github/workflows/ci.yml` and push it. Without CI there are no checks and the merge would have no condition.
+2. **Protect `main`** (Settings → Branches or Rulesets): require a PR before merging, require the `build` check to pass, block force pushes and enable "do not allow bypassing these rules" (also for administrators).
+3. **Enable "Allow auto-merge" and "Automatically delete head branches"** in Settings → General. That way `gh pr merge --auto --squash` leaves the PR scheduled and GitHub merges it on its own only when the check ends green.
+4. **Authenticate `gh`** with `gh auth login`. The safest option is a fine-grained access token limited to this repository, with read and write permissions on contents and PRs (and on workflows if Claude Code must be able to change them), and without repo administration permissions [check the exact permission names when creating it].
 
-**Por qué la protección de rama es la garantía real:** las reglas de permisos de Claude Code intentan impedir el push a `main` o el merge con `--admin`, pero son reglas sobre texto de comandos y se pueden esquivar con otras formas. La protección de rama la aplica GitHub en el servidor: aunque Claude Code lo intentase, un push directo o un merge con checks en rojo se rechaza.
+**Why branch protection is the real guarantee:** Claude Code's permission rules try to prevent pushing to `main` or merging with `--admin`, but they are rules on command text and can be circumvented with other forms. Branch protection is enforced by GitHub on the server: even if Claude Code tried, a direct push or a merge with red checks is rejected.
 
-**Límite del merge automático:** un check solo detecta lo que los tests y el lint cubren. Por eso el CI debe crecer con el proyecto (tests de parsers de enlaces, importadores, navegación simulada, comprobación de dependencias propietarias, y más adelante, benchmarks de rendimiento). Tras el spike y en cada fase, revisa qué cubre.
+**Limit of automatic merging:** a check only detects what the tests and the lint cover. That is why the CI must grow with the project (tests for link parsers, importers, simulated navigation, checks for proprietary dependencies, and later, performance benchmarks). After the spike and in each phase, review what it covers.
 
-**Por qué los workflows piden confirmación:** cambiar `.github/workflows/` equivale a cambiar la condición de merge. El archivo del paquete lo deja en «preguntar». Si prefieres no tener ni esa fricción, muévelo a `allow`, sabiendo que entonces el CI deja de ser un control independiente.
+**Why workflows ask for confirmation:** changing `.github/workflows/` is equivalent to changing the merge condition. The package file leaves it as "ask". If you prefer not to have even that friction, move it to `allow`, knowing that CI then stops being an independent control.
 
-## Bucle de trabajo (spec-driven)
+## Work loop (spec-driven)
 
-1. Leer el requisito y el criterio de aceptación.
-2. Planificar en 3-5 pasos y dividir en tareas pequeñas.
-3. Implementar.
-4. Compilar, pasar tests y, si toca rendimiento, medir.
-5. Un commit por tarea.
-6. Actualizar `docs/` y `decisions.md`.
+1. Read the requirement and the acceptance criterion.
+2. Plan in 3-5 steps and split into small tasks.
+3. Implement.
+4. Build, pass tests and, if performance is affected, measure.
+5. One commit per task.
+6. Update `docs/` and `decisions.md`.
 
-## Prompt inicial sugerido
+## Suggested initial prompt
 
-> Lee `CLAUDE.md` y `docs/mapas-README.md`. Ejecuta el spike de `docs/mapas-04-spike.md` de principio a fin sin pedirme aprobación por cada paso: prepara el entorno, compila CoMaps sin modificar su motor, descarga el mapa de España, mide con los umbrales definidos en los dispositivos que haya conectados, y entrégame `docs/spike-informe.md` con la recomendación A, B o C. Trabaja con ramas y PR como indica `CLAUDE.md`: empuja, abre la PR y mergea cuando los checks pasen. Registra tus decisiones en `docs/decisions.md`. Detente solo en los casos de «Cuándo preguntar».
+> Read `CLAUDE.md` and `docs/mapas-README.md`. Run the spike in `docs/mapas-04-spike.md` from start to finish without asking me for approval at each step: set up the environment, build CoMaps without modifying its engine, download the map of Spain, measure with the defined thresholds on the connected devices, and deliver `docs/spike-informe.md` with the recommendation A, B or C. Work with branches and PRs as `CLAUDE.md` indicates: push, open the PR and merge when the checks pass. Record your decisions in `docs/decisions.md`. Stop only in the "When to ask" cases.
 
-## Comprobaciones útiles
+## Useful checks
 
-- `/status`: ver qué archivos de ajustes se han cargado.
-- `/permissions`: ver las reglas activas y de qué archivo vienen.
-- `/context`: comprobar que `CLAUDE.md` se ha cargado.
-- `claude doctor`: ver entradas de ajustes que se han rechazado.
+- `/status`: see which settings files have been loaded.
+- `/permissions`: see the active rules and which file they come from.
+- `/context`: check that `CLAUDE.md` has been loaded.
+- `claude doctor`: see settings entries that have been rejected.
 
-## Antes de dar más autonomía
+## Before granting more autonomy
 
-Si pasas al nivel 3, hazlo en una VM sin tus credenciales, sin acceso a tus servidores y con el repositorio como único contenido de valor.
+If you move to level 3, do it in a VM without your credentials, without access to your servers and with the repository as the only content of value.

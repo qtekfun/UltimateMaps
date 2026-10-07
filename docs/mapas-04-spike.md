@@ -1,72 +1,72 @@
-# 04 · Plan del spike (fase 0)
+# 04 · Spike plan (phase 0)
 
-**Duración:** 1-2 semanas. **Objetivo:** decidir con datos si el proyecto va por A (derivar de CoMaps), C (híbrido) o B (ensamblar). El spike no toca la arquitectura final.
+**Duration:** 1-2 weeks. **Goal:** decide with data whether the project goes with A (derive from CoMaps), C (hybrid) or B (assemble). The spike does not touch the final architecture.
 
-## Principio
+## Principle
 
-Lo menos costoso primero: compilar CoMaps sin modificar el motor y medir. Si pasa los umbrales, seguimos por A; si no, se reemplaza.
+The cheapest first: build CoMaps without modifying the engine and measure. If it passes the thresholds, we continue with A; if not, it is replaced.
 
-## Pasos
+## Steps
 
-1. **Entorno.** Android SDK y NDK, CMake, Python y Git. Clonar `codeberg.org/comaps/comaps` y fijar la última versión estable.
-2. **Compilar CoMaps tal cual** para Android y descargar el mapa de España (y una región pequeña de otro continente para probar el catálogo mundial).
-3. **Medir** (ver tabla de umbrales) en los dispositivos de la matriz.
-4. **Probar el estilo:** cuánto se acerca su sistema de estilos al aspecto Apple Maps y qué queda fuera (checklist abajo).
-5. **Probar las funciones requeridas:** carriles, límites de velocidad, evitar autopistas y peajes, perfiles moto/bici/a pie, importar y exportar GPX, favoritos, intent `geo:`.
-6. **Probar el núcleo sin su interfaz:** una pantalla mínima en Compose que llame a búsqueda y routing sin la actividad de CoMaps. Estimar el coste de desacoplar.
-7. **Probar sin GMS:** ubicación en frío, voz, servicio en segundo plano 30 minutos con pantalla apagada, en un dispositivo sin GMS y en uno de-Googled.
-8. **Comparativa opcional (si queda tiempo):** MapLibre Native pintando PMTiles de España en el mismo dispositivo, para comparar fps y aspecto. Valhalla queda fuera del spike.
-9. **Informe** con los resultados y la recomendación A, B o C.
+1. **Environment.** Android SDK and NDK, CMake, Python and Git. Clone `codeberg.org/comaps/comaps` and pin the latest stable version.
+2. **Build CoMaps as is** for Android and download the map of Spain (and a small region from another continent to test the worldwide catalog).
+3. **Measure** (see the thresholds table) on the devices in the matrix.
+4. **Test the style:** how close its style system gets to the Apple Maps look and what is left out (checklist below).
+5. **Test the required features:** lanes, speed limits, avoiding motorways and tolls, motorcycle/bike/on-foot profiles, GPX import and export, favorites, `geo:` intent.
+6. **Test the core without its interface:** a minimal Compose screen that calls search and routing without the CoMaps activity. Estimate the cost of decoupling.
+7. **Test without GMS:** cold-start location, voice, a 30-minute background service with the screen off, on a device without GMS and on a de-Googled one.
+8. **Optional comparison (if time allows):** MapLibre Native drawing PMTiles of Spain on the same device, to compare fps and appearance. Valhalla is out of the spike.
+9. **Report** with the results and the recommendation A, B or C.
 
-## Matriz de dispositivos
+## Device matrix
 
-| Clase | Qué comprobar |
+| Class | What to check |
 | --- | --- |
-| Gama alta con GMS (120 Hz si es posible) | fps, arranque, búsqueda, rutas |
-| Gama media o baja con GMS | fps, memoria, rutas largas |
-| ROM china sin GMS | Ubicación, voz, servicio en segundo plano, ahorro de batería |
-| De-Googled (GrapheneOS, LineageOS sin GApps o microG) | Ubicación, voz, instalación sin Play |
+| High-end with GMS (120 Hz if possible) | fps, startup, search, routes |
+| Mid-range or low-end with GMS | fps, memory, long routes |
+| Chinese ROM without GMS | Location, voice, background service, battery saving |
+| De-Googled (GrapheneOS, LineageOS without GApps or microG) | Location, voice, installation without Play |
 
-Asignar a cada clase un dispositivo real antes de empezar.
+Assign a real device to each class before starting.
 
-## Rutas de prueba
+## Test routes
 
-- Madrid–Barcelona (larga, con autopistas y peajes).
-- Urbana: Madrid centro, 5 km con giros y carriles.
-- Montaña para moto: sierra de Guadarrama (curvas).
-- A pie y en bici: ruta urbana de 3 km.
+- Madrid–Barcelona (long, with motorways and tolls).
+- Urban: central Madrid, 5 km with turns and lanes.
+- Mountain for motorcycle: Sierra de Guadarrama (bends).
+- On foot and by bike: a 3 km urban route.
 
-## Umbrales y criterio de éxito
+## Thresholds and success criterion
 
-| Métrica | Cómo medir | Umbral para seguir con A |
+| Metric | How to measure | Threshold to continue with A |
 | --- | --- | --- |
-| fps del mapa | `dumpsys gfxinfo` / Perfetto durante pan, zoom y giro | p95 ≤ 16,6 ms en gama media; ≤ 8,3 ms en 120 Hz si hay panel |
-| Arranque en frío | `am start -W` (mediana de 10) | ≤ 1 s en gama media-alta |
-| Búsqueda | Tiempo hasta primeros resultados tras cada tecla | ≤ 100 ms |
-| Ruta Madrid–Barcelona | Tiempo de cálculo en el dispositivo | ≤ 2 s |
-| Estilo | Checklist de 10 puntos | ≥ 8 alcanzables |
-| Desacoplar la UI | Pantalla mínima que llama a búsqueda y routing | Funciona sin la actividad de CoMaps |
-| Sin GMS | Ubicación, voz y segundo plano | Todo funciona o hay vía clara de solución |
-| Rutas con curvas | Ver si se puede puntuar la sinuosidad o forzar paso por vías | Hay una vía realista |
+| Map fps | `dumpsys gfxinfo` / Perfetto during pan, zoom and rotation | p95 ≤ 16.6 ms on mid-range; ≤ 8.3 ms at 120 Hz if the panel supports it |
+| Cold start | `am start -W` (median of 10) | ≤ 1 s on mid-to-high-end |
+| Search | Time to first results after each keystroke | ≤ 100 ms |
+| Madrid–Barcelona route | Computation time on the device | ≤ 2 s |
+| Style | 10-point checklist | ≥ 8 achievable |
+| Decoupling the UI | Minimal screen that calls search and routing | Works without the CoMaps activity |
+| Without GMS | Location, voice and background | Everything works or there is a clear path to a fix |
+| Twisty routes | See whether sinuosity can be scored or passing through certain roads can be forced | There is a realistic path |
 
-### Checklist de estilo «Apple Maps»
+### "Apple Maps" style checklist
 
-1. Paleta suave de fondo y agua. 2. Carreteras con borde fino y jerarquía clara. 3. Tipografía de etiquetas controlable. 4. Iconos de POI redondeados y sustituibles. 5. Halo de etiquetas. 6. Edificios 3D discretos. 7. Sombreado de relieve opcional. 8. Transición día/noche. 9. Densidad de etiquetas ajustable por zoom. 10. Vista 3D de navegación con cámara inclinada.
+1. Soft background and water palette. 2. Roads with a thin border and clear hierarchy. 3. Controllable label typography. 4. Rounded, replaceable POI icons. 5. Label halo. 6. Discreet 3D buildings. 7. Optional relief shading. 8. Day/night transition. 9. Label density adjustable by zoom. 10. 3D navigation view with a tilted camera.
 
-## Regla de decisión
+## Decision rule
 
-- **A:** todos los umbrales pasan.
-- **C:** el motor (búsqueda, routing, sin GMS, desacople) pasa, pero estilo o fps no.
-- **B:** el núcleo no se puede desacoplar, o sus licencias o formatos bloquean.
+- **A:** all thresholds pass.
+- **C:** the engine (search, routing, without GMS, decoupling) passes, but style or fps do not.
+- **B:** the core cannot be decoupled, or its licenses or formats block us.
 
-## Entregables
+## Deliverables
 
-1. `docs/spike-informe.md` con tablas de resultados, capturas y trazas.
-2. Recomendación A, B o C con la justificación.
-3. Estimación revisada del roadmap.
-4. Lista de riesgos nuevos.
-5. Actualización de `docs/decisions.md`.
+1. `docs/spike-informe.md` with result tables, screenshots and traces.
+2. Recommendation A, B or C with the justification.
+3. Revised roadmap estimate.
+4. List of new risks.
+5. Update of `docs/decisions.md`.
 
-## Autonomía durante el spike
+## Autonomy during the spike
 
-Claude Code trabaja sin pedir aprobación para compilar, medir, instalar en dispositivos conectados y modificar el código del spike. Solo se detiene para las condiciones de «Cuándo preguntar» de `CLAUDE.md`.
+Claude Code works without asking for approval to build, measure, install on connected devices and modify the spike code. It only stops for the "When to ask" conditions in `CLAUDE.md`.

@@ -1,113 +1,113 @@
-# 03 · Arquitectura
+# 03 · Architecture
 
-## Principios
+## Principles
 
-1. **Todo en el dispositivo.** Ninguna función de la v1 depende de un servidor propio ni de terceros, salvo descargar datos de mapas.
-2. **Navegación desacoplada de la UI.** El motor de navegación es un servicio con un estado observable; la UI solo lo pinta. Así Android Auto o cualquier UI futura se añade sin reescribir nada.
-3. **Motores intercambiables detrás de interfaces.** El spike puede decidir A, B o C sin tirar el resto de la app.
-4. **GMS opcional.** Nada obligatorio depende de Google; si existe, se aprovecha por vías que no añaden dependencias.
-5. **Privacidad por diseño.** Una única política de red, centralizada y auditable.
+1. **Everything on the device.** No v1 feature depends on an own server or on third parties, except downloading map data.
+2. **Navigation decoupled from the UI.** The navigation engine is a service with an observable state; the UI only draws it. That way Android Auto or any future UI can be added without rewriting anything.
+3. **Interchangeable engines behind interfaces.** The spike can decide A, B or C without throwing away the rest of the app.
+4. **Optional GMS.** Nothing mandatory depends on Google; if it exists, it is used through routes that add no dependencies.
+5. **Privacy by design.** A single network policy, centralized and auditable.
 
-## Opciones de motor
+## Engine options
 
-| | A. Derivar de CoMaps | B. Ensamblar | C. Híbrido |
+| | A. Derive from CoMaps | B. Assemble | C. Hybrid |
 | --- | --- | --- | --- |
-| Render | Motor de CoMaps | MapLibre Native + PMTiles | MapLibre Native + PMTiles |
-| Búsqueda | Índice de CoMaps | Índice propio (SQLite FTS5) | Núcleo de CoMaps |
-| Routing | Motor de CoMaps | Valhalla | Núcleo de CoMaps |
-| Datos | .mwm de CoMaps | PMTiles + teselas Valhalla + índice propio | .mwm + PMTiles (dos descargas por región) |
-| Control del aspecto | Limitado a su sistema de estilos | Total | Total |
-| Cobertura mundial desde el día 1 | Sí | No: requiere pipeline y alojamiento propios | Sí |
-| Riesgo principal | Estilo y fps por debajo del objetivo | Coste del pipeline mundial | Doble volumen de datos y complejidad |
+| Rendering | CoMaps engine | MapLibre Native + PMTiles | MapLibre Native + PMTiles |
+| Search | CoMaps index | Own index (SQLite FTS5) | CoMaps core |
+| Routing | CoMaps engine | Valhalla | CoMaps core |
+| Data | CoMaps .mwm | PMTiles + Valhalla tiles + own index | .mwm + PMTiles (two downloads per region) |
+| Control over appearance | Limited to its style system | Total | Total |
+| Worldwide coverage from day 1 | Yes | No: requires own pipeline and hosting | Yes |
+| Main risk | Style and fps below target | Cost of the worldwide pipeline | Double data volume and complexity |
 
-**Regla de decisión** (detalle en `mapas-04-spike.md`): A si estilo y fps pasan; C si el motor pasa pero estilo o fps no; B solo si el núcleo de CoMaps no se puede desacoplar o sus licencias o formatos bloquean.
+**Decision rule** (details in `mapas-04-spike.md`): A if style and fps pass; C if the engine passes but style or fps do not; B only if the CoMaps core cannot be decoupled or its licenses or formats block us.
 
-## Capas y módulos
+## Layers and modules
 
 ```
 ┌──────────────────────────────────────────────────────────┐
-│ :app  (Compose, estilo Apple Maps, bottom sheet con 3    │
-│        detents, ajustes, intents de enlaces)             │
+│ :app  (Compose, Apple Maps style, bottom sheet with 3    │
+│        detents, settings, link intents)                  │
 ├──────────────────────────────────────────────────────────┤
-│ :feature-*  búsqueda · navegación · moto · sitios · sync │
+│ :feature-*  search · navigation · motorcycle · places · sync │
 ├──────────────────────────────────────────────────────────┤
-│ :core-nav     servicio de navegación (estado observable) │
-│ :core-map     interfaz MapEngine                         │
-│ :core-search  interfaz SearchEngine                      │
-│ :core-routing interfaz RoutingEngine                     │
-│ :core-geo     parsers de enlaces, GPX/KML/Takeout        │
-│ :core-data    base de datos local (sitios, listas, tracks)│
-│ :core-sync    cliente WebDAV                             │
-│ :core-net     NetworkPolicy (única salida a la red)      │
+│ :core-nav     navigation service (observable state)      │
+│ :core-map     MapEngine interface                        │
+│ :core-search  SearchEngine interface                     │
+│ :core-routing RoutingEngine interface                    │
+│ :core-geo     link parsers, GPX/KML/Takeout              │
+│ :core-data    local database (places, lists, tracks)     │
+│ :core-sync    WebDAV client                              │
+│ :core-net     NetworkPolicy (the only exit to the network)│
 ├──────────────────────────────────────────────────────────┤
-│ :native  (C++ vía NDK/JNI): motor elegido tras el spike  │
+│ :native  (C++ via NDK/JNI): engine chosen after the spike │
 └──────────────────────────────────────────────────────────┘
 ```
 
-Interfaces clave (Kotlin): `MapEngine`, `SearchEngine`, `RoutingEngine`, `LocationSource`, `VoiceGuide`, `NetworkPolicy`. Los tests de navegación usan una `LocationSource` simulada.
+Key interfaces (Kotlin): `MapEngine`, `SearchEngine`, `RoutingEngine`, `LocationSource`, `VoiceGuide`, `NetworkPolicy`. The navigation tests use a simulated `LocationSource`.
 
-## Diseño sin GMS (y con GMS cuando exista)
+## Design without GMS (and with GMS when it exists)
 
-| Función | Cómo funciona sin GMS | Qué se aprovecha si hay GMS |
+| Function | How it works without GMS | What is used if GMS is present |
 | --- | --- | --- |
-| Ubicación | `LocationManager`: en Android 12+ (API 31) con `FUSED_PROVIDER`; en versiones anteriores, `GPS_PROVIDER` y `NETWORK_PROVIDER`. Sin la librería `play-services-location` | En un móvil con GMS, el proveedor fused del sistema lo respalda Google, así que se mejora sin dependencia. [verificar en el spike] |
-| Ubicación por red (Wi-Fi/celdas) | Solo con microG/UnifiedNlp; si no, GPS puro | Mejor fix en frío |
-| Voz | Motor TTS del sistema. Si no hay ninguno (frecuente sin GMS), la app lo detecta y guía para instalar uno libre (por ejemplo eSpeak NG o RHVoice); evaluar una voz propia empaquetada | Google TTS |
-| Brújula | `SensorManager` (`TYPE_ROTATION_VECTOR`) | — |
-| Notificaciones push | No se usan | — |
-| Detección de GMS | Solo por `PackageManager`, para mostrar avisos; sin `GoogleApiAvailability` | — |
-| Android Auto (fase posterior) | No aplica | Sabor `gms` si hace falta la Car App Library; decidir al llegar, por la política de dependencias de F-Droid |
-| Compras/donaciones | Enlace externo; sin Play Billing | — |
+| Location | `LocationManager`: on Android 12+ (API 31) with `FUSED_PROVIDER`; on earlier versions, `GPS_PROVIDER` and `NETWORK_PROVIDER`. Without the `play-services-location` library | On a phone with GMS, the system's fused provider is backed by Google, so it improves without a dependency. [verify in the spike] |
+| Network location (Wi-Fi/cells) | Only with microG/UnifiedNlp; otherwise pure GPS | Better cold fix |
+| Voice | System TTS engine. If there is none (common without GMS), the app detects it and guides the user to install a free one (for example eSpeak NG or RHVoice); evaluate an own bundled voice | Google TTS |
+| Compass | `SensorManager` (`TYPE_ROTATION_VECTOR`) | — |
+| Push notifications | Not used | — |
+| GMS detection | Only via `PackageManager`, to show notices; without `GoogleApiAvailability` | — |
+| Android Auto (later phase) | Not applicable | `gms` flavor if the Car App Library is needed; decide when we get there, because of F-Droid's dependency policy |
+| Purchases/donations | External link; no Play Billing | — |
 
-Regla: **un solo sabor de compilación (`foss`) por defecto**. Se crea un sabor `gms` solo si las mediciones justifican una mejora concreta.
+Rule: **a single build flavor (`foss`) by default**. A `gms` flavor is created only if measurements justify a specific improvement.
 
-## Servicio de navegación y segundo plano
+## Navigation service and background
 
-- Servicio en primer plano con tipo `location`; en Android 14+ requiere el permiso `FOREGROUND_SERVICE_LOCATION`.
-- El estado de la ruta y la posición se persisten para sobrevivir a la muerte del proceso.
-- Pantalla siempre encendida mediante el flag de ventana de la actividad, no con wake lock.
-- ROM agresivas (ColorOS, OriginOS, HyperOS, MagicOS): pantalla guiada para excluir la app del ahorro de batería y detección cuando el sistema la mata en segundo plano (referencia: dontkillmyapp.com).
+- Foreground service with type `location`; on Android 14+ it requires the `FOREGROUND_SERVICE_LOCATION` permission.
+- Route state and position are persisted to survive process death.
+- Always-on screen through the activity's window flag, not a wake lock.
+- Aggressive ROMs (ColorOS, OriginOS, HyperOS, MagicOS): guided screen to exclude the app from battery saving and detection when the system kills it in the background (reference: dontkillmyapp.com).
 
-## Datos y regiones
+## Data and regions
 
-- Catálogo de regiones versionado (id, tamaño, hash SHA-256, versión de datos).
-- Descargas reanudables por rangos, verificadas por hash antes de activarse; actualizaciones atómicas (se activa el nuevo archivo cuando está completo).
-- Si el motor es CoMaps, se respeta su estructura de carpetas y de fechas (`/maps/YYMMDD/<región>.mwm`) y la lista de servidores se puede cambiar en ajustes.
-- Archivos de datos accedidos con `mmap`; nada se carga entero en memoria.
+- Versioned region catalog (id, size, SHA-256 hash, data version).
+- Resumable downloads by ranges, verified by hash before being activated; atomic updates (the new file is activated when it is complete).
+- If the engine is CoMaps, its folder and date structure is respected (`/maps/YYMMDD/<region>.mwm`) and the server list can be changed in settings.
+- Data files accessed with `mmap`; nothing is loaded entirely into memory.
 
-## Rendimiento (diseñado desde el principio)
+## Performance (designed from the start)
 
-- Presupuesto por frame: 16,6 ms a 60 Hz y 8,3 ms a 120 Hz; sin asignaciones ni GC en el bucle de render.
-- Arranque: inicialización diferida de motores nativos; la primera pantalla pinta el mapa con el último estado guardado; Baseline Profiles y Macrobenchmark en CI.
-- Medición con `adb shell dumpsys gfxinfo <paquete> framestats`, `adb shell am start -W` y trazas de Perfetto. Los resultados del spike se guardan como línea base.
+- Per-frame budget: 16.6 ms at 60 Hz and 8.3 ms at 120 Hz; no allocations or GC in the render loop.
+- Startup: deferred initialization of native engines; the first screen draws the map with the last saved state; Baseline Profiles and Macrobenchmark in CI.
+- Measurement with `adb shell dumpsys gfxinfo <package> framestats`, `adb shell am start -W` and Perfetto traces. The spike results are stored as a baseline.
 
-## Diseño visual (estilo Apple Maps)
+## Visual design (Apple Maps style)
 
-- Sistema de diseño propio (no Material You por defecto): tokens de color, tipografía y radios.
-- Bottom sheet con tres posiciones (detents): colapsado, medio y completo.
-- Paleta suave, carreteras con borde fino, iconos de POI redondeados, etiquetas con halo, edificios 3D discretos y transiciones día/noche animadas.
-- Modo guantes: botones ≥ 56 dp, contraste alto y sin gestos finos.
+- Own design system (not Material You by default): color, typography and radius tokens.
+- Bottom sheet with three positions (detents): collapsed, medium and full.
+- Soft palette, roads with a thin border, rounded POI icons, labels with a halo, discreet 3D buildings and animated day/night transitions.
+- Glove mode: buttons ≥ 56 dp, high contrast and no fine gestures.
 
-## Red y privacidad
+## Network and privacy
 
-- `NetworkPolicy` es la única salida a la red: lista blanca de dominios configurable, modo «sin red» y registro local de conexiones.
-- Conexiones posibles: descarga de regiones (a petición del usuario), fuente de teselas online (opcional, desactivada), resolución de enlaces cortos (opcional, desactivada) y sync WebDAV (opcional).
-- TLS siempre; sin tráfico en claro. Credenciales de WebDAV en Android Keystore.
+- `NetworkPolicy` is the only exit to the network: configurable domain allowlist, "no network" mode and a local log of connections.
+- Possible connections: region download (at the user's request), online tile source (optional, disabled), short-link resolution (optional, disabled) and WebDAV sync (optional).
+- TLS always; no cleartext traffic. WebDAV credentials in Android Keystore.
 
-## Fuentes de datos opcionales y ajustes (F7)
+## Optional data sources and settings (F7)
 
-Las fuentes que traen datos de fuera del mapa (precios de combustible, transporte público en tiempo real) se montan como **complementos pequeños detrás de una interfaz común**, para añadir o retirar una sin tocar el núcleo ni la navegación:
+Sources that bring data from outside the map (fuel prices, real-time public transport) are built as **small plug-ins behind a common interface**, so one can be added or removed without touching the core or the navigation:
 
-- `OptionalDataSource`: `id`, nombre visible, hosts que necesita, qué envía (texto para el aviso de activación), política de refresco, `fetch()` que devuelve un resultado con **fecha de los datos**, y su configuración propia.
-- **Todo pasa por `NetworkPolicy`**: al activar una fuente se añaden sus hosts a la lista blanca y a la lista visible de conexiones posibles; al apagarla se quitan. Con el modo sin red no se conecta ninguna.
-- **Desactivadas por defecto.** Activar una pide confirmación con una frase clara: qué datos se piden, a qué servidor y qué ve ese servidor (por ejemplo, su IP). **La ubicación del usuario no se envía nunca**: los datos se bajan enteros o por estación elegida y se filtran en el dispositivo.
-- **Aislamiento de fallos:** si una fuente falla, caduca o cambia de formato, solo esa deja de mostrarse (con la fecha del último dato bueno); nada más se ve afectado. Caché en disco con sello de tiempo.
-- **Claves de API:** no se embeben en la app. Si un operador exige clave, la introduce el usuario en Ajustes (en Android Keystore), o no se ofrece.
-- **Ajustes:** las preferencias viven en un almacén local único (`:core-data`), se leen como flujo observable y entran en la copia de seguridad. Cada fuente declara sus campos (interruptor, combustible, radio, frecuencia, operadores, URL) y la pantalla de Ajustes los dibuja, para que añadir una fuente no obligue a rehacer la pantalla.
-- **Módulos previstos:** `:core-settings` (preferencias), `:core-optional` (interfaz y registro de fuentes) y un módulo por fuente (`:source-fuel`, `:source-transit-*`). Se actualizan `PRIVACY.md` y la lista de conexiones con cada fuente.
+- `OptionalDataSource`: `id`, display name, the hosts it needs, what it sends (the text for the activation warning), refresh policy, a `fetch()` that returns a result with the **date of the data**, and its own configuration.
+- **Everything goes through `NetworkPolicy`**: turning a source on adds its hosts to the allow list and to the visible list of possible connections; turning it off removes them. With offline mode on, none connects.
+- **Off by default.** Turning one on asks for confirmation with a plain sentence: what data is requested, from which server and what that server sees (for example, the IP address). **The user's location is never sent**: data is downloaded whole, or per chosen station, and filtered on the device.
+- **Failure isolation:** if a source fails, expires or changes format, only that one stops being shown (with the date of the last good data); nothing else is affected. Disk cache with a timestamp.
+- **API keys:** not embedded in the app. If an operator requires a key, the user enters it in Settings (stored in the Android Keystore), or the source is not offered.
+- **Settings:** preferences live in a single local store, are read as an observable flow and go into the backup. Each source declares its fields (switch, fuel, radius, frequency, operators, URL) and the Settings screen draws them, so adding a source does not require redoing the screen.
+- **Planned modules:** `:core-settings` (preferences), `:core-optional` (interface and registry of sources) and one module per source (`:source-fuel`, `:source-transit-*`). `PRIVACY.md` and the list of connections are updated with each source.
 
-## Sitios, import/export y sync
+## Places, import/export and sync
 
-- Base de datos local (Room/SQLite) como fuente de verdad.
-- Importadores: GPX, KML/KMZ, Takeout (GeoJSON de favoritos; los CSV de listas solo traen título y enlace, así que las coordenadas se resuelven con el enlace o por búsqueda local).
-- Sync: carpeta WebDAV con archivos GPX/JSON por lista y track; ETag para detectar cambios y «última escritura gana» por elemento, con copia de seguridad del conflicto.
+- Local database (Room/SQLite) as the source of truth.
+- Importers: GPX, KML/KMZ, Takeout (GeoJSON of favorites; the list CSVs only contain a title and a link, so coordinates are resolved from the link or by local search).
+- Sync: WebDAV folder with GPX/JSON files per list and track; ETag to detect changes and "last write wins" per item, with a backup copy of the conflict.

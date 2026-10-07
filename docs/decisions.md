@@ -1,313 +1,190 @@
-# Registro de decisiones
+# Decision log
 
-Formato: fecha · decisión · motivo · alternativas descartadas · cómo revertirla.
+Format: date · decision · reason · discarded alternatives · how to revert it.
 
-## 2026-10-06 · Bootstrap del repo en local, sin push a `master`
-- **Decisión:** `master` se crea solo en local (commit inicial con `docs/` y `CLAUDE.md` copiado de `docs/mapas-CLAUDE.md`). No se empuja nada hasta que el usuario cree `master` en el remoto y configure CI y protección de rama.
-- **Motivo:** el remoto `origin` está vacío (sin `master`), así que no se pueden abrir PR. Empujar a `master` está prohibido por CLAUDE.md y crear `.github/workflows/` o la protección de rama es caso de «Cuándo preguntar» nº 5.
-- **Descartado:** empujar un commit inicial a `master` (viola el flujo); empujar una rama de spike (GitHub la haría rama por defecto).
-- **Revertir:** `git push origin master` tras acordarlo con el usuario; las ramas `spike/*` locales se pueden empujar y abrir como PR a partir de ese momento.
+## 2026-10-06 · Repo bootstrap locally, no push to `master`
+- **Decision:** `master` is created only locally (initial commit with `docs/` and `CLAUDE.md` copied from `docs/mapas-CLAUDE.md`). Nothing is pushed until the user creates `master` on the remote and sets up CI and branch protection.
+- **Reason:** the `origin` remote is empty (no `master`), so PRs cannot be opened. Pushing to `master` is forbidden by CLAUDE.md, and creating `.github/workflows/` or branch protection is "When to ask" case no. 5.
+- **Discarded:** pushing an initial commit to `master` (violates the flow); pushing a spike branch (GitHub would make it the default branch).
+- **Revert:** `git push origin master` after agreeing it with the user; the local `spike/*` branches can be pushed and opened as PRs from that moment.
 
-## 2026-10-06 · No se instala `.claude/settings.json` ni `.github/workflows/ci.yml`
-- **Decisión:** `mapas-claude-settings.json` y `mapas-ci.yml` quedan sin tocar en la raíz.
-- **Motivo:** el primero cambia mis propios permisos y el segundo es un workflow (CLAUDE.md, «Cuándo preguntar» nº 5).
-- **Revertir:** copiarlos a `.claude/settings.json` y `.github/workflows/ci.yml` (paso 2 de `docs/mapas-README.md`).
+## 2026-10-06 · `.claude/settings.json` and `.github/workflows/ci.yml` are not installed
+- **Decision:** `mapas-claude-settings.json` and `mapas-ci.yml` are left untouched in the root.
+- **Reason:** the first one changes my own permissions and the second one is a workflow (CLAUDE.md, "When to ask" no. 5).
+- **Revert:** copy them to `.claude/settings.json` and `.github/workflows/ci.yml` (step 2 of `docs/mapas-README.md`).
 
-## 2026-10-06 · El código fuente de CoMaps vive fuera del repo
-- **Decisión:** se clona en `~/repos/comaps-spike/` (fuera del repo), fijado a un tag estable; el repo solo guarda scripts y resultados en `spike/` y `docs/spike/`.
-- **Motivo:** instrucción explícita del usuario; evita mezclar Apache-2.0 con el código propio antes de decidir.
-- **Descartado:** submódulo (válido, pero añade ruido a un spike descartable).
-- **Revertir:** `git submodule add` más adelante si se elige A o C.
+## 2026-10-06 · The CoMaps source code lives outside the repo
+- **Decision:** it is cloned into `~/repos/comaps-spike/` (outside the repo), pinned to a stable tag; the repo only keeps scripts and results in `spike/` and `docs/spike/`.
+- **Reason:** explicit user instruction; it avoids mixing Apache-2.0 with our own code before deciding.
+- **Discarded:** submodule (valid, but adds noise to a throwaway spike).
+- **Revert:** `git submodule add` later if A or C is chosen.
 
-## 2026-10-06 · Dispositivos y concurrencia en el spike
-- **Dispositivo disponible:** un único Pixel 8 (Android 17, SDK 37, arm64, 120 Hz, con GMS). Cubre solo la clase «gama alta con GMS».
-- **Decisión:** el acceso al dispositivo se serializa con `flock`; compilaciones C++ limitadas a `-j6` por la RAM libre (~5 GB de 30 GB al empezar).
-- **Consecuencia:** gama media/baja, ROM china sin GMS y de-Googled quedan «no medido». Sin esas clases no se puede decidir el criterio «Sin GMS» ni los umbrales de gama media.
+## 2026-10-06 · Devices and concurrency in the spike
+- **Available device:** a single Pixel 8 (Android 17, SDK 37, arm64, 120 Hz, with GMS). It covers only the "high-end with GMS" class.
+- **Decision:** access to the device is serialized with `flock`; C++ builds limited to `-j6` because of free RAM (~5 GB of 30 GB at the start).
+- **Consequence:** mid-range/low-end, Chinese ROM without GMS and de-Googled remain "not measured". Without those classes, neither the "Without GMS" criterion nor the mid-range thresholds can be decided.
 
-## 2026-10-06 · La rama principal se llama `master`
-- **Decisión:** la rama principal es `master` (no `main`), por indicación del usuario. Donde los documentos del paquete dicen `main` (playbook, CI, `settings.json`), léase `master`.
-- **Pendiente para el usuario:** el workflow `mapas-ci.yml` (`branches: [main]`), las reglas deny de `mapas-claude-settings.json` (`git push origin main *`) y la protección de rama deben apuntar a `master`.
+## 2026-10-06 · The main branch is called `master`
+- **Decision:** the main branch is `master` (not `main`), at the user's instruction. Where the package documents say `main` (playbook, CI, `settings.json`), read `master`.
+- **Pending for the user:** the `mapas-ci.yml` workflow (`branches: [main]`), the deny rules in `mapas-claude-settings.json` (`git push origin main *`) and branch protection must point to `master`.
 
-## 2026-10-06 · Máximo 4 subagentes simultáneos
-- **Decisión:** nunca más de 4 subagentes activos a la vez; el flujo MapLibre (d) se lanza cuando termine uno de los cuatro iniciales.
-- **Motivo:** instrucción del usuario (y RAM limitada, ~5 GB libres).
-- **Revertir:** solo por indicación del usuario.
+## 2026-10-06 · At most 4 simultaneous subagents
+- **Decision:** never more than 4 active subagents at a time; the MapLibre workstream (d) is launched when one of the initial four finishes.
+- **Reason:** user instruction (and limited RAM, ~5 GB free).
+- **Revert:** only at the user's instruction.
 
-## 2026-10-06 · Licencias heredadas de CoMaps que bloquean enlazarlo tal cual en una app GPLv3
-- **Decisión:** antes de reutilizar código de CoMaps (opciones A/C) hay que excluir o reemplazar `3party/bsdiff-courgette/bsdiff` (BSD Protection License, GPL-incompatible), la fuente `data/fonts/06_code2000.ttf` (shareware) y los iconos Entypo (CC BY-SA 3.0). Se fija «GPLv3 o posterior», nunca GPLv2-only.
-- **Motivo:** ver `docs/spike/verificaciones.md` §1.2. Apache-2.0 sí es compatible con GPLv3.
-- **Descartado:** asumir que todo `3party/` es permisivo.
-- **Revertir:** si el autor de bsdiff o un asesor legal confirma compatibilidad, retirar la exclusión.
+## 2026-10-06 · CoMaps inherited licenses that block linking it as is in a GPLv3 app
+- **Decision:** before reusing CoMaps code (options A/C), `3party/bsdiff-courgette/bsdiff` (BSD Protection License, GPL-incompatible), the font `data/fonts/06_code2000.ttf` (shareware) and the Entypo icons (CC BY-SA 3.0) must be excluded or replaced. "GPLv3 or later" is pinned, never GPLv2-only.
+- **Reason:** see `docs/spike/verificaciones.md` §1.2. Apache-2.0 is indeed compatible with GPLv3.
+- **Discarded:** assuming that all of `3party/` is permissive.
+- **Revert:** if the author of bsdiff or a legal advisor confirms compatibility, remove the exclusion.
 
-## 2026-10-06 · Código independiente del motor: módulos JVM y parsers sin StAX
-- **Decisión:** `:core-geo`, `:core-net`, `:core-map`, `:core-search` y `:core-routing` son módulos Kotlin/JVM (`./gradlew test` sin Android); solo `:app` es Android (sabor `foss`, minSdk 26, `applicationId` provisional `com.qtekfun.mapas`). XML (GPX/KML) con `org.xmlpull.v1.XmlPullParser` (plataforma en Android; kXML2 solo en tests JVM), no StAX, porque `javax.xml.stream` no existe en Android. Takeout GeoJSON con kotlinx-serialization-json; CSV con lector propio.
-- **Motivo:** tests rápidos y código conservable con cualquier motor (A/B/C). Si el motor elegido exige que `:core-map` sea módulo Android, se convierte entonces.
-- **Detalles:** kXML2 acepta ficheros truncados sin error, por lo que los importadores comprueban `depth == 0` al final. Apple `?ll=...&q=Nombre` se interpreta como pin con etiqueta (no como búsqueda). Un `geo:0,0?q=texto` es búsqueda sin sesgo de posición.
-- **Descartado:** StAX (no portable a Android); `org.json` (no disponible en JVM puro).
+## 2026-10-06 · Engine-independent code: JVM modules and parsers without StAX
+- **Decision:** `:core-geo`, `:core-net`, `:core-map`, `:core-search` and `:core-routing` are Kotlin/JVM modules (`./gradlew test` without Android); only `:app` is Android (`foss` flavor, minSdk 26, provisional `applicationId` `com.qtekfun.mapas`). XML (GPX/KML) with `org.xmlpull.v1.XmlPullParser` (platform on Android; kXML2 only in JVM tests), not StAX, because `javax.xml.stream` does not exist on Android. Takeout GeoJSON with kotlinx-serialization-json; CSV with an own reader.
+- **Reason:** fast tests and code that can be kept with any engine (A/B/C). If the chosen engine requires `:core-map` to be an Android module, it will be converted then.
+- **Details:** kXML2 accepts truncated files without error, so the importers check `depth == 0` at the end. Apple `?ll=...&q=Name` is interpreted as a pin with a label (not as a search). A `geo:0,0?q=text` is a search without position bias.
+- **Discarded:** StAX (not portable to Android); `org.json` (not available on plain JVM).
 
-## 2026-10-06 · Motor (A/B/C): sin decisión firme; recomendación provisional C
-- **Decisión:** no se declara A, B ni C como decidida. Recomendación provisional C (MapLibre + PMTiles para el render, núcleo de CoMaps para búsqueda/routing). No se inicia la Fase 1.
-- **Motivo:** ruta Madrid–Barcelona 17,8-18,0 s en reposo (umbral 2 s) y búsqueda 631 ms (umbral 100 ms, medida con carga) no cumplen; faltan sin-GMS, gama media, desacople en ejecución. La regla de C exige que el motor pase. Ver `docs/spike-informe.md`.
-- **Descartado:** A (umbrales y dependencia de microG); B (sin evidencia de bloqueo de desacople o licencias, y coste del pipeline mundial; sin medir Valhalla); decidir en firme con datos críticos ausentes.
-- **Revertir/cerrar:** el usuario elige A/B/C o aporta dispositivos y se repiten las mediciones pendientes (informe, «Qué falta»).
+## 2026-10-06 · Engine (A/B/C): no firm decision; provisional recommendation C
+- **Decision:** none of A, B or C is declared decided. Provisional recommendation C (MapLibre + PMTiles for rendering, CoMaps core for search/routing). Phase 1 is not started.
+- **Reason:** Madrid–Barcelona route 17.8-18.0 s at idle (threshold 2 s) and search 631 ms (threshold 100 ms, measured under load) do not meet the thresholds; without-GMS, mid-range and decoupling at runtime are missing. C's rule requires the engine to pass. See `docs/spike-informe.md`.
+- **Discarded:** A (thresholds and microG dependency); B (no evidence of a decoupling or license block, and the cost of the worldwide pipeline; Valhalla not measured); deciding firmly with critical data missing.
+- **Revert/close:** the user chooses A/B/C or provides devices and the pending measurements are repeated (report, "What is missing").
 
-## 2026-10-06 · Se integran las ramas del spike en `master` local con squash
-- **Decisión:** `spike/*` y `feat/core-geo-skeleton` se integran en `master` local sin PR (no hay remoto ni CI). 83 tests pasados con `./gradlew test --rerun-tasks` como único «check». Los ficheros `mapas-ci.yml` y `mapas-claude-settings.json` quedaron versionados en la raíz como texto (no activan nada).
-- **Revertir:** `git reset --hard 559cf42`... (solo local; las ramas originales siguen existiendo).
+## 2026-10-06 · The spike branches are integrated into local `master` with squash
+- **Decision:** `spike/*` and `feat/core-geo-skeleton` are integrated into local `master` without a PR (no remote or CI). 83 tests passed with `./gradlew test --rerun-tasks` as the only "check". The files `mapas-ci.yml` and `mapas-claude-settings.json` were versioned in the root as text (they activate nothing).
+- **Revert:** `git reset --hard 559cf42`... (local only; the original branches still exist).
 
-## 2026-10-06 · El Pixel 8 solo se usa con permiso explícito del usuario
-- **Decisión:** ningún comando `adb` contra el Pixel 8 (instalar, medir, `am`, `dumpsys`, `input`, etc.) sin permiso explícito del usuario en cada ocasión.
-- **Motivo:** instrucción del usuario.
-- **Consecuencia:** las mediciones pendientes (búsqueda en reposo, carriles, MapLibre con SurfaceView) esperan a ese permiso.
-- **Revertir:** solo por indicación del usuario.
+## 2026-10-06 · The Pixel 8 is used only with the user's explicit permission
+- **Decision:** no `adb` command against the Pixel 8 (install, measure, `am`, `dumpsys`, `input`, etc.) without the user's explicit permission each time.
+- **Reason:** user instruction.
+- **Consequence:** the pending measurements (search at idle, lanes, MapLibre with SurfaceView) wait for that permission.
+- **Revert:** only at the user's instruction.
 
-## 2026-10-06 · Motor decidido por el usuario: opción C (híbrido)
-- **Decisión:** opción C. Render con MapLibre Native + PMTiles; búsqueda, routing y datos mundiales con el núcleo de CoMaps (`.mwm`), sin su actividad ni su UI. Se inicia la Fase 1. Sustituye a la «recomendación provisional» anterior.
-- **Motivo:** decisión explícita del usuario («C, implementalo»), tras el informe del spike.
-- **Riesgos que arrastra (no resueltos):** ruta larga ≈ 18 s y búsqueda ≈ 0,6 s del núcleo de CoMaps (R12), sin medir sin GMS ni gama media (R16), licencias heredadas (R11), doble descarga por región (R17).
-- **Descartado:** A y B.
-- **Cómo revertir:** cambiar de opción es caso de «Cuándo preguntar» nº 3 de CLAUDE.md. Las interfaces `MapEngine`/`SearchEngine`/`RoutingEngine` aíslan el motor.
-- **Restricción vigente:** el Pixel 8 no se usa sin permiso explícito; Fase 1 se desarrolla con compilación y tests en el PC.
+## 2026-10-06 · Engine decided by the user: option C (hybrid)
+- **Decision:** option C. Rendering with MapLibre Native + PMTiles; search, routing and worldwide data with the CoMaps core (`.mwm`), without its activity or its UI. Phase 1 starts. It supersedes the earlier "provisional recommendation".
+- **Reason:** explicit user decision ("C, implement it"), after the spike report.
+- **Risks it carries (unresolved):** long route ≈ 18 s and search ≈ 0.6 s of the CoMaps core (R12), not measured without GMS or mid-range (R16), inherited licenses (R11), double download per region (R17).
+- **Discarded:** A and B.
+- **How to revert:** changing option is "When to ask" case no. 3 of CLAUDE.md. The `MapEngine`/`SearchEngine`/`RoutingEngine` interfaces isolate the engine.
+- **Current restriction:** the Pixel 8 is not used without explicit permission; Phase 1 is developed with building and tests on the PC.
 
-## 2026-10-06 · `:core-regions`: catálogo propio con SHA-256 y activación por manifiesto
-- **Decisión:** módulo JVM `:core-regions` con catálogo propio (schema 1, dos assets por hoja, SHA-256) en lugar de consumir `countries.txt` (SHA-1, firma Ed25519) directamente. Activación atómica = renombrado de cada fichero verificado + sustitución atómica de `installed.json`. Detalles y mapeo en `docs/phase1/regions.md`.
-- **Motivo:** RF-02 pide SHA-256 y la opción C necesita unir PMTiles y `.mwm` en una sola región.
-- **Descartado:** reutilizar el catálogo firmado de CoMaps (obliga a nuestra clave Ed25519 y a recompilar; solo documentado, no implementado).
+## 2026-10-06 · `:core-regions`: own catalog with SHA-256 and activation by manifest
+- **Decision:** JVM module `:core-regions` with an own catalog (schema 1, two assets per leaf, SHA-256) instead of consuming `countries.txt` (SHA-1, Ed25519 signature) directly. Atomic activation = rename of each verified file + atomic replacement of `installed.json`. Details and mapping in `docs/phase1/regions.md`.
+- **Reason:** RF-02 asks for SHA-256 and option C needs to join PMTiles and `.mwm` into a single region.
+- **Discarded:** reusing the signed CoMaps catalog (forces our Ed25519 key and a recompile; only documented, not implemented).
 
-## 2026-10-06 · Almacenamiento local: androidx.sqlite directo, sin Room
-- **Decisión:** `:core-data` es un módulo JVM puro que usa la interfaz `SQLiteDriver` de androidx.sqlite 2.7.0 (Apache-2.0) con un repositorio escrito a mano (`SqlitePlacesRepository`). Tests en el PC con `sqlite-bundled`; en Android la app inyectará el driver de `sqlite-framework`. Esquema versionado con `PRAGMA user_version`.
-- **Motivo:** Room necesita KSP y un módulo Android (AGP 9 + Kotlin 2.4 sin verificar), lo que impediría probar en JVM; el esquema es pequeño. Mismas licencias, sin servicios propietarios.
-- **Dedup:** sitios por nombre normalizado + posición a ~1 m; tracks por SHA-256 de nombre, tipo y geometría. Copia de seguridad: ZIP con `mapas-backup.json` (formato 1), restauración MERGE o REPLACE atómica. KML no distingue ruta/track: las rutas se reimportan como tracks.
-- **Descartado:** Room KMP (riesgo de toolchain); JSON plano sin SQLite (sin consultas).
-- **Revertir:** migrar a Room sobre el mismo esquema si hace falta; la interfaz `PlacesRepository` aísla el cambio.
-## 2026-10-06 · `:app` visor: sistema de diseño propio, MapLibre y sin permiso INTERNET
-- **Decisión:** `:app` usa Compose `ui`+`foundation` (sin Material) con tokens propios (`ui/theme/Theme.kt`), bottom sheet de 3 detents propio (`ui/sheet`, geometría pura testeada en JVM) y atribución OSM fija arriba a la izquierda (RF-13). Motor: MapLibre Native 13.6.1 (`MapLibreEngine`) con PMTiles de `filesDir/maps/` y estilos protomaps light/dark generados a plantilla (`@MAPDIR@`, `@PMTILES@`). Sprites y glyphs se copian de assets a `filesDir/map/` en el primer arranque (el motor nativo no lee `file://` bajo Android/data). El manifiesto quita `INTERNET`: el visor no puede abrir conexiones; se añadirá con la primera función bajo `NetworkPolicy` (descargas). `compileSdk` 37 (exigido por Compose 1.12), `targetSdk` 36. `:app` usa JUnit 4 (Robolectric 4.17, MIT, solo tests) y los módulos `core-*` siguen con Jupiter.
-- **Enlaces cortos:** solo se avisa; no se resuelven ni se llama a `NetworkPolicy.authorize` (no se intenta ninguna conexión).
-- **Pendiente:** sprites y glyphs NO están empaquetados (acceso bloqueado a su host durante este trabajo): ejecutar `scripts/fetch-map-assets.sh` (necesita red). Sin ellos el mapa no pinta iconos ni etiquetas. Rendimiento y arranque: no medidos (sin dispositivo). Filas de LICENSES.md añadidas.
-- **Descartado:** Material3 (se pidió sistema propio), `play-services-location` (prohibido), `LocationComponent` de MapLibre (marcador propio por GeoJSON, sin trabajo por frame).
-## 2026-10-06 · Núcleo de CoMaps como módulo nativo propio, sin Framework ni drape
-- **Decisión:** `:native-comaps` compila search + routing + storage + indexer + platform de `third_party/comaps` (submódulo en `v2026.10.05-19`) con un CMake propio, sin `drape`, `drape_frontend`, `map` (Framework) ni bookmarks. Fachada C++ (`DataSource` + `search::Engine` + `IndexRouter`) y Kotlin que implementa `SearchEngine`/`RoutingEngine`. Solo arm64-v8a, sin LTO, `-j6` máximo. `Platform` headless sin red (la red es de Kotlin).
-- **Licencias:** bsdiff-courgette no se compila (`mwm_diff` sustituido por un stub: sin diffs), Code2000 y Entypo fuera de los assets. Ver `LICENSES.md`.
-- **Motivo:** consumir `:sdk` de CoMaps arrastra Framework, Drape, editor, bookmarks y 114 funciones JNI; `IndexRouter` + `search::Engine` están cubiertos por los tests de integración de CoMaps y dejan el binario en 7,7 MB.
-- **Descartado:** compilar `libs/map` sin Drape (el constructor de Framework llama a `df::`); parchear CoMaps (el submódulo queda intacto).
-- **No verificado:** ejecución (sin dispositivo permitido). Ver `docs/phase1/native-core.md`.
+## 2026-10-06 · Local storage: androidx.sqlite directly, without Room
+- **Decision:** `:core-data` is a pure JVM module that uses the `SQLiteDriver` interface of androidx.sqlite 2.7.0 (Apache-2.0) with a hand-written repository (`SqlitePlacesRepository`). Tests on the PC with `sqlite-bundled`; on Android the app will inject the `sqlite-framework` driver. Schema versioned with `PRAGMA user_version`.
+- **Reason:** Room needs KSP and an Android module (AGP 9 + Kotlin 2.4 unverified), which would prevent testing on the JVM; the schema is small. Same licenses, no proprietary services.
+- **Dedup:** places by normalized name + position to ~1 m; tracks by SHA-256 of name, type and geometry. Backup: ZIP with `mapas-backup.json` (format 1), atomic MERGE or REPLACE restore. KML does not distinguish route/track: routes are re-imported as tracks.
+- **Discarded:** Room KMP (toolchain risk); plain JSON without SQLite (no queries).
+- **Revert:** migrate to Room on the same schema if needed; the `PlacesRepository` interface isolates the change.
+## 2026-10-06 · `:app` viewer: own design system, MapLibre and no INTERNET permission
+- **Decision:** `:app` uses Compose `ui`+`foundation` (without Material) with own tokens (`ui/theme/Theme.kt`), an own 3-detent bottom sheet (`ui/sheet`, pure geometry tested on the JVM) and a fixed OSM attribution at the top left (RF-13). Engine: MapLibre Native 13.6.1 (`MapLibreEngine`) with PMTiles from `filesDir/maps/` and protomaps light/dark styles generated from a template (`@MAPDIR@`, `@PMTILES@`). Sprites and glyphs are copied from assets to `filesDir/map/` on first launch (the native engine does not read `file://` under Android/data). The manifest removes `INTERNET`: the viewer cannot open connections; it will be added with the first feature under `NetworkPolicy` (downloads). `compileSdk` 37 (required by Compose 1.12), `targetSdk` 36. `:app` uses JUnit 4 (Robolectric 4.17, MIT, tests only) and the `core-*` modules stay on Jupiter.
+- **Short links:** only a notice is shown; they are not resolved and `NetworkPolicy.authorize` is not called (no connection is attempted).
+- **Pending:** sprites and glyphs are NOT bundled (access to their host was blocked during this work): run `scripts/fetch-map-assets.sh` (needs network). Without them the map draws no icons or labels. Performance and startup: not measured (no device). Rows added to LICENSES.md.
+- **Discarded:** Material3 (an own system was requested), `play-services-location` (forbidden), MapLibre's `LocationComponent` (own marker via GeoJSON, no per-frame work).
+## 2026-10-06 · CoMaps core as an own native module, without Framework or drape
+- **Decision:** `:native-comaps` compiles search + routing + storage + indexer + platform from `third_party/comaps` (submodule at `v2026.10.05-19`) with an own CMake, without `drape`, `drape_frontend`, `map` (Framework) or bookmarks. C++ facade (`DataSource` + `search::Engine` + `IndexRouter`) and Kotlin implementing `SearchEngine`/`RoutingEngine`. arm64-v8a only, no LTO, `-j6` at most. Headless `Platform` without network (the network is Kotlin's).
+- **Licenses:** bsdiff-courgette is not compiled (`mwm_diff` replaced by a stub: no diffs), Code2000 and Entypo are out of the assets. See `LICENSES.md`.
+- **Reason:** consuming CoMaps' `:sdk` drags in Framework, Drape, editor, bookmarks and 114 JNI functions; `IndexRouter` + `search::Engine` are covered by CoMaps' integration tests and leave the binary at 7.7 MB.
+- **Discarded:** compiling `libs/map` without Drape (Framework's constructor calls `df::`); patching CoMaps (the submodule stays intact).
+- **Not verified:** execution (no device allowed). See `docs/phase1/native-core.md`.
 
-## 2026-10-06 · Integración de `feat/comaps-core-native` verificada solo en parte
-- **Decisión:** se integra en `master` local. `./gradlew test --offline --rerun-tasks` da 153 tests en verde (repetido por mí). `assembleDebug` completo **no lo repetí** en `master`: falla porque `third_party/comaps` no está inicializado en este checkout; el agente lo compiló en su worktree (`libumcomaps.so` arm64 7,7 MB). El código nativo no se ha ejecutado nunca (sin dispositivo permitido).
-- **Motivo:** no inicializar 2 GB de submódulos ni forzar un build largo con poca RAM sin necesidad; el siguiente paso útil es ejecutarlo.
-- **Revertir:** `git revert` del commit de integración.
+## 2026-10-06 · Integration of `feat/comaps-core-native` only partly verified
+- **Decision:** it is integrated into local `master`. `./gradlew test --offline --rerun-tasks` gives 153 green tests (repeated by me). A full `assembleDebug` I **did not repeat** on `master`: it fails because `third_party/comaps` is not initialized in this checkout; the agent built it in its worktree (`libumcomaps.so` arm64 7.7 MB). The native code has never been executed (no device allowed).
+- **Reason:** not to initialize 2 GB of submodules or force a long build with little RAM unnecessarily; the next useful step is to run it.
+- **Revert:** `git revert` of the integration commit.
 
-## 2026-10-07 · Pixel 8 cedido a otra sesión; pausa de las pruebas del núcleo
-- **Decisión:** el usuario ordenó dejar de usar el teléfono («eres muy lento») y otra sesión (ultimateVE) lo usa para sus pruebas, con el lock `/tmp/pixel-device.lock`. Esta sesión no ejecuta ningún `adb` hasta nuevo permiso explícito.
-- **Estado de la prueba del núcleo:** el banco de pruebas (`app/src/debug/.../CoreBenchActivity.kt`, solo debug) llegó a arrancar en el Pixel 8. Primer fallo real: `CoMaps init: File not found drules_proto_walking_light.bin`; corregido en `scripts/comaps-prepare.sh` y en la lista de assets. El segundo intento no llegó a dar resultados (el dispositivo quedó offline). **No hay cifras de búsqueda ni ruta del núcleo propio.**
-- **En el móvil quedan** (no tocar sin avisar): `com.qtekfun.mapas` con `files/maps/madrid.pmtiles` y `files/maps-core/261004/` (World, WorldCoasts y 7 regiones, ≈ 0,8 GB).
+## 2026-10-07 · Pixel 8 handed over to another session; core tests paused
+- **Decision:** the user ordered to stop using the phone ("you are very slow") and another session (ultimateVE) uses it for its tests, with the lock `/tmp/pixel-device.lock`. This session runs no `adb` until further explicit permission.
+- **State of the core test:** the test bench (`app/src/debug/.../CoreBenchActivity.kt`, debug only) did manage to start on the Pixel 8. First real failure: `CoMaps init: File not found drules_proto_walking_light.bin`; fixed in `scripts/comaps-prepare.sh` and in the asset list. The second attempt did not produce results (the device went offline). **There are no search or route figures for our own core.**
+- **Left on the phone** (do not touch without warning): `com.qtekfun.mapas` with `files/maps/madrid.pmtiles` and `files/maps-core/261004/` (World, WorldCoasts and 7 regions, ≈ 0.8 GB).
 
-## 2026-10-07 · Release automático en GitHub, como UltimateDeck
-- **Decisión:** versión única `appVersion` en `gradle.properties` con `versionCode` derivado (0.1.0-rc.1 → 10001), firma por variables `UM_KEYSTORE_*`, `CHANGELOG.md` y `RELEASING.md`, y `.github/workflows/release.yml` disparado por tag `v*` (tag = `appVersion`, notas obligatorias, APK firmado + `.sha256`, `-rc.N` como pre-release). Referencia revisada: `~/repos/ultimatedeck` (`release.yml`, `RELEASING.md`, `app/build.gradle.kts`).
-- **Diferencias a propósito:** el workflow **falla si falta el secreto de firma** (UltimateDeck publicaría un APK sin firmar); `lintFossRelease` en vez de `check` completo; sin minificar de momento; SHAs de las acciones fijados igual que en UltimateDeck.
-- **Verificado:** `assembleFossRelease` genera `app-foss-release-unsigned.apk` con `versionCode=10001`, `versionName=0.1.0-rc.1` (`aapt2 dump badging`); YAML válido; la extracción de notas con `awk` funciona. **No verificado:** el workflow en GitHub (no hay remoto ni secretos).
-- **Autorización:** el usuario pidió explícitamente este release automático; es la única parte de `.github/workflows/` que se toca. El CI (`ci.yml`) y la protección de rama siguen pendientes de él (CLAUDE.md, «Cuándo preguntar» nº 5).
-- **Pendiente del usuario:** crear la clave y los secretos (`RELEASING.md`), `master` en GitHub, la regla de protección (hay una plantilla en `~/repos/ruleset-master.json`) y el primer tag.
-- **Revertir:** borrar `.github/workflows/release.yml`.
-## 2026-10-07 · M2/M3: búsqueda en producción y sitios guardados (rama `feat/mvp-search-places`)
-- **Decisión:** `:native-comaps` pasa a `implementation` de `:app`. El núcleo se arranca en diferido (primera consulta o cambio de regiones), fuera del hilo principal, sobre `filesDir/maps-core/` mediante la interfaz `search.InstalledRegions` (`DirectoryInstalledRegions` escanea `<versión>/World.mwm` y cuenta regiones; el módulo de regiones puede aportar la suya a `PanelHost`). Consultas con debounce de 250 ms; una tecla nueva cancela la anterior y las llamadas nativas se serializan con un `Mutex` (un solo `Core` por proceso). Sin regiones: estado vacío y el núcleo no se arranca.
-- **Latencia (para la prueba futura en el móvil, no ejecutada):** logcat `UMSEARCH` con `engine_ready_ms`, y por consulta `qlen`, `results`, `ms` y `first` (primera tras arrancar). Sin texto de consultas ni posiciones. Medida con `SystemClock.elapsedRealtime` alrededor de la llamada nativa (no incluye el debounce).
-- **Sitios:** driver `sqlite-framework` (`AndroidSQLiteDriver`) en `databases/places.db`; la lista por defecto («Favoritos») guarda su id en SharedPreferences y se recrea si se borra. Importar/exportar GPX/KML con el selector de documentos (SAF: `OpenDocument`/`CreateDocument`, sin permisos de almacenamiento; formato por extensión y, si no, por contenido; tope de 32 MB). Marcadores de sitios guardados: capa de círculos propia en `MapLibreEngine` (`MapEngine.showMarkers`), sin sprites. Ordenar por distancia usa la última ubicación conocida en memoria o, si no hay, el centro de la cámara.
-- **Pendiente:** el botón «Ruta» de la ficha solo avisa (M4); zoom fijo 15 al elegir un resultado (el núcleo no devuelve extensión); medir R12 y fluidez en el móvil.
+## 2026-10-07 · Automatic release on GitHub, like UltimateDeck
+- **Decision:** single `appVersion` in `gradle.properties` with derived `versionCode` (0.1.0-rc.1 → 10001), signing through `UM_KEYSTORE_*` variables, `CHANGELOG.md` and `RELEASING.md`, and `.github/workflows/release.yml` triggered by a `v*` tag (tag = `appVersion`, notes required, signed APK + `.sha256`, `-rc.N` as pre-release). Reference reviewed: `~/repos/ultimatedeck` (`release.yml`, `RELEASING.md`, `app/build.gradle.kts`).
+- **Deliberate differences:** the workflow **fails if the signing secret is missing** (UltimateDeck would publish an unsigned APK); `lintFossRelease` instead of the full `check`; no minification for now; action SHAs pinned the same as in UltimateDeck.
+- **Verified:** `assembleFossRelease` generates `app-foss-release-unsigned.apk` with `versionCode=10001`, `versionName=0.1.0-rc.1` (`aapt2 dump badging`); valid YAML; the notes extraction with `awk` works. **Not verified:** the workflow on GitHub (no remote or secrets).
+- **Authorization:** the user explicitly asked for this automatic release; it is the only part of `.github/workflows/` that is touched. CI (`ci.yml`) and branch protection are still pending on the user (CLAUDE.md, "When to ask" no. 5).
+- **Pending for the user:** create the key and the secrets (`RELEASING.md`), `master` on GitHub, the protection rule (there is a template in `~/repos/ruleset-master.json`) and the first tag.
+- **Revert:** delete `.github/workflows/release.yml`.
+## 2026-10-07 · M2/M3: search in production and saved places (branch `feat/mvp-search-places`)
+- **Decision:** `:native-comaps` becomes an `implementation` of `:app`. The core is started lazily (first query or region change), off the main thread, over `filesDir/maps-core/` through the `search.InstalledRegions` interface (`DirectoryInstalledRegions` scans `<version>/World.mwm` and counts regions; the regions module can supply its own to `PanelHost`). Queries with a 250 ms debounce; a new keystroke cancels the previous one and native calls are serialized with a `Mutex` (a single `Core` per process). Without regions: empty state and the core is not started.
+- **Latency (for the future test on the phone, not run):** logcat `UMSEARCH` with `engine_ready_ms`, and per query `qlen`, `results`, `ms` and `first` (first after startup). No query text or positions. Measured with `SystemClock.elapsedRealtime` around the native call (does not include the debounce).
+- **Places:** `sqlite-framework` driver (`AndroidSQLiteDriver`) in `databases/places.db`; the default list ("Favoritos", i.e. Favorites) stores its id in SharedPreferences and is recreated if deleted. GPX/KML import/export with the document picker (SAF: `OpenDocument`/`CreateDocument`, no storage permissions; format by extension and, failing that, by content; 32 MB cap). Saved place markers: own circle layer in `MapLibreEngine` (`MapEngine.showMarkers`), no sprites. Sorting by distance uses the last known location in memory or, if there is none, the camera center.
+- **Pending:** the detail card's "Ruta" (Route) button only shows a notice (M4); fixed zoom 15 when choosing a result (the core returns no extent); measure R12 and fluidity on the phone.
 
-## 2026-10-07 · El workflow de release prepara el núcleo de CoMaps
-- **Decisión:** tras integrar M2, `release.yml` ejecuta `git submodule update --init third_party/comaps` y `scripts/comaps-prepare.sh` antes de compilar (el núcleo ya va en el APK de release).
-- **Verificado:** `assembleFossRelease` local con el núcleo: OK, 2 min 51 s, APK sin firmar 42,3 MB. **No verificado:** el workflow en GitHub (sin remoto ni secretos), ni NDK/CMake/tiempo/RAM del runner.
-- **Revertir:** quitar el paso «Preparar el núcleo de CoMaps» (el release dejaría de compilar).
-## 2026-10-07 · M0 + M1 (rama `feat/mvp-regions`): assets del mapa, pantalla «Mapas» y descargas
-- **Hallazgo M0:** `scripts/gen-map-style.mjs` no pasaba `lang` y `@protomaps/basemaps` **no genera capas de etiquetas sin él** (57 capas, 0 `symbol`): el mapa nunca iba a tener texto aunque hubiera glyphs. Ahora `lang=es` por defecto (cae a `name`, el nombre local); 71 capas, 14 `symbol`. Sprites v4 y 3 fuentes Noto Sans (rangos 0-255, 256-511, 8192-8703) empaquetados, ~1,3 MB (OFL/BSD-3). Los rangos y fuentes que no existen (p. ej. Devanagari) devuelven error de fichero y MapLibre solo omite esos glifos. No verificado en dispositivo (nombres de carpeta con espacios en `file://`).
-- **Pin:** `LinkOutcome.pinPoint()`; `handleLink` siempre reemplaza o borra el pin (enlace corto/no reconocido/búsqueda lo borran).
-- **`countries.txt` (campos reales, verificados):** raíz `{id:"Countries", v:261004, map_series:"2026.06.28", g:[…]}`; hojas `{id, s (bytes), sha1_base64, old, affiliations, country_name_synonyms?}`; grupos `{id, g}`. `v` es global. Los ids llevan espacios y hay 5 nodos repetidos bajo dos padres (Campo de Hielo Sur, Abkhazia, South Ossetia, Jerusalem, Crimea). `scripts/gen-region-catalog.py`: id propio = slug ASCII (`spain_community-of-madrid`), `comapsId` original como campo extra (el parser lo ignora), se conserva la primera aparición de cada nodo, SHA-256 de ficheros reales (`--mwm-dir`, `--pmtiles-dir`); una hoja solo es descargable con ambos ficheros; `--fetch-mwm` descarga UN .mwm bajo petición con tope de 20 MB. La URL base por defecto de los .mwm (`<servidor>/maps/<series>/<v>/<id>.mwm`) sale de la documentación, no se comprobó con red.
-- **No hay servidor propio ni catálogo por defecto:** la app no trae ninguna URL. El usuario escribe la del catálogo en «Mapas»; su host (y los de las URLs de los assets del catálogo, que decide ese servidor) se añaden a `NetworkPolicy` como `MAP_DOWNLOAD` y quedan listados en «conexiones posibles». Sin servidor: cero conexiones.
-- **INTERNET restaurado** (se quita el `tools:node="remove"`) solo para este flujo; `FOREGROUND_SERVICE`, `FOREGROUND_SERVICE_DATA_SYNC`, `POST_NOTIFICATIONS`. «Modo sin red» persistido (`offline_mode`) y aplicado en `Application.onCreate`: probado con servidor local que no llega ninguna petición.
-- **Servicio:** `RegionDownloadService` (dataSync) solo muestra la notificación y se para solo; el trabajo lo hace `RegionsController` (cola secuencial, pausa conserva el `.part`, reanuda con `Range`). Android 15: `onTimeout` pausa todo (límite ~6 h de dataSync).
-- **Límites conocidos:** el estilo tiene una sola fuente PMTiles, así que con varias regiones instaladas solo se dibuja la primera por id (conviene un extracto PMTiles por país); instalar en tarjeta SD está permitido pero el motor nativo solo se sabe que lee de `filesDir` (aviso en la UI); si una actualización se interrumpe tras el primer fichero, ese fichero se vuelve a bajar (el `.part` ya se movió).
-- **Alternativa descartada:** catálogo embebido en la APK (sin URLs de descarga fiables ni SHA-256 reales) y auto-descarga del catálogo al arrancar (la app no conecta sin una acción del usuario).
+## 2026-10-07 · The release workflow prepares the CoMaps core
+- **Decision:** after integrating M2, `release.yml` runs `git submodule update --init third_party/comaps` and `scripts/comaps-prepare.sh` before building (the core now ships in the release APK).
+- **Verified:** local `assembleFossRelease` with the core: OK, 2 min 51 s, unsigned APK 42.3 MB. **Not verified:** the workflow on GitHub (no remote or secrets), nor the runner's NDK/CMake/time/RAM.
+- **Revert:** remove the "Prepare the CoMaps core" step (the release would stop building).
+## 2026-10-07 · M0 + M1 (branch `feat/mvp-regions`): map assets, "Mapas" screen and downloads
+- **M0 finding:** `scripts/gen-map-style.mjs` did not pass `lang` and `@protomaps/basemaps` **does not generate label layers without it** (57 layers, 0 `symbol`): the map was never going to have text even with glyphs. Now `lang=es` by default (falls back to `name`, the local name); 71 layers, 14 `symbol`. Sprites v4 and 3 Noto Sans fonts (ranges 0-255, 256-511, 8192-8703) bundled, ~1.3 MB (OFL/BSD-3). Ranges and fonts that do not exist (e.g. Devanagari) return a file error and MapLibre just omits those glyphs. Not verified on a device (folder names with spaces in `file://`).
+- **Pin:** `LinkOutcome.pinPoint()`; `handleLink` always replaces or clears the pin (short links/unrecognized/search clear it).
+- **`countries.txt` (real fields, verified):** root `{id:"Countries", v:261004, map_series:"2026.06.28", g:[…]}`; leaves `{id, s (bytes), sha1_base64, old, affiliations, country_name_synonyms?}`; groups `{id, g}`. `v` is global. The ids contain spaces and there are 5 nodes repeated under two parents (Campo de Hielo Sur, Abkhazia, South Ossetia, Jerusalem, Crimea). `scripts/gen-region-catalog.py`: own id = ASCII slug (`spain_community-of-madrid`), original `comapsId` as an extra field (the parser ignores it), the first appearance of each node is kept, SHA-256 of real files (`--mwm-dir`, `--pmtiles-dir`); a leaf is downloadable only with both files; `--fetch-mwm` downloads ONE .mwm on request with a 20 MB cap. The default base URL of the .mwm (`<server>/maps/<series>/<v>/<id>.mwm`) comes from the documentation, it was not checked with network.
+- **There is no own server or default catalog:** the app ships no URL. The user types the catalog's URL in "Mapas" (Maps); its host (and those of the catalog's asset URLs, which that server decides) are added to `NetworkPolicy` as `MAP_DOWNLOAD` and are listed under "possible connections". Without a server: zero connections.
+- **INTERNET restored** (the `tools:node="remove"` is removed) only for this flow; `FOREGROUND_SERVICE`, `FOREGROUND_SERVICE_DATA_SYNC`, `POST_NOTIFICATIONS`. "No network mode" persisted (`offline_mode`) and applied in `Application.onCreate`: tested with a local server that no request arrives.
+- **Service:** `RegionDownloadService` (dataSync) only shows the notification and stops by itself; the work is done by `RegionsController` (sequential queue, pause keeps the `.part`, resumes with `Range`). Android 15: `onTimeout` pauses everything (dataSync limit ~6 h).
+- **Known limits:** the style has a single PMTiles source, so with several regions installed only the first by id is drawn (one PMTiles extract per country is advisable); installing on an SD card is allowed but the native engine is only known to read from `filesDir` (warning in the UI); if an update is interrupted after the first file, that file is downloaded again (the `.part` was already moved).
+- **Discarded alternative:** a catalog embedded in the APK (no reliable download URLs or real SHA-256) and auto-downloading the catalog at startup (the app does not connect without a user action).
 
-## 2026-10-07 · Datos de mapas alojados en GitHub Releases, un PMTiles por región
-- **Decisión:** repositorio público `qtekfun/UltimateMaps-data` (creado a petición del usuario: «Dale a GitHub») con releases de datos. Primera release `data-261004-20261006`: 25 regiones de España, un `.pmtiles` y un `.mwm` por región (50 ficheros, 4,34 GB; el mayor, Castilla-La Mancha, 209 MB), más `World.mwm`, `WorldCoasts.mwm`, `catalog.json` y `SHA256SUMS`. Catálogo estable: `https://github.com/qtekfun/UltimateMaps-data/releases/latest/download/catalog.json`.
-- **Motivo:** gratis, HTTPS y `Range`, sin cuentas nuevas, reversible (la app solo conoce la URL del catálogo). Partir por regiones deja todos los ficheros muy por debajo del límite de 2 GB y permite descargar solo lo necesario.
-- **Cómo se hizo (reproducible):** `.mwm` copiados sin modificar del CDN de CoMaps (datos 261004); PMTiles con `scripts/split-pmtiles.py` (recorte con los polígonos `data/borders/*.poly` de CoMaps sobre el build de Protomaps 20261006); catálogo con `scripts/gen-region-catalog.py --mwm-url-by-slug` (SHA-256 de los ficheros reales). Datos locales en `~/mapas-data/` (fuera del repo).
-- **Incidencia corregida:** Canarias, Ceuta y Melilla salieron casi vacíos al cortarlos de un extracto que no los cubría; se rehicieron desde el planeta completo (62, 1,5 y 1,7 MB).
-- **Riesgos y avisos:** no hemos encontrado condiciones de uso del CDN de CoMaps (el README lo dice y ofrece retirar los `.mwm` a petición del proyecto); GitHub renombra los espacios de los nombres de asset, por eso las URL de los `.mwm` usan el slug; los datos son ODbL (atribución y compartir igual, en el README).
-- **Lagunas conocidas (tareas pendientes, ver `docs/mvp-plan.md`):**
-  1. **Enlazar lo descargado con el núcleo:** el catálogo instala el `.mwm` como `<slug>.mwm` en `<root>/<id>/<versión>/`, pero el núcleo exige `maps-core/<versión>/<comapsId>.mwm` (p. ej. `Spain_La Rioja.mwm`). Falta guardar `comapsId` en el modelo y crear el enlace simbólico al instalar y borrar.
-  2. **`World.mwm` y `WorldCoasts.mwm`** están en la release pero no en el esquema del catálogo (no son una región).
-  3. **URL del catálogo por defecto** en la app (hoy la escribe el usuario) y lista blanca de `NetworkPolicy` para `github.com` y los hosts de redirección de los assets.
-  4. **Dibujado multi-región** (agente en curso): el estilo solo dibuja una región; las regiones se solapan en el borde.
-- **Revertir:** `gh release delete data-261004-20261006` y borrar el repo de datos; la app no depende de él hasta que se fije la URL por defecto.
-## 2026-10-07 · Render multirregión (rama `feat/multi-region-render`)
-- **Decisión:** el estilo se genera en ejecución (`map/MultiRegionStyle.kt`) a partir de la plantilla de una fuente: una fuente `pmtiles://file://…` por región instalada (`protomaps-<i>`, orden por id de región) y una copia de cada capa con fuente por región, en orden capa-mayor (capa 1 de todas las regiones, luego capa 2…) para conservar el z-order entre regiones. Copia 0 con el id original, las demás `<id>@<i>`. `background` una sola vez. Sin regiones: sin fuentes, solo fondo (ya no apunta a un `none.pmtiles` inexistente). MapLibre Native (≥ 11.7, Context7) admite varias fuentes `pmtiles://` y `file://`.
-- **Solape en bordes:** rellenos y líneas opacos repintan los mismos píxeles (inocuo). Las capas translúcidas (`buildings` 0,5, `landuse_urban_green` 0,7, `roads_rail` 0,5; `landcover` solo entre z5 y z7) se ven más densas en la franja de solape. Las etiquetas duplicadas (mismo texto y sitio) colisionan entre sí y solo se coloca una (no usan allow-overlap). No se mitiga más: no se sabe qué región «gana» sin conocer los polígonos; pendiente de verlo en el móvil.
-- **Coste (estimación, NO medida):** 71 capas por fuente (41 line, 15 fill, 14 symbol, 1 background) → 1 + 70·N capas: 3 regiones = 211, 10 = 701, 25 = 1751 (tope `MAX_SOURCES` = 25; el resto se omite y se registra). El estilo crece ~lineal (≈ 0,3 MB de JSON con 25). Solo cuestan por fotograma las fuentes con teselas en el viewport (normalmente 1–3), pero la lista de capas y la reconciliación de estilo sí crecen con N, y la carga del estilo en el arranque también. Sin dedupe de earth/water: cada extracto solo contiene su polígono, así que una fuente no puede cubrir a las demás. Opciones si mide mal: un PMTiles de baja resolución mundial (z0–z5) como fuente única de tierra/agua más extractos solo desde z6; o más de una región por extracto (país/comunidad).
-- **Métrica:** logcat `UMSTYLE` en cada carga de estilo: `sources`, `layers`, `template_layers`, `skipped`, `json_kb`, `build_ms`, `style_load_ms` (sin rutas ni ubicaciones). Fluidez con N regiones: no medida.
-- **Recarga:** `refreshTilesIfChanged` compara una firma (ruta + tamaño + mtime de cada PMTiles) en lugar de la primera ruta; al volver de «Mapas» (`onStart`) se recarga si se instaló, borró o reemplazó una región. No hace falta reiniciar.
-- **Tests:** `MultiRegionStyleTest` (Robolectric): 0, 1, N regiones, ids únicos, ninguna fuente sin definir ni sin usar, tope y escape de rutas.
+## 2026-10-07 · Map data hosted on GitHub Releases, one PMTiles per region
+- **Decision:** public repository `qtekfun/UltimateMaps-data` (created at the user's request: "Give it to GitHub") with data releases. First release `data-261004-20261006`: 25 regions of Spain, one `.pmtiles` and one `.mwm` per region (50 files, 4.34 GB; the largest, Castilla-La Mancha, 209 MB), plus `World.mwm`, `WorldCoasts.mwm`, `catalog.json` and `SHA256SUMS`. Stable catalog: `https://github.com/qtekfun/UltimateMaps-data/releases/latest/download/catalog.json`.
+- **Reason:** free, HTTPS and `Range`, no new accounts, reversible (the app only knows the catalog URL). Splitting by regions leaves all files well below the 2 GB limit and allows downloading only what is needed.
+- **How it was done (reproducible):** `.mwm` copied unmodified from the CoMaps CDN (data 261004); PMTiles with `scripts/split-pmtiles.py` (clipping with CoMaps' `data/borders/*.poly` polygons over the Protomaps build 20261006); catalog with `scripts/gen-region-catalog.py --mwm-url-by-slug` (SHA-256 of the real files). Local data in `~/mapas-data/` (outside the repo).
+- **Incident fixed:** Canarias, Ceuta and Melilla came out almost empty when cut from an extract that did not cover them; they were redone from the full planet (62, 1.5 and 1.7 MB).
+- **Risks and warnings:** we have not found terms of use for the CoMaps CDN (the README says so and offers to remove the `.mwm` at the project's request); GitHub renames the spaces in asset names, which is why the `.mwm` URLs use the slug; the data is ODbL (attribution and share-alike, in the README).
+- **Known gaps (pending tasks, see `docs/mvp-plan.md`):**
+  1. **Link what was downloaded to the core:** the catalog installs the `.mwm` as `<slug>.mwm` in `<root>/<id>/<version>/`, but the core requires `maps-core/<version>/<comapsId>.mwm` (e.g. `Spain_La Rioja.mwm`). `comapsId` must be stored in the model and the symbolic link created on install and delete.
+  2. **`World.mwm` and `WorldCoasts.mwm`** are in the release but not in the catalog schema (they are not a region).
+  3. **Default catalog URL** in the app (today the user types it) and `NetworkPolicy` allowlist for `github.com` and the asset redirect hosts.
+  4. **Multi-region drawing** (agent in progress): the style only draws one region; regions overlap at the border.
+- **Revert:** `gh release delete data-261004-20261006` and delete the data repo; the app does not depend on it until the default URL is set.
+## 2026-10-07 · Multi-region rendering (branch `feat/multi-region-render`)
+- **Decision:** the style is generated at runtime (`map/MultiRegionStyle.kt`) from the single-source template: one `pmtiles://file://…` source per installed region (`protomaps-<i>`, ordered by region id) and a copy of each layer with a per-region source, in layer-major order (layer 1 of all regions, then layer 2…) to preserve z-order across regions. Copy 0 with the original id, the others `<id>@<i>`. `background` only once. Without regions: no sources, only background (it no longer points to a nonexistent `none.pmtiles`). MapLibre Native (≥ 11.7, Context7) supports several `pmtiles://` and `file://` sources.
+- **Overlap at borders:** opaque fills and lines repaint the same pixels (harmless). Translucent layers (`buildings` 0.5, `landuse_urban_green` 0.7, `roads_rail` 0.5; `landcover` only between z5 and z7) look denser in the overlap strip. Duplicate labels (same text and place) collide with each other and only one is placed (they do not use allow-overlap). Not mitigated further: it is not known which region "wins" without knowing the polygons; pending to be seen on the phone.
+- **Cost (estimate, NOT measured):** 71 layers per source (41 line, 15 fill, 14 symbol, 1 background) → 1 + 70·N layers: 3 regions = 211, 10 = 701, 25 = 1751 (`MAX_SOURCES` cap = 25; the rest is omitted and logged). The style grows ~linearly (≈ 0.3 MB of JSON with 25). Only sources with tiles in the viewport cost per frame (normally 1–3), but the layer list and style reconciliation do grow with N, and so does style loading at startup. No dedup of earth/water: each extract contains only its polygon, so one source cannot cover the others. Options if it measures badly: a low-resolution worldwide PMTiles (z0–z5) as the single land/water source and extracts only from z6; or more than one region per extract (country/community).
+- **Metric:** logcat `UMSTYLE` on each style load: `sources`, `layers`, `template_layers`, `skipped`, `json_kb`, `build_ms`, `style_load_ms` (no paths or locations). Fluidity with N regions: not measured.
+- **Reload:** `refreshTilesIfChanged` compares a signature (path + size + mtime of each PMTiles) instead of the first path; when returning from "Mapas" (Maps) (`onStart`) it reloads if a region was installed, deleted or replaced. No restart needed.
+- **Tests:** `MultiRegionStyleTest` (Robolectric): 0, 1, N regions, unique ids, no undefined or unused source, cap and path escaping.
 
-## 2026-10-07 · Release de datos publicada y verificada (parcialmente)
-- **Estado:** `data-261004-20261006` publicada (no borrador): 54 ficheros, 4,40 GB, en `https://github.com/qtekfun/UltimateMaps-data/releases/tag/data-261004-20261006`.
-- **Verificado con descargas reales (curl y urllib):** el catálogo estable `…/releases/latest/download/catalog.json` responde 200 y es byte a byte idéntico al local; `Range` devuelve 206 con los bytes correctos (inicio y a mitad de un PMTiles de Madrid); descargas completas de Canarias, Ceuta, La Rioja y Melilla (render y search, 8 ficheros): tamaño y SHA-256 coinciden con el catálogo.
-- **Dato para la lista blanca de red:** la descarga de un asset hace 302 desde `github.com` a **`release-assets.githubusercontent.com`** (URL firmada con caducidad corta). Hay que permitir ambos hosts (agente `feat/mvp-regions-core-link`).
-- **No verificado:** los otros 21 pares de ficheros, `World.mwm` y `WorldCoasts.mwm` (están subidos y con hash en `SHA256SUMS`, no re-descargados), ni cuota o límites de ancho de banda de GitHub para tráfico real de usuarios.
-## 2026-10-07 · M4: vista previa de ruta (rama `feat/mvp-route-preview`)
-- **Decisión:** «Ruta» de la ficha abre `RoutePanel` (origen = ubicación actual, perfil coche/pie/bici, evitar autopistas/peajes/ferris/sin asfaltar con `RouteOptions`, distancia y tiempo, cerrar). Sin ubicación se avisa y se elige el origen buscando o tocando el mapa (`MapEngine.setMapTapListener`, solo mientras se elige). `MapEngine` gana `showRoute`/`clearRoute`/`setMapTapListener` con implementación vacía por defecto; `MapLibreEngine` dibuja una `LineLayer` bajo los puntos y encuadra la ruta con relleno inferior para el panel.
-- **Concurrencia:** cada cálculo corre en IO, se cancela al cambiar perfil/opción/origen y se serializa con la búsqueda con un único `Mutex` compartido (un solo `CoMapsCore`). Una llamada nativa no se puede interrumpir: el **timeout (30 s)** solo deja de esperar y descarta el resultado tardío, y se pasa el mismo presupuesto al router nativo; el núcleo ya ocupado retrasa el siguiente cálculo. `CANCELLED` del núcleo se muestra como timeout.
-- **Latencia (R12, no medida):** logcat `UMROUTE` con `route profile=<perfil> ms=<n> result=<ok|need_more_maps|start_not_found|end_not_found|route_not_found|timeout|no_regions|internal|cancelled>`. Sin coordenadas ni nombres. Medida desde que se lanza hasta el resultado (incluye la espera del `Mutex` y el arranque en frío del núcleo).
-- **Límites:** no hay giro a giro; el origen elegido no tiene marcador propio; el tiempo de las rutas largas sigue sin medirse en el móvil; la lista de regiones que faltan (`NEED_MORE_MAPS`) no se detalla.
+## 2026-10-07 · Data release published and verified (partially)
+- **State:** `data-261004-20261006` published (not a draft): 54 files, 4.40 GB, at `https://github.com/qtekfun/UltimateMaps-data/releases/tag/data-261004-20261006`.
+- **Verified with real downloads (curl and urllib):** the stable catalog `…/releases/latest/download/catalog.json` answers 200 and is byte-for-byte identical to the local one; `Range` returns 206 with the correct bytes (start and middle of a Madrid PMTiles); full downloads of Canarias, Ceuta, La Rioja and Melilla (render and search, 8 files): size and SHA-256 match the catalog.
+- **Datum for the network allowlist:** downloading an asset does a 302 from `github.com` to **`release-assets.githubusercontent.com`** (signed URL with a short expiry). Both hosts must be allowed (agent `feat/mvp-regions-core-link`).
+- **Not verified:** the other 21 file pairs, `World.mwm` and `WorldCoasts.mwm` (they are uploaded and hashed in `SHA256SUMS`, not re-downloaded), nor GitHub's quota or bandwidth limits for real user traffic.
+## 2026-10-07 · M4: route preview (branch `feat/mvp-route-preview`)
+- **Decision:** the detail card's "Ruta" (Route) opens `RoutePanel` (origin = current location, car/foot/bike profile, avoid motorways/tolls/ferries/unpaved with `RouteOptions`, distance and time, close). Without a location a notice is shown and the origin is chosen by searching or tapping the map (`MapEngine.setMapTapListener`, only while choosing). `MapEngine` gains `showRoute`/`clearRoute`/`setMapTapListener` with an empty default implementation; `MapLibreEngine` draws a `LineLayer` under the points and frames the route with bottom padding for the panel.
+- **Concurrency:** each computation runs on IO, is cancelled when the profile/option/origin changes and is serialized with search through a single shared `Mutex` (a single `CoMapsCore`). A native call cannot be interrupted: the **timeout (30 s)** only stops waiting and discards the late result, and the same budget is passed to the native router; an already busy core delays the next computation. The core's `CANCELLED` is shown as a timeout.
+- **Latency (R12, not measured):** logcat `UMROUTE` with `route profile=<profile> ms=<n> result=<ok|need_more_maps|start_not_found|end_not_found|route_not_found|timeout|no_regions|internal|cancelled>`. No coordinates or names. Measured from launch to result (includes the wait for the `Mutex` and the core's cold start).
+- **Limits:** there is no turn-by-turn; the chosen origin has no marker of its own; the time of long routes is still not measured on the phone; the list of missing regions (`NEED_MORE_MAPS`) is not detailed.
 
-## 2026-10-07 · Test `RoutePanelTest` intermitente: corregido en el test, no en el código
-- **Síntoma:** tras integrar M4, `explainsNeedMoreMaps` fallaba ~1 de cada 2 suites completas y 0 de 3 aislado.
-- **Diagnóstico (con volcado del árbol de semántica al fallar):** el estado del controlador era `ERROR/NEED_MORE_MAPS`, pero la pantalla seguía mostrando «Calculating route…». El test arrancaba el cálculo en hilos de fondo (`Dispatchers.Default/IO`) antes de componer y esperaba una recomposición provocada desde otro hilo; en una JVM con muchas pruebas de Compose/Robolectric esa recomposición no siempre llegaba.
-- **Intentos descartados (no funcionaron, 2 de 4 y 0 de 6):** esperar al nodo en vez de al estado; forzar `Snapshot.sendApplyNotifications()`; hacer que el controlador trabaje sobre `Dispatchers.Main`.
-- **Arreglo:** el test espera (sin tocar la UI) a que el cálculo termine y compone la pantalla después, así la primera composición lee el estado final. No se debilita nada: se siguen comprobando los mismos textos, perfiles y el botón de cerrar. Resultado: 6 suites completas seguidas en verde.
-- **Qué no cubre:** el test ya no prueba que la UI se recomponga al llegar un resultado desde otro hilo; la lógica con hilos reales sigue en `RoutePreviewControllerTest`. Si la app mostrara «Calculando…» tras un resultado en el dispositivo, estos tests no lo detectarían: comprobarlo en el móvil.
-## 2026-10-07 · Enlace con el núcleo, World y catálogo por defecto (rama `feat/mvp-regions-core-link`)
-- **Decisión:** `Region.comapsId` e `installed.json` (retrocompatibles); bloque `base` del catálogo (World/WorldCoasts, una vez por versión, `<root>/.base/<v>/`); `CoreMapsLinker` (enlaces simbólicos, duros como respaldo, ledger `.links.json`) que deja `filesDir/maps-core/<v>/<comapsId>.mwm` + `World*.mwm` al arrancar y tras instalar, actualizar o borrar; catálogo por defecto `https://github.com/qtekfun/UltimateMaps-data/releases/latest/download/catalog.json` con `github.com`, `release-assets.githubusercontent.com` y `objects.githubusercontent.com` en la lista blanca (solo al usar un catálogo de github.com). Detalles en `docs/phase1/regions.md`. Cierran las lagunas 1, 2 y 3 de la entrada anterior.
-- **Motivo del simbólico:** funciona hacia la tarjeta SD (otro volumen) y no duplica 4 GB; el duro es el respaldo. El núcleo lee con `stat`/`fopen` (siguen enlaces).
-- **Hallazgo (núcleo):** `RefreshMaps` registra mapas nuevos y versiones más nuevas, pero no hay desregistro: tras **borrar** una región el núcleo la sigue sirviendo hasta reiniciar la app (singleton). La UI lo avisa (`restartNeeded`). Una actualización no necesita reinicio.
-- **Verificado:** tests JVM (`:core-regions`, `:app`): enlazador, catálogo/base, redirecciones 302 a otro host autorizado y no, integración catálogo -> instalar con World -> estructura `maps-core/<v>/` con nombres exactos (`Spain_La Rioja.mwm`) -> actualizar -> borrar. Cadena de redirecciones de nuestra release comprobada con HEAD. **No verificado:** que el núcleo lea de verdad a través de enlaces en Android (ni en la tarjeta), la descarga real de la release, ni la búsqueda real con estos ficheros (sin móvil).
-- **Límites:** si una tarjeta no está montada al arrancar, sus regiones se desenlazan hasta el siguiente arranque o instalación; un catálogo sin `base` no puede descargar World (el enlace usa la base ya instalada, si la hay); un único `World*.mwm` por versión en cada almacenamiento.
-- **Alternativa descartada:** copiar los .mwm a `maps-core` (duplica espacio y no sirve en la tarjeta) y descargar el catálogo al arrancar (la app no conecta sin acción del usuario).
+## 2026-10-07 · Intermittent `RoutePanelTest` test: fixed in the test, not in the code
+- **Symptom:** after integrating M4, `explainsNeedMoreMaps` failed in ~1 of every 2 full suites and 0 of 3 in isolation.
+- **Diagnosis (with a semantics tree dump on failure):** the controller state was `ERROR/NEED_MORE_MAPS`, but the screen still showed "Calculating route…". The test started the computation on background threads (`Dispatchers.Default/IO`) before composing and waited for a recomposition triggered from another thread; in a JVM with many Compose/Robolectric tests that recomposition did not always arrive.
+- **Discarded attempts (did not work, 2 of 4 and 0 of 6):** waiting for the node instead of the state; forcing `Snapshot.sendApplyNotifications()`; making the controller work on `Dispatchers.Main`.
+- **Fix:** the test waits (without touching the UI) for the computation to finish and composes the screen afterwards, so the first composition reads the final state. Nothing is weakened: the same texts, profiles and the close button are still checked. Result: 6 full suites in a row green.
+- **What it does not cover:** the test no longer checks that the UI recomposes when a result arrives from another thread; the logic with real threads stays in `RoutePreviewControllerTest`. If the app showed "Calculando…" (Calculating…) after a result on the device, these tests would not detect it: check it on the phone.
+## 2026-10-07 · Link with the core, World and default catalog (branch `feat/mvp-regions-core-link`)
+- **Decision:** `Region.comapsId` and `installed.json` (backward compatible); `base` block in the catalog (World/WorldCoasts, once per version, `<root>/.base/<v>/`); `CoreMapsLinker` (symbolic links, hard links as a fallback, `.links.json` ledger) that leaves `filesDir/maps-core/<v>/<comapsId>.mwm` + `World*.mwm` at startup and after install, update or delete; default catalog `https://github.com/qtekfun/UltimateMaps-data/releases/latest/download/catalog.json` with `github.com`, `release-assets.githubusercontent.com` and `objects.githubusercontent.com` in the allowlist (only when using a github.com catalog). Details in `docs/phase1/regions.md`. They close gaps 1, 2 and 3 of the previous entry.
+- **Reason for the symlink:** it works towards the SD card (another volume) and does not duplicate 4 GB; the hard link is the fallback. The core reads with `stat`/`fopen` (they follow links).
+- **Finding (core):** `RefreshMaps` registers new maps and newer versions, but there is no unregistration: after **deleting** a region the core keeps serving it until the app is restarted (singleton). The UI warns about it (`restartNeeded`). An update needs no restart.
+- **Verified:** JVM tests (`:core-regions`, `:app`): linker, catalog/base, 302 redirects to another authorized host and not, catalog -> install with World -> `maps-core/<v>/` structure with exact names (`Spain_La Rioja.mwm`) -> update -> delete integration. Redirect chain of our release checked with HEAD. **Not verified:** that the core really reads through links on Android (nor on the card), the real download of the release, nor real search with these files (no phone).
+- **Limits:** if a card is not mounted at startup, its regions are unlinked until the next startup or install; a catalog without `base` cannot download World (the link uses the already installed base, if there is one); a single `World*.mwm` per version in each storage.
+- **Discarded alternative:** copying the .mwm to `maps-core` (duplicates space and does not work on the card) and downloading the catalog at startup (the app does not connect without a user action).
 
-## 2026-10-07 · Primera prueba real del núcleo en el Pixel 8: arranca y busca; ruta larga sin resolver
-- **Qué se hizo:** con permiso del usuario («úsalo ahora»), APK de release firmado con la clave de depuración (solo para actualizar encima de la app instalada y conservar datos), con el lock `/tmp/pixel-device.lock`. Detalle y capturas en `docs/phase1/device-test/release-rc1/`.
-- **Corregido:** el núcleo abortaba al arrancar (clasificador del estilo equivocado, ver el README). Ahora `SetCurrentStyle(kDefaultMapStyle)`; `scripts/comaps-prepare.sh` genera `drules_proto_default_light.bin` antes del estilo vehicle; `um_core.cpp` enlaza log y `CHECK` de CoMaps a logcat (etiqueta `UMCORE`) para no volver a abortar en silencio.
-- **Medido (R12):** búsqueda en caliente 484-4201 ms (n=6, umbral 100 ms): no cumple. Ruta Madrid–Barcelona: `route_not_found` en 549 ms con 7 regiones: sin medida válida contra el umbral de 2 s. En el spike (25 regiones) fueron ≈ 18 s.
-- **Decisión pendiente (del usuario):** R12 sigue abierto; la opción C ya está elegida (cambiarla es «Cuándo preguntar» nº 3). Siguiente medida útil: la misma ruta con las 25 regiones instaladas, y la búsqueda con 1-2 regiones, para separar el efecto del número de regiones.
-- **Riesgo:** el APK de prueba (`~/mapas-data/test-builds/`) está firmado con la clave de depuración: no es instalable como actualización sobre un release firmado con la clave del proyecto.
+## 2026-10-07 · First real test of the core on the Pixel 8: it starts and searches; long route unresolved
+- **What was done:** with the user's permission ("use it now"), release APK signed with the debug key (only to update over the installed app and keep data), with the lock `/tmp/pixel-device.lock`. Details and screenshots in `docs/phase1/device-test/release-rc1/`.
+- **Fixed:** the core aborted at startup (wrong style classifier, see the README). Now `SetCurrentStyle(kDefaultMapStyle)`; `scripts/comaps-prepare.sh` generates `drules_proto_default_light.bin` before the vehicle style; `um_core.cpp` hooks CoMaps' log and `CHECK` to logcat (tag `UMCORE`) so it does not abort silently again.
+- **Measured (R12):** warm search 484-4201 ms (n=6, threshold 100 ms): fails. Madrid–Barcelona route: `route_not_found` in 549 ms with 7 regions: no valid measurement against the 2 s threshold. In the spike (25 regions) it was ≈ 18 s.
+- **Pending decision (the user's):** R12 is still open; option C is already chosen (changing it is "When to ask" no. 3). The next useful measurement: the same route with all 25 regions installed, and search with 1-2 regions, to separate the effect of the number of regions.
+- **Risk:** the test APK (`~/mapas-data/test-builds/`) is signed with the debug key: it is not installable as an update over a release signed with the project key.
 
-## 2026-10-07 · Preparación de la release 0.1.0-rc.1 (sin Pixel 8, que el usuario retiró)
-- **Decisión:** se prepara todo lo que no necesita el teléfono ni secretos: `LICENSE` (GPL-3.0, copia de la de UltimateDeck), `README.md`, `PRIVACY.md` (es/en), `CHANGELOG.md` con notas reales y limitaciones, `fastlane/metadata` (es-ES y en-US), borrador `fdroid/com.qtekfun.mapas.yml` sin `Builds`, `usesCleartextTraffic="false"`, y el workflow `release.yml` con instalación explícita de NDK 28.2 y CMake 3.31.6. `RELEASING.md` lista lo que queda: tuyo, del teléfono y riesgos de F-Droid.
-- **Hallazgo de licencias:** `kdtree++` SÍ se compila (lo incluye `libs/geometry/tree4d.hpp`; 16 cadenas en el `.so`) y su licencia es Artistic License 2.0 según las cabeceras (`function.hpp:83`), compatible con GPLv3. `LICENSES.md` decía lo contrario («no se compila aquí»): corregido. Falta incluir su texto en un `NOTICE` o en «Acerca de».
-- **Verificado:** `permisos de red` (`ACCESS_NETWORK_STATE`, `ACCESS_WIFI_STATE`) vienen de MapLibre 13.6.1 (informe del manifest merger); 267 tests JVM en verde; YAML del workflow válido. **No verificado:** el workflow en GitHub, `lint`/`assembleRelease` tras estos cambios (ver abajo), ni F-Droid.
-- **Prueba de reproducibilidad NO completada:** lancé dos compilaciones limpias del APK sin firmar para comparar entradas, pero el sistema alcanzó poca memoria libre (27 de 30 GB) y detuvo mi comando de espera; paré mis procesos de compilación para no perjudicar al resto de la máquina. No hay resultado, ni positivo ni negativo. Repetir cuando haya memoria libre y bajo petición del usuario: `./gradlew clean :app:assembleFossRelease` dos veces y comparar `unzip -v`. Un APK reproducible es requisito de F-Droid (como en UltimateDeck).
-- **Efecto secundario:** `gradle clean` borró `app/build` y `native-comaps/build`; la próxima compilación nativa tardará (≈ 3-5 min).
-- **Revertir:** `git revert` de este commit; no cambia código de la app salvo la línea del manifiesto.
-
-## 2026-10-07 · El código se publica en GitHub (primer push a `master`, autorizado por el usuario)
-- **Decisión:** `git push origin master` (excepción única a «nunca empujes a `master`»), tras preguntar al usuario («¿subo ya el código?» → «Si»). 29 commits, repositorio público `qtekfun/UltimateMaps`, rama por defecto `master`; local y remoto idénticos (`aa9ebab`).
-- **Antes de publicar se escaneó** lo versionado (sin `third_party`): sin claves, tokens, números de serie del móvil, IP privadas ni correos personales. Se publican: el autor `Qtekfun <qtekfun@gmail.com>` de los commits, 19 `logcat` de las pruebas del spike (sin datos personales encontrados) y los enlaces a la sesión de Claude de los mensajes de commit.
-- **No se hizo:** quitar los logs del historial (exigiría reescribirlo: «Cuándo preguntar» nº 5). Quedan solo en local las ramas `spike/*` y `feat/*`.
-- **Pendiente del usuario:** protección de `master` y CI (sin checks, las PR no se mergean solas); los secretos `UM_*`.
-- **Desde ahora:** una rama y una PR por tarea; esta misma entrada va por PR.
-
-## 2026-10-07 · Error mío: el catálogo publicado no traía `World.mwm`; corregido
-- **Síntoma (reportado por el usuario con la pre-release `test-v0.1.0-rc.1`):** descargó una región desde la app (la descarga y el dibujado funcionan) pero la búsqueda decía «no hay mapas, descarga uno».
-- **Causa:** el núcleo exige `World.mwm` en `maps-core/<versión>/`, que baja el bloque `base` del catálogo. El `catalog.json` de la release `data-261004-20261006` se generó **antes** de que existiera ese bloque y no se regeneró al integrar la rama que lo añadió (lo había apuntado como laguna nº 2 y se me pasó). Sin `base`, la app nunca descarga `World`.
-- **Corrección:** catálogo regenerado con `--base-dir` (solo cambia el bloque `base`; las 1.303 regiones son idénticas; hashes de World iguales a `SHA256SUMS`) y reemplazado en la release (`gh release upload --clobber`). La URL `…/releases/latest/download/catalog.json` tardó unos 90 s en servir la copia nueva por caché.
-- **Qué debe hacer quien ya tiene una región instalada:** la app solo baja `World` al **instalar** una región cuando aún no lo tiene; una región ya instalada no lo dispara. Basta descargar cualquier otra región (p. ej. Ceuta, 1,5 MB, + 62 MB de World) o borrar y volver a bajar la región.
-- **Salvaguarda:** `scripts/gen-region-catalog.py` avisa ahora si hay regiones descargables pero no `--base-dir`.
-- **Lo que no detectaron los tests:** ninguno cubría «catálogo real publicado → buscar»; el circuito descarga → enlace → búsqueda no se probó de punta a punta con la release real. Pendiente (con el teléfono, cuando el usuario lo permita).
-
-## 2026-10-07 · Hasta 3 subagentes a la vez
-- **Decisión:** el límite de subagentes simultáneos sube de 2 a 3 por indicación del usuario («Pon hasta 3 subagentes»). Sustituye a las entradas anteriores de 4 y 2.
-- **Reparto en curso:** A `feat/nav-maneuvers` (giros, carriles y límites desde el núcleo), B `feat/nav-following` (módulo `:core-nav`: seguimiento de ruta y recálculo), C `feat/ui-regions-search-sheet` (buscador de regiones y arrastre del panel inferior). Modelo común en `feat/nav-model` (`97d77ac`).
-
-## 2026-10-07 · Ideas del usuario: precios de gasolineras y transporte en tiempo real (sin decidir)
-- **Estado:** solo anotadas en `docs/mapas-05-roadmap.md`, sin código. Tocan «Qué no hacemos» (transporte público) y la regla de que todo ocurre en el dispositivo, así que necesitan decisión del usuario y un spike que verifique APIs, formatos, claves y licencias.
-
-## 2026-10-07 · Precios de combustible y transporte en tiempo real entran en el roadmap (F7), configurables en Ajustes
-- **Decisión del usuario:** «Mételas en roadmap y que sean configurables en ajustes». Nueva fase **F7. Datos opcionales** (después de F5), requisitos **RF-15** (precios de combustible por tipo: GLP, gasolina, diésel, GNC…), **RF-16** (transporte público en tiempo real por operador) y **RF-17** (pantalla de Ajustes con privacidad, preferencias de navegación y las fuentes opcionales), y una sección de arquitectura con la interfaz `OptionalDataSource`.
-- **Principios que se mantienen:** desactivadas por defecto; todo por `NetworkPolicy` con los hosts en la lista visible de conexiones; aviso al activar de qué se envía y a quién; **la ubicación nunca sale** (se descarga todo o se pide por estación elegida y se filtra en el dispositivo); un fallo de una fuente no afecta a las demás; sin claves embebidas (si hace falta, la pone el usuario en Android Keystore).
-- **Alcance:** «transporte público» sale de «Qué no hacemos» y se reubica en F7 (opcional); «tráfico de carretera» sigue fuera. No cambia ninguna decisión inamovible de `CLAUDE.md` (tráfico en carretera, red por `NetworkPolicy`, cero telemetría).
-- **Prerrequisito detectado:** la app **no tiene todavía pantalla de Ajustes** (solo el modo sin red dentro de «Mapas»). Se añade a F2 (voz, unidades, privacidad) con secciones reservadas para F7.
-- **Sin verificar (spike antes de codificar):** URL, formato, frecuencia y licencia del fichero de precios del Ministerio; datos abiertos y tiempo real de Renfe/Cercanías; si Metro de Madrid u otros piden clave. Lo escrito sobre esas APIs es de memoria.
-- **Revertir:** quitar la fila F7 y las RF-15 a RF-17; no hay código.
-
-## 2026-10-07 · Estudio de verificación de F7: lo que cambia en el roadmap
-- **Resultado (agente D, `docs/phase7/verificacion-fuentes.md`; combustible re-verificado por mí con una descarga real):**
-  - **Combustible:** servicio abierto sin clave; 12,2 MB nacional, 999 estaciones con GLP (377 KB con `FiltroProducto/17`); se actualiza **cada 30 min** (el roadmap decía «diaria»: corregido). Filtrar por provincia o municipio revela la zona del usuario → se descarta; se usa descarga entera o por producto.
-  - **Cercanías:** GTFS-RT público sin clave, CC BY 4.0, 20 s; el tiempo real solo trae la siguiente parada, así que el tablero completo exige el GTFS estático (14 MB).
-  - **Metro:** solo **Bilbao** tiene tiempo real abierto sin clave. **Metro de Madrid no** (solo estático, «Powered by CRTM»); TMB, Valencia, Sevilla y EMT exigen clave → solo con clave del usuario.
-- **Desmentido:** «Metro de Madrid sin clave» del roadmap anterior.
-- **~~Bloqueo antes de publicar la función~~ (corregido más abajo: riesgo bajo con atribución):** la **licencia de reutilización** del servicio de combustible no está verificada (las fichas de datos.gob.es devuelven 404). Hay que aclararlo con el Ministerio. Es decisión/acción del usuario.
-- **Sigue sin verificar:** límites de uso (ninguno publicado), texto de atribución de Renfe, licencia de la librería protobuf.
-## 2026-10-07 · Guiado (maniobras, carriles, límites) desde el núcleo, sin ejecutar
-- **Decisión:** `Route(..., withGuidance)` + `nativeRouteGuidance` (JNI nuevo; `nativeRoute` intacto) + `GuidanceWire` en Kotlin; `routingEngine(withGuidance = false)` por defecto, así la vista previa no cambia. Detalle, formato y lo no verificado en `docs/phase2/maneuvers.md`.
-- **Hallazgos:** bici usa `CarDirectionsEngine` (no `PedestrianDirection`); límite por segmento sí existe pero solo se rellena en coche; no hay MERGE, ARRIVE_LEFT/RIGHT ni salida (DEPART) en el núcleo.
-- **Estado:** compila y enlaza; no ejecutado (sin dispositivo). `Guidance.kt` no se tocó.
-- **Alternativa descartada:** codificar el guiado dentro de `nativeRoute` (rompe el formato y obliga a pagar el coste siempre).
-## 2026-10-07 · Motor de seguimiento de ruta `:core-nav` (rama `feat/nav-following`)
-- **Decisión:** módulo Kotlin JVM puro con un núcleo síncrono (`RouteTracker`) y un envoltorio de corrutinas (`NavigationSession`, `StateFlow<NavState>` + `SharedFlow<Announcement>`). Umbrales y su porqué en `docs/phase2/following.md`. Identificadores de estado en inglés (`ON_ROUTE`, `OFF_ROUTE`, `REROUTING`, `ARRIVED`, `NO_SIGNAL`) como el resto del código.
-- **Dependencia nueva:** `kotlinx-coroutines` 1.11.0 (core y test), Apache-2.0, registrada en `LICENSES.md`. Alternativa descartada: callbacks propios (reinventar `StateFlow`, y la UI Compose ya espera flujos).
-- **Motivo del núcleo síncrono:** el tiempo sale solo de los fijos y los ticks, así que las pruebas son exactas sin dormir; la sesión solo añade concurrencia (un único consumidor, sin locks).
-- **Descartado:** emparejar con el mapa de calles (no hay datos en JVM puro; la ventana monótona + rumbo basta para bucles y solapes); proyectar siempre al segmento global más cercano (salta de paso en rutas con bucles).
-- **Medido:** ≈ 0,5-0,8 µs por fijo y 0 B asignados en `onFix` (JVM de escritorio; no es el Pixel 8). Detalle en el doc.
-- **Revertir:** `git revert` de los commits de la rama; no toca ningún otro módulo (solo `settings.gradle.kts`, `libs.versions.toml` y `LICENSES.md`).
-## 2026-10-07 · Buscador en «Mapas» y arrastre del panel (rama `feat/ui-regions-search-sheet`, sin móvil)
-- **Decisión:** la pantalla «Mapas» filtra por nombre sin mayúsculas ni acentos, con una clave normalizada por catálogo (más sinónimos en español de comunidades y países; solo nombres que existen en el catálogo publicado), resultados con ruta («Spain › Catalonia › Provincia de Barcelona»), descargables primero. El panel inferior arrastra desde cualquier zona, con `nestedScroll`, fling a 200 dp/s, 25 % del hueco, muelle 0,9/800 y acciones de TalkBack. Detalle en `docs/phase2/sheet-drag.md`.
-- **No medido:** la sensación real del arrastre (sin Pixel 8). Los valores son una estimación razonada. El catálogo real es plano (países en la raíz y 25 hijos de España), no hay niveles de continente.
-- **Alternativa descartada:** colapsar el panel con el fling sobrante de una lista (como Material): sorprende al volver arriba de una lista larga.
-
-## 2026-10-07 · Sin metro; gasolineras ya (F2b); prioridad a la robustez de la navegación
-- **Decisión del usuario:** «Quita los metros, mete las gasolineras, descarga todos los combustibles configurados en ajustes… muestra sobre el mapa el precio del combustible seleccionado… poder clicar en la gasolinera y meterla en ruta… necesito robustez en la navegación».
-- **Plan:** el metro sale del roadmap (F7 queda solo con Cercanías); nueva fase **F2b. Gasolineras** (RF-15) con Ajustes (RF-17). Contrato común en `:core-fuel` (`64f78ee`).
-- **Reparto (3 agentes, rama base `feat/fuel-model`):** E `feat/fuel-data-settings` (cliente del Ministerio **por combustible** con `FiltroProducto/{id}` para no revelar la zona, caché, índice espacial, y la primera pantalla de Ajustes), F `feat/fuel-map-route` (precio sobre cada gasolinera en el mapa, ficha al tocar, «Ir» y «Añadir parada», ruta con paradas), G `feat/nav-robustness` (seguimiento robusto y paradas intermedias, `NavigationService` en primer plano con estado persistente, **aislar el núcleo nativo en otro proceso** para que un `CHECK` abortado no mate la guía, y política de rutas fallidas).
-- **Motivo de aislar el núcleo:** ya abortó el proceso entero en el Pixel 8 (SIGABRT por un `CHECK` de CoMaps); en carretera sería perder la navegación.
-- **Compilación nativa serializada** entre agentes con `flock /tmp/claude-1000/native-build.lock` (poca RAM; una compilación nativa a la vez).
-- **Sigue abierto:** licencia de reutilización del servicio de combustible sin texto literal (después se resolvió como riesgo bajo con atribución).
-
-## 2026-10-07 · Licencia de combustible: el usuario indica que no habrá problema; la evidencia lo apoya, con atribución obligatoria
-- **Petición del usuario:** «Lo de las licencias no creo que haya nada. Revisa gasolineras España en PlayStore que lo usa».
-- **Evidencia encontrada (búsqueda web del 2026-10-07):**
-  - El Ministerio (MITECO) publica los precios por obligación legal, **«para incrementar la transparencia … y mejorar la información a los ciudadanos sobre sus precios»** (Orden ITC/2308/2007; `energia.gob.es/risp/faq`, hoy `miteco.gob.es/.../hidrocarburos-nuevos-combustibles/risp.html`).
-  - El Ministerio ofrece el servicio público sin clave y tiene **su propia app oficial** en Play Store (`es.gob.geogasolineras`) y el Geoportal con descarga de ficheros.
-  - El catálogo oficial **datos.gob.es** lista como «aplicaciones» que reutilizan el dato a Precioil.es, Fuelconomy, Gasolineras Baratas (Mobilendo) y eGasolineras, enlazando el conjunto de datos como fuente.
-  - En **Google Play** lo usan apps como «Gasolineras España», «Octana», «RepostaYA» y «RadarGasolina», todas citando al Ministerio como fuente.
-  - Un aviso legal de una de ellas (Rastreoil) resume el marco: datos «reutilizados conforme a la **Ley 37/2007**, de reutilización de la información del sector público», indicando la fecha de la última actualización y sin carácter oficial.
-- **Lo que NO se encontró:** el **texto literal de la licencia** del conjunto de datos. La ficha de datos.gob.es y la página del catálogo de la sede electrónica (`sede.minetur.gob.es/.../precios-carburantes`) devuelven **404**. Por tanto, no hay una licencia leída en la fuente primaria; hay uso público generalizado y finalidad de información al ciudadano.
-- **Decisión:** el riesgo pasa de «bloqueo antes de anunciar» a **riesgo bajo que se cubre con atribución**: citar al Ministerio como fuente, mostrar la fecha de la última actualización, no alterar el sentido de los datos y no presentarlos como oficiales («precio publicado por el Ministerio»). Los agentes E y F lo implementan (Ajustes, ficha de la gasolinera, `PRIVACY.md`). Las condiciones exactas son una inferencia de la práctica de otras apps y del régimen general de la Ley 37/2007, no una cita de la licencia.
-- **Sigue siendo prudente** (no obligatorio): si algún día se quiere certeza jurídica, escribir al Ministerio; no bloquea el desarrollo ni, a juicio del usuario, la publicación.
-## 2026-10-07 · Gasolineras: datos, caché y Ajustes (rama `feat/fuel-data-settings`)
-- **Decisión:** una petición por combustible (`FiltroProducto/{id}`, nunca por zona) con parser JSON en streaming propio (sin dependencias nuevas), caché binaria atómica por combustible, índice en rejilla inmutable (lecturas sin cerrojos) y `FuelDataManager`; pantalla de Ajustes (`SettingsActivity`) con Privacidad y Gasolineras, confirmación al activar y engranaje discreto en el mapa. Detalle en `docs/phase7/fuel-implementation.md`.
-- **Motivo:** privacidad (el servidor no sabe dónde estás), robustez ante un servicio sin documentar y sin red de seguridad (si falla un combustible, se conserva su dato) y no descargar nunca al arrancar.
-- **Licencia de reutilización NO verificada:** se muestra la atribución prudente (cita de la fuente, fecha, «información no oficial», sin llamar «oficial» al precio), pero **superado por la decisión posterior del 2026-10-07 («Licencia de combustible»): riesgo bajo con atribución, ya no es un bloqueo**; aclararlo por escrito con el Ministerio es opcional.
-- **Cambios fuera de `:core-fuel`:** `DefaultNetworkPolicy.removeEndpoint` (`:core-net`), `implementation(project(":core-fuel"))` en `app/build.gradle.kts`, un engranaje en `MapScreen`/`MapControls` y una línea en `MainActivity`.
-- **Límites:** las preferencias no entran en copia (no hay exportación y `allowBackup=false`); el host se lista como propósito `OTHER`; nombres de combustible solo en español; sin medir en dispositivo.
-- **Alternativa descartada:** descargar el fichero nacional (12 MB, un solo combustible interesa) o filtrar por provincia (revela la zona).
-## 2026-10-07 · Gasolineras en el mapa, ficha y paradas de ruta (rama `feat/fuel-map-route`)
-- **Decisión:** el precio del combustible elegido se dibuja con una `SymbolLayer` alimentada por `FuelMapLayer` (consulta al terminar el gesto, con antirrebote, fuera del hilo principal, solo si cambia el resultado); las más baratas se distinguen por forma y tamaño, no solo por color. La ruta admite hasta 5 paradas (`addStop/removeStop/moveStop`) y el núcleo ya enruta por checkpoints, así que no se encadenan tramos. Atribución del Ministerio y nota «no oficial» siempre bajo los precios de la ficha.
-- **Alternativa descartada:** una capa por combustible o un `Marker` de vista por estación (asignaciones por fotograma y coste de vistas); encadenar tramos en Kotlin (el núcleo ya lo hace).
-- **No medido:** apariencia y fluidez en el móvil. Detalle en `docs/phase7/fuel-map.md`.
-
-## 2026-10-07 · Primera ejecución real del guiado del núcleo en el Pixel 8: un fallo de C++ encontrado y corregido
-- **Qué se hizo (con permiso del usuario, «Móvil tuyo»):** APK de depuración con todo lo integrado; `CoreBenchActivity --ez guidance true`. Evidencia: `docs/phase2/device-test/guidance-dump-2026-10-07.txt`.
-- **Fallo encontrado:** el guiado llegaba rechazado: «salidaRotonda no es un entero: 4294967295». Causa: en `um_core.cpp` un ternario mezclaba `uint32_t` (`m_exitNum`) con `-1`; C++ lo promociona a `uint32_t` y el `-1` salía como 4294967295. Corregido convirtiendo a `double` antes. El decodificador estricto de Kotlin (`GuidanceWire`) hizo su trabajo: detectó el error en vez de dar datos erróneos. Los tests JVM no podían verlo (usan arrays hechos a mano): es el tipo de fallo que solo aparece ejecutando el núcleo.
-- **Resultado tras la corrección (primera vez que el guiado se ve funcionando):** sin abortos; coche 11 maniobras con calles reales, una rotonda con salida 2 y llegada; límites de 20/30/50 km/h; bici 12 maniobras; a pie 21. Pedir guiado no ralentiza la ruta apreciablemente (coche 267 ms con guiado vs 418 ms sin él en esa ejecución).
-- **Confirmado:** límites de velocidad solo en coche (bici y a pie: 0 tramos), como había leído el agente A en el código.
-- **Observaciones sin resolver:** carriles vacíos en estas rutas urbanas (no se ha probado una ruta de autovía); la ruta en bici empieza con un `U_TURN_RIGHT` en la Puerta del Sol que habría que verificar sobre el terreno; los nombres sin calle salen como `null`.
-- **Medido en esta misma sesión (build de depuración nativa, no representativo de release):** búsqueda 308-3344 ms (n=12), ruta urbana en coche 3,2 km en 244 ms, a pie 454 ms, en bici 391 ms; Madrid–Barcelona sigue dando `ROUTE_NOT_FOUND` (código 8) en 449-590 ms con 7 regiones.
-
-## 2026-10-07 · Gasolineras probadas de punta a punta en el Pixel 8
-- **Resultado:** Ajustes → activar (diálogo) → descarga real de GLP y gasóleo A → precio sobre la gasolinera → ficha → Ir → ruta → Añadir parada → ruta recalculada con la parada (15,3 km, 452 ms). Evidencia en `docs/phase7/device-test/` (8 capturas y README).
-- **Lo que no se probó:** gasolina 95 (índice grande), quitar/reordenar paradas, guardar, modo sin red bloqueando la descarga, actualización en segundo plano, y el coste real con miles de estaciones.
-- **Detalle de UI a pulir:** la nota «Lugar · Abierto desde un enlace de mapa» se queda sobre el panel de ruta.
-## 2026-10-07 · Robustez de la navegación: seguimiento a prueba de caos, servicio en primer plano y núcleo aislado en `:core` (rama `feat/nav-robustness`)
-- **Petición del usuario (explícita):** «robustez en la navegación», por encima de funciones nuevas. Motivo real: el núcleo nativo ya abortó el proceso (SIGABRT por un `CHECK` de CoMaps) y en navegación eso sería perder la guía en carretera.
-- **Decisiones:** (1) el aviso «ahora» se emite por cruce de posición a lo largo de la ruta y las paradas intermedias son `RouteGuidance.stops` (retrocompatible) con eventos `StopReached/StopSkipped`; (2) `NavigationController` (JVM puro) + `NavigationService` `foregroundServiceType="location"` con estado persistente atómico que caduca a las 3 h; (3) el núcleo de CoMaps corre en un proceso `:core` detrás de `IsolatedCore` (reinicio + un reintento, plazo, kill del proceso para cancelar de verdad, respuestas troceadas, circuito tras caídas repetidas), con la preferencia `core.isolated` como válvula; (4) política de ruta fallida: solo se reintenta lo transitorio.
-- **Alternativas descartadas:** reintentar `ROUTE_NOT_FOUND` (determinista); cancelar un cálculo nativo de otra forma que matando el proceso (no hay otra); `SharedMemory`/ficheros para rutas grandes (el troceado es más simple y se prueba en la JVM); exponer `GetAbsentCountries` por JNI ahora (recompilar el núcleo en este entorno es muy costoso y no se podría ejecutar).
-- **Verificado solo en la JVM (435 tests):** no se ejecutó nada en un dispositivo ni el núcleo real con el aislamiento. Riesgos y pendientes en `docs/phase2/robustness.md`.
-
-## 2026-10-07 · Núcleo aislado en `:core`: probado en el Pixel 8 con una muerte forzada
-- **Prueba (APK de depuración con todo integrado, con permiso del usuario):** el servicio `CoreService` arranca el proceso `com.qtekfun.mapas:core` (pid distinto) y la búsqueda funciona a través de él (20 resultados; `engine_ready_ms=774` incluye arrancar el proceso; primera búsqueda 3516 ms). Después, `run-as … kill -9` sobre el pid de `:core` (simula un `abort` nativo): **el proceso principal siguió vivo (mismo pid), Android reinició `:core` en ~1,1 s (12:59:32.860 muerte → 12:59:33.907 arranque) y la siguiente búsqueda devolvió 20 resultados (4352 ms)**. Cero señales fatales. Captura en `docs/phase2/device-test/search-after-core-kill.png`.
-- **Lo que esto valida:** que un `abort` del núcleo nativo, que ya ocurrió en este móvil, ya no tumba la app. **Lo que no valida:** durante una ruta o una navegación en curso, los reintentos con tiempo máximo, el circuito tras 3 caídas en 60 s, la válvula `core.isolated=false`, ni el `NavigationService` (sin pantalla de navegación todavía).
-- **Otras medidas de la sesión:** `CoreBenchActivity` con 9 mapas: búsqueda 308-3344 ms, ruta urbana en coche 244 ms; Madrid–Barcelona `ROUTE_NOT_FOUND` (≈ 450-590 ms con 7 regiones); memoria `:core` 172 MB PSS.
-- **Dos tests frágiles corregidos al integrar:** `RoutePanelTest` (carrera entre hilos al componer) y `FuelMapLayerTest.aBurstOfGesturesQueriesOnce` (antirrebote real de 80 ms; ahora 400 ms).
-
-## 2026-10-07 · Voz de la navegación y ajustes de navegación (rama `feat/nav-voice`, sin móvil)
-- **Decisión:** módulo JVM `:core-voice` con las frases (es/en, km/mi, redondeo natural, carriles solo en avisos cercanos, calle ausente omitida), la cola de voz con prioridades (`URGENT` interrumpe, `LOW` no se acumula, caducidad), la recuperación del motor (reinicio con espera creciente, plazos, máximo de reinicios) y `VoiceNavigationController`; en `:app`, `TextToSpeech` del sistema sin GMS, enfoque de audio `GAIN_TRANSIENT_MAY_DUCK` con atributos de guiado, `<queries>` para ver los motores (Android 11+), sección «Navegación» en Ajustes y guía para instalar un motor libre de F-Droid (RHVoice, eSpeak NG, SherpaTTS). Detalle en `docs/phase2/voice.md`.
-- **Motivo:** sin GMS es habitual no tener motor TTS; la navegación debe seguir sin voz y avisar de forma visual, no fallar. La lógica de cola y recuperación en la JVM se prueba con tiempo virtual, sin esperas reales.
-- **Alternativas descartadas:** voz propia empaquetada (peso, duplicar al sistema), voz pregrabada (no cubre calles), hablar aunque otra app tenga el foco (encima de una llamada).
-- **No medido (sin dispositivo):** calidad de la voz, ducking real de la música, motores reales y su reinicio, latencia del primer aviso, que el cliente de F-Droid atienda los enlaces. No se tocó `core-nav`; en `SettingsScreen` solo `internal` en 5 componentes y un parámetro opcional en `SettingsEnv`.
-
-## 2026-10-07 · Pantalla de navegación y voz integradas (sin probar en dispositivo)
-- **Qué entra:** N1 (`feat/nav-ui`): botones Empezar y Simular, `NavScreen` con banner de giro, carriles, límite de velocidad, ETA, estados, cámara que sigue al usuario, modo noche y guantes, pantalla encendida (flag de ventana), reanudar tras morir el proceso, `NavEventSink`. N2 (`feat/nav-voice`): `:core-voice` (frases es/en con km/mi para los 18 giros), `SpeechDirector` y TTS de Android sin GMS con atenuación de audio, detección de ausencia de motor con guía a F-Droid, sección «Navegación» en Ajustes.
-- **Cableado hecho al integrar:** `VoiceNavSink` (voz se engancha al empezar y se silencia al terminar), franja `VoiceProblemBanner` en la pantalla de navegación, y las teclas de volumen controlan el volumen multimedia.
-- **Verificado:** 632 tests JVM, 0 fallos, en 3 ejecuciones seguidas; `lintFossDebug` en verde.
-- **NO verificado (sin móvil):** apariencia, fluidez y batería de la pantalla de navegación; calidad de la voz, atenuación de audio y motores TTS reales; `startForegroundService` en Android 14; guiado con `:core` real durante una navegación; carriles en autovía; pulsar Empezar sin permiso de ubicación (se pide pero no se espera la respuesta).
-- **Pendiente:** la matriz de rutas largas (`--ez matrix true`) para localizar por qué Madrid–Barcelona da `ROUTE_NOT_FOUND`; se interrumpió al retirar el usuario el móvil. Lo que se vio (últimas 4 líneas del log): todas las rutas largas probadas devolvieron `code=8` y tardaron de 10 a 17 s, incluso Lleida→Tarragona (vecinas e instaladas): sospecha de problema general del enrutado entre regiones, no de una región concreta; sin confirmar.
+## 2026-10-07 · Preparation of release 0.1.0-rc.1 (without the Pixel 8, which the user withdrew)
+- **Decision:** everything that needs neither the phone nor secrets is prepared: `LICENSE` (GPL-3.0, copy of UltimateDeck's), `README.md`, `PRIVACY.md` (es/en), `CHANGELOG.md` with real notes and limitations, `fastlane/metadata` (es-ES and en-US), draft `fdroid/com.qtekfun.mapas.yml` without `Builds`, `usesCleartextTraffic="false"`, and the `release.yml` workflow with explicit installation of NDK 28.2 and CMake 3.31.6. `RELEASING.md` lists what remains: the user's, the phone's and F-Droid risks.
+- **License finding:** `kdtree++` IS compiled (included by `libs/geometry/tree4d.hpp`; 16 strings in the `.so`) and its license is Artistic License 2.0 according to the headers (`function.hpp:83`), compatible with GPLv3. `LICENSES.md` said the opposite ("not compiled here"): fixed. Its text still has to be included in a `NOTICE` or in "About".
+- **Verified:** `network permissions` (`ACCESS_NETWORK_STATE`, `ACCESS_WIFI_STATE`) come from MapLibre 13.6.1 (manifest merger report); 267 green JVM tests; valid workflow YAML. **Not verified:** the workflow on GitHub, `lint`/`assembleRelease` after these changes (see below), nor F-Droid.
+- **Reproducibility test NOT completed:** I launched two clean builds of the unsigned APK to compare entries, but the system reached low free memory (27 of 30 GB) and stopped my wait command; I stopped my build processes so as not to harm the rest of the machine. There is no result, neither positive nor negative. Repeat when there is free memory and at the user's request: `./gradlew clean :app:assembleFossRelease` twice and compare `unzip -v`. A reproducible APK is an F-Droid requirement (as in UltimateDeck).
+- **Side effect:** `gradle clean` deleted `app/build` and `native-comaps/build`; the next native build will take a while (≈ 3-5 min).
+- **Revert:** `git revert` of this commit; it does not change app code except the manifest line.
