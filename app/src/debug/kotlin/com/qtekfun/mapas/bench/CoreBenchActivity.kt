@@ -9,12 +9,13 @@ import com.qtekfun.mapas.core.geo.LatLon
 import com.qtekfun.mapas.core.routing.RouteRequest
 import com.qtekfun.mapas.core.routing.RoutingProfile
 import com.qtekfun.mapas.nativecomaps.CoMapsCore
+import com.qtekfun.mapas.nativecomaps.RouteOutcome
 import java.io.File
 import kotlin.concurrent.thread
 
 /**
  * Banco de pruebas del núcleo de CoMaps (solo debug). Se lanza con
- * `am start -n com.qtekfun.mapas/.bench.CoreBenchActivity` y escribe en logcat con la etiqueta UMBENCH.
+ * `am start -n com.qtekfun.mapas/.bench.CoreBenchActivity` (con `--ez guidance true` solo vuelca el guiado) y escribe en logcat con la etiqueta UMBENCH.
  * Los mapas van en `filesDir/maps-core/<versión>/` con los ficheros .mwm (incluido World.mwm). No guarda ubicaciones del usuario.
  */
 class CoreBenchActivity : Activity() {
@@ -23,7 +24,41 @@ class CoreBenchActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(TextView(this).apply { text = "Banco de pruebas del núcleo: mira logcat (UMBENCH)" })
-        thread(name = "umbench") { runCatching { run() }.onFailure { Log.e(tag, "FALLO: $it", it) } }
+        // `--ez guidance true`: en vez del banco completo, vuelca el guiado de rutas de prueba (maniobras, carriles, límites).
+        val guidanceOnly = intent?.getBooleanExtra("guidance", false) == true
+        thread(name = "umbench") {
+            runCatching { if (guidanceOnly) dumpGuidance() else run() }.onFailure { Log.e(tag, "FALLO: $it", it) }
+        }
+    }
+
+    /** Vuelca a logcat el guiado de una ruta urbana de Madrid en coche, bici y a pie. Sin ejecutar aún: ver docs/phase2/maneuvers.md. */
+    private fun dumpGuidance() {
+        val mapsDir = File(filesDir, "maps-core")
+        val core = CoMapsCore()
+        core.init(applicationInfo.sourceDir, mapsDir.absolutePath, cacheDir.absolutePath, "es")
+        Log.i(tag, "guidance init maps=${core.refreshMaps()}")
+        val plain = core.routingEngine()
+        val guided = core.routingEngine(withGuidance = true)
+        val sol = LatLon(40.4170, -3.7036)
+        val atocha = LatLon(40.4065, -3.6890)
+        for ((name, p) in listOf("car" to RoutingProfile.CAR, "bike" to RoutingProfile.BIKE, "foot" to RoutingProfile.FOOT)) {
+            val request = RouteRequest(sol, atocha, profile = p)
+            val tPlain = ms { plain.routeDetailed(request) }
+            var out: RouteOutcome? = null
+            val tGuided = ms { out = guided.routeDetailed(request) }
+            val plan = out?.plan
+            Log.i(
+                tag,
+                "guidance profile=$name code=${out?.code} plain_ms=$tPlain guided_ms=$tGuided points=${plan?.geometry?.size} " +
+                    "maneuvers=${plan?.guidance?.maneuvers?.size} limits=${plan?.guidance?.speedLimits?.size} err=${out?.guidanceError}",
+            )
+            plan?.guidance?.maneuvers?.forEach { m ->
+                val lanes = m.lanes.joinToString("|") { l -> (if (l.recommended) "*" else "") + l.directions.joinToString("+") }
+                Log.i(tag, "  maneuver idx=${m.geometryIndex} type=${m.type} street='${m.streetName}' exit=${m.roundaboutExit} lanes=[$lanes]")
+            }
+            plan?.guidance?.speedLimits?.forEach { s -> Log.i(tag, "  limit ${s.startIndex}..${s.endIndex} kmh=${s.kmh}") }
+        }
+        Log.i(tag, "FIN guidance")
     }
 
     private fun ms(block: () -> Unit): Long {
