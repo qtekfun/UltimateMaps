@@ -35,6 +35,9 @@ class SqlitePlacesRepository(driver: SQLiteDriver, fileName: String) : PlacesRep
             if (version < 1) {
                 SCHEMA_V1.forEach { db.execSQL(it) }
             }
+            if (version < 2) {
+                SCHEMA_V2.forEach { db.execSQL(it) }
+            }
             db.execSQL("PRAGMA user_version = $SCHEMA_VERSION")
         }
     }
@@ -266,13 +269,60 @@ class SqlitePlacesRepository(driver: SQLiteDriver, fileName: String) : PlacesRep
         Track(info, segments)
     }
 
+    // ---- special places ----
+
+    override fun setSpecial(slot: SpecialSlot, name: String, point: LatLon, savedAt: Long) {
+        synchronized(lock) {
+            exec("INSERT OR REPLACE INTO special_places(slot,name,lat,lon,saved_at) VALUES(?,?,?,?,?)") { s ->
+                s.bindText(1, slot.name); s.bindText(2, name); s.bindDouble(3, point.lat); s.bindDouble(4, point.lon)
+                s.bindLong(5, savedAt)
+            }
+        }
+    }
+
+    override fun special(slot: SpecialSlot): SpecialPlace? = synchronized(lock) {
+        stmt("SELECT name,lat,lon,saved_at FROM special_places WHERE slot=?", { it.bindText(1, slot.name) }) {
+            if (it.step()) SpecialPlace(slot, it.getText(0), LatLon(it.getDouble(1), it.getDouble(2)), it.getLong(3)) else null
+        }
+    }
+
+    override fun clearSpecial(slot: SpecialSlot): Boolean = synchronized(lock) {
+        exec("DELETE FROM special_places WHERE slot=?") { it.bindText(1, slot.name) } > 0
+    }
+
+    // ---- recent searches ----
+
+    override fun addSearch(query: String, at: Long, keep: Int) {
+        val text = query.trim()
+        if (text.isEmpty() || keep <= 0) return
+        transaction {
+            exec("INSERT OR REPLACE INTO search_history(query_key,query,used_at) VALUES(?,?,?)") { s ->
+                s.bindText(1, fold(text)); s.bindText(2, text); s.bindLong(3, at)
+            }
+            exec(
+                "DELETE FROM search_history WHERE query_key NOT IN " +
+                    "(SELECT query_key FROM search_history ORDER BY used_at DESC, rowid DESC LIMIT ?)",
+            ) { it.bindLong(1, keep.toLong()) }
+        }
+    }
+
+    override fun recentSearches(limit: Int): List<String> = synchronized(lock) {
+        val out = ArrayList<String>()
+        stmt("SELECT query FROM search_history ORDER BY used_at DESC, rowid DESC LIMIT ?", { it.bindLong(1, limit.toLong()) }) {
+            while (it.step()) out += it.getText(0)
+        }
+        out
+    }
+
+    override fun clearSearches() { synchronized(lock) { db.execSQL("DELETE FROM search_history") } }
+
     override fun clearAll() = transaction {
         db.execSQL("DELETE FROM track_points"); db.execSQL("DELETE FROM tracks")
         db.execSQL("DELETE FROM list_places"); db.execSQL("DELETE FROM lists"); db.execSQL("DELETE FROM places")
     }
 
     internal companion object {
-        const val SCHEMA_VERSION = 1
+        const val SCHEMA_VERSION = 2
         const val PLACE_COLS = "p.id,p.name,p.lat,p.lon,p.notes,p.icon,p.color,p.created_at,p.updated_at"
 
         val SCHEMA_V1 = listOf(
@@ -291,6 +341,14 @@ class SqlitePlacesRepository(driver: SQLiteDriver, fileName: String) : PlacesRep
             """CREATE TABLE track_points(track_id INTEGER NOT NULL REFERENCES tracks(id) ON DELETE CASCADE, seg INTEGER NOT NULL,
                seq INTEGER NOT NULL, lat REAL NOT NULL, lon REAL NOT NULL, ele REAL, time INTEGER,
                PRIMARY KEY(track_id, seg, seq)) WITHOUT ROWID""",
+        )
+
+        /** v2: Home / Work / parked car, and the recent searches. Additive: nothing of v1 changes. */
+        val SCHEMA_V2 = listOf(
+            """CREATE TABLE special_places(slot TEXT PRIMARY KEY, name TEXT NOT NULL, lat REAL NOT NULL, lon REAL NOT NULL,
+               saved_at INTEGER NOT NULL) WITHOUT ROWID""",
+            """CREATE TABLE search_history(query_key TEXT PRIMARY KEY, query TEXT NOT NULL, used_at INTEGER NOT NULL)""",
+            "CREATE INDEX idx_search_history_used ON search_history(used_at)",
         )
 
         /** Lower-case, accent-free text for searching and dedup. */
