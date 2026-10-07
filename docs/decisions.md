@@ -343,3 +343,7 @@ Format: date · decision · reason · discarded alternatives · how to revert it
 - **Reason:** smallest additive change to the shared engine contract and panel; no new screen.
 - **Discarded alternatives:** a persistent visible set (extra storage for little value), simplifying the geometry in the app (MapLibre's GeoJSON source already simplifies per tile; not measured with very long tracks), a separate tracks screen.
 - **Tests:** `TrackLayerTest` (controller and UI, on `Dispatchers.Unconfined`) and `TrackFeaturesTest`. **Not verified:** how it looks and its frame-rate cost on a device (huge tracks).
+
+## 2026-10-07 · Stop reordering already exists (branch `feat/data-import-tracks`)
+- **Finding:** the route panel already has stop reordering (move up / down per stop, `route_stop_up_N` / `route_stop_down_N` test tags, `RoutePreviewController.moveStop`, limit of 5 stops, recalculation through `via`), added with the stops themselves (`f95ef19`) and kept by the panel redesign; `RouteStopsTest` and `RoutePanelTest` cover it. Nothing was added for this item.
+- **Discarded:** drag-and-drop reordering on top of the buttons (not requested as a replacement; touch drag inside a bottom sheet competes with the sheet gesture and could only be judged on a device).
