@@ -27,4 +27,13 @@
     <string name="route_err_not_found">No hay ruta con estas opciones. Prueba otro perfil o quita opciones de evitar.</string>
     <string name="route_err_timeout">La ruta tardó demasiado en calcularse. Inténtalo de nuevo o elige un punto más cercano.</string>
     <string name="route_err_internal">No se pudo calcular la ruta.</string>
+    <string name="route_change_short">Cambiar</string>
+    <string name="route_profile_group">Modo de viaje</string>
+    <string name="route_options_title">Opciones de ruta</string>
+    <string name="route_options_none">Ninguna</string>
+    <string name="route_options_avoiding">Evitando: %1$s</string>
+    <string name="route_avoid_short_motorways">autopistas</string>
+    <string name="route_avoid_short_tolls">peajes</string>
+    <string name="route_avoid_short_ferries">ferris</string>
+    <string name="route_avoid_short_unpaved">caminos sin asfaltar</string>
 </resources>
