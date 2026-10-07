@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Google Takeout import, GPX track layer, stop reordering -->
+    <!-- Google Takeout import, GPX track layer -->
     <string name="msg_takeout_imported">Takeout: %1$d lists, %2$d places added (%3$d already there), %4$d skipped without coordinates</string>
     <string name="tracks_title">Tracks on the map</string>
     <string name="tracks_empty">No imported tracks</string>
@@ -8,6 +8,4 @@
     <string name="track_hide">Hide</string>
     <string name="track_fit">Zoom to track</string>
     <string name="track_points">%1$d points</string>
-    <string name="route_stop_move_up">Move stop up</string>
-    <string name="route_stop_move_down">Move stop down</string>
 </resources>
