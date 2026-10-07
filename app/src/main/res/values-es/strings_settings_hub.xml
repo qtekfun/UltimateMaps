@@ -7,7 +7,7 @@
     <string name="hub_alerts_title">Alertas</string>
     <string name="hub_alerts_keywords">radares cámaras velocidad tráfico incidencias obras avisos sonido silencio</string>
     <string name="hub_alerts_summary">Radares: %1$s · Tráfico: %2$s</string>
-    <string name="hub_fuel_keywords">gasolina gasóleo diésel combustible precios gasolineras</string>
+    <string name="hub_fuel_keywords">gasolina gasóleo diésel combustible precios gasolineras eléctrico coche cargador carga enchufe</string>
     <string name="hub_fuel_off">Desactivadas</string>
     <string name="hub_fuel_no_fuel">Activadas, sin combustible elegido</string>
     <plurals name="hub_fuel_count">
