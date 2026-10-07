@@ -1,6 +1,6 @@
 #!/bin/bash
-# SurfaceView (texture=false): gfxinfo no ve los frames del SurfaceView -> usar SurfaceFlinger --latency de la capa SurfaceView.
-# Ejecutar bajo lock: flock /tmp/claude-1000/device.lock bash sf-latency.sh <tag>
+# SurfaceView (texture=false): gfxinfo does not see the SurfaceView frames -> use SurfaceFlinger --latency of the SurfaceView layer.
+# Run under lock: flock /tmp/claude-1000/device.lock bash sf-latency.sh <tag>
 TAG=$1
 PKG=org.ultimatemaps.spike.maplibre
 ACT=$PKG/org.ultimatemaps.spike.MainActivity

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Rutas de prueba (proceso en frio cada vez). Salidas: traces/12-*.logcat.txt/.png
+# Test routes (cold process each time). Outputs: traces/12-*.logcat.txt/.png
 H=$(dirname "$0")
 T=$H/traces
 SOL=40.4168,-3.7038

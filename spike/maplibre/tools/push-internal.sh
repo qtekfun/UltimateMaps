@@ -1,5 +1,5 @@
 #!/bin/bash
-# MapLibre nativo no lee ficheros de Android/data (almacenamiento externo) -> copiar al dir interno via run-as.
+# Native MapLibre does not read files from Android/data (external storage) -> copy to the internal dir via run-as.
 # Uso: push-internal.sh <fichero> [...]
 for f in "$@"; do
   b=$(basename "$f")

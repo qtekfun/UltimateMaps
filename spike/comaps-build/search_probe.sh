@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Busqueda por intent comaps://search?query=...&map  -> logcat completo
+# Search via the comaps://search?query=...&map intent  -> full logcat
 Q=$1; P=$2
 exec 9>/tmp/claude-1000/device.lock
 flock 9

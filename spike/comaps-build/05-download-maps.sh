@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Descarga los .mwm de España (todas las regiones, ids de data/countries.txt) y Fiji (Oceanía) desde el CDN de CoMaps
-# a /tmp/claude-1000/maps/261004 (fuera del repo).
+# Downloads the .mwm files of Spain (all regions, ids from data/countries.txt) and Fiji (Oceania) from the CoMaps CDN
+# to /tmp/claude-1000/maps/261004 (outside the repo).
 set -u
 OUT=/tmp/claude-1000/maps/261004
 mkdir -p "$OUT"

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Bloqueo: Fedora no trae uconv (paquete `icu`, requiere sudo). Se compila uconv desde el ICU del submodulo
-# 3party/icu (sin sudo) en un prefijo fuera del repo de CoMaps y se pone en PATH.
+# Blocker: Fedora does not ship uconv (package `icu`, needs sudo). uconv is built from the submodule's ICU
+# 3party/icu (no sudo) into a prefix outside the CoMaps repo and put on PATH.
 set -ex
 ICU=~/repos/comaps-spike/3party/icu/icu/icu4c
 ls $ICU
