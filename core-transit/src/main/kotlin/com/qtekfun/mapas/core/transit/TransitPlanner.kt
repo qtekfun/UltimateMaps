@@ -342,8 +342,9 @@ class TransitPlanner(val index: TransitIndex, val config: PlannerConfig = Planne
         for (m in 0 until markedList.size) marked[markedList[m]] = false
 
         val out = ArrayList<Journey>()
-        if (walkOnly != null) out.add(walkOnly)
         for (k in 1..rounds) if (roundDestStop[k] >= 0) out.add(reconstruct(k, roundDestStop[k], oLat, oLon, dLat, dLon))
+        // transit results all beat the walk-only time (it seeded the pruning bound), so keep walking only when alone
+        if (out.isEmpty() && walkOnly != null) out.add(walkOnly)
         return out
     }
 
@@ -430,8 +431,18 @@ class TransitPlanner(val index: TransitIndex, val config: PlannerConfig = Planne
             ),
         )
         legs.reverse()
-        // a zero-length egress/access walk is noise
-        return Journey(legs.filterNot { it is Leg.Walk && it.arriveSec == it.departSec && it.meters == 0 })
+        // a zero-length walk is noise; two consecutive walks (transfer walk + egress walk) are shown as one
+        val merged = ArrayList<Leg>()
+        for (l in legs) {
+            if (l is Leg.Walk && l.arriveSec == l.departSec && l.meters == 0) continue
+            val prev = merged.lastOrNull()
+            if (l is Leg.Walk && prev is Leg.Walk) {
+                merged[merged.size - 1] = Leg.Walk(prev.fromStop, l.toStop, prev.departSec, l.arriveSec, prev.meters + l.meters)
+            } else {
+                merged.add(l)
+            }
+        }
+        return Journey(merged)
     }
 
     /**

@@ -22,5 +22,6 @@ tasks.register<JavaExec>("transitBench") {
     classpath = sourceSets["test"].runtimeClasspath
     mainClass.set("com.qtekfun.mapas.core.transit.bench.TransitBenchKt")
     maxHeapSize = "3g"
+    providers.gradleProperty("transitDebug").orNull?.let { systemProperty("transit.debug", it) }
     args(providers.gradleProperty("transitData").orElse("").get())
 }
