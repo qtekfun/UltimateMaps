@@ -36,9 +36,30 @@ Sin esas variables, `./gradlew :app:assembleFossRelease` genera un APK **sin fir
    ```
 4. El workflow comprueba que el tag coincide con `appVersion` y que hay notas, ejecuta `test`, `lintFossRelease`, compila el APK firmado y publica la Release con `UltimateMaps-X.Y.Z.apk` y su `.sha256`. Las candidatas (`-rc.N`) salen como pre-release.
 
-## Pendiente antes del primer release real
+## Estado de la preparación (2026-10-07)
 
-- **Núcleo nativo en el APK de release (M2, ya integrado):** el workflow ejecuta `git submodule update --init third_party/comaps` y `scripts/comaps-prepare.sh` (descarga ~2 GB y usa PyPI). En local, `assembleFossRelease` con el núcleo tarda 2 min 51 s (APK sin firmar de 42,3 MB); **no verificado en el runner de GitHub** (NDK 28.2, CMake 3.31.6, tiempo y RAM).
-- **Minificado:** desactivado a propósito hasta probar JNI y MapLibre minificados en un dispositivo.
-- **F-Droid:** metadatos y `fastlane/` (Fase 5).
-- **Secretos, protección de `master` y tag:** los configura el usuario.
+**Preparado en el repo** (verificado en local, no en GitHub): `LICENSE` (GPL-3.0), `README.md`, `PRIVACY.md` (es/en), `CHANGELOG.md` con notas de `0.1.0-rc.1`, `fastlane/metadata/android/{en-US,es-ES}` (título, descripciones y changelog 10001), borrador `fdroid/com.qtekfun.mapas.yml` (sin la sección `Builds`), versión única `appVersion` con `versionCode` derivado, firma por entorno, `release.yml` (instala NDK y CMake exactos, prepara el submódulo, falla sin clave, publica APK y `.sha256`), `usesCleartextTraffic="false"`, `allowBackup="false"`, y `LICENSES.md` al día (incluido `kdtree++`, Artistic License 2.0 verificada en cabeceras).
+
+### Solo puedes hacerlo tú (CLAUDE.md, «Cuándo preguntar» nº 4 y 5)
+
+1. **Clave y secretos** `UM_KEYSTORE_BASE64`, `UM_KEYSTORE_PASSWORD`, `UM_KEY_ALIAS`, `UM_KEY_PASSWORD` (sección «Firma»). Guarda la clave con copia: si se pierde, hay que desinstalar para actualizar.
+2. **Crear `master` en GitHub**: hoy `origin` está vacío y el flujo prohíbe empujar a `master` directamente. Hay que autorizar un primer `git push origin master` (o hacerlo tú) y proteger la rama (plantilla en `~/repos/ruleset-master.json`).
+3. **CI (`ci.yml`)**: existe `mapas-ci.yml` en la raíz, con `main` en vez de `master`; tocar `.github/workflows/` requiere tu visto bueno. Sin CI el merge automático no tiene puerta.
+4. **Primer tag** `v0.1.0-rc.1` tras poner fecha en `CHANGELOG.md`: `git tag v0.1.0-rc.1 && git push origin v0.1.0-rc.1`.
+5. **Avisar al proyecto CoMaps** de que alojamos copias de sus `.mwm` (no encontramos condiciones de uso del CDN) y decidir si se anuncia antes.
+6. **Icono y capturas** para las tiendas (`fastlane/.../images/`): hoy hay un `ic_launcher` provisional y ninguna captura.
+
+### Necesita el Pixel 8 (prohibido hasta nuevo aviso del usuario)
+
+- Descarga de una región **desde la app** con la URL por defecto (no probada nunca), con pausa y reanudación.
+- Captura de tráfico con el **modo sin red** activo (RF-12: cero conexiones salientes) y al arrancar (debe ser cero).
+- Latencia de búsqueda (umbral 100 ms; medida 484-4201 ms) y ruta larga con las 25 regiones (umbral 2 s).
+- Fluidez con etiquetas y varias regiones, memoria, y un segundo dispositivo (gama media, sin GMS).
+- **Minificado (R8):** hoy desactivado; activarlo exige probar JNI y MapLibre minificados.
+
+### Riesgos conocidos para F-Droid
+
+- **Compilar el núcleo necesita red y PyPI** (`scripts/comaps-prepare.sh` instala `protobuf` con pip y clona ~2 GB de submódulos). Los servidores de F-Droid limitan la red durante la compilación: probablemente haya que **versionar los ficheros generados** (clasificador, categorías, reglas de estilo, cadenas; <3 MB) y dejar el script solo para regenerarlos.
+- La entrada `Builds` (versión, `versionCode`, commit, `submodules: true`, `sudo` con JDK 21) se escribe al tener el tag; ver `~/repos/ultimatedeck/fdroid/` como modelo.
+- Anti-features: por descargar de GitHub puede aplicarse `NonFreeNet` o similar; lo decide la revisión.
+- El texto de la Artistic License 2.0 de `kdtree++` no viene en el submódulo: incluirlo en un `NOTICE` o en «Acerca de» (la app aún no tiene pantalla «Acerca de»; la atribución de OSM sí está siempre en el mapa).

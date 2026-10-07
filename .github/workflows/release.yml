@@ -25,6 +25,12 @@ jobs:
 
       - uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
 
+      # El núcleo nativo fija NDK y CMake exactos (native-comaps/build.gradle.kts); no depender de lo que traiga la imagen.
+      - name: Instalar NDK y CMake exactos
+        run: |
+          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null || true
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "ndk;28.2.13676358" "cmake;3.31.6" "platforms;android-37"
+
       # El núcleo de CoMaps es un submódulo (tag fijado) y sus datos generados no se versionan.
       # El script inicializa solo los submódulos anidados necesarios (necesita red y PyPI).
       - name: Preparar el núcleo de CoMaps

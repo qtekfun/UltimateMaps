@@ -1,0 +1,14 @@
+Mapas es una app de mapas sin conexión y privada. El mapa, la búsqueda y las rutas se calculan en tu teléfono: sin tráfico en tiempo real, sin cuentas, sin anuncios, sin analítica y sin telemetría. Funciona sin Google Play Services.
+
+Es una versión candidata de un MVP, no una app terminada. Lo que funciona hoy:
+
+• Mapa vectorial sin conexión (MapLibre + PMTiles), tema claro y oscuro.
+• Descarga de regiones desde la pantalla Mapas: reanudables y verificadas con SHA-256. Un modo sin red bloquea todas las conexiones de la app.
+• Búsqueda de lugares y direcciones sin conexión, con el motor de CoMaps.
+• Vista previa de ruta en coche, a pie o en bici (todavía sin guía giro a giro).
+• Sitios guardados y listas, con importación y exportación GPX y KML.
+• Abre enlaces de Google Maps, Apple Maps, Waze y geo:.
+
+Todavía no: navegación giro a giro con voz, carriles y límites de velocidad, perfil de moto y rutas con curvas, grabación de recorridos, sincronización con Nextcloud, importación de Google Takeout, Android Auto.
+
+Por ahora solo está disponible España. Los datos de mapas son de OpenStreetMap (© colaboradores de OpenStreetMap, ODbL) y se descargan solo cuando lo pides. Software libre, GPL-3.0-or-later.

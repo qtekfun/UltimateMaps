@@ -20,6 +20,7 @@ Proyecto bajo GPLv3. Toda dependencia debe ser compatible y constar aquí antes 
 | Datos de OpenStreetMap | n/a | ODbL 1.0 | Sí (datos, no código; atribución visible, RF-13) | Teselas PMTiles locales |
 | CoMaps (`third_party/comaps`, tag `v2026.10.05-19`) | v2026.10.05-19 | Apache-2.0 (copyright My.com, Organic Maps y CoMaps Contributors) | Si (Apache-2.0 es compatible con GPLv3; el conjunto queda GPLv3-o-posterior) | `:native-comaps`: busqueda, routing, indexer, storage y platform minima. Sin drape/render |
 | 3party de CoMaps compilados: boost (Boost), expat y jansson (MIT), pugixml (MIT), protobuf (BSD-3), ICU (ICU License), succinct, open-location-code (Apache-2.0), monocypher (BSD-2/CC0), utfcpp (BSL), opening_hours | segun submodulo | Permisivas | Si | `:native-comaps` |
+| `kdtree++` (libkdtree++, solo cabeceras; lo incluye `libs/geometry/tree4d.hpp`) | la de CoMaps | Artistic License 2.0 (lo dicen las cabeceras: `3party/kdtree++/function.hpp:83`, `allocator.hpp:90`, `kdtree.hpp:1092`; no hay fichero `COPYING` en el submódulo) | Sí (la FSF la considera compatible con la GPL) | `:native-comaps`, estructuras espaciales de búsqueda |
 
 ### Excluido a proposito de la build propia (CoMaps)
 
@@ -31,6 +32,6 @@ Proyecto bajo GPLv3. Toda dependencia debe ser compatible y constar aquí antes 
 | freetype, harfbuzz, agg, stb_image, libtess2, glfw, imgui, vulkan_wrapper | varias | Solo drape/escritorio | No se compilan |
 | Datos de mapa .mwm (OSM + terceros) | ODbL y otras (ver `data/copyright.html`) | Se descargan en ejecucion, no se empaquetan | Atribucion en la pantalla "Acerca de" (pendiente) |
 
-Pendientes heredados (no bloquean la build, si la publicacion): licencia de `kdtree++` (no se compila aqui) y `gb-postcode-data` (GPLv2) dentro de los mwm de GB; ver `docs/spike/comaps-code.md` seccion 5.
+Pendientes heredados (no bloquean la build): `gb-postcode-data` (GPLv2) solo afecta a mapas de GB que generemos nosotros (no es el caso); el texto de la Artistic License 2.0 de `kdtree++` no viene en el submódulo y habrá que incluirlo en el «Acerca de» o en un `NOTICE` antes de F-Droid. Ver `docs/spike/comaps-code.md` sección 5 y `docs/spike/verificaciones.md`.
 
 Sin `play-services-*, Firebase ni SDK propietarios.
