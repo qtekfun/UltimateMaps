@@ -94,7 +94,7 @@ def fetch_mwm(base_url, comaps_id, expected_size, dest_dir, max_bytes):
 
 
 def build(countries, mwm_dir=None, pmtiles_dir=None, mwm_base=None, pmtiles_base=None, catalog_version=None,
-          fetch=(), max_download_bytes=20 << 20, log=lambda m: None):
+          fetch=(), max_download_bytes=20 << 20, log=lambda m: None, mwm_url_by_slug=False):
     version = str(countries["v"])
     series = countries.get("map_series", "")
     mwm_base = (mwm_base or DEFAULT_MWM_BASE.format(series=series, v=version))
@@ -142,7 +142,7 @@ def build(countries, mwm_dir=None, pmtiles_dir=None, mwm_base=None, pmtiles_base
                     region["assets"] = {
                         "render": {"url": pmtiles_base + rid + ".pmtiles", "size": os.path.getsize(pm),
                                    "sha256": sha256_of(pm), "file": rid + ".pmtiles"},
-                        "search": {"url": mwm_base + urllib.parse.quote(cid) + ".mwm", "size": msize,
+                        "search": {"url": mwm_base + (rid if mwm_url_by_slug else urllib.parse.quote(cid)) + ".mwm", "size": msize,
                                    "sha256": sha256_of(mwm), "file": rid + ".mwm"},
                     }
         regions.append(region)
@@ -165,12 +165,15 @@ def main(argv=None):
     ap.add_argument("--fetch-mwm", action="append", default=[], metavar="COMAPS_ID",
                     help="descarga ese .mwm a --mwm-dir (red; solo si se pide)")
     ap.add_argument("--max-download-mb", type=int, default=20)
+    ap.add_argument("--mwm-url-by-slug", action="store_true",
+                    help="la URL del .mwm usa el id propio (`<slug>.mwm`), p. ej. en GitHub Releases, que renombra los espacios")
     ap.add_argument("-o", "--output", default="-")
     a = ap.parse_args(argv)
     with open(a.countries, encoding="utf-8") as f:
         countries = json.load(f)
     cat = build(countries, a.mwm_dir, a.pmtiles_dir, a.mwm_base, a.pmtiles_base, a.catalog_version,
-                set(a.fetch_mwm), a.max_download_mb << 20, log=lambda m: print(m, file=sys.stderr))
+                set(a.fetch_mwm), a.max_download_mb << 20, log=lambda m: print(m, file=sys.stderr),
+                mwm_url_by_slug=a.mwm_url_by_slug)
     text = json.dumps(cat, indent=1, ensure_ascii=False) + "\n"
     if a.output == "-":
         sys.stdout.write(text)

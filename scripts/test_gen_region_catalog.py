@@ -60,6 +60,17 @@ class GenCatalogTest(unittest.TestCase):
         self.assertNotIn("assets", by["andorra"])
         self.assertNotIn("assets", by["spain_castile-and-leon_west"])
 
+    def test_mwm_url_by_slug(self):
+        with tempfile.TemporaryDirectory() as t:
+            mwm, pm = os.path.join(t, "mwm"), os.path.join(t, "pm")
+            os.makedirs(mwm)
+            os.makedirs(pm)
+            put(os.path.join(mwm, "Spain_Community of Madrid.mwm"), b"abc")
+            put(os.path.join(pm, "spain_community-of-madrid.pmtiles"), b"0123456789")
+            c = gen.build(COUNTRIES, mwm, pm, "https://m.example/d", "https://m.example/d", "t", mwm_url_by_slug=True)
+        a = {r["id"]: r for r in c["regions"]}["spain_community-of-madrid"]["assets"]
+        self.assertEqual("https://m.example/d/spain_community-of-madrid.mwm", a["search"]["url"])
+
     def test_size_mismatch_with_countries_txt_is_skipped(self):
         with tempfile.TemporaryDirectory() as t:
             os.makedirs(os.path.join(t, "pm"))
