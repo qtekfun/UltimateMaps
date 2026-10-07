@@ -188,3 +188,132 @@ Format: date · decision · reason · discarded alternatives · how to revert it
 - **Reproducibility test NOT completed:** I launched two clean builds of the unsigned APK to compare entries, but the system reached low free memory (27 of 30 GB) and stopped my wait command; I stopped my build processes so as not to harm the rest of the machine. There is no result, neither positive nor negative. Repeat when there is free memory and at the user's request: `./gradlew clean :app:assembleFossRelease` twice and compare `unzip -v`. A reproducible APK is an F-Droid requirement (as in UltimateDeck).
 - **Side effect:** `gradle clean` deleted `app/build` and `native-comaps/build`; the next native build will take a while (≈ 3-5 min).
 - **Revert:** `git revert` of this commit; it does not change app code except the manifest line.
+
+## 2026-10-07 · The code is published on GitHub (first push to `master`, authorised by the user)
+- **Decision:** `git push origin master` (a single exception to "never push to `master`"), after asking the user ("shall I upload the code now?" → "Yes"). 29 commits, public repository `qtekfun/UltimateMaps`, default branch `master`; local and remote identical (`aa9ebab`).
+- **Before publishing, everything versioned was scanned** (excluding `third_party`): no keys, tokens, phone serial numbers, private IPs or personal emails. What gets published: the commit author `Qtekfun <qtekfun@gmail.com>`, 19 `logcat` files from the spike tests (no personal data found) and the links to the Claude session in the commit messages.
+- **Not done:** removing the logs from history (it would require rewriting it: "When to ask" no. 5). Only the `spike/*` and `feat/*` branches remain local.
+- **Pending on the user:** protection of `master` and CI (without checks, PRs do not merge themselves); the `UM_*` secrets.
+- **From now on:** one branch and one PR per task; this very entry goes through a PR.
+
+## 2026-10-07 · My mistake: the published catalogue did not include `World.mwm`; fixed
+- **Symptom (reported by the user with the pre-release `test-v0.1.0-rc.1`):** they downloaded a region from the app (download and rendering work) but search said "no maps, download one".
+- **Cause:** the core requires `World.mwm` in `maps-core/<version>/`, which the catalogue's `base` block downloads. The `catalog.json` of the `data-261004-20261006` release was generated **before** that block existed and was not regenerated when the branch that added it was integrated (I had noted it as gap no. 2 and it slipped my mind). Without `base`, the app never downloads `World`.
+- **Fix:** catalogue regenerated with `--base-dir` (only the `base` block changes; the 1,303 regions are identical; World hashes equal to `SHA256SUMS`) and replaced in the release (`gh release upload --clobber`). The URL `…/releases/latest/download/catalog.json` took about 90 s to serve the new copy because of caching.
+- **What someone who already has a region installed must do:** the app only downloads `World` when **installing** a region while it does not yet have it; an already installed region does not trigger it. It is enough to download any other region (e.g. Ceuta, 1.5 MB, + 62 MB of World) or to delete and re-download the region.
+- **Safeguard:** `scripts/gen-region-catalog.py` now warns if there are downloadable regions but no `--base-dir`.
+- **What the tests did not catch:** none covered "real published catalogue → search"; the download → link → search circuit was not tested end to end with the real release. Pending (with the phone, when the user allows it).
+
+## 2026-10-07 · Up to 3 subagents at once
+- **Decision:** the limit of simultaneous subagents goes up from 2 to 3 at the user's request ("Use up to 3 subagents"). It supersedes the earlier entries about 4 and 2.
+- **Split in progress:** A `feat/nav-maneuvers` (turns, lanes and limits from the core), B `feat/nav-following` (`:core-nav` module: route following and recalculation), C `feat/ui-regions-search-sheet` (region search and bottom-sheet dragging). Common model in `feat/nav-model` (`97d77ac`).
+
+## 2026-10-07 · User ideas: fuel station prices and real-time transit (undecided)
+- **Status:** only noted in `docs/mapas-05-roadmap.md`, no code. They touch "What we do not do" (public transport) and the rule that everything happens on the device, so they need a user decision and a spike that verifies APIs, formats, keys and licences.
+
+## 2026-10-07 · Fuel prices and real-time transit enter the roadmap (F7), configurable in Settings
+- **User decision:** "Put them in the roadmap and make them configurable in settings". New phase **F7. Optional data** (after F5), requirements **RF-15** (fuel prices by type: LPG, petrol, diesel, CNG…), **RF-16** (real-time public transport per operator) and **RF-17** (Settings screen with privacy, navigation preferences and the optional sources), and an architecture section with the `OptionalDataSource` interface.
+- **Principles kept:** disabled by default; everything through `NetworkPolicy` with the hosts in the visible connections list; a notice when enabling about what is sent and to whom; **the location never leaves** (everything is downloaded, or requested per chosen station, and filtered on the device); a failure in one source does not affect the others; no embedded keys (if one is needed, the user supplies it in Android Keystore).
+- **Scope:** "public transport" leaves "What we do not do" and moves to F7 (optional); "road traffic" stays out. It changes none of the immovable decisions in `CLAUDE.md` (road traffic, network through `NetworkPolicy`, zero telemetry).
+- **Prerequisite detected:** the app **does not yet have a Settings screen** (only the offline mode inside "Maps"). It is added to F2 (voice, units, privacy) with sections reserved for F7.
+- **Unverified (spike before coding):** URL, format, frequency and licence of the Ministry's price file; open data and real time for Renfe/Cercanías; whether Metro de Madrid or others require a key. What is written about those APIs is from memory.
+- **Revert:** remove the F7 row and RF-15 to RF-17; there is no code.
+
+## 2026-10-07 · F7 verification study: what changes in the roadmap
+- **Result (agent D, `docs/phase7/verificacion-fuentes.md`; fuel re-verified by me with a real download):**
+  - **Fuel:** open service without a key; 12.2 MB nationwide, 999 stations with LPG (377 KB with `FiltroProducto/17`); updated **every 30 min** (the roadmap said "daily": corrected). Filtering by province or municipality reveals the user's area → discarded; whole-file or per-product download is used.
+  - **Cercanías:** public GTFS-RT without a key, CC BY 4.0, 20 s; the real-time feed only carries the next stop, so the full departure board requires the static GTFS (14 MB).
+  - **Metro:** only **Bilbao** has open real time without a key. **Metro de Madrid does not** (static only, "Powered by CRTM"); TMB, Valencia, Seville and EMT require a key → only with the user's own key.
+- **Refuted:** "Metro de Madrid without a key" from the previous roadmap.
+- **~~Blocker before publishing the feature~~ (corrected below: low risk with attribution):** the **reuse licence** of the fuel service is not verified (the datos.gob.es records return 404). It must be clarified with the Ministry. It is a user decision/action.
+- **Still unverified:** usage limits (none published), Renfe's attribution text, licence of the protobuf library.
+
+## 2026-10-07 · Guidance (manoeuvres, lanes, limits) from the core, not executed
+- **Decision:** `Route(..., withGuidance)` + `nativeRouteGuidance` (new JNI; `nativeRoute` untouched) + `GuidanceWire` in Kotlin; `routingEngine(withGuidance = false)` by default, so the preview does not change. Detail, format and what is unverified in `docs/phase2/maneuvers.md`.
+- **Findings:** bicycle uses `CarDirectionsEngine` (not `PedestrianDirection`); a per-segment limit does exist but is only filled in for car; the core has no MERGE, ARRIVE_LEFT/RIGHT or departure (DEPART).
+- **Status:** compiles and links; not executed (no device). `Guidance.kt` was not touched.
+- **Discarded alternative:** encoding the guidance inside `nativeRoute` (breaks the format and forces paying the cost every time).
+
+## 2026-10-07 · Route-following engine `:core-nav` (branch `feat/nav-following`)
+- **Decision:** pure Kotlin JVM module with a synchronous core (`RouteTracker`) and a coroutine wrapper (`NavigationSession`, `StateFlow<NavState>` + `SharedFlow<Announcement>`). Thresholds and their rationale in `docs/phase2/following.md`. State identifiers in English (`ON_ROUTE`, `OFF_ROUTE`, `REROUTING`, `ARRIVED`, `NO_SIGNAL`) like the rest of the code.
+- **New dependency:** `kotlinx-coroutines` 1.11.0 (core and test), Apache-2.0, recorded in `LICENSES.md`. Discarded alternative: custom callbacks (reinventing `StateFlow`, and the Compose UI already expects flows).
+- **Reason for the synchronous core:** time comes only from the fixes and the ticks, so tests are exact without sleeping; the session only adds concurrency (a single consumer, no locks).
+- **Discarded:** matching against the street map (there is no data in pure JVM; the monotonic window + heading is enough for loops and overlaps); always projecting onto the globally nearest segment (it jumps around on routes with loops).
+- **Measured:** ≈ 0.5-0.8 µs per fix and 0 B allocated in `onFix` (desktop JVM; not the Pixel 8). Detail in the doc.
+- **Revert:** `git revert` of the branch commits; it touches no other module (only `settings.gradle.kts`, `libs.versions.toml` and `LICENSES.md`).
+
+## 2026-10-07 · Search in "Maps" and sheet dragging (branch `feat/ui-regions-search-sheet`, no phone)
+- **Decision:** the "Maps" screen filters by name ignoring case and accents, with a normalised key per catalogue entry (plus Spanish synonyms for autonomous communities and countries; only names that exist in the published catalogue), results with a path ("Spain › Catalonia › Provincia de Barcelona"), downloadable ones first. The bottom sheet drags from any area, with `nestedScroll`, fling at 200 dp/s, 25 % of the gap, spring 0.9/800 and TalkBack actions. Detail in `docs/phase2/sheet-drag.md`.
+- **Not measured:** the real feel of the drag (no Pixel 8). The values are a reasoned estimate. The real catalogue is flat (countries at the root and 25 children of Spain), there are no continent levels.
+- **Discarded alternative:** collapsing the sheet with the leftover fling of a list (as Material does): it is surprising when returning to the top of a long list.
+
+## 2026-10-07 · No metro; fuel stations now (F2b); priority to navigation robustness
+- **User decision:** "Remove the metros, add the fuel stations, download all the fuels configured in settings… show on the map the price of the selected fuel… be able to tap the station and add it to the route… I need robustness in navigation".
+- **Plan:** metro leaves the roadmap (F7 is left with only Cercanías); new phase **F2b. Fuel stations** (RF-15) with Settings (RF-17). Common contract in `:core-fuel` (`64f78ee`).
+- **Split (3 agents, base branch `feat/fuel-model`):** E `feat/fuel-data-settings` (Ministry client **per fuel** with `FiltroProducto/{id}` so as not to reveal the area, cache, spatial index, and the first Settings screen), F `feat/fuel-map-route` (price over each station on the map, detail card on tap, "Go" and "Add stop", route with stops), G `feat/nav-robustness` (robust following and intermediate stops, foreground `NavigationService` with persistent state, **isolating the native core in another process** so an aborted `CHECK` does not kill the guidance, and a failed-route policy).
+- **Reason for isolating the core:** it already aborted the whole process on the Pixel 8 (SIGABRT from a CoMaps `CHECK`); on the road that would mean losing navigation.
+- **Native build serialised** between agents with `flock /tmp/claude-1000/native-build.lock` (little RAM; one native build at a time).
+- **Still open:** reuse licence of the fuel service without literal text (later resolved as low risk with attribution).
+
+## 2026-10-07 · Fuel licence: the user says there will be no problem; the evidence supports it, with mandatory attribution
+- **User request:** "I don't think there is anything about the licences. Check Gasolineras España on the Play Store, which uses it".
+- **Evidence found (web search of 2026-10-07):**
+  - The Ministry (MITECO) publishes the prices by legal obligation, **"to increase transparency … and improve information to citizens about their prices"** (Order ITC/2308/2007; `energia.gob.es/risp/faq`, now `miteco.gob.es/.../hidrocarburos-nuevos-combustibles/risp.html`).
+  - The Ministry offers the public service without a key and has **its own official app** on the Play Store (`es.gob.geogasolineras`) and the Geoportal with file downloads.
+  - The official catalogue **datos.gob.es** lists as "applications" that reuse the data Precioil.es, Fuelconomy, Gasolineras Baratas (Mobilendo) and eGasolineras, linking the dataset as the source.
+  - On **Google Play** it is used by apps such as "Gasolineras España", "Octana", "RepostaYA" and "RadarGasolina", all citing the Ministry as the source.
+  - A legal notice from one of them (Rastreoil) summarises the framework: data "reused in accordance with **Law 37/2007**, on the reuse of public sector information", stating the date of the last update and with no official status.
+- **What was NOT found:** the **literal text of the licence** of the dataset. The datos.gob.es record and the catalogue page of the electronic office (`sede.minetur.gob.es/.../precios-carburantes`) return **404**. Therefore there is no licence read from the primary source; there is widespread public use and a purpose of informing citizens.
+- **Decision:** the risk moves from "blocker before announcing" to **low risk covered by attribution**: cite the Ministry as the source, show the date of the last update, not alter the meaning of the data and not present it as official ("price published by the Ministry"). Agents E and F implement it (Settings, station detail card, `PRIVACY.md`). The exact conditions are an inference from the practice of other apps and from the general regime of Law 37/2007, not a quotation of the licence.
+- **Still prudent** (not mandatory): if legal certainty is ever wanted, write to the Ministry; it does not block development or, in the user's judgement, publication.
+
+## 2026-10-07 · Fuel stations: data, cache and Settings (branch `feat/fuel-data-settings`)
+- **Decision:** one request per fuel (`FiltroProducto/{id}`, never by area) with our own streaming JSON parser (no new dependencies), an atomic binary cache per fuel, an immutable grid index (lock-free reads) and `FuelDataManager`; Settings screen (`SettingsActivity`) with Privacy and Fuel stations, confirmation on enabling and a discreet gear on the map. Detail in `docs/phase7/fuel-implementation.md`.
+- **Reason:** privacy (the server does not know where you are), robustness against an undocumented service with no safety net (if one fuel fails, its data is kept) and never downloading at startup.
+- **Reuse licence NOT verified:** the prudent attribution is shown (source citation, date, "unofficial information", without calling the price "official"), but **superseded by the later decision of 2026-10-07 ("Fuel licence"): low risk with attribution, no longer a blocker**; clarifying it in writing with the Ministry is optional.
+- **Changes outside `:core-fuel`:** `DefaultNetworkPolicy.removeEndpoint` (`:core-net`), `implementation(project(":core-fuel"))` in `app/build.gradle.kts`, a gear in `MapScreen`/`MapControls` and one line in `MainActivity`.
+- **Limits:** preferences are not included in backups (there is no export and `allowBackup=false`); the host is listed with purpose `OTHER`; fuel names only in Spanish; not measured on a device.
+- **Discarded alternative:** downloading the national file (12 MB, only one fuel is of interest) or filtering by province (reveals the area).
+
+## 2026-10-07 · Fuel stations on the map, detail card and route stops (branch `feat/fuel-map-route`)
+- **Decision:** the price of the chosen fuel is drawn with a `SymbolLayer` fed by `FuelMapLayer` (query when the gesture ends, debounced, off the main thread, only if the result changes); the cheapest ones are distinguished by shape and size, not just by colour. The route accepts up to 5 stops (`addStop/removeStop/moveStop`) and the core already routes through checkpoints, so legs are not chained. The Ministry's attribution and the "unofficial" note always sit under the prices on the detail card.
+- **Discarded alternative:** one layer per fuel or a view `Marker` per station (per-frame allocations and view cost); chaining legs in Kotlin (the core already does it).
+- **Not measured:** appearance and smoothness on the phone. Detail in `docs/phase7/fuel-map.md`.
+
+## 2026-10-07 · First real run of the core's guidance on the Pixel 8: one C++ bug found and fixed
+- **What was done (with the user's permission, "Phone is yours"):** debug APK with everything integrated; `CoreBenchActivity --ez guidance true`. Evidence: `docs/phase2/device-test/guidance-dump-2026-10-07.txt`.
+- **Bug found:** the guidance arrived rejected: "salidaRotonda is not an integer: 4294967295" (`salidaRotonda` = roundabout exit). Cause: in `um_core.cpp` a ternary mixed `uint32_t` (`m_exitNum`) with `-1`; C++ promotes it to `uint32_t` and the `-1` came out as 4294967295. Fixed by converting to `double` first. Kotlin's strict decoder (`GuidanceWire`) did its job: it detected the error instead of yielding wrong data. The JVM tests could not see it (they use hand-made arrays): it is the kind of failure that only appears when running the core.
+- **Result after the fix (first time guidance is seen working):** no aborts; car 11 manoeuvres with real streets, one roundabout with exit 2 and arrival; limits of 20/30/50 km/h; bicycle 12 manoeuvres; on foot 21. Requesting guidance does not noticeably slow the route (car 267 ms with guidance vs 418 ms without it in that run).
+- **Confirmed:** speed limits only for car (bicycle and on foot: 0 segments), as agent A had read in the code.
+- **Unresolved observations:** empty lanes on these urban routes (a motorway route has not been tested); the bicycle route starts with a `U_TURN_RIGHT` at Puerta del Sol that would have to be verified on the ground; unnamed streets come out as `null`.
+- **Measured in this same session (native debug build, not representative of release):** search 308-3344 ms (n=12), urban car route 3.2 km in 244 ms, on foot 454 ms, by bicycle 391 ms; Madrid–Barcelona still gives `ROUTE_NOT_FOUND` (code 8) in 449-590 ms with 7 regions.
+
+## 2026-10-07 · Fuel stations tested end to end on the Pixel 8
+- **Result:** Settings → enable (dialog) → real download of LPG and diesel A → price over the station → detail card → Go → route → Add stop → route recalculated with the stop (15.3 km, 452 ms). Evidence in `docs/phase7/device-test/` (8 screenshots and a README).
+- **Not tested:** petrol 95 (large index), removing/reordering stops, saving, offline mode blocking the download, background refresh, and the real cost with thousands of stations.
+- **UI detail to polish:** the note "Lugar · Abierto desde un enlace de mapa" ("Place · Opened from a map link") stays on top of the route panel.
+
+## 2026-10-07 · Navigation robustness: chaos-proof following, foreground service and core isolated in `:core` (branch `feat/nav-robustness`)
+- **User request (explicit):** "robustness in navigation", above new features. Real reason: the native core already aborted the process (SIGABRT from a CoMaps `CHECK`) and during navigation that would mean losing the guidance on the road.
+- **Decisions:** (1) the "now" announcement is emitted on crossing a position along the route, and intermediate stops are `RouteGuidance.stops` (backward compatible) with `StopReached/StopSkipped` events; (2) `NavigationController` (pure JVM) + `NavigationService` `foregroundServiceType="location"` with atomic persistent state that expires after 3 h; (3) the CoMaps core runs in a `:core` process behind `IsolatedCore` (restart + one retry, deadline, killing the process to really cancel, chunked responses, circuit breaker after repeated crashes), with the `core.isolated` preference as a safety valve; (4) failed-route policy: only transient failures are retried.
+- **Discarded alternatives:** retrying `ROUTE_NOT_FOUND` (deterministic); cancelling a native computation any way other than killing the process (there is no other); `SharedMemory`/files for large routes (chunking is simpler and is tested on the JVM); exposing `GetAbsentCountries` through JNI now (recompiling the core in this environment is very costly and it could not be run).
+- **Verified only on the JVM (435 tests):** nothing was run on a device, nor the real core with the isolation. Risks and pending items in `docs/phase2/robustness.md`.
+
+## 2026-10-07 · Core isolated in `:core`: tested on the Pixel 8 with a forced kill
+- **Test (debug APK with everything integrated, with the user's permission):** the `CoreService` service starts the process `com.qtekfun.mapas:core` (different pid) and search works through it (20 results; `engine_ready_ms=774` includes starting the process; first search 3516 ms). Then, `run-as … kill -9` on the `:core` pid (simulates a native `abort`): **the main process stayed alive (same pid), Android restarted `:core` in ~1.1 s (12:59:32.860 death → 12:59:33.907 start) and the next search returned 20 results (4352 ms)**. Zero fatal signals. Screenshot in `docs/phase2/device-test/search-after-core-kill.png`.
+- **What this validates:** that an `abort` of the native core, which already happened on this phone, no longer takes the app down. **What it does not validate:** during a route or a navigation in progress, the retries with a maximum time, the circuit breaker after 3 crashes in 60 s, the `core.isolated=false` valve, or the `NavigationService` (no navigation screen yet).
+- **Other measurements from the session:** `CoreBenchActivity` with 9 maps: search 308-3344 ms, urban car route 244 ms; Madrid–Barcelona `ROUTE_NOT_FOUND` (≈ 450-590 ms with 7 regions); `:core` memory 172 MB PSS.
+- **Two fragile tests fixed on integration:** `RoutePanelTest` (race between threads when composing) and `FuelMapLayerTest.aBurstOfGesturesQueriesOnce` (real debounce of 80 ms; now 400 ms).
+
+## 2026-10-07 · Navigation voice and navigation settings (branch `feat/nav-voice`, no phone)
+- **Decision:** JVM module `:core-voice` with the phrases (es/en, km/mi, natural rounding, lanes only in near announcements, missing street omitted), the voice queue with priorities (`URGENT` interrupts, `LOW` does not pile up, expiry), engine recovery (restart with growing wait, deadlines, maximum restarts) and `VoiceNavigationController`; in `:app`, the system `TextToSpeech` without GMS, audio focus `GAIN_TRANSIENT_MAY_DUCK` with guidance attributes, `<queries>` to see the engines (Android 11+), a "Navigation" section in Settings and a guide to install a free engine from F-Droid (RHVoice, eSpeak NG, SherpaTTS). Detail in `docs/phase2/voice.md`.
+- **Reason:** without GMS it is common to have no TTS engine; navigation must carry on without voice and warn visually, not fail. The queue and recovery logic on the JVM is tested with virtual time, with no real waits.
+- **Discarded alternatives:** bundled own voice (weight, duplicating the system), pre-recorded voice (does not cover streets), speaking even if another app has focus (on top of a call).
+- **Not measured (no device):** voice quality, real music ducking, real engines and their restart, latency of the first announcement, that the F-Droid client handles the links. `core-nav` was not touched; in `SettingsScreen` only `internal` on 5 components and an optional parameter in `SettingsEnv`.
+
+## 2026-10-07 · Navigation screen and voice integrated (not tested on a device)
+- **What goes in:** N1 (`feat/nav-ui`): Start and Simulate buttons, `NavScreen` with turn banner, lanes, speed limit, ETA, states, camera that follows the user, night mode and gloves, screen kept on (window flag), resume after the process dies, `NavEventSink`. N2 (`feat/nav-voice`): `:core-voice` (es/en phrases with km/mi for the 18 turns), `SpeechDirector` and Android TTS without GMS with audio ducking, detection of a missing engine with a guide to F-Droid, "Navigation" section in Settings.
+- **Wiring done on integration:** `VoiceNavSink` (voice attaches on start and goes silent on finish), a `VoiceProblemBanner` strip on the navigation screen, and the volume keys control media volume.
+- **Verified:** 632 JVM tests, 0 failures, in 3 consecutive runs; `lintFossDebug` green.
+- **NOT verified (no phone):** appearance, smoothness and battery of the navigation screen; voice quality, audio ducking and real TTS engines; `startForegroundService` on Android 14; guidance with the real `:core` during a navigation; lanes on motorways; pressing Start without location permission (it is requested but the answer is not awaited).
+- **Pending:** the long-routes matrix (`--ez matrix true`) to find out why Madrid–Barcelona gives `ROUTE_NOT_FOUND`; it was interrupted when the user took the phone away. What was seen (last 4 lines of the log): every long route tried returned `code=8` and took 10 to 17 s, even Lleida→Tarragona (neighbours and installed): suspected general problem of routing between regions, not of a specific region; unconfirmed.

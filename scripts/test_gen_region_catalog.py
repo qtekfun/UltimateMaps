@@ -1,4 +1,4 @@
-"""Pruebas de gen-region-catalog.py: python3 -I -m unittest discover -s scripts -p 'test_*.py'"""
+"""Tests for gen-region-catalog.py: python3 -I -m unittest discover -s scripts -p 'test_*.py'"""
 import hashlib
 import importlib.util
 import os
@@ -47,7 +47,7 @@ class GenCatalogTest(unittest.TestCase):
             os.makedirs(pm)
             put(os.path.join(mwm, "Spain_Community of Madrid.mwm"), b"abc")
             put(os.path.join(pm, "spain_community-of-madrid.pmtiles"), b"0123456789")
-            put(os.path.join(mwm, "Andorra.mwm"), b"12345")  # sin pmtiles: no descargable
+            put(os.path.join(mwm, "Andorra.mwm"), b"12345")  # no pmtiles: not downloadable
             c = gen.build(COUNTRIES, mwm, pm, "https://m.example/mwm", "https://m.example/pm", "t")
         by = {r["id"]: r for r in c["regions"]}
         a = by["spain_community-of-madrid"]["assets"]
@@ -102,7 +102,7 @@ class GenCatalogTest(unittest.TestCase):
         p = os.environ.get("COUNTRIES_TXT") or os.path.join(
             os.path.dirname(__file__), "..", "third_party", "comaps", "data", "countries.txt")
         if not os.path.isfile(p):
-            self.skipTest("submódulo sin inicializar")
+            self.skipTest("submodule not initialised")
         import json
         with open(p, encoding="utf-8") as f:
             c = gen.build(json.load(f), catalog_version="t")

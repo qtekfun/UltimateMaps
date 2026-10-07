@@ -1,44 +1,44 @@
 # Mapas
 
-App Android de mapas y navegación **fuera de línea y privada**: mapa, búsqueda y rutas se calculan en el dispositivo, sin tráfico en tiempo real, sin cuentas y sin telemetría. Funciona sin Google Play Services. Software libre (GPLv3).
+An Android maps and navigation app that is **offline and private**: map, search and routes are computed on the device, with no real-time traffic, no accounts and no telemetry. It works without Google Play Services. Free software (GPLv3).
 
-> **Estado: versión candidata (0.1.0-rc.1).** Es un MVP en desarrollo, no una app terminada. Mira [`CHANGELOG.md`](CHANGELOG.md) para lo que hay y lo que falta, y [`docs/mvp-plan.md`](docs/mvp-plan.md) para el plan.
+> **Status: release candidate (0.1.0-rc.1).** It is an MVP under development, not a finished app. See [`CHANGELOG.md`](CHANGELOG.md) for what exists and what is missing, and [`docs/mvp-plan.md`](docs/mvp-plan.md) for the plan.
 
-## Qué hace hoy
+## What it does today
 
-- Mapa vectorial fuera de línea (MapLibre Native + PMTiles), tema claro y oscuro, atribución de OpenStreetMap.
-- Descarga de regiones desde la pantalla «Mapas» (reanudables, verificadas con SHA-256); modo sin red.
-- Búsqueda de lugares y direcciones fuera de línea (núcleo de [CoMaps](https://codeberg.org/comaps/comaps)).
-- Vista previa de ruta en coche, a pie o en bici (sin guía giro a giro todavía).
-- Sitios guardados y listas, con importación y exportación GPX y KML.
-- Abre enlaces de Google Maps, Apple Maps, Waze y `geo:`.
+- Offline vector map (MapLibre Native + PMTiles), light and dark theme, OpenStreetMap attribution.
+- Region downloads from the "Mapas" screen ("Maps", resumable, verified with SHA-256); offline mode.
+- Offline search for places and addresses (core from [CoMaps](https://codeberg.org/comaps/comaps)).
+- Route preview by car, on foot or by bike (no turn-by-turn guidance yet).
+- Saved places and lists, with GPX and KML import and export.
+- Opens Google Maps, Apple Maps, Waze and `geo:` links.
 
-## Qué no hace (todavía)
+## What it does not do (yet)
 
-Navegación giro a giro con voz, carriles y límites de velocidad, perfil de moto y rutas con curvas, grabación de recorridos, sincronización con Nextcloud, importación de Google Takeout, Android Auto. Ver `docs/mapas-05-roadmap.md`.
+Turn-by-turn navigation with voice, lanes and speed limits, motorcycle profile and curvy routes, track recording, Nextcloud sync, Google Takeout import, Android Auto. See `docs/mapas-05-roadmap.md`.
 
-## Datos
+## Data
 
-Los datos de mapas (OpenStreetMap, ODbL) se bajan por regiones desde [`UltimateMaps-data`](https://github.com/qtekfun/UltimateMaps-data). Hoy solo España. La app no se conecta a nada hasta que abres «Mapas» o descargas una región.
+Map data (OpenStreetMap, ODbL) is downloaded by region from [`UltimateMaps-data`](https://github.com/qtekfun/UltimateMaps-data). Only Spain for now. The app does not connect to anything until you open "Mapas" ("Maps") or download a region.
 
-## Compilar
+## Building
 
-Requisitos: JDK 21, Android SDK (plataforma 37), NDK 28.2.13676358, CMake 3.31.6, Git, Python 3 y `jq`.
+Requirements: JDK 21, Android SDK (platform 37), NDK 28.2.13676358, CMake 3.31.6, Git, Python 3 and `jq`.
 
 ```sh
 git clone https://github.com/qtekfun/UltimateMaps.git && cd UltimateMaps
 git submodule update --init third_party/comaps
-scripts/comaps-prepare.sh            # una vez: ~2 GB, necesita red y PyPI
+scripts/comaps-prepare.sh            # once: ~2 GB, needs network and PyPI
 ./gradlew assembleFossDebug -Dorg.gradle.workers.max=2
-./gradlew test                       # 267 tests JVM; no necesitan el submódulo
+./gradlew test                       # 267 JVM tests; they do not need the submodule
 ```
 
-La compilación nativa necesita bastante RAM; con poca, usa `-Dorg.gradle.workers.max=2` y evita LTO.
+The native build needs quite a lot of RAM; with little, use `-Dorg.gradle.workers.max=2` and avoid LTO.
 
-## Documentación
+## Documentation
 
-Empieza por [`docs/mapas-README.md`](docs/mapas-README.md). Decisiones y su porqué en [`docs/decisions.md`](docs/decisions.md); resultados del spike en [`docs/spike-informe.md`](docs/spike-informe.md); cómo sacar una versión en [`RELEASING.md`](RELEASING.md); licencias de dependencias en [`LICENSES.md`](LICENSES.md); privacidad en [`PRIVACY.md`](PRIVACY.md).
+Start with [`docs/mapas-README.md`](docs/mapas-README.md). Decisions and their reasons are in [`docs/decisions.md`](docs/decisions.md); spike results in [`docs/spike-informe.md`](docs/spike-informe.md); how to cut a release in [`RELEASING.md`](RELEASING.md); dependency licences in [`LICENSES.md`](LICENSES.md); privacy in [`PRIVACY.md`](PRIVACY.md).
 
-## Licencia
+## Licence
 
-GPL-3.0-or-later. Usa el código de CoMaps (Apache-2.0, compatible) y datos de OpenStreetMap © OpenStreetMap contributors (ODbL).
+GPL-3.0-or-later. It uses CoMaps code (Apache-2.0, compatible) and OpenStreetMap data © OpenStreetMap contributors (ODbL).
