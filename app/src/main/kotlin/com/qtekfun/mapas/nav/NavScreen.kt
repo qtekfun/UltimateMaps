@@ -70,7 +70,7 @@ class NavActions(
     val onGlove: (Boolean) -> Unit = {},
     val onView3d: (Boolean) -> Unit = {},
     val onVoice: (Boolean) -> Unit = {},
-    /** Mutes or unmutes only the camera/incident voice (the alerts' own switch). */
+    /** Mutes or unmutes the camera/incident alert sound and voice (the quick mute). */
     val onCameraVoice: (Boolean) -> Unit = {},
     val onOverview: () -> Unit = {},
     val onFaster: () -> Unit = {},
@@ -432,7 +432,7 @@ private fun MuteToggle(ui: NavUi, actions: NavActions) {
     )
 }
 
-/** Mutes only the camera/incident voice; highlighted while muted. The navigation Mute still silences everything. */
+/** Mutes the sound and voice of the camera and incident alerts at once; highlighted while muted. The navigation Mute still silences everything. */
 @Composable
 private fun CameraMuteToggle(ui: NavUi, actions: NavActions) {
     val c = NavTheme.colors

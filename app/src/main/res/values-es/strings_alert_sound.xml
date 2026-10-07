@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Cómo se anuncian los avisos de radares e incidencias: un sonido, la frase hablada o solo el aviso en pantalla -->
+    <string name="alert_mode_cam_title">Avisos de radares</string>
+    <string name="alert_mode_incident_title">Avisos de incidencias</string>
+    <string name="alert_mode_sound">Sonido (un tono corto)</string>
+    <string name="alert_mode_voice">Voz (aviso hablado)</string>
+    <string name="alert_mode_silent">Silencioso (solo el aviso en pantalla)</string>
+    <string name="alert_mode_note">El aviso en pantalla se muestra siempre. Silenciar de la navegación y el botón Silenciar avisos callan el sonido y la voz.</string>
+</resources>

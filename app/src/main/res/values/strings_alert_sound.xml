@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- How camera and incident alerts are announced: a chime, the spoken sentence, or only the on-screen alert -->
+    <string name="alert_mode_cam_title">Speed camera alerts</string>
+    <string name="alert_mode_incident_title">Incident alerts</string>
+    <string name="alert_mode_sound">Sound (a short chime)</string>
+    <string name="alert_mode_voice">Voice (spoken warning)</string>
+    <string name="alert_mode_silent">Silent (on-screen alert only)</string>
+    <string name="alert_mode_note">The on-screen alert always shows. The navigation Mute and the Mute alerts button silence the sound and the voice.</string>
+</resources>
