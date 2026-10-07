@@ -96,6 +96,32 @@ class GenCatalogTest(unittest.TestCase):
             self.assertNotIn("cameras", gen.build(COUNTRIES, catalog_version="t", cameras_file=os.path.join(t, "nope.bin"), cameras_base="https://x"))
         self.assertNotIn("cameras", gen.build(COUNTRIES, catalog_version="t"))
 
+    def test_optional_transit_block(self):
+        import json
+        with tempfile.TemporaryDirectory() as t:
+            f = os.path.join(t, "transit-madrid.umti")
+            put(f, b"u" * 13)
+            meta = {"id": "madrid", "city": "Madrid", "timezone": "Europe/Madrid", "validFrom": "2026-10-07",
+                    "validTo": "2026-11-05", "bounds": [39.8, -4.6, 41.2, -3.0], "attribution": ["Powered by CRTM"]}
+            with open(os.path.join(t, "transit-madrid.json"), "w") as m:
+                json.dump(meta, m)
+            tr = gen.build(COUNTRIES, catalog_version="t", transit_files=[f], transit_base="https://x/rel")["transit"]
+            self.assertEqual(1, len(tr))
+            self.assertEqual("https://x/rel/transit-madrid.umti", tr[0]["url"])
+            self.assertEqual(13, tr[0]["size"])
+            self.assertEqual(hashlib.sha256(b"u" * 13).hexdigest(), tr[0]["sha256"])
+            self.assertEqual("2026-11-05", tr[0]["validTo"])
+            self.assertEqual(["Powered by CRTM"], tr[0]["attribution"])
+            # a missing sidecar skips the file; a sidecar without attribution is an error
+            put(os.path.join(t, "transit-other.umti"), b"o")
+            self.assertNotIn("transit", gen.build(COUNTRIES, catalog_version="t", transit_files=[os.path.join(t, "transit-other.umti")], transit_base="https://x"))
+            del meta["attribution"]
+            with open(os.path.join(t, "transit-madrid.json"), "w") as m:
+                json.dump(meta, m)
+            with self.assertRaises(SystemExit):
+                gen.build(COUNTRIES, catalog_version="t", transit_files=[f], transit_base="https://x")
+        self.assertNotIn("transit", gen.build(COUNTRIES, catalog_version="t"))
+
     def test_size_mismatch_with_countries_txt_is_skipped(self):
         with tempfile.TemporaryDirectory() as t:
             os.makedirs(os.path.join(t, "pm"))

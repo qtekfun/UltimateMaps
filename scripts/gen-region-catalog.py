@@ -30,6 +30,11 @@ next to each region; the app downloads them once per version). Without it, the c
 `--cameras-file` (with `--cameras-base`) adds the optional `cameras` block for the speed-camera file; without it the catalog is
 unchanged and the app works without camera data.
 
+`--transit-file` (repeatable, with `--transit-base`) adds the optional `transit` array, one entry per city index
+`transit-<id>.umti` built by `scripts/build-transit.sh`. Each file needs its sidecar `transit-<id>.json` (written by the same
+tool: id, city, timezone, bounds, validFrom, validTo, attribution). Without the option the catalog is unchanged and the app
+works without transit data. See docs/phase2/transit.md.
+
 With network, only on explicit request and with a size cap: --fetch-mwm <comapsId> downloads THAT .mwm
 (by default <= 20 MB) to --mwm-dir to compute its SHA-256.
 """
@@ -133,9 +138,42 @@ def build_cameras(cameras_file, cameras_base, log=lambda m: None):
     return {"url": cameras_base + name, "size": os.path.getsize(cameras_file), "sha256": sha256_of(cameras_file), "file": name}
 
 
+TRANSIT_META_KEYS = ("id", "city", "timezone", "validFrom", "validTo", "attribution")
+
+
+def build_transit(transit_files, transit_base, log=lambda m: None):
+    """Optional `transit` array: one entry per `.umti` that has its `.json` sidecar (see scripts/build-transit.sh)."""
+    out = []
+    if not transit_files:
+        return out
+    if not transit_base:
+        raise SystemExit("--transit-file needs --transit-base")
+    transit_base = transit_base if transit_base.endswith("/") else transit_base + "/"
+    for path in transit_files:
+        meta_path = os.path.splitext(path)[0] + ".json"
+        if not os.path.isfile(path) or not os.path.isfile(meta_path):
+            log(f"WARNING {path} or its sidecar {meta_path} is missing; the catalog will not carry it")
+            continue
+        with open(meta_path, encoding="utf-8") as f:
+            meta = json.load(f)
+        missing = [k for k in TRANSIT_META_KEYS if not meta.get(k)]
+        if missing:
+            raise SystemExit(f"{meta_path}: missing {', '.join(missing)}")
+        name = os.path.basename(path)
+        entry = {"id": meta["id"], "city": meta["city"], "url": transit_base + name, "size": os.path.getsize(path),
+                 "sha256": sha256_of(path), "file": name, "validFrom": meta["validFrom"], "validTo": meta["validTo"],
+                 "timezone": meta["timezone"]}
+        if meta.get("bounds"):
+            entry["bounds"] = meta["bounds"]
+        entry["attribution"] = meta["attribution"]
+        out.append(entry)
+    return out
+
+
 def build(countries, mwm_dir=None, pmtiles_dir=None, mwm_base=None, pmtiles_base=None, catalog_version=None,
           fetch=(), max_download_bytes=20 << 20, log=lambda m: None, mwm_url_by_slug=False,
-          base_dir=None, base_url=None, cameras_file=None, cameras_base=None):
+          base_dir=None, base_url=None, cameras_file=None, cameras_base=None,
+          transit_files=(), transit_base=None):
     version = str(countries["v"])
     series = countries.get("map_series", "")
     mwm_base = (mwm_base or DEFAULT_MWM_BASE.format(series=series, v=version))
@@ -197,6 +235,9 @@ def build(countries, mwm_dir=None, pmtiles_dir=None, mwm_base=None, pmtiles_base
     cams = build_cameras(cameras_file, cameras_base, log)
     if cams:
         cat["cameras"] = cams
+    transit = build_transit(transit_files, transit_base, log)
+    if transit:
+        cat["transit"] = transit
     cat["regions"] = regions
     return cat
 
@@ -217,6 +258,8 @@ def main(argv=None):
     ap.add_argument("--base-url", help="base URL of World*.mwm (by default, --mwm-base)")
     ap.add_argument("--cameras-file", help="speedcams-es.bin from scripts/build-cameras.py (adds the optional `cameras` block)")
     ap.add_argument("--cameras-base", help="base URL of the cameras file (required with --cameras-file)")
+    ap.add_argument("--transit-file", action="append", default=[], help="transit-<id>.umti (repeatable; adds the optional `transit` array)")
+    ap.add_argument("--transit-base", help="base URL of the transit files (required with --transit-file)")
     ap.add_argument("--mwm-url-by-slug", action="store_true",
                     help="the .mwm URL uses the own id (`<slug>.mwm`), e.g. on GitHub Releases, which renames spaces")
     ap.add_argument("-o", "--output", default="-")
@@ -226,7 +269,8 @@ def main(argv=None):
     cat = build(countries, a.mwm_dir, a.pmtiles_dir, a.mwm_base, a.pmtiles_base, a.catalog_version,
                 set(a.fetch_mwm), a.max_download_mb << 20, log=lambda m: print(m, file=sys.stderr),
                 mwm_url_by_slug=a.mwm_url_by_slug, base_dir=a.base_dir, base_url=a.base_url,
-                cameras_file=a.cameras_file, cameras_base=a.cameras_base)
+                cameras_file=a.cameras_file, cameras_base=a.cameras_base,
+                transit_files=a.transit_file, transit_base=a.transit_base)
     text = json.dumps(cat, indent=1, ensure_ascii=False) + "\n"
     if a.output == "-":
         sys.stdout.write(text)

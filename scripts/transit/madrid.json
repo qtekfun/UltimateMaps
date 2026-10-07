@@ -1,0 +1,20 @@
+{
+  "id": "madrid",
+  "city": "Madrid",
+  "timezone": "Europe/Madrid",
+  "bounds": [39.8, -4.6, 41.2, -3.0],
+  "feeds": [
+    {"label": "CRTM Metro de Madrid", "file": "crtm_metro.zip", "namespace": "crtm",
+     "attribution": "Powered by CRTM (https://www.crtm.es/). Processed data: timetables converted to a compact index."},
+    {"label": "CRTM Metro Ligero", "file": "crtm_metroligero.zip", "namespace": "crtm",
+     "attribution": "Powered by CRTM (https://www.crtm.es/). Processed data: timetables converted to a compact index."},
+    {"label": "CRTM EMT Madrid buses", "file": "crtm_emt.zip", "namespace": "emt",
+     "attribution": "Powered by CRTM (https://www.crtm.es/). Processed data: timetables converted to a compact index."},
+    {"label": "CRTM interurban buses", "file": "crtm_interurban.zip", "namespace": "crtm",
+     "attribution": "Powered by CRTM (https://www.crtm.es/). Processed data: timetables converted to a compact index."},
+    {"label": "CRTM other urban buses", "file": "crtm_urban_other.zip", "namespace": "crtm",
+     "attribution": "Powered by CRTM (https://www.crtm.es/). Processed data: timetables converted to a compact index."},
+    {"label": "Renfe Cercanias (Madrid area)", "file": "renfe_cercanias.zip", "namespace": "renfe", "bbox": [39.8, -4.6, 41.2, -3.0],
+     "attribution": "Renfe Operadora, CC BY 4.0 (https://data.renfe.com/). Processed data: filtered to the Madrid area and converted to a compact index."}
+  ]
+}
