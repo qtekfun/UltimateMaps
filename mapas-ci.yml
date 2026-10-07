@@ -1,9 +1,9 @@
-# Copiar al repo como .github/workflows/ci.yml
+# Copy into the repo as .github/workflows/ci.yml
 #
-# CI mínimo para que el merge automático tenga sentido: el job "build" debe ser
-# un check obligatorio en la protección de rama (ver playbook, sección «Push, PR y merge automático»).
-# Ajusta las versiones de las acciones y de Java a las vigentes cuando lo copies,
-# y amplía el job tras el spike (NDK, CMake, tests instrumentados).
+# Minimal CI so that automatic merging makes sense: the "build" job must be
+# a required check in branch protection (see playbook, section "Push, PR and automatic merge").
+# Adjust the action and Java versions to the current ones when you copy it,
+# and extend the job after the spike (NDK, CMake, instrumented tests).
 
 name: CI
 
@@ -32,7 +32,7 @@ jobs:
         run: |
           if grep -rEi "play-services|firebase|com\.google\.android\.gms" \
               --include='*.gradle' --include='*.kts' --include='*.toml' .; then
-            echo "Dependencia propietaria detectada: no permitida en el sabor foss"
+            echo "Proprietary dependency detected: not allowed in the foss flavor"
             exit 1
           fi
 
@@ -43,5 +43,5 @@ jobs:
 
       - uses: gradle/actions/setup-gradle@v4
 
-      - name: Lint, tests unitarios y compilación
+      - name: Lint, unit tests and build
         run: ./gradlew lint test assembleDebug

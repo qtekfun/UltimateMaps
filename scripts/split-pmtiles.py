@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
-"""Corta un PMTiles de origen en un PMTiles por región de CoMaps, usando los polígonos de
-`third_party/comaps/data/borders/<id>.poly` (formato Osmosis). Salida: `<slug>.pmtiles` por región,
-con el mismo slug que `gen-region-catalog.py`, para que el catálogo encaje 1:1 con los .mwm.
+"""Cuts a source PMTiles into one PMTiles per CoMaps region, using the polygons in
+`third_party/comaps/data/borders/<id>.poly` (Osmosis format). Output: `<slug>.pmtiles` per region,
+with the same slug as `gen-region-catalog.py`, so the catalog fits 1:1 with the .mwm files.
 
-Uso:
-  scripts/split-pmtiles.py --pmtiles BIN --source ORIGEN --out DIR [--prefix Spain_] [--only ID ...]
-ORIGEN puede ser un fichero local o la URL de un build de Protomaps. Es idempotente: salta lo ya hecho.
-Un PMTiles recortado incluye los teselas enteros que tocan el polígono, así que las regiones vecinas
-se solapan en el borde (eso lo debe tener en cuenta el dibujado).
+Usage:
+  scripts/split-pmtiles.py --pmtiles BIN --source SOURCE --out DIR [--prefix Spain_] [--only ID ...]
+SOURCE can be a local file or the URL of a Protomaps build. It is idempotent: it skips what is already done.
+A cropped PMTiles includes the whole tiles that touch the polygon, so neighboring regions
+overlap at the border (rendering must take that into account).
 """
 import argparse
 import importlib.util
@@ -28,11 +28,11 @@ def _slug():
 
 
 def read_poly(path):
-    """Devuelve un MultiPolygon GeoJSON: cada anillo exterior es un polígono; los agujeros (`!nombre`) se añaden al último."""
+    """Returns a MultiPolygon GeoJSON: each outer ring is a polygon; the holes (`!nombre`) are added to the last one."""
     polys = []
     with open(path, encoding="utf-8") as f:
         lines = [l.strip() for l in f if l.strip()]
-    i = 1  # la primera línea es el nombre del fichero
+    i = 1  # the first line is the file name
     while i < len(lines) and lines[i] != "END":
         hole = lines[i].startswith("!")
         i += 1
@@ -57,7 +57,7 @@ def main(argv=None):
     ap.add_argument("--source", required=True)
     ap.add_argument("--out", required=True)
     ap.add_argument("--prefix", default="Spain_")
-    ap.add_argument("--only", nargs="*", help="ids de CoMaps (sin .poly) a procesar")
+    ap.add_argument("--only", nargs="*", help="CoMaps ids (without .poly) to process")
     a = ap.parse_args(argv)
     slug = _slug()
     os.makedirs(a.out, exist_ok=True)

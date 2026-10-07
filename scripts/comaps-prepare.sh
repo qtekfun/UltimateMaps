@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 #
-# Prepara third_party/comaps para el build nativo propio (:native-comaps).
-# Es un subconjunto de third_party/comaps/configure.sh SIN: descarga de World.mwm, simbolos ni drules
-# de todos los estilos (el render es de MapLibre). Idempotente.
+# Prepares third_party/comaps for the project's own native build (:native-comaps).
+# It is a subset of third_party/comaps/configure.sh WITHOUT: World.mwm download, symbols or drules
+# for all styles (rendering is MapLibre's). Idempotent.
 #
-# Requisitos: git, jq, python3 (+venv/pip con acceso a PyPI la primera vez), bash, curl.
-# No necesita `uconv` (solo servia para fichas de Google Play).
+# Requirements: git, jq, python3 (+venv/pip with PyPI access the first time), bash, curl.
+# Does not need `uconv` (it was only used for Google Play listings).
 #
-# Los ficheros generados quedan sin versionar dentro de third_party/comaps (el submodulo se marca
-# con ignore = untracked).
+# The generated files stay unversioned inside third_party/comaps (the submodule is marked
+# with ignore = untracked).
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -26,7 +26,7 @@ if [ ! -d 3party/boost/boost ]; then
   (cd 3party/boost && ./bootstrap.sh && ./b2 headers)
 fi
 
-# Venv local con protobuf 3.x (lo exige kothic)
+# Local venv with protobuf 3.x (required by kothic)
 set +u
 source ./tools/unix/activate_venv.sh
 set -u
@@ -35,22 +35,22 @@ echo "== cadenas json y categorias"
 ./tools/unix/generate_json_strings.sh
 ./tools/unix/generate_categories.sh
 
-echo "== cadenas de UI de escritorio (libs/platform/localized_types_map.cpp)"
+echo "== desktop UI strings (libs/platform/localized_types_map.cpp)"
 ./tools/unix/generate_desktop_ui_strings.sh
 
-# El nucleo fija el estilo por defecto de Android (default/light) con SetCurrentStyle y por eso carga
-# drules_proto_default_light.bin; sin el, CoMaps init falla (comprobado en el Pixel 8). Se genera ANTES que el estilo
-# vehicle: cada libkomwm reescribe classificator.txt/types.txt/visibility.txt y vehicle debe quedar el ultimo, como en
+# The core sets Android's default style (default/light) with SetCurrentStyle and therefore loads
+# drules_proto_default_light.bin; without it, CoMaps init fails (verified on the Pixel 8). It is generated BEFORE the
+# vehicle style: each libkomwm rewrites classificator.txt/types.txt/visibility.txt and vehicle must come last, as in
 # tools/unix/generate_drules.sh.
-echo "== drules default/light (lo pide el arranque del nucleo)"
+echo "== drules default/light (required by core startup)"
 python3 tools/kothic/src/libkomwm.py --txt \
   -s data/styles/default/light/style.mapcss \
   -o data/drules_proto_default_light \
   -p data/styles/default/include/
 
-# classificator.txt, types.txt, visibility.txt, colors.txt y patterns.txt salen de compilar UN estilo
-# (el de vehiculo, como hace generate_drules.sh al final: «produce same visibility.txt & classificator.txt»).
-echo "== classificator/types/visibility desde el estilo vehicle"
+# classificator.txt, types.txt, visibility.txt, colors.txt and patterns.txt come from compiling ONE style
+# (the vehicle one, as generate_drules.sh does at the end: "produce same visibility.txt & classificator.txt").
+echo "== classificator/types/visibility from the vehicle style"
 python3 tools/kothic/src/libkomwm.py --txt \
   -s data/styles/vehicle/light/style.mapcss \
   -o data/drules_proto_vehicle_light \
