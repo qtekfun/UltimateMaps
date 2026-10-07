@@ -49,6 +49,10 @@ object InstructionText {
 
     fun of(message: VoiceMessage, language: VoiceLanguage): String = words(language).message(message)
 
+    /** The rounded distance lead of a prompt ("En 300 metros" / "In 300 meters"), for voice modules that are not maneuvers. */
+    fun lead(meters: Int, units: DistanceUnits, language: VoiceLanguage): String =
+        words(language).distance(DistanceRounding.round(meters, units))
+
     /** What "Test voice" says: a real prompt, so the units and the language can be checked too. */
     fun test(units: DistanceUnits, language: VoiceLanguage): String {
         val sample = of(Announcement(Maneuver(0, TurnType.LEFT), AnnouncementKind.FAR, 300), units, language)
