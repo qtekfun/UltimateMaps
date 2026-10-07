@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Alternative routes in the route panel -->
+    <string name="route_alt_find">Show alternatives</string>
+    <string name="route_alt_finding">Looking for alternatives…</string>
+    <string name="route_alt_none">No different route found with other restrictions.</string>
+    <string name="route_alt_title">Routes (each alternative avoids one more road type)</string>
+    <string name="route_alt_main">Your route</string>
+    <string name="route_alt_same_time">same time</string>
+    <string name="route_alt_avoid_motorways">Avoiding motorways</string>
+    <string name="route_alt_avoid_tolls">Avoiding tolls</string>
+    <string name="route_alt_avoid_unpaved">Avoiding unpaved roads</string>
+    <string name="route_alt_avoid_ferries">Avoiding ferries</string>
+</resources>

@@ -24,6 +24,9 @@ class SearchState {
     var results by mutableStateOf<List<SearchResult>>(emptyList())
     var status by mutableStateOf(SearchStatus.IDLE)
 
+    /** The category being browsed (its results are in [results], nearest first); null while searching by text. */
+    var category by mutableStateOf<PlaceCategory?>(null)
+
     /** null until the first scan of the installed regions has finished. */
     var regionsAvailable by mutableStateOf<Boolean?>(null)
 }
@@ -62,6 +65,10 @@ class SearchCoordinator(
     private val limit: Int = 20,
     /** Serialises native calls; share it with the routing so the one core is never entered twice. */
     private val mutex: Mutex = Mutex(),
+    /** Where category results are measured from (the user if known, else the map center); defaults to [near]. */
+    private val categoryOrigin: () -> LatLon? = near,
+    /** Receives the positions of the category results (empty when they are cleared) to draw them on the map. */
+    private val onCategoryResults: (List<LatLon>) -> Unit = {},
 ) {
     val state = SearchState()
 
@@ -86,7 +93,58 @@ class SearchCoordinator(
         }
     }
 
+    /**
+     * Lists the places of [category] nearest first. [categoryName] is the category name in the UI language that the core
+     * searches as a pure category (see [PlaceCategory.query]). Replaces any text query and shows the results on the map.
+     */
+    fun browseCategory(category: PlaceCategory, categoryName: String) {
+        job?.cancel()
+        state.query = ""
+        state.category = category
+        state.results = emptyList()
+        onCategoryResults(emptyList())
+        val origin = categoryOrigin()
+        job = scope.launch {
+            val cold = engine == null || dirty
+            state.status = if (cold) SearchStatus.PREPARING else SearchStatus.SEARCHING
+            val outcome = withContext(io) {
+                mutex.withLock { run(categoryName) { it.searchCategory(categoryName, origin, limit) } }
+            }
+            when (outcome) {
+                is Outcome.Found -> {
+                    val sorted = sortedByDistance(outcome.list, origin)
+                    state.results = sorted
+                    state.status = SearchStatus.DONE
+                    onCategoryResults(sorted.map { it.point })
+                }
+                Outcome.NoRegions -> {
+                    state.regionsAvailable = false
+                    state.results = emptyList()
+                    state.status = SearchStatus.NO_REGIONS
+                }
+                Outcome.Failed -> {
+                    state.results = emptyList()
+                    state.status = SearchStatus.ERROR
+                }
+            }
+        }
+    }
+
+    /** Leaves category browsing: empties the list and removes the pins. */
+    fun clearCategory() {
+        if (state.category == null) return
+        job?.cancel()
+        state.category = null
+        state.results = emptyList()
+        state.status = if (state.regionsAvailable == false) SearchStatus.NO_REGIONS else SearchStatus.IDLE
+        onCategoryResults(emptyList())
+    }
+
     fun onQueryChange(query: String) {
+        if (state.category != null) {
+            state.category = null
+            onCategoryResults(emptyList())
+        }
         state.query = query
         job?.cancel()
         if (query.isBlank()) {
@@ -99,7 +157,7 @@ class SearchCoordinator(
             val point = near()
             val cold = engine == null || dirty
             state.status = if (cold) SearchStatus.PREPARING else SearchStatus.SEARCHING
-            when (val outcome = withContext(io) { mutex.withLock { run(query.trim(), point) } }) {
+            when (val outcome = withContext(io) { mutex.withLock { run(query.trim()) { it.search(query.trim(), point, limit) } } }) {
                 is Outcome.Found -> {
                     state.results = outcome.list
                     state.status = SearchStatus.DONE
@@ -123,7 +181,7 @@ class SearchCoordinator(
         data object Failed : Outcome
     }
 
-    private fun run(query: String, point: LatLon?): Outcome {
+    private fun run(query: String, search: (SearchEngine) -> List<SearchResult>): Outcome {
         try {
             var current = engine
             if (current == null || dirty) {
@@ -136,7 +194,7 @@ class SearchCoordinator(
                 log.engineReady(clock() - t0, maps.regionCount)
             }
             val t0 = clock()
-            val found = current.search(query, point, limit)
+            val found = search(current)
             log.searched(query.length, found.size, clock() - t0, firstSinceReady)
             firstSinceReady = false
             return Outcome.Found(found)

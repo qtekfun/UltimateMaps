@@ -84,6 +84,7 @@ fun RoutePanel(
             ProfileSelector(route)
             Spacer(Modifier.height(SECTION_GAP))
             ResultAndStart(s, navStart)
+            AlternativesSection(route)
             Spacer(Modifier.height(4.dp))
             RouteOptionsSection(route)
             if (s.profile == RoutingProfile.BIKE) BikeCyclewaysRow(route)
