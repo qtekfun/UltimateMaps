@@ -188,10 +188,10 @@ private fun SearchPane(
     search: SearchCoordinator,
     actions: PanelActions,
     modifier: Modifier,
-    /** Extra rows shown while the query is empty (quick places, recent searches). */
-    whenEmpty: LazyListScope.() -> Unit = {},
     /** The category chips under the field; off while a route origin is being picked. */
     categories: Boolean = true,
+    /** Extra rows shown while the query is empty (quick places, recent searches). */
+    whenEmpty: LazyListScope.() -> Unit = {},
 ) {
     val state = search.state
     Column(modifier) {
