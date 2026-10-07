@@ -26,7 +26,11 @@ In this CoMaps version `World` and `WorldCoasts` are leaves of `countries.txt`, 
 
 All twelve pairs are found. This is the first time Madrid to Barcelona (620 km) returns a route in the app.
 
+## Where the time goes (second run with the engine log at info level)
+- Short and medium pairs run in `Joints` mode (Madrid to Zaragoza 312 km: 8.2 s). Long pairs run in `LeapsOnly` mode, as designed: Madrid to Barcelona spent about 5 to 7 s before "Filtered candidates count = 15" and then about 11 to 13 s in the rest of the leaps processing; total 18.4 s of route build in that run (19.5 s measured by the tool).
+- The native core is always built in Release configuration (`-O2`, no LTO; see `native-comaps/src/main/cpp/CMakeLists.txt`), also for the debug app, so these times are representative of a release APK for the native part.
+
 ## Caveats
-- **This is a debug build**, including the native core (CMake Debug configuration). Times are not representative of a release build; the spike measured 17.8 s for Madrid to Barcelona with other conditions. Repeat with an optimised core before drawing conclusions.
-- The target is 2 s for Madrid to Barcelona: not met in this run (20.1 s; the reverse direction took 47.0 s). No cause for the slowness or the asymmetry has been found.
-- Zaragoza to Barcelona was found in 14.8 s here, after failing in 23.5 s before the fix.
+- Single runs on a shared phone; the first matrix run gave 20.1 s for Madrid to Barcelona and the second 19.5 s, Madrid to Lleida 28.9 s and 33.2 s, Barcelona to Madrid 47.0 s (first run only).
+- The target is 2 s for Madrid to Barcelona: not met (about 19 s). The spike measured 17.8 s on the same phone with the whole of Spain loaded, so installing fewer regions did not make it faster. The reverse trip is slower (47 s) and the cause is not known.
+- Possible directions, none tried: fewer leaps candidates, a time-capped search with a progress indicator, or relaxing the target for 600 km trips (a product decision).
