@@ -64,6 +64,8 @@ data class NavSettings(
     val view3d: Boolean = true,
     /** Extruded 3D buildings in the 3D view. Its cost on mid-range phones has not been measured. */
     val buildings3d: Boolean = true,
+    /** Android 16+: show the distance to the next turn as a chip in the status bar (promoted Live Update). */
+    val liveUpdateChip: Boolean = true,
 ) {
     fun normalized(): NavSettings = copy(volumePercent = volumePercent.coerceIn(MIN_VOLUME, 100))
 

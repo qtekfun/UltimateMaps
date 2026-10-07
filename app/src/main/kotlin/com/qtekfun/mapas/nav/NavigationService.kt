@@ -16,7 +16,11 @@ import com.qtekfun.mapas.MainActivity
 import com.qtekfun.mapas.MapasApp
 import com.qtekfun.mapas.R
 import com.qtekfun.mapas.core.nav.NavNotificationThrottle
+import com.qtekfun.mapas.core.nav.NavProblem
+import com.qtekfun.mapas.core.nav.NavState
 import com.qtekfun.mapas.core.nav.NavStatus
+import com.qtekfun.mapas.voice.VoiceModule
+import java.util.Locale
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -49,6 +53,7 @@ class NavigationService : Service() {
     private var watcher: Job? = null
     private var inForeground = false
     private val throttle = NavNotificationThrottle()
+    private val dedupe = NotificationDedupe()
     private val environment by lazy { AndroidNavEnvironment(this) }
 
     override fun onBind(intent: Intent?): IBinder? = null
@@ -89,8 +94,13 @@ class NavigationService : Service() {
                 val arrived = state.status == NavStatus.ARRIVED
                 val minGap = if (environment.isPowerSaveMode()) 5_000L else 1_000L
                 if (throttle.shouldPost(now, minGap, key = "${state.status}|$problem|${state.nextManeuver?.maneuver?.geometryIndex}", force = arrived)) {
-                    val n = build(NavNotificationTexts.of(this@NavigationService, state, problem), ongoing = !arrived)
-                    getSystemService(NotificationManager::class.java)?.notify(NOTIFICATION_ID, n)
+                    val content = NavNotificationTexts.of(this@NavigationService, state, problem)
+                    val plan = liveUpdatePlan(state, problem)
+                    // Redraw only when something shown changed (the chip text in particular).
+                    if (dedupe.shouldPost(content.title, content.text, plan, force = arrived)) {
+                        val n = build(content, ongoing = !arrived, plan = plan)
+                        getSystemService(NotificationManager::class.java)?.notify(NOTIFICATION_ID, n)
+                    }
                 }
                 if (arrived) {
                     // Leave the final "you have arrived" notification, drop the foreground state and end.
@@ -107,7 +117,7 @@ class NavigationService : Service() {
         if (inForeground) return true
         val type = if (Build.VERSION.SDK_INT >= 29) ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION else 0
         return try {
-            ServiceCompat.startForeground(this, NOTIFICATION_ID, build(content, ongoing = true), type)
+            ServiceCompat.startForeground(this, NOTIFICATION_ID, build(content, ongoing = true, plan = liveUpdatePlan(controller.state.value, controller.problem.value)), type)
             inForeground = true
             true
         } catch (_: SecurityException) {
@@ -129,7 +139,17 @@ class NavigationService : Service() {
         super.onDestroy()
     }
 
-    private fun build(content: NavNotificationContent, ongoing: Boolean): Notification {
+    /** The chip and progress for the promoted (Android 16+) notification, or null to keep it a normal one. */
+    private fun liveUpdatePlan(state: NavState?, problem: NavProblem?): LiveUpdatePlan? {
+        val settings = VoiceModule.settings(this).settings.value
+        val locale = Locale.getDefault()
+        return LiveUpdatePolicy.plan(
+            settings.liveUpdateChip, Build.VERSION.SDK_INT, state, problem, settings.units.resolve(locale), locale,
+            ChipWords(getString(R.string.live_update_chip_reroute), getString(R.string.live_update_chip_no_signal)),
+        )
+    }
+
+    private fun build(content: NavNotificationContent, ongoing: Boolean, plan: LiveUpdatePlan? = null): Notification {
         val flags = PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         val open = PendingIntent.getActivity(this, 0, Intent(this, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), flags)
         val stop = PendingIntent.getService(this, 1, Intent(this, NavigationService::class.java).setAction(ACTION_STOP), flags)
@@ -147,6 +167,7 @@ class NavigationService : Service() {
             .addAction(0, getString(R.string.nav_notification_open), open)
             .addAction(0, getString(R.string.nav_notification_stop), stop)
             .build()
+            .let { n -> if (plan != null && ongoing && Build.VERSION.SDK_INT >= LiveUpdatePolicy.MIN_SDK) LiveUpdateNotification.promote(this, n, plan, R.drawable.ic_launcher) else n }
     }
 
     private fun createChannel() {
