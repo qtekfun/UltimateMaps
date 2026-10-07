@@ -102,7 +102,8 @@ fun compassVisible(bearingDegrees: Float, tiltDegrees: Float): Boolean =
 private const val COMPASS_THRESHOLD = 0.5f
 
 /**
- * Column of map buttons (top-right, like Apple Maps). The compass only appears when the map is rotated or tilted.
+ * Column of map buttons (top-right, like Apple Maps): my location, then the compass (only when the map is rotated or
+ * tilted), then Settings (when [onSettings] is given). Every button has the same chip style and touch target.
  */
 @Composable
 fun MapButtons(
@@ -114,18 +115,26 @@ fun MapButtons(
     onResetNorth: () -> Unit,
     modifier: Modifier = Modifier,
     tiltDegrees: Float = 0f,
+    settingsDescription: String = "",
+    onSettings: (() -> Unit)? = null,
 ) {
     Column(modifier = modifier, horizontalAlignment = Alignment.End) {
+        MapButton(locateDescription, onLocate, tag = "btn_locate") { tint -> drawLocateIcon(tint, filled = locating) }
         if (compassVisible(bearingDegrees, tiltDegrees)) {
+            Spacer(Modifier.height(BUTTON_GAP))
             MapButton(compassDescription, onResetNorth, tag = "btn_compass") { tint ->
                 // Rotation is applied through the Canvas transform below to keep the icon crisp.
                 rotate(-bearingDegrees) { drawCompassIcon(tint) }
             }
-            Spacer(Modifier.height(10.dp))
         }
-        MapButton(locateDescription, onLocate, tag = "btn_locate") { tint -> drawLocateIcon(tint, filled = locating) }
+        if (onSettings != null) {
+            Spacer(Modifier.height(BUTTON_GAP))
+            SettingsGear(settingsDescription, onSettings)
+        }
     }
 }
+
+private val BUTTON_GAP = 10.dp
 
 /**
  * OpenStreetMap attribution (RF-13): always drawn over the map, never hidden by the sheet.
@@ -145,7 +154,7 @@ fun AttributionLabel(text: String, onClick: () -> Unit, modifier: Modifier = Mod
     )
 }
 
-/** Gear icon: small and discreet (smaller than the map buttons), top-left under the attribution. */
+/** Gear icon of the Settings button, drawn with the same 22 dp canvas as the other map buttons. */
 fun DrawScope.drawGearIcon(tint: Color) {
     val c = Offset(size.width / 2, size.height / 2)
     val r = size.minDimension * 0.30f
