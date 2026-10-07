@@ -2,20 +2,22 @@
 
 An Android maps and navigation app that is **offline and private**: map, search and routes are computed on the device, with no real-time traffic, no accounts and no telemetry. It works without Google Play Services. Free software (GPLv3).
 
-> **Status: release candidate (0.1.0-rc.1).** It is an MVP under development, not a finished app. See [`CHANGELOG.md`](CHANGELOG.md) for what exists and what is missing, and [`docs/mvp-plan.md`](docs/mvp-plan.md) for the plan.
+> **Status: release candidate (0.1.0-rc.3, test pre-releases).** It is an MVP under development, not a finished app. See [`CHANGELOG.md`](CHANGELOG.md) for what exists and what is missing, and [`docs/mvp-plan.md`](docs/mvp-plan.md) for the plan.
 
 ## What it does today
 
 - Offline vector map (MapLibre Native + PMTiles), light and dark theme, OpenStreetMap attribution.
-- Region downloads from the "Mapas" screen ("Maps", resumable, verified with SHA-256); offline mode.
-- Offline search for places and addresses (core from [CoMaps](https://codeberg.org/comaps/comaps)).
-- Route preview by car, on foot or by bike (no turn-by-turn guidance yet).
+- Region downloads from the "Maps" screen (resumable, verified with SHA-256); offline mode.
+- Offline search for places and addresses (core from [CoMaps](https://codeberg.org/comaps/comaps), running in its own process so a crash cannot take the app down).
+- Route preview by car, on foot or by bike, with up to 5 stops.
+- **Petrol stations (optional, off by default):** choose the fuels in Settings (LPG, petrol, diesel, CNG…), see the price over each station on the map, tap one to go there or add it as a stop. Prices come from the Spanish Ministry for the Ecological Transition (unofficial).
+- **Navigation screen with voice** (new, not yet verified on a device): turn banner, lanes, speed limit, arrival time, night and glove modes, a route simulator, and voice guidance in English and Spanish.
 - Saved places and lists, with GPX and KML import and export.
 - Opens Google Maps, Apple Maps, Waze and `geo:` links.
 
 ## What it does not do (yet)
 
-Turn-by-turn navigation with voice, lanes and speed limits, motorcycle profile and curvy routes, track recording, Nextcloud sync, Google Takeout import, Android Auto. See `docs/mapas-05-roadmap.md`.
+Motorcycle profile and curvy routes, track recording, Nextcloud sync, Google Takeout import, Android Auto. Long routes can return "route not found" with few regions installed. See `docs/mapas-05-roadmap.md`.
 
 ## Data
 
