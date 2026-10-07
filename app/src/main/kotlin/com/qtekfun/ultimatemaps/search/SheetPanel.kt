@@ -40,6 +40,8 @@ import com.qtekfun.ultimatemaps.places.PlacesMessage
 import com.qtekfun.ultimatemaps.places.subtitleOf
 import com.qtekfun.ultimatemaps.nav.NavStartHost
 import com.qtekfun.ultimatemaps.cameras.HazardCard
+import com.qtekfun.ultimatemaps.chargers.ChargerCard
+import com.qtekfun.ultimatemaps.chargers.ChargerCardHost
 import com.qtekfun.ultimatemaps.cameras.HazardCardState
 import com.qtekfun.ultimatemaps.route.RoutePanel
 import com.qtekfun.ultimatemaps.route.RoutePreviewController
@@ -98,11 +100,20 @@ fun SheetPanel(
     tracks: TrackLayerController? = null,
     /** The card of a tapped camera, zone or incident (null: none). */
     hazard: HazardCardState? = null,
+    /** The card of a tapped EV charger (null: none). */
+    charger: ChargerCardHost? = null,
 ) {
     val card = places.state.card
     Column(modifier.fillMaxWidth().testTag("sheet_panel")) {
         if (hazard != null && hazard.info != null) {
             HazardCard(hazard)
+        } else if (charger != null && charger.state.charger != null) {
+            // Over the route panel too: "Add stop" needs the card while a route is active.
+            ChargerCard(
+                state = charger.state, generatedMillis = charger.generatedMillis(),
+                routeActive = route?.state?.active == true || charger.navigating(),
+                onGo = charger.onGo, onAddStop = charger.onAddStop,
+            )
         } else if (fuel != null && fuel.state.station != null) {
             // Over the route panel too: "Add stop" needs the card while a route is active.
             FuelStationCard(

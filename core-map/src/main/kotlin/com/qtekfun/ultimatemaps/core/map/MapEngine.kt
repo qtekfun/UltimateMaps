@@ -57,6 +57,12 @@ data class GeoBounds(val south: Double, val west: Double, val north: Double, val
  */
 data class FuelPin(val id: String, val point: LatLon, val label: String, val cheap: Boolean, val rank: Int)
 
+/**
+ * One EV charging station marker. [id] is opaque to the engine (it hands it back on a tap). [fast] stations (high power) are
+ * drawn with a different SHAPE (a bolt in the plug), not only a different colour.
+ */
+data class ChargerPin(val id: String, val point: LatLon, val fast: Boolean)
+
 /** One imported GPX track (or route) drawn as a line: [segments] are drawn separately, [color] is ARGB. */
 class TrackLine(val id: Long, val segments: List<List<LatLon>>, val color: Int)
 
@@ -168,6 +174,14 @@ interface MapEngine : AutoCloseable {
 
     /** Reports taps on a hazard marker or line (its id), after stations and before [setMapTapListener]; null removes it. */
     fun setHazardTapListener(listener: ((String) -> Unit)?) {}
+
+    // --- EV charging stations (optional layer) ---
+
+    /** Draws exactly these charging stations; an empty list removes them. Never called per frame. */
+    fun showChargers(pins: List<ChargerPin>) {}
+
+    /** Reports taps on a charging station (its id), after petrol stations and before hazards; null removes it. */
+    fun setChargerTapListener(listener: ((String) -> Unit)?) {}
 
     /** Reports the visible rectangle and zoom when a camera gesture or animation ends (never per frame); null removes it. */
     fun setViewportListener(listener: ((GeoBounds, Double) -> Unit)?) {}

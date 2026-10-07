@@ -101,6 +101,7 @@ dependencies {
     implementation(project(":core-fuel")) // gas stations: data contract (RF-15)
     implementation(project(":core-transit")) // public-transport timetables: index, planner, data manager
     implementation(project(":core-cameras")) // optional speed-camera and traffic layers, warner
+    implementation(project(":core-chargers")) // optional EV-charging-station layer
     implementation(project(":core-nav")) // route tracking and NavigationController (navigation service)
     implementation(project(":core-voice")) // instruction text, voice queue and navigation settings
     implementation(project(":native-comaps")) // CoMaps core (search), deferred startup; M2

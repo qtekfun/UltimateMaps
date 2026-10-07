@@ -96,10 +96,12 @@ class RoutePreviewControllerTest {
 
     @Test
     fun successDrawsTheRouteAndReportsDistanceAndTime() {
-        val engine = FakeEngine { ok() }
+        val release = CountDownLatch(1)
+        val engine = FakeEngine { release.await(5, TimeUnit.SECONDS); ok() }
         val c = controller(engine)
         c.start(dest)
         assertEquals(RouteStatus.COMPUTING, c.state.status)
+        release.countDown()
         await("route") { c.state.status == RouteStatus.DONE }
         assertEquals(620_000.0, c.state.distanceMeters)
         assertEquals(21_600.0, c.state.durationSeconds)

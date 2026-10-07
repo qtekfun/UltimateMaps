@@ -250,7 +250,7 @@ private fun DataCard(env: CamerasSettingsEnv, s: CameraSettings) {
     }
 }
 
-private fun failureText(f: DownloadFailure): Int = when (f) {
+internal fun failureText(f: DownloadFailure): Int = when (f) {
     DownloadFailure.OFFLINE_MODE -> R.string.cam_err_offline
     DownloadFailure.NOT_ALLOWED -> R.string.cam_err_not_allowed
     DownloadFailure.NETWORK -> R.string.cam_err_network

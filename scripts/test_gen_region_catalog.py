@@ -96,6 +96,23 @@ class GenCatalogTest(unittest.TestCase):
             self.assertNotIn("cameras", gen.build(COUNTRIES, catalog_version="t", cameras_file=os.path.join(t, "nope.bin"), cameras_base="https://x"))
         self.assertNotIn("cameras", gen.build(COUNTRIES, catalog_version="t"))
 
+    def test_optional_chargers_block(self):
+        with tempfile.TemporaryDirectory() as t:
+            f = os.path.join(t, "chargers-es.bin")
+            put(f, b"e" * 7)
+            c = gen.build(COUNTRIES, catalog_version="t", chargers_file=f, chargers_base="https://x/rel/")["chargers"]
+            self.assertEqual("https://x/rel/chargers-es.bin", c["url"])
+            self.assertEqual(7, c["size"])
+            self.assertEqual(hashlib.sha256(b"e" * 7).hexdigest(), c["sha256"])
+            self.assertEqual("chargers-es.bin", c["file"])
+            # backward compatible: no option, a missing file, and the cameras block are all independent of it
+            self.assertNotIn("chargers", gen.build(COUNTRIES, catalog_version="t", chargers_file=os.path.join(t, "nope.bin"), chargers_base="https://x"))
+            with self.assertRaises(SystemExit):
+                gen.build(COUNTRIES, catalog_version="t", chargers_file=f)
+            cat = gen.build(COUNTRIES, catalog_version="t", chargers_file=f, chargers_base="https://x")
+            self.assertNotIn("cameras", cat)
+        self.assertNotIn("chargers", gen.build(COUNTRIES, catalog_version="t"))
+
     def test_optional_transit_block(self):
         import json
         with tempfile.TemporaryDirectory() as t:
