@@ -40,7 +40,7 @@ class AndroidLocationSource(
     private val intervalMillis: Long = 1000L,
 ) : LocationSource {
     private val lm = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-    private val mainExecutor = context.mainExecutor
+    private val mainExecutor = androidx.core.content.ContextCompat.getMainExecutor(context)
     private var active: LocationListener? = null
 
     @SuppressLint("NewApi") // guarded by sdkInt (injectable for tests); lint cannot see through the field
