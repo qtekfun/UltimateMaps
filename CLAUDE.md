@@ -23,7 +23,7 @@ Phase 1 plus the first navigation work, with **option C** (hybrid: MapLibre rend
 ## Standing rules from the user
 
 - **The Pixel 8 is used only with the user's explicit permission, each time** (given on 2026-10-07 for testing the rc builds; ask again for later sessions). Every `adb` call that touches the device goes through `flock /tmp/pixel-device.lock` (another session shares the phone) and first checks which app is in the foreground before sending taps or text.
-- **At most 1 subagent at a time** (the user changed it from 3 to 5, then 2, then 1 on 2026-10-07). Native builds are serialized across agents with `flock /tmp/claude-1000/native-build.lock` (little RAM).
+- **At most 2 subagents at a time** (the user changed it from 3 to 5, 2, 1 and finally 2 on 2026-10-07). Native builds are serialized across agents with `flock /tmp/claude-1000/native-build.lock` (little RAM).
 - Test builds published to GitHub are **pre-releases signed with the debug key**, tagged `test-v…` (never `v*`, which triggers the release workflow), pointing at the exact commit they were built from, with notes that say what was and was not tested on a device.
 
 ## Commands
