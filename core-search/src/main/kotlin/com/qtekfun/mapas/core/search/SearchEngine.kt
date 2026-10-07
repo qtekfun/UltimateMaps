@@ -10,6 +10,8 @@ data class SearchResult(
     val category: String? = null,
     /** Straight-line distance in meters from the point the search was made around; set by category browsing only. */
     val distanceMeters: Double? = null,
+    /** Phone, website, wheelchair and opening hours from the OSM tags; null while the engine does not provide them. */
+    val extras: PlaceExtras? = null,
 )
 
 /** On-device search/geocoding contract. */

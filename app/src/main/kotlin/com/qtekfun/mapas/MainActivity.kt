@@ -61,7 +61,7 @@ class MainActivity : ComponentActivity() {
             files = files,
             store = PrefsCameraStateStore(this),
             initialTheme = if (isNight()) MapTheme.DARK else MapTheme.LIGHT,
-            onCameraIdle = { state.bearing = it.bearing.toFloat() },
+            onCameraIdle = state::onCamera,
         )
         lifecycle.addObserver(engine)
         // The navigation voice prompts use the media volume: the volume keys must control it.
@@ -82,7 +82,7 @@ class MainActivity : ComponentActivity() {
         panel.onRequestLocation = ::onLocate
         state.onOpenMaps = { startActivity(Intent(this, RegionsActivity::class.java)) }
         state.onOpenSettings = { startActivity(Intent(this, SettingsActivity::class.java)) }
-        state.bearing = engine.cameraState().bearing.toFloat()
+        state.onCamera(engine.cameraState())
 
         setContent {
             val dark = isSystemInDarkTheme()
