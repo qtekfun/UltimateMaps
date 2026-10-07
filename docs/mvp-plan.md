@@ -1,61 +1,61 @@
-# Plan del MVP
+# MVP plan
 
-Fecha: 2026-10-07. Opción C (decisión del usuario, `docs/decisions.md`). Equivale al «hecho cuando» de la Fase 1: **usable como visor y buscador offline en el día a día**.
+Date: 2026-10-07. Option C (user decision, `docs/decisions.md`). It is equivalent to the "done when" of Phase 1: **usable day to day as an offline viewer and search tool**.
 
-## Definición del MVP
+## MVP definition
 
-Una persona instala la app, descarga España, y puede:
+A person installs the app, downloads Spain, and can:
 
-1. **Ver el mapa** fuera de línea, fluido, con etiquetas e iconos (hoy faltan sprites y glyphs), día/noche.
-2. **Descargar y gestionar regiones** (España primero): progreso, reanudar, verificar, borrar, actualizar. Es lo único que usa red, solo a petición suyas.
-3. **Buscar** lugares y direcciones offline mientras escribe, ver el resultado en el mapa y sus datos.
-4. **Guardar sitios** en listas (favoritos), verlos en el mapa, importar/exportar GPX y KML.
-5. **Abrir enlaces** de Google Maps, Apple Maps, Waze y `geo:` (hecho; falta Waze/Apple probados y limpiar el pin).
-6. **Ver una ruta** de coche, a pie o en bici entre dos puntos (vista previa con distancia y tiempo), sin guía giro a giro.
+1. **View the map** offline, fluid, with labels and icons (sprites and glyphs are missing today), day/night.
+2. **Download and manage regions** (Spain first): progress, resume, verify, delete, update. This is the only thing that uses the network, only at their request.
+3. **Search** places and addresses offline while typing, see the result on the map and its details.
+4. **Save places** in lists (favorites), see them on the map, import/export GPX and KML.
+5. **Open links** from Google Maps, Apple Maps, Waze and `geo:` (done; Waze/Apple still need to be tested and the pin cleaned up).
+6. **View a route** by car, on foot or by bike between two points (preview with distance and time), without turn-by-turn guidance.
 
-**Fuera del MVP** (siguientes fases): navegación giro a giro con voz, carriles y límites de velocidad, moto y curvas, grabación de tracks, sync WebDAV, Takeout, Android Auto.
+**Out of the MVP** (later phases): turn-by-turn navigation with voice, lanes and speed limits, motorcycle and twisty roads, track recording, WebDAV sync, Takeout, Android Auto.
 
-## Estado de partida (verificado)
+## Starting state (verified)
 
-| Pieza | Estado | Dónde |
+| Piece | State | Where |
 | --- | --- | --- |
-| Visor Compose + MapLibre + PMTiles | Funciona en el Pixel 8 (arranque ≈ 480 ms, Madrid offline, valoración del usuario: «se mueve bien») | `:app`, `docs/phase1/device-test/` |
-| Enlaces `geo:`/Google/enlace corto | Probados en el Pixel 8; Apple/Waze solo en tests | `:core-geo`, `:app` |
-| Regiones (catálogo, descarga reanudable, SHA-256, atómica) | Lógica JVM con 14 tests; **sin UI ni servicio** | `:core-regions` |
-| Sitios, listas, GPX/KML, backup | Lógica JVM con tests; **sin driver Android ni UI** | `:core-data` |
-| Búsqueda y rutas (núcleo CoMaps) | Compila y está en el APK debug; **nunca ha dado resultados** (R12) | `:native-comaps` |
-| Sprites y glyphs | **Sin empaquetar**: el mapa no tiene etiquetas ni iconos | `scripts/fetch-map-assets.sh` |
+| Compose viewer + MapLibre + PMTiles | Works on the Pixel 8 (startup ≈ 480 ms, Madrid offline, user's assessment: "it moves well") | `:app`, `docs/phase1/device-test/` |
+| `geo:`/Google/short link links | Tested on the Pixel 8; Apple/Waze only in tests | `:core-geo`, `:app` |
+| Regions (catalog, resumable download, SHA-256, atomic) | JVM logic with 14 tests; **no UI or service** | `:core-regions` |
+| Places, lists, GPX/KML, backup | JVM logic with tests; **no Android driver or UI** | `:core-data` |
+| Search and routes (CoMaps core) | Compiles and is in the debug APK; **has never returned results** (R12) | `:native-comaps` |
+| Sprites and glyphs | **Not bundled**: the map has no labels or icons | `scripts/fetch-map-assets.sh` |
 
-## Hitos
+## Milestones
 
-| Hito | Contenido | Depende de | Requiere el Pixel 8 |
+| Milestone | Content | Depends on | Requires the Pixel 8 |
 | --- | --- | --- | --- |
-| **M0. Mapa completo** | Empaquetar sprites y glyphs; limpiar el pin al abrir enlace corto | — | solo verificar |
-| **M1. Regiones** | Catálogo (script que une `countries.txt` y PMTiles), servicio de descarga en primer plano, pantalla «Mapas», permiso INTERNET solo para descargar, `NetworkPolicy` | M0 | verificar |
-| **M2. Búsqueda** | `:native-comaps` en el APK de producción, arranque diferido sobre las regiones instaladas, barra con debounce y lista, resultado → cámara + pin + ficha | M1 | **sí: R12 (latencia)** |
-| **M3. Sitios** | Driver SQLite de Android, guardar desde la ficha, pantalla de listas, importar/exportar GPX/KML | M2 (ficha) | verificar |
-| **M4. Ruta (vista previa)** | Elegir origen/destino, perfil coche/pie/bici, dibujar la ruta con distancia y tiempo | M2 | **sí: R12 (ruta larga)** |
-| **M5. Pulido MVP** | Cadenas es/en completas, ajustes de privacidad (modo sin red), «Acerca de» con atribución y licencias, estados vacíos y errores | todos | verificar |
+| **M0. Complete map** | Bundle sprites and glyphs; clean up the pin when opening a short link | — | only to verify |
+| **M1. Regions** | Catalog (script that joins `countries.txt` and PMTiles), foreground download service, "Maps" screen, INTERNET permission only for downloading, `NetworkPolicy` | M0 | verify |
+| **M2. Search** | `:native-comaps` in the production APK, deferred startup over the installed regions, bar with debounce and list, result → camera + pin + detail card | M1 | **yes: R12 (latency)** |
+| **M3. Places** | Android SQLite driver, save from the detail card, lists screen, import/export GPX/KML | M2 (detail card) | verify |
+| **M4. Route (preview)** | Choose origin/destination, car/foot/bike profile, draw the route with distance and time | M2 | **yes: R12 (long route)** |
+| **M5. MVP polish** | Complete es/en strings, privacy settings ("no network" mode), "About" with attribution and licenses, empty and error states | all | verify |
 
-## Reparto (máx. 2 subagentes a la vez)
+## Split (max. 2 subagents at a time)
 
-- **Agente A, `feat/mvp-regions` (M0 + M1):** sprites y glyphs, pantalla y servicio de regiones, catálogo, permiso de red.
-- **Agente B, `feat/mvp-search-places` (M2 + M3, sin ruta):** núcleo en producción, búsqueda y ficha, driver SQLite y listas.
-- **M4 y M5** los hago yo (o un agente) cuando uno de los dos termine.
+- **Agent A, `feat/mvp-regions` (M0 + M1):** sprites and glyphs, regions screen and service, catalog, network permission.
+- **Agent B, `feat/mvp-search-places` (M2 + M3, without route):** core in production, search and detail card, SQLite driver and lists.
+- **M4 and M5** I do myself (or an agent) when one of the two finishes.
 
-Para no chocar: A toca `app/**/regions/**` y el servicio; B toca `app/**/search/**` y `app/**/places/**`; los ficheros compartidos (`MainActivity`, panel inferior, manifiesto) se editan lo mínimo y en funciones separadas. Yo integro en `master` local con tests.
+To avoid collisions: A touches `app/**/regions/**` and the service; B touches `app/**/search/**` and `app/**/places/**`; shared files (`MainActivity`, bottom panel, manifest) are edited minimally and in separate functions. I integrate into local `master` with tests.
 
-## Puertas con el teléfono (no se usa sin permiso explícito)
+## Gates involving the phone (not used without explicit permission)
 
-1. **R12 búsqueda:** ≤ 100 ms por tecla (el spike dio 631 ms con el motor completo).
-2. **R12 ruta larga:** ≤ 2 s en Madrid–Barcelona (el spike dio ≈ 18 s).
-3. Fluidez con etiquetas e iconos, y consumo de memoria con España cargada.
+1. **R12 search:** ≤ 100 ms per keystroke (the spike gave 631 ms with the full engine).
+2. **R12 long route:** ≤ 2 s for Madrid–Barcelona (the spike gave ≈ 18 s).
+3. Fluidity with labels and icons, and memory consumption with Spain loaded.
 
-**Si R12 no mejora** con el núcleo desacoplado, se decide con datos: relajar el umbral para rutas largas, acotar regiones cargadas o evaluar Valhalla. Hasta entonces M2/M4 avanzan con el motor tal cual.
+**If R12 does not improve** with the decoupled core, we decide with data: relax the threshold for long routes, limit the loaded regions or evaluate Valhalla. Until then M2/M4 move forward with the engine as is.
 
-## Criterios de «hecho» del MVP
+## MVP "done" criteria
 
-- `./gradlew lint test assembleDebug` en verde, con tests por hito.
-- Probado en el Pixel 8 con permiso: arranque, descarga de una región real pequeña, búsqueda, guardar un sitio, ver una ruta.
-- Sin dependencias propietarias; `LICENSES.md` al día; licencias heredadas de CoMaps excluidas (R11).
-- Estimación: 6-10 semanas a tiempo parcial (orientativa, sin medir velocidad real).
+- `./gradlew lint test assembleDebug` green, with tests per milestone.
+- Tested on the Pixel 8 with permission: startup, download of a small real region, search, saving a place, viewing a route.
+- No proprietary dependencies; `LICENSES.md` up to date; licenses inherited from CoMaps excluded (R11).
+- Estimate: 6-10 weeks part-time (rough, without measuring real velocity).
