@@ -15,6 +15,8 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.qtekfun.mapas.R
+import com.qtekfun.mapas.core.data.record.RECORDED_TRACK_NOTES
+import com.qtekfun.mapas.recording.RecordingControls
 import com.qtekfun.mapas.ui.theme.Mapas
 
 /**
@@ -31,6 +33,7 @@ fun LazyListScope.tracksItems(tracks: TrackLayerController?) {
                 style = Mapas.typography.title.copy(color = Mapas.colors.label),
                 modifier = Modifier.testTag("tracks_title"),
             )
+            tracks.recording?.let { RecordingControls(it) }
             if (tracks.state.tracks.isEmpty()) PanelNote(stringResource(R.string.tracks_empty), "tracks_empty")
         }
     }
@@ -54,6 +57,8 @@ fun LazyListScope.tracksItems(tracks: TrackLayerController?) {
                 { tracks.toggle(info.id) }, primary = shown, tag = "track_toggle",
             )
             PanelButton(stringResource(R.string.track_fit), { tracks.fitTo(info.id) }, tag = "track_fit")
+            // Only tracks the user recorded can be deleted here, in one tap; imported ones are never removed by accident.
+            if (info.notes == RECORDED_TRACK_NOTES) PanelButton(stringResource(R.string.track_delete), { tracks.delete(info.id) }, tag = "track_delete")
         }
     }
 }

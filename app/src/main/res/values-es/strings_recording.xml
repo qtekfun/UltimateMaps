@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Grabación de tracks -->
+    <string name="recording_title">Grabación de tracks</string>
+    <string name="recording_switch_title">Permitir grabar tracks</string>
+    <string name="recording_switch_body">Añade un botón Empezar a grabar a la lista de tracks. El viaje se guarda como un track solo en este dispositivo y no se envía nada a ninguna parte. Se guardan puntos mientras la app está abierta o mientras navegas.</string>
+    <string name="recording_delete_all">Borrar tracks grabados</string>
+    <string name="recording_deleted">Tracks grabados borrados.</string>
+    <string name="recording_idle">Sin grabar</string>
+    <string name="recording_start">Empezar a grabar</string>
+    <string name="recording_stop">Parar y guardar</string>
+    <string name="recording_status_on">Grabando · %1$d puntos · %2$s</string>
+    <string name="recording_status_paused">En pausa, te has detenido · %1$d puntos · %2$s</string>
+    <string name="recording_note">La grabación sigue mientras la app está abierta o mientras navegas, y se pausa sola cuando dejas de moverte.</string>
+    <string name="recording_saved">Track guardado. Puedes verlo en el mapa o exportarlo como GPX.</string>
+    <string name="recording_too_short">Nada que guardar: la grabación fue demasiado corta.</string>
+    <string name="recording_failed">No se pudo guardar el track. Los puntos se conservan y se guardan la próxima vez que empieces.</string>
+    <string name="recording_could_not_start">No se pudo empezar: una grabación anterior sigue pendiente de guardarse.</string>
+    <string name="recording_track_name">Grabado %1$s</string>
+    <string name="track_delete">Borrar</string>
+</resources>
