@@ -21,6 +21,10 @@ data class FeedSource(
  * `patternTimeBase[p] + t * patternStopCount(p) + i`.
  *
  * Times are seconds since midnight of the service day and may exceed 86400 (trips running past midnight).
+ *
+ * Each pattern lists its scheduled trips first (sorted by first departure, binary-searchable) and then its
+ * frequency-based trips (`frequencies.txt` windows kept as they are, never expanded into explicit trips):
+ * such a trip stores the times of its first run and repeats it [tripRuns] times every [tripHeadway] seconds.
  */
 class TransitIndex(
     val sources: List<FeedSource>,
@@ -50,7 +54,13 @@ class TransitIndex(
     val patternStops: IntArray,
     val patternTripOffset: IntArray,
     val patternTimeBase: IntArray,
+    /** Index (absolute trip number) of the first frequency-based trip of each pattern; scheduled trips come first. */
+    val patternFreqStart: IntArray,
     val tripService: IntArray,
+    /** 0 for a scheduled trip; for a frequency trip the headway in seconds between consecutive runs. */
+    val tripHeadway: IntArray,
+    /** Number of runs of the trip (1 for scheduled trips): run k leaves `k * headway` after the stored times. */
+    val tripRuns: IntArray,
     val tripHeadsign: IntArray,
     val headsigns: Array<String>,
     val arrivals: IntArray,

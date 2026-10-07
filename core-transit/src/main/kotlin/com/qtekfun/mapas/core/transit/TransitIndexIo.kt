@@ -6,7 +6,7 @@ import java.io.InputStream
 import java.io.OutputStream
 
 /**
- * Binary file format of [TransitIndex] ("UMTI", version 1). Big-endian, varint (LEB128) integers.
+ * Binary file format of [TransitIndex] ("UMTI", version 2). Big-endian, varint (LEB128) integers.
  *
  * ```
  * magic "UMTI", u8 version
@@ -15,9 +15,9 @@ import java.io.OutputStream
  * stops:     n, then [name, lat(i32), lon(i32), group+1]
  * lines:     n, then [short, long, color+1, textColor+1, type]
  * services:  n, then [mask, start(zz), end(zz), nAdded, added(delta), nRemoved, removed(delta)]
- * patterns:  n, then [line, nStops, stops..., nTrips, nProfiles,
+ * patterns:  n, then [line, nStops, stops..., nTrips, nSched, nProfiles,
  *                     profiles: per profile 2*nStops varints (run time from previous departure, dwell),
- *                     per trip: service, headsign, profile, firstArrival]
+ *                     per trip: service, headsign, profile, firstArrival, headway, runs; frequency trips last, see nSched]
  * transfers: n, then [from, to, type, min+1]
  * ```
  *
@@ -26,7 +26,7 @@ import java.io.OutputStream
  * trip. The reader expands them back into the flat arrays the planner scans.
  */
 object TransitIndexIo {
-    private const val VERSION = 1
+    private const val VERSION = 2
 
     fun write(index: TransitIndex, out: OutputStream) {
         val w = Writer(DataOutputStream(out.buffered(1 shl 16)))
@@ -74,6 +74,7 @@ object TransitIndexIo {
             for (i in 0 until n) w.varint(index.patternStops[index.patternStopOffset[p] + i])
             val nt = index.patternTrips(p)
             w.varint(nt)
+            w.varint(index.patternFreqStart[p] - index.patternTripOffset[p])
             val profiles = LinkedHashMap<ProfileKey, Int>()
             val tripProfile = IntArray(nt)
             for (t in 0 until nt) {
@@ -95,6 +96,8 @@ object TransitIndexIo {
                 w.varint(index.tripHeadsign[ti])
                 w.varint(tripProfile[t])
                 w.varint(index.arrivals[index.patternTimeBase[p] + t * n])
+                w.varint(index.tripHeadway[ti])
+                w.varint(index.tripRuns[ti])
             }
         }
         w.varint(index.transferFrom.size)
@@ -162,6 +165,9 @@ object TransitIndexIo {
         val stopsList = IntList(1 shl 16)
         val tSvc = IntList(1 shl 16)
         val tHead = IntList(1 shl 16)
+        val tHeadway = IntList(1 shl 16)
+        val tRuns = IntList(1 shl 16)
+        val pFreqStart = IntArray(nP)
         var arrivals = IntArray(1 shl 20)
         var departures = IntArray(1 shl 20)
         var timeFill = 0
@@ -172,6 +178,7 @@ object TransitIndexIo {
             for (i in 0 until n) stopsList.add(r.varint())
             val nt = r.varint()
             pTripOff[p] = tSvc.size
+            pFreqStart[p] = tSvc.size + r.varint()
             pTimeBase[p] = timeFill
             val nProf = r.varint()
             val profiles = Array(nProf) { IntArray(2 * n) { r.varint() } }
@@ -186,6 +193,8 @@ object TransitIndexIo {
                 tHead.add(r.varint())
                 val prof = profiles[r.varint()]
                 var prev = r.varint()
+                tHeadway.add(r.varint())
+                tRuns.add(r.varint())
                 val base = timeFill + t * n
                 for (i in 0 until n) {
                     val a = prev + prof[2 * i]
@@ -231,7 +240,10 @@ object TransitIndexIo {
             patternStops = stopsList.toArray(),
             patternTripOffset = pTripOff,
             patternTimeBase = pTimeBase,
+            patternFreqStart = pFreqStart,
             tripService = tSvc.toArray(),
+            tripHeadway = tHeadway.toArray(),
+            tripRuns = tRuns.toArray(),
             tripHeadsign = tHead.toArray(),
             headsigns = headsigns,
             arrivals = arrivals.copyOf(timeFill),

@@ -143,6 +143,13 @@ class TransitTest {
         b.addFeed(feed, FeedOptions("f", "f", ""))
         val idx = b.build()
         val planner = TransitPlanner(idx)
+        // kept as ONE frequency trip with 4 runs (14 trips: 6 + 6 + 1 + 1 weekend, the template included)
+        assertEquals(14, idx.tripCount)
+        assertEquals(4, idx.tripRuns.max())
+        assertEquals(900, idx.tripHeadway.max())
+        // mid-window boarding uses the closed-form next run: 12:20 -> 12:30
+        val mid = best(planner.plan(nearA, LatLon(40.0201, -3.0), wed, hms(12, 20)))
+        assertEquals(hms(12, 30), mid.legs.filterIsInstance<Leg.Ride>().single().departSec)
         // template trip L1_0 (08:00) is replaced by 12:00, 12:15, 12:30, 12:45
         val js = planner.planNextDepartures(nearA, LatLon(40.0201, -3.0), wed, hms(11, 55), 4)
         assertEquals(listOf(hms(12, 0), hms(12, 15), hms(12, 30), hms(12, 45)), js.map { it.legs.filterIsInstance<Leg.Ride>().single().departSec })
@@ -229,7 +236,7 @@ class TransitTest {
 
     @Test
     fun indexFileStoresRepeatedTimeProfilesOnce() {
-        // 200 identical-shape trips must cost far less than 200 stored profiles
+        // 200 identical-shape trips share one stored profile: each costs only its (service, headsign, profile, time, headway, runs) tuple
         val trips = StringBuilder()
         val times = StringBuilder()
         for (i in 0 until 200) {
@@ -241,7 +248,7 @@ class TransitTest {
         }
         val small = ByteArrayOutputStream().also { TransitIndexIo.write(Fixtures.index(), it) }.size()
         val big = ByteArrayOutputStream().also { TransitIndexIo.write(Fixtures.index(extraTrips = trips.toString(), extraStopTimes = times.toString()), it) }.size()
-        assertTrue(big - small < 200 * 8, "200 extra trips added ${big - small} bytes")
+        assertTrue(big - small < 200 * 10, "200 extra trips added ${big - small} bytes")
     }
 
     @Test
