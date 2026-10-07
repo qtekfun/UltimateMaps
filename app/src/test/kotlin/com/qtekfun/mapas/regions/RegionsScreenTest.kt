@@ -12,6 +12,12 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToNode
+import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.StateRestorationTester
+import androidx.compose.ui.test.runComposeUiTest
+import androidx.compose.ui.test.assertTextEquals
+import androidx.compose.ui.test.performTextInput
+import androidx.compose.ui.test.performTextReplacement
 import com.qtekfun.mapas.core.regions.AssetKind
 import com.qtekfun.mapas.core.regions.InstalledRegion
 import com.qtekfun.mapas.core.regions.Region
@@ -237,6 +243,82 @@ class RegionsScreenTest {
         rule.setContent { MapasTheme(darkTheme = false) { MapScreen(s, onLocate = {}, onResetNorth = {}) {} } }
         rule.onNodeWithTag("open_maps").performClick()
         assertEquals("open", log.last())
+    }
+
+    private fun loadedForSearch() {
+        state = RegionsUiState(
+            CatalogState.Loaded(catalog), storage = listOf(storage()),
+            installed = listOf(installed("galicia", "2")),
+            downloads = mapOf("madrid" to DownloadState.Running(10_000_000, 40_000_000)),
+        )
+    }
+
+    @Test
+    fun searchFindsCollapsedLeavesWithPathAndKeepsActionsWorking() {
+        loadedForSearch()
+        show()
+        rule.onNodeWithTag("regions_search").performTextInput("MÁDRID")
+        rule.waitForIdle()
+        scrollTo("region_madrid")
+        rule.onNodeWithTag("path_madrid").assertIsDisplayed()
+        rule.onNodeWithText("Spain › Madrid").assertIsDisplayed()
+        assertEquals(0, rule.onAllNodesWithTagCount("offline_card"))
+        rule.onNodeWithTag("pause_madrid").performClick()
+        assertEquals("pause=madrid", log.last())
+        rule.onNodeWithTag("cancel_madrid").performClick()
+        assertEquals("cancel=madrid", log.last())
+
+        rule.onNodeWithTag("regions_search").performTextReplacement("galicia")
+        rule.waitForIdle()
+        scrollTo("delete_galicia")
+        rule.onNodeWithTag("delete_galicia").performClick()
+        rule.onNodeWithTag("delete_yes").performClick()
+        assertEquals("delete=galicia", log.last())
+    }
+
+    @Test
+    fun searchEmptyStateAndClearButton() {
+        loadedForSearch()
+        show()
+        assertEquals(0, rule.onAllNodesWithTagCount("regions_search_clear"))
+        rule.onNodeWithTag("regions_search").performTextInput("zzzz")
+        rule.waitForIdle()
+        rule.onNodeWithTag("regions_search_empty").assertIsDisplayed()
+        rule.onNodeWithText("No maps match “zzzz”.").assertIsDisplayed()
+        rule.onNodeWithTag("regions_search_clear").performClick()
+        rule.waitForIdle()
+        assertEquals(0, rule.onAllNodesWithTagCount("regions_search_empty"))
+        rule.onNodeWithTag("offline_card").assertIsDisplayed()
+        rule.onNodeWithTag("regions_search").assertTextEquals("")
+    }
+
+    @Test
+    fun searchHitOnAGroupOpensItInTheTree() {
+        loadedForSearch()
+        show()
+        rule.onNodeWithTag("regions_search").performTextInput("spain")
+        rule.waitForIdle()
+        rule.onNodeWithTag("region_spain").performClick()
+        rule.waitForIdle()
+        rule.onNodeWithTag("regions_search").assertTextEquals("")
+        scrollTo("region_madrid")
+        rule.onNodeWithTag("region_madrid").assertIsDisplayed()
+    }
+
+    @OptIn(ExperimentalTestApi::class)
+    @Test
+    fun searchTextSurvivesRecreation() = runComposeUiTest {
+        loadedForSearch()
+        val restorer = StateRestorationTester(this)
+        restorer.setContent { MapasTheme(darkTheme = false) { RegionsScreen(state, actions) } }
+        onNodeWithTag("regions_search").performTextInput("madrid")
+        waitForIdle()
+        restorer.emulateSaveAndRestore()
+        waitForIdle()
+        onNodeWithTag("regions_search").assertTextEquals("madrid")
+        onNodeWithTag("regions_list").performScrollToNode(hasTestTag("region_madrid"))
+        onNodeWithTag("region_madrid").assertIsDisplayed()
+        assertEquals(0, onAllNodes(hasTestTag("offline_card")).fetchSemanticsNodes().size)
     }
 
     private fun androidx.compose.ui.test.junit4.ComposeTestRule.onAllNodesWithTagCount(tag: String) =

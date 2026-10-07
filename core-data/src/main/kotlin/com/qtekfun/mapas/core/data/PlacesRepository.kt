@@ -51,9 +51,32 @@ interface PlacesRepository : AutoCloseable {
     fun tracks(query: String? = null): List<TrackInfo>
     fun track(id: Long): Track?
 
-    /** Removes everything (used by "replace" restores). */
+    // Special places (Home, Work, parked car): one place per slot, outside the lists
+
+    /** Stores [name] and [point] in [slot], replacing whatever was there. */
+    fun setSpecial(slot: SpecialSlot, name: String, point: LatLon, savedAt: Long = System.currentTimeMillis())
+
+    fun special(slot: SpecialSlot): SpecialPlace?
+    fun clearSpecial(slot: SpecialSlot): Boolean
+
+    // Recent searches (query text only; never positions)
+
+    /**
+     * Remembers [query] (trimmed; blank is ignored). The same text, ignoring case and accents, only moves to the
+     * top. Only the [keep] most recent are kept.
+     */
+    fun addSearch(query: String, at: Long = System.currentTimeMillis(), keep: Int = DEFAULT_SEARCHES_KEPT)
+
+    /** Most recent first. */
+    fun recentSearches(limit: Int = DEFAULT_SEARCHES_KEPT): List<String>
+
+    fun clearSearches()
+
+    /** Removes the places, lists and tracks (used by "replace" restores). Special places and searches are kept. */
     fun clearAll()
 
     /** Runs [block] atomically: all changes are rolled back if it throws. */
     fun <T> transaction(block: () -> T): T
 }
+
+const val DEFAULT_SEARCHES_KEPT = 20

@@ -1,7 +1,7 @@
 #!/bin/bash
-# Mide arranque en frio y gfxinfo. Ejecutar COMPLETO bajo el lock:
+# Measures cold start and gfxinfo. Run it ENTIRELY under the lock:
 #   flock /tmp/claude-1000/device.lock bash measure.sh <tag> <hz: 120|60> <style> <texture:true|false>
-# (dentro NO se llama a flock). Deja trazas crudas en ../traces/.
+# (flock is NOT called inside). Leaves raw traces in ../traces/.
 TAG=$1; HZ=$2; STYLE=${3:-style-es.json}; TEX=${4:-true}
 PKG=org.ultimatemaps.spike.maplibre
 ACT=$PKG/org.ultimatemaps.spike.MainActivity
@@ -17,7 +17,7 @@ adb shell dumpsys SurfaceFlinger | grep -m3 -i "refresh-rate\|vsyncPeriod\|VSYNC
 adb shell getprop ro.product.model >> "$T/$TAG-env.txt"
 EX="--es style $STYLE --ez texture $TEX"
 
-# 1) Arranque en frio x10
+# 1) Cold start x10
 : > "$T/$TAG-coldstart.txt"
 for i in $(seq 1 10); do
   adb shell am force-stop $PKG; sleep 2
@@ -34,12 +34,12 @@ for r in 1 2 3; do
   adb shell am force-stop $PKG; sleep 2
   adb shell am start -W -n $ACT $EX >/dev/null; sleep 6
   adb shell dumpsys gfxinfo $PKG reset >/dev/null
-  # 12 swipes alternando direccion (400 ms c/u), reproducible
+  # 12 swipes alternating direction (400 ms each), reproducible
   adb shell 'for i in 1 2 3 4 5 6; do input swipe 800 1500 300 700 400; input swipe 300 700 800 1500 400; done'
   sleep 1
   adb shell dumpsys gfxinfo $PKG framestats > "$T/$TAG-pan-$r.txt"
 done
-# 3) gfxinfo: zoom por doble toque + (programatico) zoom/giro x3
+# 3) gfxinfo: double-tap zoom + (programmatic) zoom/rotation x3
 for r in 1 2 3; do
   adb shell am force-stop $PKG; sleep 2
   adb shell am start -W -n $ACT $EX >/dev/null; sleep 6

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Deja en traces/ solo texto: borra capturas PNG y trazas descartadas, y filtra los logcat a las lineas del nucleo
-# (OMcore) y del gestor de marcadores, para no guardar ruido ni datos de otras apps del dispositivo compartido.
+# Leaves only text in traces/: deletes PNG screenshots and discarded traces, and filters the logcats to the core lines
+# (OMcore) and the bookmark manager, to avoid keeping noise or data from other apps on the shared device.
 cd "$(dirname "$0")/traces" || exit 1
 rm -f ./*.png 08-pan.json 08-pan.latency.txt 08-pan.layers.txt 09-pan-test.json 09-pan-frametimeline.json 11-route-mad-bcn-car-warm1.logcat.txt
 for f in ./*.logcat.txt; do

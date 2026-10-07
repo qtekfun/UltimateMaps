@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""Inyecta gestos reproducibles (pan 1 dedo, pinch-zoom 2 dedos, giro 2 dedos) escribiendo eventos
-multitouch (protocolo B) en /dev/input/event3 (goodix_ts0) a ~120 Hz, y mide los intervalos de presentacion
-de la capa SurfaceView del mapa con `dumpsys SurfaceFlinger --latency`. Todo bajo el lock compartido del
-dispositivo (fcntl.flock sobre /tmp/claude-1000/device.lock, equivalente a flock(1)).
+"""Injects reproducible gestures (1-finger pan, 2-finger pinch-zoom, 2-finger rotation) by writing
+multitouch events (protocol B) to /dev/input/event3 (goodix_ts0) at ~120 Hz, and measures the presentation intervals
+of the map's SurfaceView layer with `dumpsys SurfaceFlinger --latency`. All under the device's shared
+lock (fcntl.flock on /tmp/claude-1000/device.lock, equivalent to flock(1)).
 
-Uso: gesture_bench.py <pan|zoom|rotate|idle> <segundos> <salida_prefijo>
-Salidas: <prefijo>.latency.txt (volcados crudos), <prefijo>.json (estadisticas)
+Usage: gesture_bench.py <pan|zoom|rotate|idle> <seconds> <output_prefix>
+Outputs: <prefix>.latency.txt (raw dumps), <prefix>.json (statistics)
 """
 import fcntl, json, math, re, struct, subprocess, sys, time, statistics, threading
 
@@ -70,7 +70,7 @@ def run_gesture(kind, secs):
     n = int(secs * HZ)
     dt = 1.0 / HZ
     if kind == "pan":
-        # 1 dedo: barrido vertical de ida y vuelta (ciclos de 1 s), amplitud 500 px
+        # 1 finger: vertical back-and-forth sweep (1 s cycles), amplitude 500 px
         tp.down([(0, CX, CY)])
         t0 = time.perf_counter()
         for i in range(n):
@@ -81,7 +81,7 @@ def run_gesture(kind, secs):
             time.sleep(max(0, t0 + (i + 1) * dt - time.perf_counter()))
         tp.up([0])
     elif kind == "zoom":
-        # 2 dedos horizontales: separacion 120 <-> 600 px, ida y vuelta cada 2 s
+        # 2 horizontal fingers: separation 120 <-> 600 px, back and forth every 2 s
         tp.down([(0, CX - 60, CY), (1, CX + 60, CY)])
         t0 = time.perf_counter()
         for i in range(n):
@@ -91,7 +91,7 @@ def run_gesture(kind, secs):
             time.sleep(max(0, t0 + (i + 1) * dt - time.perf_counter()))
         tp.up([0, 1])
     elif kind == "rotate":
-        # 2 dedos a radio 250 px girando 360 grados por 3 s
+        # 2 fingers at radius 250 px rotating 360 degrees over 3 s
         r = 250
         tp.down([(0, CX - r, CY), (1, CX + r, CY)])
         t0 = time.perf_counter()
@@ -141,7 +141,7 @@ def main():
         cands, lst = find_layer()
         open(prefix + ".layers.txt", "w").write(lst)
         if not cands:
-            print("no se encontro la capa SurfaceView", file=sys.stderr)
+            print("SurfaceView layer not found", file=sys.stderr)
             sys.exit(2)
         layer = cands[0]
         adb("shell", "dumpsys", "SurfaceFlinger", "--latency-clear", layer)

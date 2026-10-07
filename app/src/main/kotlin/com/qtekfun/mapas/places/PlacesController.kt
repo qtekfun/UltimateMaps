@@ -22,6 +22,7 @@ sealed interface PlacesMessage {
     data class Saved(val listName: String) : PlacesMessage
     data object Removed : PlacesMessage
     data class Imported(val result: ImportResult) : PlacesMessage
+    data class TakeoutImported(val summary: com.qtekfun.mapas.core.data.TakeoutSummary) : PlacesMessage
     data object ImportFailed : PlacesMessage
     data class Exported(val places: Int) : PlacesMessage
     data object ExportFailed : PlacesMessage
@@ -42,6 +43,9 @@ class PlacesState {
     var query by mutableStateOf("")
     var byDistance by mutableStateOf(true)
     var message by mutableStateOf<PlacesMessage?>(null)
+
+    /** True while the open list is being customised (emoji, colour, notes). */
+    var editingList by mutableStateOf(false)
 }
 
 /**
@@ -55,6 +59,8 @@ class PlacesController(
     private val service: Lazy<PlacesService>,
     private val near: () -> LatLon?,
     private val onMarkers: (List<LatLon>) -> Unit,
+    /** Called after every reload (imports and deletes end in one), for views of other stored data such as tracks. */
+    private val onReloaded: () -> Unit = {},
 ) {
     val state = PlacesState()
     private var refreshJob: Job? = null
@@ -93,6 +99,28 @@ class PlacesController(
         }
     }
 
+    /** Whether [info] is already saved (asks the database off the main thread). */
+    fun isSaved(info: PlaceInfo, onResult: (Boolean) -> Unit) {
+        scope.launch { onResult(withContext(io) { service.value.savedId(info) } != null) }
+    }
+
+    /** Saves or unsaves [info] without opening the place card (used by the petrol-station card). */
+    fun toggleSaved(info: PlaceInfo, onResult: (Boolean) -> Unit = {}) {
+        scope.launch {
+            val savedId = withContext(io) { service.value.savedId(info) }
+            if (savedId != null) {
+                withContext(io) { service.value.unsave(savedId) }
+                state.message = PlacesMessage.Removed
+                onResult(false)
+            } else {
+                val saved = withContext(io) { service.value.save(info) }
+                state.message = PlacesMessage.Saved(saved.listName)
+                onResult(true)
+            }
+            reload()
+        }
+    }
+
     // --- Lists ---
 
     fun showMode(mode: PanelMode) {
@@ -102,6 +130,7 @@ class PlacesController(
     }
 
     fun openList(list: PlaceList?) {
+        state.editingList = false
         state.openList = list
         state.message = null
         state.query = ""
@@ -119,6 +148,21 @@ class PlacesController(
     }
 
     fun createList(name: String) = mutate { service.value.createList(name) }
+
+    fun startEditingList() {
+        if (state.openList != null) state.editingList = true
+    }
+
+    fun cancelEditingList() {
+        state.editingList = false
+    }
+
+    /** Saves the editor of the open list; [ListStyle] cleans the values on the way in. */
+    fun saveListStyle(edit: ListEdit) {
+        val list = state.openList ?: return
+        state.editingList = false
+        mutate { service.value.customiseList(list.id, edit.name, edit.emoji, edit.color, edit.notes) }
+    }
 
     fun deleteList(list: PlaceList) {
         if (state.openList?.id == list.id) state.openList = null
@@ -149,6 +193,7 @@ class PlacesController(
             state.openList = loaded.second
             state.rows = loaded.third
             onMarkers(loaded.third.map { it.place.point })
+            onReloaded()
         }
     }
 
@@ -158,13 +203,18 @@ class PlacesController(
         val into = state.openList?.id
         scope.launch {
             val result = try {
-                withContext(io) { service.value.import(open(), fileName, into) }
+                withContext(io) { service.value.importAny(open(), fileName, into) }
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
                 null
             }
-            state.message = if (result == null) PlacesMessage.ImportFailed else PlacesMessage.Imported(result)
+            state.message = when (result) {
+                null -> PlacesMessage.ImportFailed
+                is ImportOutcome.Geo -> PlacesMessage.Imported(result.result)
+                is ImportOutcome.Takeout ->
+                    if (result.summary.isEmpty) PlacesMessage.ImportFailed else PlacesMessage.TakeoutImported(result.summary)
+            }
             reload()
         }
     }

@@ -1,5 +1,5 @@
-// Fachada C++ sobre el nucleo de CoMaps SIN Framework, SIN drape y SIN bookmarks:
-// DataSource + search::Engine + routing::IndexRouter. Sin JNI aqui (ver um_jni.cpp).
+// C++ facade over the CoMaps core WITHOUT Framework, WITHOUT drape and WITHOUT bookmarks:
+// DataSource + search::Engine + routing::IndexRouter. No JNI here (see um_jni.cpp).
 #pragma once
 
 #include <cstdint>
@@ -19,7 +19,7 @@ struct SearchHit
 
 enum Profile : int32_t { kCar = 0, kFoot = 1, kBike = 2 };
 
-// Bits de evitar (mismo orden que RouteOptions de Kotlin).
+// Avoid bits (same order as Kotlin's RouteOptions).
 enum AvoidFlags : int32_t
 {
   kAvoidMotorway = 1 << 0,
@@ -30,19 +30,37 @@ enum AvoidFlags : int32_t
 
 struct RouteOut
 {
-  // routing::RouterResultCode como entero (0 = NoError, 8 = RouteNotFound, 9 = NeedMoreMaps, ...).
+  // routing::RouterResultCode as an integer (0 = NoError, 8 = RouteNotFound, 9 = NeedMoreMaps, ...).
   int32_t code = 10;
   std::vector<double> latLon;  // lat0, lon0, lat1, lon1, ...
   double distanceMeters = 0;
   double durationSeconds = 0;
+
+  // Guidance (only if requested): empty = not requested. Format in docs/phase2/maneuvers.md and in `GuidanceWire` (Kotlin):
+  //   [version, nManeuvers, nLimits,
+  //    per maneuver: geometryIndex, turn(WireTurn), roundaboutExit(-1 = no), nameIndex(-1 = no), nLanes,
+  //                  per lane: laneWayMask, recommended(0/1),
+  //    per limit: from, to, kmh(-1 = no data)]
+  // Everything is an integer, exact in double. `guidanceNames` is the street table that nameIndex points to.
+  std::vector<double> guidance;
+  std::vector<std::string> guidanceNames;
 };
+
+// Wire turn codes; same order and values as `TurnType` of :core-routing (Kotlin translates them with a `when`).
+enum WireTurn : int32_t
+{
+  kTurnDepart = 0, kTurnStraight, kTurnSlightRight, kTurnRight, kTurnSharpRight, kTurnSlightLeft, kTurnLeft,
+  kTurnSharpLeft, kTurnUTurnLeft, kTurnUTurnRight, kTurnRoundaboutEnter, kTurnRoundaboutLeave, kTurnExitLeft,
+  kTurnExitRight, kTurnMerge, kTurnArrive, kTurnArriveLeft, kTurnArriveRight,
+};
+constexpr int32_t kGuidanceWireVersion = 1;
 
 struct InitParams
 {
-  std::string resourcesApk;  // ruta del APK (assets/ con classificator, categories, countries.txt...)
-  std::string writableDir;   // donde viven los .mwm (<dir>/<version>/<Pais>.mwm)
+  std::string resourcesApk;  // APK path (assets/ with classificator, categories, countries.txt...)
+  std::string writableDir;   // where the .mwm files live (<dir>/<version>/<Country>.mwm)
   std::string tmpDir;
-  std::string locale;        // p. ej. "es"
+  std::string locale;        // e.g. "es"
 };
 
 class Core
@@ -50,17 +68,19 @@ class Core
 public:
   static Core & Instance();
 
-  // Devuelve "" si todo va bien o el mensaje de error.
+  // Returns "" if all went well, or the error message.
   std::string Init(InitParams const & params);
   bool IsInitialized() const;
 
-  // Re-escanea writableDir y registra los mwm nuevos; reconstruye los routers. Devuelve cuantos mapas hay.
+  // Rescans writableDir and registers the new mwm files; rebuilds the routers. Returns how many maps there are.
   int RefreshMaps();
 
   std::vector<SearchHit> Search(std::string const & query, bool hasPos, double lat, double lon, int limit,
                                 int timeoutMs, std::string const & locale);
 
-  RouteOut Route(Profile profile, std::vector<double> const & latLonPoints, int32_t avoidFlags, int timeoutSec);
+  // withGuidance = false leaves the route exactly as before (no extra cost).
+  RouteOut Route(Profile profile, std::vector<double> const & latLonPoints, int32_t avoidFlags, int timeoutSec,
+                 bool withGuidance = false);
 
   void Shutdown();
 

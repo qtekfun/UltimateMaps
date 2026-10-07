@@ -1,92 +1,92 @@
-# Spike (c): estudio del sistema de estilos de CoMaps
+# Spike (c): study of the CoMaps style system
 
-Fuente: `~/repos/comaps-spike` (tag `v2026.10.05-19`, solo lectura) y el submódulo `tools/kothic` en el commit fijado `3dd47d5941891ed2e0e554058edf214e9050e678`. El submódulo estaba vacío en el árbol cuando lo leí (el otro agente lo estaba inicializando), así que traje ese commit exacto, con `--depth 1`, a un directorio temporal fuera del repo; el código de `libkomwm.py` citado abajo es de ese commit.
+Source: `~/repos/comaps-spike` (tag `v2026.10.05-19`, read-only) and the `tools/kothic` submodule at the pinned commit `3dd47d5941891ed2e0e554058edf214e9050e678`. The submodule was empty in the tree when I read it (the other agent was initializing it), so I fetched that exact commit, with `--depth 1`, into a temporary directory outside the repo; the `libkomwm.py` code cited below is from that commit.
 
-Evidencia: **[L]** leído en código (`archivo:línea`), **[I]** inferido, **[N]** no verificado. No se ha compilado ni renderizado nada: **este informe no puede decir si el resultado "se parece a Apple Maps"**; solo qué controles existen. El juicio visual necesita capturas reales (flujo de medición del spike).
+Evidence: **[L]** read in code (`file:line`), **[I]** inferred, **[N]** not verified. Nothing has been built or rendered: **this report cannot say whether the result "looks like Apple Maps"**; only which controls exist. The visual judgment needs real screenshots (the spike's measurement flow).
 
-## 1. Cómo funciona el sistema de estilos
+## 1. How the style system works
 
-Cadena de producción [L]:
+Production chain [L]:
 
 ```
-data/styles/<tema>/{light,dark}/style.mapcss  (+ colors.mapcss, symbols/*.svg)
-data/styles/<tema>/include/*.mapcss, priorities_*.prio.txt
+data/styles/<theme>/{light,dark}/style.mapcss  (+ colors.mapcss, symbols/*.svg)
+data/styles/<theme>/include/*.mapcss, priorities_*.prio.txt
         |  tools/unix/generate_drules.sh -> tools/kothic/src/libkomwm.py
         v
-data/drules_proto_<tema>_<light|dark>.bin (+ .txt, visibility.txt, classificator.txt, colors.txt, patterns.txt)
+data/drules_proto_<theme>_<light|dark>.bin (+ .txt, visibility.txt, classificator.txt, colors.txt, patterns.txt)
         |  tools/unix/generate_symbols.sh (skin_generator)
         v
 data/resources-*/symbols.png + symbols.sdf
-        |  carga en runtime: libs/indexer/map_style_reader.cpp:156
+        |  runtime loading: libs/indexer/map_style_reader.cpp:156
         v
 drape_frontend (stylist.cpp, apply_feature_functors.cpp, rule_drawer.cpp) + shaders/GL/*.glsl
 ```
 
-- **Temas** (`data/styles/`): `default`, `outdoors`, `vehicle` (navegación), `driving`, `walking`, `cycling`, `public-transport` y sus variantes `_outdoor` (11 directorios). Cada uno tiene `light/` y `dark/` (`docs/STYLES.md`, sección "Styles directories and files"). `generate_drules.sh` compila 22 combinaciones (tema x claro/oscuro). [L: `tools/unix/generate_drules.sh:48-72`]
-- **Lenguaje**: un subconjunto de MapCSS 0.2 con extensiones de CoMaps (`docs/STYLES.md`, "Technical details"). Selectores por tipo y zoom: `line|z10-13[highway=motorway]` (`data/styles/default/include/Roads.mapcss:87`). Colores como variables (`@water: #89CDDC;` en `data/styles/default/light/colors.mapcss:42`, `@background0: #F5E8D6` en `:29`).
-- **Compilado, no interpretado**: el estilo no se evalúa en el dispositivo; se compila a un protobuf (`libs/indexer/drules_struct.proto`) con una tabla `tipo de feature x zoom -> reglas`. Cambiar el estilo en la app es cambiar de `.bin` (`map_style_reader.cpp:156`) y recargar (`DrapeEngine::UpdateMapStyle`, `drape_engine.cpp:462-469`). [L]
-- **Qué se puede expresar** es exactamente lo que cabe en el proto [L: `drules_struct.proto`]:
-  - `LineRuleProto` (`:31`): ancho, color (ARGB), patrón de guiones, prioridad, símbolo a lo largo de la línea, `join` y `cap`.
-  - `AreaRuleProto` (`:52`): un color de relleno, un borde (`LineDefProto`) y prioridad. Sin degradados ni texturas salvo `pattern-image`/`hatching`.
-  - `SymbolRuleProto` (`:59`): nombre del icono, prioridad, `min_distance`.
-  - `CaptionDefProto` (`:67`): `height` (entero), `color`, `stroke_color`, `offset_x/y`, `text`, `is_optional`. **No hay familia tipográfica, peso, interletraje, ni ancho de halo.**
-  - `DrawElementProto` (`:111`): una regla por `scale` (zoom).
-- **Prioridades**: ficheros `priorities_{1_BG-by-size,2_BG-top,3_FG,4_overlays}.prio.txt`, regenerados y reordenados por el script. Las superposiciones (iconos, rótulos, escudos) **no se solapan**: gana la de mayor prioridad (`priorities_4_overlays.prio.txt:5-8`), y los rótulos opcionales de un icono solo salen si hay hueco.
-- **Iconos**: SVG en `data/styles/<tema>/{light,dark}/symbols/` (1088 ficheros en `default/light/symbols`), regla `icon-image` en `Icons.mapcss`, y `generate_symbols.sh` los compone en el atlas (SDF) (`docs/STYLES.md`, "How to add a new icon"). Es el procedimiento oficial de sustitución. [L]
-- **Cambios que exigen regenerar mwm**: si cambia qué features existen o su rango de zoom más allá de los límites de índice (`docs/STYLES.md`, "Testing your changes"). Un retoque de colores/anchos/iconos no los toca. [L]
-- **Herramienta**: hay una versión de escritorio "Designer" para iterar (`docs/STYLES.md`), y se pueden copiar `.bin` compilados a `Android/data/<app>/files/styles/` en el móvil sin recompilar la app. [L]
+- **Themes** (`data/styles/`): `default`, `outdoors`, `vehicle` (navigation), `driving`, `walking`, `cycling`, `public-transport` and their `_outdoor` variants (11 directories). Each one has `light/` and `dark/` (`docs/STYLES.md`, section "Styles directories and files"). `generate_drules.sh` compiles 22 combinations (theme x light/dark). [L: `tools/unix/generate_drules.sh:48-72`]
+- **Language**: a subset of MapCSS 0.2 with CoMaps extensions (`docs/STYLES.md`, "Technical details"). Selectors by type and zoom: `line|z10-13[highway=motorway]` (`data/styles/default/include/Roads.mapcss:87`). Colors as variables (`@water: #89CDDC;` in `data/styles/default/light/colors.mapcss:42`, `@background0: #F5E8D6` at `:29`).
+- **Compiled, not interpreted**: the style is not evaluated on the device; it is compiled to a protobuf (`libs/indexer/drules_struct.proto`) with a `feature type x zoom -> rules` table. Changing the style in the app means switching the `.bin` (`map_style_reader.cpp:156`) and reloading (`DrapeEngine::UpdateMapStyle`, `drape_engine.cpp:462-469`). [L]
+- **What can be expressed** is exactly what fits in the proto [L: `drules_struct.proto`]:
+  - `LineRuleProto` (`:31`): width, color (ARGB), dash pattern, priority, symbol along the line, `join` and `cap`.
+  - `AreaRuleProto` (`:52`): a fill color, a border (`LineDefProto`) and priority. No gradients or textures except `pattern-image`/`hatching`.
+  - `SymbolRuleProto` (`:59`): icon name, priority, `min_distance`.
+  - `CaptionDefProto` (`:67`): `height` (integer), `color`, `stroke_color`, `offset_x/y`, `text`, `is_optional`. **There is no font family, weight, letter spacing, or halo width.**
+  - `DrawElementProto` (`:111`): one rule per `scale` (zoom).
+- **Priorities**: files `priorities_{1_BG-by-size,2_BG-top,3_FG,4_overlays}.prio.txt`, regenerated and reordered by the script. Overlays (icons, labels, shields) **do not overlap**: the one with the highest priority wins (`priorities_4_overlays.prio.txt:5-8`), and an icon's optional labels only appear if there is room.
+- **Icons**: SVGs in `data/styles/<theme>/{light,dark}/symbols/` (1088 files in `default/light/symbols`), `icon-image` rule in `Icons.mapcss`, and `generate_symbols.sh` composes them into the atlas (SDF) (`docs/STYLES.md`, "How to add a new icon"). This is the official replacement procedure. [L]
+- **Changes that require regenerating mwm**: if which features exist or their zoom range changes beyond the index limits (`docs/STYLES.md`, "Testing your changes"). A tweak to colors/widths/icons does not touch them. [L]
+- **Tooling**: there is a desktop "Designer" version for iterating (`docs/STYLES.md`), and compiled `.bin` files can be copied to `Android/data/<app>/files/styles/` on the phone without rebuilding the app. [L]
 
-## 2. Tabla del checklist de 10 puntos
+## 2. The 10-point checklist table
 
-"Alcanzable" aquí = se puede conseguir con el sistema de estilos y/o cambios pequeños, no con un motor nuevo. **Esfuerzo** en días de persona (estimación mía, [I]).
+"Reachable" here = can be achieved with the style system and/or small changes, not with a new engine. **Effort** in person-days (my estimate, [I]).
 
-| # | Punto | Alcanzable | Evidencia | Qué falta / límite | Esfuerzo |
+| # | Point | Reachable | Evidence | What is missing / limit | Effort |
 | --- | --- | --- | --- | --- | --- |
-| 1 | Paleta suave de fondo y agua | **Sí** | Colores como variables hex por tema y modo: `default/light/colors.mapcss:29, 42` (`@background0`, `@water`); el compilador los codifica a ARGB (`libkomwm.py:104-112`). | Nada de motor. Hay que repetir en `dark/` y en los temas que se usen. | 2-3 |
-| 2 | Carreteras con borde fino y jerarquía clara | **Sí** | Ancho, color, opacidad por zoom y clase en `Roads.mapcss:87-100`; borde con `casing-width/-color/-dashes` (`Roads.mapcss:124, 129, 229`), que el compilador emite como línea extra bajo la principal (`libkomwm.py:805-831`). Orden por `priorities_3_FG.prio.txt`. | Sin sombras ni degradados en carretera (el proto de línea no los tiene). Relleno de intersecciones fijo por el renderizador. [I] | 4-6 |
-| 3 | Tipografía de etiquetas controlable | **Parcial** | Por regla solo se controla tamaño entero, color, offset y halo (`CaptionDefProto`, `drules_struct.proto:67-75`; `libkomwm.py:923-935`). La lista de fuentes es **global y fija en C++**: `libs/platform/platform.cpp:197-209` (Noto, DejaVu, Droid, Roboto Medium...) más fuentes del sistema (`:211`). Glifos como SDF a 22 px base (`libs/drape/font_constants.hpp:6`). | Se puede cambiar la fuente latina global (sustituir/añadir un TTF en `data/fonts` y la lista): coste bajo. **No** hay pesos por clase (negrita para ciudades, ligera para calles) ni interletraje sin tocar `glyph_manager`/`text_layout` (C++): 8-12 días. No he comprobado la prioridad de resolución entre fuentes [N]. | Global: 2; por clase: 8-12 |
-| 4 | Iconos de POI redondeados y sustituibles | **Sí** | Pipeline oficial de sustitución: SVG en `symbols/` + `icon-image` en `Icons.mapcss` + `generate_symbols.sh` (`docs/STYLES.md`). 1088 SVG en `default/light/symbols`. | Es trabajo de diseño más que técnico: un set propio coherente (y su versión `dark/`). Licencia: los iconos actuales vienen de colecciones con licencias distintas (`NOTICE`, `data/copyright.html`); usar set propio evita arrastrarlas. Mecánica: 2 días; set completo: 10-15. | 12-17 |
-| 5 | Halo de etiquetas | **Sí** (con límite) | `text-halo-color`, `text-halo-opacity` y `text-halo-radius` se leen en `Roads_label.mapcss:130-134` e `Icons_Label_Colors.mapcss:11`; se serializan como `stroke_color` con alfa (`libkomwm.py:104-112, 928-929`). | **El radio solo actúa como interruptor**: el compilador comprueba `!= 0` y guarda solo el color (`libkomwm.py:928`); el proto no tiene ancho. El halo se dibuja como pasada de contorno del glifo SDF (`render_group.cpp:107-114`, `text_layout.cpp:101`), con un margen SDF fijo (`kSdfBorder = 4`, `drape/font_constants.hpp:5`) [I: que ese margen limite el ancho]. Controlar el ancho = C++. Color y opacidad del halo sí. | 1-2 |
-| 6 | Edificios 3D discretos | **Parcial** | Extrusión real: altura de `height` o `building:levels` x 3 m (default 3 m) (`rule_drawer.cpp:61-96`); se activa si `Is3dBuildingsEnabled` (`rule_drawer.cpp:281`); interruptor en `DrapeEngine::Allow3dMode(allowPerspectiveInNavigation, allow3dBuildings)` (`drape_engine.cpp:700-703`); sombreado con una luz fija (`shaders/GL/area3d.vsh.glsl:19`). | Desde el estilo solo se controla el color/opacidad del relleno (`Basemap.mapcss:714-723` define `fill-color`/`fill-opacity` por zoom). Dirección de luz, ambiente, sombras, tejados: constantes en shader/C++ (modificables, es nuestro código). "Discreto" = ajustar color+opacidad+shader: 3-5 días. Sin sombras proyectadas ni tejados. Con `building:levels` ausente salen casi planos (3 m). | 3-5 |
-| 7 | Sombreado de relieve opcional | **No** | Búsqueda `hillshade|hill_shade|relief|hillshading` en todo el árbol (sin `3party/`): **ningún resultado**. Lo que sí hay son isolíneas (curvas de nivel) generadas con SRTM (`docs/ISOLINES.md`, `tools/topography_generator`) y altitudes de ruta. | Hillshade necesita capa raster/mesh + shader nuevos en Drape, más datos DEM distribuidos (Sonny/SRTM están ya en la lista de licencias). Coste alto: 15-25 días y mantenimiento de un fork de Drape; o resolverlo con otro motor (opción C). Isolíneas como sucedáneo: 0 días (ya existe). | 15-25 |
-| 8 | Transición día/noche | **Parcial** | Pares `light`/`dark` por tema; cambio en caliente con `Framework::SetMapStyle(mapStyle, forceRerendering)` (`framework.cpp:1843-1851`) -> `DrapeEngine::UpdateMapStyle` (`drape_engine.cpp:462`) -> recarga de reglas. | Es un cambio **brusco** de conjunto de reglas; no he encontrado interpolación entre estilos [I; no buscado en profundidad]. Un fundido visual se puede hacer en la capa de UI (cruce de una captura del mapa en Compose): 2-3 días. El modo automático por hora/sensor es de la app, no del estilo. Mantener `dark/` en paridad con `light/` duplica el trabajo de paleta. | 2-3 (+ paridad) |
-| 9 | Densidad de etiquetas ajustable por zoom | **Parcial** | Visibilidad por zoom en cada regla (`|zN-M`, p. ej. `Roads.mapcss:87`); prioridades y desplazamiento de solapes (`priorities_4_overlays.prio.txt:5-8`); `min_distance` en símbolos y escudos (`apply_feature_functors.cpp:597-600, 1260`); factor global de fuente (`visual_params.hpp:63-64`, `framework.hpp:806`). | Es **estático por estilo**, afinable offline por tipo y zoom; **no hay control en runtime** de "densidad". Un deslizador de densidad sería un multiplicador en `min_distance`/escala de colisión (C++, 3-5 días [I]). Afinado de los ficheros de prioridades: 4-6 días. | 4-6 (+3-5 slider) |
-| 10 | Vista 3D de navegación con cámara inclinada | **Sí** (afinable en C++) | Perspectiva automática al seguir ruta: `EnablePerspective` (`routing_manager.cpp:1357`), ángulo según escala hasta π/4 y 55° con FOV 60° (`libs/geometry/screenbase.cpp:8-10, 92-110`); `Allow3dMode(allowPerspectiveInNavigation, ...)` (`drape_engine.cpp:700`). Tema `vehicle` propio para navegación. | Los ángulos y el FOV son **constantes en C++**, no del estilo. Cambiar la inclinación/posición del coche en pantalla = tocar `screenbase.cpp` y la lógica de seguimiento (2-3 días). El "aspecto Apple" de la cámara depende de ellos y no está validado [N]. | 2-3 |
+| 1 | Soft background and water palette | **Yes** | Colors as hex variables per theme and mode: `default/light/colors.mapcss:29, 42` (`@background0`, `@water`); the compiler encodes them to ARGB (`libkomwm.py:104-112`). | Nothing engine-side. Has to be repeated in `dark/` and in the themes that are used. | 2-3 |
+| 2 | Roads with thin casing and clear hierarchy | **Yes** | Width, color, opacity by zoom and class in `Roads.mapcss:87-100`; casing with `casing-width/-color/-dashes` (`Roads.mapcss:124, 129, 229`), which the compiler emits as an extra line under the main one (`libkomwm.py:805-831`). Order by `priorities_3_FG.prio.txt`. | No shadows or gradients on roads (the line proto does not have them). Intersection fill is fixed by the renderer. [I] | 4-6 |
+| 3 | Controllable label typography | **Partial** | Per rule only integer size, color, offset and halo are controlled (`CaptionDefProto`, `drules_struct.proto:67-75`; `libkomwm.py:923-935`). The font list is **global and fixed in C++**: `libs/platform/platform.cpp:197-209` (Noto, DejaVu, Droid, Roboto Medium...) plus system fonts (`:211`). Glyphs as SDF at 22 px base (`libs/drape/font_constants.hpp:6`). | The global Latin font can be changed (replace/add a TTF in `data/fonts` and the list): low cost. There are **no** per-class weights (bold for cities, light for streets) or letter spacing without touching `glyph_manager`/`text_layout` (C++): 8-12 days. I have not checked the resolution priority between fonts [N]. | Global: 2; per class: 8-12 |
+| 4 | Rounded, replaceable POI icons | **Yes** | Official replacement pipeline: SVG in `symbols/` + `icon-image` in `Icons.mapcss` + `generate_symbols.sh` (`docs/STYLES.md`). 1088 SVGs in `default/light/symbols`. | It is design work more than technical: a coherent own set (and its `dark/` version). License: the current icons come from collections with different licenses (`NOTICE`, `data/copyright.html`); using our own set avoids carrying them. Mechanics: 2 days; full set: 10-15. | 12-17 |
+| 5 | Label halo | **Yes** (with a limit) | `text-halo-color`, `text-halo-opacity` and `text-halo-radius` are read in `Roads_label.mapcss:130-134` and `Icons_Label_Colors.mapcss:11`; they are serialized as `stroke_color` with alpha (`libkomwm.py:104-112, 928-929`). | **The radius only acts as a switch**: the compiler checks `!= 0` and stores only the color (`libkomwm.py:928`); the proto has no width. The halo is drawn as an outline pass of the SDF glyph (`render_group.cpp:107-114`, `text_layout.cpp:101`), with a fixed SDF margin (`kSdfBorder = 4`, `drape/font_constants.hpp:5`) [I: that this margin limits the width]. Controlling the width = C++. Halo color and opacity, yes. | 1-2 |
+| 6 | Discreet 3D buildings | **Partial** | Real extrusion: height from `height` or `building:levels` x 3 m (default 3 m) (`rule_drawer.cpp:61-96`); enabled if `Is3dBuildingsEnabled` (`rule_drawer.cpp:281`); switch in `DrapeEngine::Allow3dMode(allowPerspectiveInNavigation, allow3dBuildings)` (`drape_engine.cpp:700-703`); shading with a fixed light (`shaders/GL/area3d.vsh.glsl:19`). | From the style only the fill color/opacity is controlled (`Basemap.mapcss:714-723` defines `fill-color`/`fill-opacity` per zoom). Light direction, ambient, shadows, roofs: constants in shader/C++ (modifiable, it is our code). "Discreet" = tune color+opacity+shader: 3-5 days. No cast shadows or roofs. With `building:levels` absent they come out almost flat (3 m). | 3-5 |
+| 7 | Optional relief shading | **No** | Search for `hillshade|hill_shade|relief|hillshading` across the whole tree (excluding `3party/`): **no results**. What does exist are isolines (contour lines) generated with SRTM (`docs/ISOLINES.md`, `tools/topography_generator`) and route altitudes. | Hillshade needs a new raster/mesh layer + shader in Drape, plus distributed DEM data (Sonny/SRTM are already in the license list). High cost: 15-25 days and maintaining a Drape fork; or solve it with another engine (option C). Isolines as a substitute: 0 days (already exists). | 15-25 |
+| 8 | Day/night transition | **Partial** | `light`/`dark` pairs per theme; hot switch with `Framework::SetMapStyle(mapStyle, forceRerendering)` (`framework.cpp:1843-1851`) -> `DrapeEngine::UpdateMapStyle` (`drape_engine.cpp:462`) -> rule reload. | It is an **abrupt** switch of rule set; I did not find interpolation between styles [I; not searched in depth]. A visual fade can be done in the UI layer (crossfade of a map snapshot in Compose): 2-3 days. The automatic mode by time/sensor belongs to the app, not the style. Keeping `dark/` in parity with `light/` doubles the palette work. | 2-3 (+ parity) |
+| 9 | Label density adjustable by zoom | **Partial** | Visibility by zoom in each rule (`|zN-M`, e.g. `Roads.mapcss:87`); priorities and overlap displacement (`priorities_4_overlays.prio.txt:5-8`); `min_distance` in symbols and shields (`apply_feature_functors.cpp:597-600, 1260`); global font factor (`visual_params.hpp:63-64`, `framework.hpp:806`). | It is **static per style**, tunable offline by type and zoom; there is **no runtime control** of "density". A density slider would be a multiplier on `min_distance`/collision scale (C++, 3-5 days [I]). Tuning the priority files: 4-6 days. | 4-6 (+3-5 slider) |
+| 10 | 3D navigation view with tilted camera | **Yes** (tunable in C++) | Automatic perspective when following a route: `EnablePerspective` (`routing_manager.cpp:1357`), angle by scale up to π/4 and 55° with FOV 60° (`libs/geometry/screenbase.cpp:8-10, 92-110`); `Allow3dMode(allowPerspectiveInNavigation, ...)` (`drape_engine.cpp:700`). Own `vehicle` theme for navigation. | The angles and the FOV are **constants in C++**, not in the style. Changing the tilt/position of the car on screen = touching `screenbase.cpp` and the following logic (2-3 days). The camera's "Apple look" depends on them and is not validated [N]. | 2-3 |
 
-### Recuento
+### Count
 
-- **Sí: 4** (1, 2, 4, 5) más el 10, que es sí pero con constantes en C++: **5**.
-- **Parcial: 4** (3, 6, 8, 9).
+- **Yes: 4** (1, 2, 4, 5) plus 10, which is a yes but with constants in C++: **5**.
+- **Partial: 4** (3, 6, 8, 9).
 - **No: 1** (7).
 
-Contra el umbral del spike ("≥ 8 alcanzables"):
+Against the spike threshold ("≥ 8 reachable"):
 
-- Contando solo los **Sí**: 5/10, **no se llega**.
-- Contando **Sí + Parcial** como alcanzables: 9/10, se llega, **pero** tres de los cuatro parciales (3, 6, 9) dependen de modificar C++ de Drape o de aceptar un resultado menos fino. Mi lectura honesta: el sistema de estilos cubre bien paleta, carreteras, iconos y halos (los controles "de superficie"); los controles que definen el carácter "Apple" (pesos tipográficos, relieve, edificios con sombra, transición animada) están **fuera del alcance del estilo** y dependen de un fork de Drape o de otro motor.
-- Si el criterio es "alcanzable sin tocar C++", el recuento es **5 o 6 de 10** (1, 2, 4, 5, y 9 y 8 parcialmente).
+- Counting only the **Yes**: 5/10, **not reached**.
+- Counting **Yes + Partial** as reachable: 9/10, reached, **but** three of the four partials (3, 6, 9) depend on modifying Drape C++ or accepting a less refined result. My honest reading: the style system covers palette, roads, icons and halos well (the "surface" controls); the controls that define the "Apple" character (type weights, relief, buildings with shadow, animated transition) are **out of the style's reach** and depend on a Drape fork or another engine.
+- If the criterion is "reachable without touching C++", the count is **5 or 6 out of 10** (1, 2, 4, 5, and 9 and 8 partially).
 
-La decisión A/C del spike depende de cómo se ponga ese listón y de la comparación visual, que no he hecho. Recomiendo que el informe final no cuente "parcial" como "sí" sin una captura que lo respalde.
+The spike's A/C decision depends on where that bar is set and on the visual comparison, which I have not done. I recommend that the final report not count "partial" as "yes" without a screenshot to back it up.
 
-## 3. Esfuerzo total (si se va por A, afinando estilo y Drape)
+## 3. Total effort (if going with A, tuning style and Drape)
 
-| Bloque | Días |
+| Block | Days |
 | --- | --- |
-| Paleta (claro/oscuro, `default` + `vehicle`) | 2-3 |
-| Carreteras | 4-6 |
-| Iconos propios | 12-17 |
-| Halo, densidad (estático), fundido día/noche | 7-11 |
-| Edificios 3D discretos (shader + colores) | 3-5 |
-| Cámara de navegación | 2-3 |
-| Tipografía global (fuente única) | 2 |
-| **Subtotal sin C++ profundo** | **~32-47** |
-| Tipografía por peso (C++) | 8-12 |
-| Hillshade (C++/datos) | 15-25 |
-| Slider de densidad en runtime (C++) | 3-5 |
-| **Con los tres extras** | **~58-89** |
+| Palette (light/dark, `default` + `vehicle`) | 2-3 |
+| Roads | 4-6 |
+| Own icons | 12-17 |
+| Halo, density (static), day/night fade | 7-11 |
+| Discreet 3D buildings (shader + colors) | 3-5 |
+| Navigation camera | 2-3 |
+| Global typography (single font) | 2 |
+| **Subtotal without deep C++** | **~32-47** |
+| Typography by weight (C++) | 8-12 |
+| Hillshade (C++/data) | 15-25 |
+| Runtime density slider (C++) | 3-5 |
+| **With the three extras** | **~58-89** |
 
-## 4. Riesgos propios del estilo
+## 4. Style-specific risks
 
-- **Mantener un fork de Drape**: cualquier cambio de shaders/constantes (puntos 3, 6, 7, 10) nos ata a rebasar contra CoMaps en cada versión (la serie de mapas cambia: `MAP_SERIES` en `private.h:22`). [I]
-- **Compilador de estilos en Python (kothic)** con dependencia de `protobuf` en Python y script que modifica `data/` en el sitio; el árbol de `data/` se regenera y es grande (1088 iconos, 22 variantes). [L/I]
-- **Licencias de iconos y fuentes**: ver `comaps-code.md`, sección 5 (Code2000 es shareware y debe retirarse; los iconos de colecciones externas hay que auditarlos si no se sustituyen todos).
-- **Tema "vehicle" y los temas por modo** (a pie, bici, coche, transporte) multiplican el trabajo de estilo por 11 si se quiere coherencia; conviene decidir cuántos temas se mantienen (propuesta: `default` y `vehicle`, claro y oscuro = 4 compilados). [I]
+- **Maintaining a Drape fork**: any change to shaders/constants (points 3, 6, 7, 10) ties us to rebasing against CoMaps on every version (the map series changes: `MAP_SERIES` in `private.h:22`). [I]
+- **Python style compiler (kothic)** with a `protobuf` dependency in Python and a script that modifies `data/` in place; the `data/` tree is regenerated and large (1088 icons, 22 variants). [L/I]
+- **Icon and font licenses**: see `comaps-code.md`, section 5 (Code2000 is shareware and must be removed; icons from external collections have to be audited if not all are replaced).
+- **"vehicle" theme and the per-mode themes** (foot, bike, car, transit) multiply the style work by 11 if coherence is wanted; it is advisable to decide how many themes are kept (proposal: `default` and `vehicle`, light and dark = 4 compiled). [I]

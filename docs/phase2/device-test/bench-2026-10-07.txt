@@ -1,0 +1,22 @@
+# Normal benchmark on the Pixel 8 (2026-10-07, native debug; figures from a debug build are NOT representative of release)
+.680 I/UMBENCH (23978): mapas: [World.mwm, WorldCoasts.mwm, Spain_Community of Madrid.mwm, Spain_Aragon.mwm, Spain_Castile-La Mancha.mwm, Spain_Castile and Leon_East.mwm, Spain_Catalonia_Provincia de Lleida.mwm, Spain_Catalonia_Provinci
+.955 I/UMBENCH (23978): init_ms=254 maps=9
+.467 I/UMBENCH (23978): search q='c' results=10 ms=2512
+.743 I/UMBENCH (23978): search q='ca' results=10 ms=1275
+.553 I/UMBENCH (23978): search q='cal' results=10 ms=810
+.454 I/UMBENCH (23978): search q='call' results=10 ms=901
+.127 I/UMBENCH (23978): search q='calle' results=10 ms=673
+.126 I/UMBENCH (23978): search q='calle m' results=10 ms=2999
+.858 I/UMBENCH (23978): search q='calle ma' results=10 ms=1731
+.410 I/UMBENCH (23978): search q='calle may' results=10 ms=552
+.952 I/UMBENCH (23978): search q='calle mayor' results=10 ms=541
+.297 I/UMBENCH (23978): search_warm q='Puerta del Sol' results=10 ms=3344
+.606 I/UMBENCH (23978): search_warm q='Sagrada Familia' results=10 ms=308
+.246 I/UMBENCH (23978): search_warm q='farmacia' results=10 ms=640
+.836 I/UMBENCH (23978): route_mad_bcn run=0 code=8 ms=590 km=null s=null
+.286 I/UMBENCH (23978): route_mad_bcn run=1 code=8 ms=449 km=null s=null
+.743 I/UMBENCH (23978): route_mad_bcn run=2 code=8 ms=457 km=null s=null
+.987 I/UMBENCH (23978): route_urban profile=car code=0 ms=244 km=3.2047623290732288
+.441 I/UMBENCH (23978): route_urban profile=foot code=0 ms=454 km=2.0745648673656585
+.833 I/UMBENCH (23978): route_urban profile=bike code=0 ms=391 km=2.344706670172685
+.833 I/UMBENCH (23978): FIN

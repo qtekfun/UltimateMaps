@@ -1,6 +1,6 @@
-// Sustituto de libs/mwm_diff/diff.cpp. El original depende de bsdiff-courgette
-// (BSD Protection License, incompatible con GPLv3), que NO se compila aqui.
-// Efecto: las actualizaciones incrementales por diff no existen; se descarga el mwm completo.
+// Substitute for libs/mwm_diff/diff.cpp. The original depends on bsdiff-courgette
+// (BSD Protection License, incompatible with GPLv3), which is NOT built here.
+// Effect: incremental diff updates do not exist; the full mwm is downloaded.
 #include "mwm_diff/diff.hpp"
 
 namespace generator::mwm_diff

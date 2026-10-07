@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Notificación del servicio de navegación -->
+    <string name="nav_channel_name">Navegación</string>
+    <string name="nav_notification_stop">Parar</string>
+    <string name="nav_notification_open">Abrir</string>
+    <string name="nav_remaining">%1$s · %2$s</string>
+    <string name="nav_in_distance">%1$s: %2$s</string>
+    <string name="nav_onto_street">%1$s en %2$s</string>
+    <string name="nav_waiting_gps">Esperando señal GPS…</string>
+    <string name="nav_recalculating">Recalculando la ruta…</string>
+    <string name="nav_arrived">Has llegado</string>
+    <string name="nav_stop_reached">Parada alcanzada</string>
+    <string name="nav_problem_permission">Se retiró el permiso de ubicación. Concédelo para seguir navegando.</string>
+    <string name="nav_problem_gps_off">La ubicación está apagada. Enciéndela para seguir navegando.</string>
+    <string name="nav_resumed">Navegación reanudada</string>
+    <string name="nav_turn_depart">Salida</string>
+    <string name="nav_turn_straight">Sigue recto</string>
+    <string name="nav_turn_slight_right">Gira ligeramente a la derecha</string>
+    <string name="nav_turn_right">Gira a la derecha</string>
+    <string name="nav_turn_sharp_right">Gira bruscamente a la derecha</string>
+    <string name="nav_turn_slight_left">Gira ligeramente a la izquierda</string>
+    <string name="nav_turn_left">Gira a la izquierda</string>
+    <string name="nav_turn_sharp_left">Gira bruscamente a la izquierda</string>
+    <string name="nav_turn_u_turn">Haz un cambio de sentido</string>
+    <string name="nav_turn_roundabout_enter">Entra en la rotonda</string>
+    <string name="nav_turn_roundabout_leave">Sal de la rotonda</string>
+    <string name="nav_turn_exit_left">Toma la salida de la izquierda</string>
+    <string name="nav_turn_exit_right">Toma la salida de la derecha</string>
+    <string name="nav_turn_merge">Incorpórate</string>
+    <string name="nav_turn_arrive">Llegas a tu destino</string>
+    <string name="nav_turn_arrive_left">Tu destino está a la izquierda</string>
+    <string name="nav_turn_arrive_right">Tu destino está a la derecha</string>
+    <!-- Rutas fallidas (política en RouteFailurePolicy) -->
+    <string name="nav_route_err_no_regions">No hay regiones instaladas. Descarga una región para calcular rutas sin conexión.</string>
+    <string name="nav_route_err_need_maps">Faltan mapas para esta ruta. Descárgalos en Mapas y vuelve a intentarlo.</string>
+    <string name="nav_route_err_need_maps_named">Faltan mapas para esta ruta: %1$s. Descárgalos en Mapas y vuelve a intentarlo.</string>
+    <string name="nav_route_err_start">El origen no está en una carretera de los mapas descargados. Elige otro punto de partida.</string>
+    <string name="nav_route_err_end">El destino no está en una carretera de los mapas descargados.</string>
+    <string name="nav_route_err_stop">Una de las paradas no está en una carretera de los mapas descargados. Muévela o quítala.</string>
+    <string name="nav_route_err_not_found">No hay ruta con estas opciones. Prueba otro perfil, otras opciones de evitar u otros puntos.</string>
+    <string name="nav_route_err_timeout">La ruta tardó demasiado en calcularse. Inténtalo de nuevo o elige un punto más cercano.</string>
+    <string name="nav_route_err_core">El motor de rutas tuvo un problema y se reinició. Inténtalo de nuevo.</string>
+    <string name="nav_route_err_core_unavailable">El motor de rutas sigue fallando. Inténtalo de nuevo en un momento.</string>
+    <string name="nav_route_err_internal">No se pudo calcular la ruta.</string>
+</resources>

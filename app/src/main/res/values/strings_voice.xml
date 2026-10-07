@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Settings: Navigation section -->
+    <string name="nav_settings_title">Navigation</string>
+    <string name="nav_voice_title">Voice guidance</string>
+    <string name="nav_voice_body">Speak the turn instructions while you navigate.</string>
+    <string name="nav_important_title">Only important prompts</string>
+    <string name="nav_important_body">Skip “continue straight”, slight bends and distant warnings.</string>
+    <string name="nav_volume_title">Voice volume</string>
+    <string name="nav_language_title">Voice language</string>
+    <string name="nav_language_auto">Same as the app</string>
+    <string name="nav_language_es">Spanish</string>
+    <string name="nav_language_en">English</string>
+    <string name="nav_units_title">Units</string>
+    <string name="nav_units_auto">Automatic (by region)</string>
+    <string name="nav_units_metric">Kilometers and meters</string>
+    <string name="nav_units_imperial">Miles and feet</string>
+    <string name="nav_test_voice">Test voice</string>
+    <string name="nav_voice_ready">The voice engine is ready.</string>
+    <string name="nav_voice_starting">Starting the voice engine…</string>
+    <string name="nav_view3d_title">3D view</string>
+    <string name="nav_view3d_body">While navigating, tilt the map and look ahead along the road, like most navigation apps. Off: a flat map.</string>
+    <string name="nav_buildings3d_title">3D buildings</string>
+    <string name="nav_buildings3d_body">Draw buildings with height in the 3D view from zoom 15. It needs more graphics power; turn it off if the map stutters.</string>
+    <string name="nav_avoid_title">Avoid by default</string>
+    <string name="nav_avoid_body">Used when you plan a route. You can change it for each trip.</string>
+    <string name="nav_avoid_motorways">Motorways</string>
+    <string name="nav_avoid_tolls">Toll roads</string>
+    <string name="nav_avoid_ferries">Ferries</string>
+    <string name="nav_avoid_unpaved">Unpaved roads</string>
+
+    <!-- Voice problems -->
+    <string name="voice_lang_es">Spanish</string>
+    <string name="voice_lang_en">English</string>
+    <string name="voice_problem_no_engine_title">No voice engine installed</string>
+    <string name="voice_problem_no_engine_body">Navigation works, but without voice. This device has no text-to-speech engine, which is common without Google services.</string>
+    <string name="voice_problem_lang_title">No %1$s voice</string>
+    <string name="voice_problem_lang_body">The installed engines have no %1$s voice data. Install it from the engine\'s settings, or install another engine. Navigation goes on without voice.</string>
+    <string name="voice_problem_failed_title">The voice engine does not respond</string>
+    <string name="voice_problem_failed_body">The engine stopped answering several times. Navigation goes on without voice. Try again, or install another engine.</string>
+    <string name="voice_problem_init_body">The engine could not start. Navigation goes on without voice. Try again, or install another engine.</string>
+    <string name="voice_install_intro">Free engines on F-Droid:</string>
+    <string name="voice_install_engine">Get %1$s on F-Droid</string>
+    <string name="voice_install_then">After installing one, choose it in Android settings under Text-to-speech output, then come back and tap “Try again”.</string>
+    <string name="voice_install_data">Install voice data</string>
+    <string name="voice_open_tts_settings">Open text-to-speech settings</string>
+    <string name="voice_retry">Try again</string>
+    <string name="voice_banner_no_engine">Silent navigation: no voice engine installed. Tap for help.</string>
+    <string name="voice_banner_lang">Silent navigation: no %1$s voice. Tap for help.</string>
+    <string name="voice_banner_failed">Silent navigation: the voice engine does not respond. Tap for help.</string>
+</resources>

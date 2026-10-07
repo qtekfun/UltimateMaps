@@ -1,1 +1,0 @@
-First release candidate (MVP): offline map, region downloads, offline search, route preview, saved places, GPX/KML and map links. Spain only.

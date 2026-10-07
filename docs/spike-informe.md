@@ -1,67 +1,67 @@
-# Informe del spike (fase 0)
+# Spike report (phase 0)
 
-Fecha: 2026-10-06. Autor: Claude Code (responsable técnico autónomo). Fuentes detalladas: `docs/spike/comaps-build.md`, `comaps-code.md`, `comaps-style.md`, `maplibre.md`, `verificaciones.md`. Código y trazas en `spike/`.
+Date: 2026-10-06. Author: Claude Code (autonomous technical lead). Detailed sources: `docs/spike/comaps-build.md`, `comaps-code.md`, `comaps-style.md`, `maplibre.md`, `verificaciones.md`. Code and traces in `spike/`.
 
-## Resumen
+## Summary
 
-- **No hay una decisión firme A/B/C.** Faltan datos críticos (sin GMS, desacople en ejecución, clases de dispositivo) y dos umbrales del motor de CoMaps **no se cumplen** (búsqueda y ruta larga). Por la regla del propio spike y por `CLAUDE.md` (cambiar la opción ya decidida exige preguntar), no avanzo a la Fase 1.
-- **Recomendación provisional: C (híbrido)**, condicionada a las comprobaciones de la sección «Qué falta». Justificación abajo.
-- Hardware: **un solo dispositivo**, Pixel 8 (Android 17, 120 Hz, con GMS). Todo lo medido es «gama alta con GMS».
+- **There is no firm A/B/C decision.** Critical data is missing (without GMS, decoupling at runtime, device classes) and two thresholds of the CoMaps engine **are not met** (search and long route). By the spike's own rule and by `CLAUDE.md` (changing the already decided option requires asking), I do not proceed to Phase 1.
+- **Provisional recommendation: C (hybrid)**, conditional on the checks in the "What is missing" section. Justification below.
+- Hardware: **a single device**, Pixel 8 (Android 17, 120 Hz, with GMS). Everything measured is "high-end with GMS".
 
-## Cifras frente a umbrales
+## Figures against thresholds
 
-Todo medido en el Pixel 8 a 120 Hz, con comando y traza (ver los informes por flujo). «No medido» = sin dato, no un suspenso.
+Everything measured on the Pixel 8 at 120 Hz, with command and trace (see the per-workstream reports). "Not measured" = no data, not a failure.
 
-| Métrica | Umbral | CoMaps tal cual | MapLibre + PMTiles | Veredicto |
+| Metric | Threshold | CoMaps as is | MapLibre + PMTiles | Verdict |
 | --- | --- | --- | --- | --- |
-| fps / frame time en gestos | p95 ≤ 8,3 ms (120 Hz) | Intervalo entre buffers de SurfaceFlinger: p95 8,85-8,88 ms, 119-120 fps, 0-0,16 % de intervalos > 12,5 ms (`traces/07..`) | `gfxinfo` p95 6,8-7,3 ms (120 Hz), 0 frames > 16,6 ms | Ambos fluidos. **Métricas no comparables** (CoMaps: proxy de SF, MapLibre: hilo UI con TextureView, puede subestimar). El p95 literal de CoMaps queda 0,5 ms por encima |
-| Arranque en frío | ≤ 1 s | 141 ms (Splash, mediana de 10); ≈ 650 ms hasta `MwmActivity` (n=5) | 228 ms (mediana de 10); primer render completo ≈ 0,94 s | Pasan ambos |
-| Búsqueda por tecla (primer lote) | ≤ 100 ms | mediana 631 ms, p95 1734 ms (n=31); 1.ª en frío 6705 ms (sin traza íntegra) | no aplica (sin índice) | **No pasa.** Medido con el dispositivo compartido y España completa; **no repetido en reposo** |
-| Ruta Madrid–Barcelona, coche | ≤ 2 s | 16,5-17,4 s (agente) y **17,8 / 18,0 / 18,0 s en reposo** (`traces/20-rerun-route-quiet.txt`), 620,6 km | no aplica | **No pasa (≈ 9x), reproducible sin carga** |
-| Rutas urbanas (informativo) | — | coche 6,7 km 0,43 s; pie 5,1 km 1,3 s; bici 5,4 km 1,15 s; Guadarrama 13,8 km 0,67 s | — | Aceptables |
-| Estilo (checklist 10) | ≥ 8 alcanzables | 5 sí, 4 parcial, 1 no (relieve); 3 de los parciales requieren C++ de Drape. Solo lectura de código, sin capturas | Estilo Protomaps light: paleta suave, jerarquía de vías, POI redondeados, halo (capturas en `spike/maplibre/traces/`). 3D, relieve y día/noche no probados | A: ≥ 8 solo contando parciales, **no demostrado**. MapLibre: control total, parcialmente evidenciado |
-| Desacoplar la UI | Pantalla Compose sin la actividad de CoMaps | **Viable por lectura de código**: `:app` y `:sdk` ya separados en Gradle; coste 15-21 persona-días. **No ejecutado** | — | Sin prueba en ejecución |
-| Sin GMS | Todo funciona o vía clara | El sabor fdroid de CoMaps depende de `org.microg.gms:play-services-location` (`app/build.gradle.kts:375`), contrario a `CLAUDE.md`; consumiendo solo `:sdk` se evita (`LocationManager`). **No probado** en dispositivo sin GMS | — | **No medido** |
-| Rutas con curvas | Vía realista | Sí: `EdgeEstimator::CalcSegmentWeight` virtual, solo aumentar costes; 6-10 días de C++ | — | Pasa (por código) |
-| Moto | — | No existe `VehicleType` moto: estimador y router nuevos, 5-8 días | — | Trabajo propio |
-| Evitar autopistas/peajes | — | Existe como exclusión dura. «Evitar autopistas» dio 691 km / 11 h 25 min tras ~3-4 min de cálculo (captura no guardada); «evitar peajes» dio la misma ruta que sin evitar | — | Parcial |
-| Carriles y límite de velocidad | — | Solo confirmados en código; la navegación simulada falló (usó la ubicación real) | — | **No medido** |
-| Memoria / APK | — | PSS 503 MB; APK arm64 46,3 MB | PMTiles España peninsular + Baleares 3,4 GB (vs 1,9 GB de .mwm) | Informativo |
+| fps / frame time in gestures | p95 ≤ 8.3 ms (120 Hz) | Interval between SurfaceFlinger buffers: p95 8.85-8.88 ms, 119-120 fps, 0-0.16% of intervals > 12.5 ms (`traces/07..`) | `gfxinfo` p95 6.8-7.3 ms (120 Hz), 0 frames > 16.6 ms | Both fluid. **Metrics not comparable** (CoMaps: SF proxy, MapLibre: UI thread with TextureView, may underestimate). The literal CoMaps p95 is 0.5 ms above |
+| Cold start | ≤ 1 s | 141 ms (Splash, median of 10); ≈ 650 ms to `MwmActivity` (n=5) | 228 ms (median of 10); first full render ≈ 0.94 s | Both pass |
+| Search per keystroke (first batch) | ≤ 100 ms | median 631 ms, p95 1734 ms (n=31); 1st cold 6705 ms (no complete trace) | not applicable (no index) | **Fails.** Measured with the shared device and the whole of Spain; **not repeated at idle** |
+| Madrid–Barcelona route, car | ≤ 2 s | 16.5-17.4 s (agent) and **17.8 / 18.0 / 18.0 s at idle** (`traces/20-rerun-route-quiet.txt`), 620.6 km | not applicable | **Fails (≈ 9x), reproducible without load** |
+| Urban routes (informative) | — | car 6.7 km 0.43 s; foot 5.1 km 1.3 s; bike 5.4 km 1.15 s; Guadarrama 13.8 km 0.67 s | — | Acceptable |
+| Style (10-point checklist) | ≥ 8 achievable | 5 yes, 4 partial, 1 no (relief); 3 of the partial ones require Drape C++. Code reading only, no screenshots | Protomaps light style: soft palette, road hierarchy, rounded POIs, halo (screenshots in `spike/maplibre/traces/`). 3D, relief and day/night not tested | A: ≥ 8 only counting partials, **not demonstrated**. MapLibre: full control, partially evidenced |
+| Decoupling the UI | Compose screen without the CoMaps activity | **Viable by code reading**: `:app` and `:sdk` already separated in Gradle; cost 15-21 person-days. **Not executed** | — | No runtime proof |
+| Without GMS | Everything works or a clear path | CoMaps' fdroid flavor depends on `org.microg.gms:play-services-location` (`app/build.gradle.kts:375`), contrary to `CLAUDE.md`; consuming only `:sdk` avoids it (`LocationManager`). **Not tested** on a device without GMS | — | **Not measured** |
+| Twisty routes | Realistic path | Yes: virtual `EdgeEstimator::CalcSegmentWeight`, only increasing costs; 6-10 days of C++ | — | Passes (by code) |
+| Motorcycle | — | There is no motorcycle `VehicleType`: new estimator and router, 5-8 days | — | Own work |
+| Avoid motorways/tolls | — | Exists as a hard exclusion. "Avoid motorways" gave 691 km / 11 h 25 min after ~3-4 min of computation (screenshot not saved); "avoid tolls" gave the same route as without avoiding | — | Partial |
+| Lanes and speed limit | — | Only confirmed in code; simulated navigation failed (it used the real location) | — | **Not measured** |
+| Memory / APK | — | PSS 503 MB; arm64 APK 46.3 MB | PMTiles mainland Spain + Balearics 3.4 GB (vs 1.9 GB of .mwm) | Informative |
 
-## Licencias (de `verificaciones.md`)
+## Licenses (from `verificaciones.md`)
 
-- El código de CoMaps es Apache-2.0, compatible con GPLv3 (hay que fijar «GPLv3 o posterior», nunca GPLv2-only).
-- Tres elementos **bloquean publicar tal cual**: `3party/bsdiff-courgette/bsdiff` (BSD Protection License, GPL-incompatible), la fuente `06_code2000.ttf` (shareware, no libre, NonFreeAssets) y los iconos Entypo (CC BY-SA 3.0). Son excluibles o reemplazables sin tocar el motor de ruta/búsqueda, pero cuestan trabajo. `gb-postcode-data` (GPLv2) solo afecta si generamos mapas de GB; `kdtree++` (Artistic) sin fichero de licencia. Licencias de submódulos tomadas de `copyright.html`, no leídas en cada submódulo.
-- Datos: OSM bajo ODbL con atribución. No se encontraron condiciones de uso del CDN de CoMaps: hay que preguntar al proyecto antes de montar un espejo público.
+- The CoMaps code is Apache-2.0, compatible with GPLv3 (we must pin "GPLv3 or later", never GPLv2-only).
+- Three items **block publishing as is**: `3party/bsdiff-courgette/bsdiff` (BSD Protection License, GPL-incompatible), the font `06_code2000.ttf` (shareware, not free, NonFreeAssets) and the Entypo icons (CC BY-SA 3.0). They can be excluded or replaced without touching the routing/search engine, but they cost work. `gb-postcode-data` (GPLv2) only matters if we generate GB maps; `kdtree++` (Artistic) has no license file. Submodule licenses were taken from `copyright.html`, not read in each submodule.
+- Data: OSM under ODbL with attribution. No terms of use were found for the CoMaps CDN: we must ask the project before setting up a public mirror.
 
-## Recomendación: C (provisional)
+## Recommendation: C (provisional)
 
-**Por qué no A:** no todos los umbrales pasan (ruta 9x, búsqueda 6x), el estilo depende de tocar C++ de Drape para llegar a 8/10, y el sabor fdroid arrastra una dependencia de microG.
+**Why not A:** not all thresholds pass (route 9x, search 6x), the style depends on touching Drape C++ to reach 8/10, and the fdroid flavor drags in a microG dependency.
 
-**Por qué no B (todavía):** la regla de B (núcleo no desacoplable, o licencias/formatos bloqueantes) no se activa: el desacople es viable por código y las licencias problemáticas son excluibles. B costaría el pipeline mundial (R3), sin ninguna cifra de Valhalla.
+**Why not B (yet):** B's rule (core cannot be decoupled, or blocking licenses/formats) is not triggered: decoupling is viable by code and the problematic licenses are excludable. B would cost the worldwide pipeline (R3), with no Valhalla figures at all.
 
-**Por qué C:** MapLibre pinta España fluido (p95 ≈ 7 ms, arranque 0,23 s) con control total del estilo, y el desacople de CoMaps (búsqueda + routing + datos mundiales) está evaluado como viable.
+**Why C:** MapLibre draws Spain fluidly (p95 ≈ 7 ms, startup 0.23 s) with full control over the style, and the decoupling of CoMaps (search + routing + worldwide data) is assessed as viable.
 
-**Debilidad abierta de C (importante):** C reutiliza el núcleo de routing y búsqueda de CoMaps, justo lo que **no cumple** los umbrales. La regla del spike para C exige que el motor pase; aquí no pasa. Antes de comprometerse hay que saber si los 18 s y los 0,6 s son estructurales o se deben a medir con España entera cargada en frío (por ejemplo con solo las regiones necesarias), o si habrá que relajar el umbral de 2 s para rutas de 600 km (decisión de producto, no mía). Si resultara estructural y el umbral irrenunciable, la alternativa es B con Valhalla, sin medir.
+**Open weakness of C (important):** C reuses the CoMaps routing and search core, precisely what **does not meet** the thresholds. The spike's rule for C requires the engine to pass; here it does not. Before committing we need to know whether the 18 s and 0.6 s are structural or are due to measuring with all of Spain loaded cold (for example with only the necessary regions), or whether the 2 s threshold will have to be relaxed for 600 km routes (a product decision, not mine). If it turned out to be structural and the threshold non-negotiable, the alternative is B with Valhalla, unmeasured.
 
-## Qué falta (bloquea decidir en firme)
+## What is missing (blocks a firm decision)
 
-1. Búsqueda en reposo y con un subconjunto de regiones (hipótesis no evaluada).
-2. Un dispositivo sin GMS y otro de-Googled: ubicación en frío, voz, servicio en segundo plano 30 min.
-3. Un dispositivo de gama media para los umbrales de gama media.
-4. Desacople ejecutado: pantalla Compose mínima sobre `:sdk`.
-5. Capturas de CoMaps para comparar el aspecto con MapLibre (no hay).
-6. Carriles y límites de velocidad con una ruta simulada.
-7. Medición de SurfaceView en MapLibre y de multitoque real.
+1. Search at idle and with a subset of regions (untested hypothesis).
+2. A device without GMS and another de-Googled one: cold-start location, voice, 30-minute background service.
+3. A mid-range device for the mid-range thresholds.
+4. Decoupling executed: minimal Compose screen on top of `:sdk`.
+5. CoMaps screenshots to compare the look with MapLibre (there are none).
+6. Lanes and speed limits with a simulated route.
+7. Measurement of SurfaceView in MapLibre and of real multitouch.
 
-## Estimación revisada del roadmap
+## Revised roadmap estimate
 
-Persona-días del estudio de código (estimaciones, no medidas): desacople 15-21 d; con moto (5-8 d), curvas (6-10 d), servidor de mapas propio y `NetworkPolicy`: 40-58 d. Para C se suma la integración de dos motores y dos descargas por región (≈ 5,3 GB para España con PMTiles 3,4 GB + mwm 1,9 GB). Fase 1: 2-3 meses → **3-4 meses** a tiempo parcial. El resto de fases no se modifica sin la decisión firme (ver `docs/mapas-05-roadmap.md`).
+Person-days from the code study (estimates, not measurements): decoupling 15-21 d; with motorcycle (5-8 d), twisty routes (6-10 d), own map server and `NetworkPolicy`: 40-58 d. For C, add the integration of two engines and two downloads per region (≈ 5.3 GB for Spain with PMTiles 3.4 GB + mwm 1.9 GB). Phase 1: 2-3 months → **3-4 months** part-time. The remaining phases are not modified without the firm decision (see `docs/mapas-05-roadmap.md`).
 
-## Riesgos nuevos (añadidos al roadmap, R11-R17)
+## New risks (added to the roadmap, R11-R17)
 
-R11 licencias heredadas (bsdiff, code2000, Entypo); R12 latencia de ruta y búsqueda de CoMaps 6-9x sobre umbral; R13 `countries.txt` firmado con Ed25519 y SHA-1 por región: un espejo propio exige recompilar con nuestra clave y no cumple RF-02 (SHA-256) sin cambios; R14 sabor fdroid de CoMaps con dependencia de microG; R15 Android 17 impide `adb push` a `Android/data` y el motor de MapLibre no lee `file://` allí (los datos van en `filesDir`); R16 un solo dispositivo de prueba; R17 volumen de datos de C (≈ 5,3 GB para España).
+R11 inherited licenses (bsdiff, code2000, Entypo); R12 CoMaps route and search latency 6-9x above threshold; R13 `countries.txt` signed with Ed25519 and SHA-1 per region: an own mirror requires recompiling with our key and does not meet RF-02 (SHA-256) without changes; R14 CoMaps' fdroid flavor with a microG dependency; R15 Android 17 prevents `adb push` to `Android/data` and the MapLibre engine does not read `file://` there (data goes in `filesDir`); R16 a single test device; R17 data volume of C (≈ 5.3 GB for Spain).
 
-## Estado de git
+## Git state
 
-Todo está en `master` local (squash de las ramas `spike/*` y `feat/core-geo-skeleton`; 83 tests unitarios en verde, repetidos en la consolidación). **Nada empujado**: `origin` está vacío y no existen CI ni protección de rama (ver `docs/decisions.md`).
+Everything is on local `master` (squash of the `spike/*` and `feat/core-geo-skeleton` branches; 83 unit tests green, repeated in the consolidation). **Nothing pushed**: `origin` is empty and there is no CI or branch protection (see `docs/decisions.md`).

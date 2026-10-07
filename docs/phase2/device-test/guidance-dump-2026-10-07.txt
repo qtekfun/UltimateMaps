@@ -1,0 +1,62 @@
+# Core guidance test on the Pixel 8 (2026-10-07, debug, 7 regions + World)
+# Command: am start -W -n com.qtekfun.mapas/.bench.CoreBenchActivity --ez guidance true; logcat output of UMBENCH (no coordinates)
+.443 I/UMBENCH (24141): guidance init maps=9
+.129 I/UMBENCH (24141): guidance profile=car code=0 plain_ms=418 guided_ms=267 points=179 maneuvers=11 limits=11 err=null
+.129 I/UMBENCH (24141):   maneuver idx=7 type=LEFT street='Plaza del Carmen' exit=null lanes=[]
+.129 I/UMBENCH (24141):   maneuver idx=12 type=RIGHT street='Calle de la Salud' exit=null lanes=[]
+.129 I/UMBENCH (24141):   maneuver idx=16 type=SLIGHT_RIGHT street='Calle de las Tres Cruces' exit=null lanes=[]
+.129 I/UMBENCH (24141):   maneuver idx=32 type=RIGHT street='Gran Vía' exit=null lanes=[]
+.129 I/UMBENCH (24141):   maneuver idx=68 type=LEFT street='Calle de Alcalá' exit=null lanes=[]
+.129 I/UMBENCH (24141):   maneuver idx=90 type=RIGHT street='Paseo de Recoletos' exit=null lanes=[]
+.129 I/UMBENCH (24141):   maneuver idx=131 type=ROUNDABOUT_ENTER street='Plaza del Emperador Carlos V' exit=2 lanes=[]
+.129 I/UMBENCH (24141):   maneuver idx=142 type=ROUNDABOUT_LEAVE street='Avenida de la Ciudad de Barcelona' exit=2 lanes=[]
+.129 I/UMBENCH (24141):   maneuver idx=153 type=RIGHT street='null' exit=null lanes=[]
+.129 I/UMBENCH (24141):   maneuver idx=158 type=STRAIGHT street='null' exit=null lanes=[]
+.129 I/UMBENCH (24141):   maneuver idx=178 type=ARRIVE street='null' exit=null lanes=[]
+.129 I/UMBENCH (24141):   limit 0..7 kmh=null
+.129 I/UMBENCH (24141):   limit 7..14 kmh=20
+.129 I/UMBENCH (24141):   limit 14..16 kmh=30
+.129 I/UMBENCH (24141):   limit 16..38 kmh=null
+.129 I/UMBENCH (24141):   limit 38..42 kmh=30
+.129 I/UMBENCH (24141):   limit 42..51 kmh=null
+.129 I/UMBENCH (24141):   limit 51..62 kmh=30
+.129 I/UMBENCH (24141):   limit 62..90 kmh=50
+.129 I/UMBENCH (24141):   limit 90..92 kmh=null
+.129 I/UMBENCH (24141):   limit 92..153 kmh=50
+.129 I/UMBENCH (24141):   limit 153..178 kmh=null
+.883 I/UMBENCH (24141): guidance profile=bike code=0 plain_ms=373 guided_ms=380 points=125 maneuvers=12 limits=0 err=null
+.883 I/UMBENCH (24141):   maneuver idx=1 type=U_TURN_RIGHT street='Plaza de la Puerta del Sol' exit=null lanes=[]
+.883 I/UMBENCH (24141):   maneuver idx=39 type=SLIGHT_RIGHT street='Plaza de las Cortes' exit=null lanes=[]
+.883 I/UMBENCH (24141):   maneuver idx=50 type=ROUNDABOUT_ENTER street='Plaza de Cánovas del Castillo' exit=2 lanes=[]
+.883 I/UMBENCH (24141):   maneuver idx=57 type=ROUNDABOUT_LEAVE street='Plaza de Cánovas del Castillo' exit=2 lanes=[]
+.883 I/UMBENCH (24141):   maneuver idx=65 type=SLIGHT_RIGHT street='Calle de Felipe IV' exit=null lanes=[]
+.883 I/UMBENCH (24141):   maneuver idx=68 type=RIGHT street='Calle Moreto' exit=null lanes=[]
+.883 I/UMBENCH (24141):   maneuver idx=76 type=LEFT street='Calle Espalter' exit=null lanes=[]
+.883 I/UMBENCH (24141):   maneuver idx=87 type=RIGHT street='Calle de Alfonso XII' exit=null lanes=[]
+.883 I/UMBENCH (24141):   maneuver idx=91 type=SLIGHT_LEFT street='Calle de Alfonso XII' exit=null lanes=[]
+.883 I/UMBENCH (24141):   maneuver idx=113 type=EXIT_RIGHT street='null' exit=null lanes=[]
+.883 I/UMBENCH (24141):   maneuver idx=116 type=LEFT street='null' exit=null lanes=[]
+.883 I/UMBENCH (24141):   maneuver idx=124 type=ARRIVE street='null' exit=null lanes=[]
+.735 I/UMBENCH (24141): guidance profile=foot code=0 plain_ms=421 guided_ms=432 points=81 maneuvers=21 limits=0 err=null
+.735 I/UMBENCH (24141):   maneuver idx=3 type=LEFT street='Plaza de la Puerta del Sol' exit=null lanes=[]
+.735 I/UMBENCH (24141):   maneuver idx=4 type=RIGHT street='Calle de Carretas' exit=null lanes=[]
+.735 I/UMBENCH (24141):   maneuver idx=8 type=LEFT street='Calle de Cádiz' exit=null lanes=[]
+.735 I/UMBENCH (24141):   maneuver idx=12 type=RIGHT street='Calle de Espoz y Mina' exit=null lanes=[]
+.735 I/UMBENCH (24141):   maneuver idx=15 type=LEFT street='Plaza del Ángel' exit=null lanes=[]
+.735 I/UMBENCH (24141):   maneuver idx=29 type=LEFT street='Calle de Jesús' exit=null lanes=[]
+.735 I/UMBENCH (24141):   maneuver idx=30 type=RIGHT street='Calle de las Huertas' exit=null lanes=[]
+.735 I/UMBENCH (24141):   maneuver idx=32 type=RIGHT street='Calle Berenjena' exit=null lanes=[]
+.735 I/UMBENCH (24141):   maneuver idx=33 type=LEFT street='Plaza de la Platería de Martínez' exit=null lanes=[]
+.735 I/UMBENCH (24141):   maneuver idx=38 type=LEFT street='Plaza de la Platería de Martínez' exit=null lanes=[]
+.735 I/UMBENCH (24141):   maneuver idx=39 type=RIGHT street='Paseo del Prado' exit=null lanes=[]
+.735 I/UMBENCH (24141):   maneuver idx=40 type=LEFT street='Plaza del Emperador Carlos V' exit=null lanes=[]
+.735 I/UMBENCH (24141):   maneuver idx=41 type=RIGHT street='Plaza del Emperador Carlos V' exit=null lanes=[]
+.735 I/UMBENCH (24141):   maneuver idx=42 type=LEFT street='Plaza del Emperador Carlos V' exit=null lanes=[]
+.735 I/UMBENCH (24141):   maneuver idx=46 type=RIGHT street='Plaza del Emperador Carlos V' exit=null lanes=[]
+.735 I/UMBENCH (24141):   maneuver idx=49 type=LEFT street='Plaza del Emperador Carlos V' exit=null lanes=[]
+.735 I/UMBENCH (24141):   maneuver idx=50 type=RIGHT street='Plaza del Emperador Carlos V' exit=null lanes=[]
+.735 I/UMBENCH (24141):   maneuver idx=69 type=RIGHT street='null' exit=null lanes=[]
+.735 I/UMBENCH (24141):   maneuver idx=72 type=LEFT street='null' exit=null lanes=[]
+.735 I/UMBENCH (24141):   maneuver idx=76 type=RIGHT street='null' exit=null lanes=[]
+.735 I/UMBENCH (24141):   maneuver idx=80 type=ARRIVE street='null' exit=null lanes=[]
+.735 I/UMBENCH (24141): FIN guidance

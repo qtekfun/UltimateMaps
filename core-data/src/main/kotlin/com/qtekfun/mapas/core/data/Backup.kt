@@ -41,7 +41,7 @@ class BackupService(private val repo: PlacesRepository) {
         val doc = readDoc(input)
         return repo.transaction {
             if (mode == RestoreMode.REPLACE) repo.clearAll()
-            apply(doc)
+            apply(doc, overwriteSpecial = mode == RestoreMode.REPLACE)
         }
     }
 
@@ -53,6 +53,8 @@ class BackupService(private val repo: PlacesRepository) {
             format = FORMAT,
             places = places.map { PlaceDto(it.id, it.name, it.point.lat, it.point.lon, it.notes, it.icon, it.color, it.createdAt) },
             lists = lists.mapIndexed { i, l -> ListDto(l.name, l.color, l.icon, l.notes, members[i].sorted()) },
+            special = BACKED_UP_SLOTS.mapNotNull { repo.special(it) }
+                .map { SpecialDto(it.slot.name, it.name, it.point.lat, it.point.lon, it.savedAt) },
             tracks = repo.tracks().mapNotNull { repo.track(it.id) }.map { t ->
                 TrackDto(
                     t.info.name, t.info.kind.name, t.info.notes, t.info.color, t.info.createdAt,
@@ -85,7 +87,7 @@ class BackupService(private val repo: PlacesRepository) {
         }
     }
 
-    private fun apply(doc: BackupDoc): ImportResult {
+    private fun apply(doc: BackupDoc, overwriteSpecial: Boolean): ImportResult {
         var pa = 0; var pd = 0; var ta = 0; var td = 0
         val idMap = HashMap<Long, Long>()
         for (p in doc.places) {
@@ -111,19 +113,34 @@ class BackupService(private val repo: PlacesRepository) {
                 ta++
             } else td++
         }
+        for (sp in doc.special) {
+            val slot = BACKED_UP_SLOTS.firstOrNull { it.name == sp.slot } ?: continue // unknown or not backed up: skip
+            val pt = LatLon.ofOrNull(sp.lat, sp.lon) ?: throw BackupException("corrupt backup: invalid coordinates")
+            if (overwriteSpecial || repo.special(slot) == null) repo.setSpecial(slot, sp.name, pt, sp.savedAt)
+        }
         return ImportResult(pa, pd, ta, td, 0)
     }
 
     private companion object {
         const val ENTRY = "mapas-backup.json"
         const val FORMAT = 1
+
+        /** Home and Work travel with the backup; the parked car is transient and stays on the device. */
+        val BACKED_UP_SLOTS = listOf(SpecialSlot.HOME, SpecialSlot.WORK)
         const val MAX_JSON_BYTES = 512 * 1024 * 1024
         val JSON = Json { encodeDefaults = false; explicitNulls = false; ignoreUnknownKeys = true }
     }
 }
 
 @Serializable
-internal class BackupDoc(val format: Int, val places: List<PlaceDto>, val lists: List<ListDto>, val tracks: List<TrackDto>)
+internal class BackupDoc(
+    val format: Int, val places: List<PlaceDto>, val lists: List<ListDto>, val tracks: List<TrackDto>,
+    /** Added without a format bump: older backups lack it (empty) and older readers ignore it. */
+    val special: List<SpecialDto> = emptyList(),
+)
+
+@Serializable
+internal class SpecialDto(val slot: String, val name: String, val lat: Double, val lon: Double, val savedAt: Long = 0)
 
 @Serializable
 internal class PlaceDto(

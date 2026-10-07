@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-"""Perfetto + gesto: graba frametimeline/gfx durante un gesto (de gesture_bench.run_gesture) bajo el lock del dispositivo.
-Uso: gesture_trace.py <pan|zoom|rotate|idle> <segundos> <salida.pftrace>   (trazas binarias van a /tmp, NO al repo)
+"""Perfetto + gesture: records frametimeline/gfx during a gesture (from gesture_bench.run_gesture) under the device lock.
+Usage: gesture_trace.py <pan|zoom|rotate|idle> <seconds> <output.pftrace>   (binary traces go to /tmp, NOT to the repo)
 """
 import fcntl, os, subprocess, sys, time, threading, importlib.util
 
@@ -14,10 +14,10 @@ cfg = open(os.path.join(here, "perfetto.cfg")).read().replace("duration_ms: 1200
 lockf = open("/tmp/claude-1000/device.lock", "w")
 fcntl.flock(lockf, fcntl.LOCK_EX)
 try:
-    # posicion y zoom reproducibles: Madrid centro, z=15 (intent geo:)
+    # reproducible position and zoom: central Madrid, z=15 (geo: intent)
     subprocess.run(["adb", "shell", "am", "start", "-a", "android.intent.action.VIEW", "-d", "geo:40.4168,-3.7038?z=" + (sys.argv[4] if len(sys.argv) > 4 else "15"), "app.comaps.fdroid"], capture_output=True)
     time.sleep(4)
-    subprocess.run(["adb", "shell", "input", "tap", "1006", "1999"])  # cierra la hoja de lugar si existe
+    subprocess.run(["adb", "shell", "input", "tap", "1006", "1999"])  # closes the place sheet if present
     time.sleep(2)
     p = subprocess.Popen(["adb", "shell", "perfetto", "-c", "-", "--txt", "-o", "/data/misc/perfetto-traces/gb.pftrace"],
                          stdin=subprocess.PIPE, text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
