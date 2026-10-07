@@ -90,6 +90,7 @@ class MapLibreEngine(
     private var fuelSource: GeoJsonSource? = null
     private var fuelTapListener: ((String) -> Unit)? = null
     private var viewportListener: ((GeoBounds, Double) -> Unit)? = null
+    private var gestureListener: (() -> Unit)? = null
 
     // Sources belong to one style: they are recreated on every style load (day/night switch).
     private var userSource: GeoJsonSource? = null
@@ -113,6 +114,9 @@ class MapLibreEngine(
         view.getMapAsync { m ->
             map = m
             m.addOnCameraIdleListener { handleIdle(m) }
+            m.addOnCameraMoveStartedListener { reason ->
+                if (reason == MapLibreMap.OnCameraMoveStartedListener.REASON_API_GESTURE) gestureListener?.invoke()
+            }
             m.addOnMapClickListener { p -> handleTap(p) }
             pendingCamera?.let { m.moveCamera(CameraUpdateFactory.newCameraPosition(it.toPosition())); pendingCamera = null }
             loadStyle()
@@ -203,6 +207,10 @@ class MapLibreEngine(
 
     override fun setFuelTapListener(listener: ((String) -> Unit)?) {
         fuelTapListener = listener
+    }
+
+    override fun setCameraGestureListener(listener: (() -> Unit)?) {
+        gestureListener = listener
     }
 
     override fun setViewportListener(listener: ((GeoBounds, Double) -> Unit)?) {

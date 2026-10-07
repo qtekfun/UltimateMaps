@@ -104,7 +104,7 @@ class RouteRun(val plan: RoutePlan?, val failure: RouteFailure?, val attempts: I
  */
 class RouteRunner(
     private val io: CoroutineDispatcher,
-    private val timeoutMillis: Long = DEFAULT_TIMEOUT_MILLIS,
+    val timeoutMillis: Long = DEFAULT_TIMEOUT_MILLIS,
     private val clock: () -> Long = System::currentTimeMillis,
 ) {
     suspend fun run(request: RouteRequest, engine: () -> DetailedRoutingEngine?): RouteRun {
