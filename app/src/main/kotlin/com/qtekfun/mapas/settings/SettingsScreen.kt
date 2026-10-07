@@ -1,5 +1,6 @@
 package com.qtekfun.mapas.settings
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -29,6 +30,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -66,23 +68,32 @@ class SettingsEnv(
     val setOffline: (Boolean) -> Unit,
     val catalogUrl: () -> String,
     val openMaps: () -> Unit,
-    /** Navigation section (voice and route defaults); null hides it. */
+    /** Navigation category (voice and route defaults); null hides it. */
     val navigation: NavigationSettingsEnv? = null,
-    /** Search history section (on/off and clear); null hides it. */
+    /** Search history part of the Data category (on/off and clear); null hides it. */
     val history: HistorySettingsEnv? = null,
-    /** Speed cameras and traffic section; null hides it. */
+    /** Alerts category (speed cameras and traffic); null hides it. */
     val cameras: CamerasSettingsEnv? = null,
-    /** Track recording section (switch and delete); null hides it. */
+    /** Track recording part of the Data category (switch and delete); null hides it. */
     val recording: RecordingSettingsEnv? = null,
-    /** Backup and restore section (export, import, export everything); null hides it. */
+    /** Backup and restore part of the Data category (export, import, export everything); null hides it. */
     val backup: BackupSettingsEnv? = null,
+    /** About category: the version name and the attribution lines of the installed public-transport data. */
+    val about: AboutSettingsEnv = AboutSettingsEnv(),
 )
 
-/** The first Settings screen: Privacy (offline mode, region catalog, possible connections) and Petrol stations. */
+/**
+ * The Settings screen: a hub of categories (see [settingsCategories]) and, once one is opened, that category's screen
+ * with a back arrow. The open category is kept across rotation and the system Back returns to the hub first.
+ * [initialCategory] opens a category directly (tests, previews).
+ */
 @Composable
-fun SettingsScreen(env: SettingsEnv, onBack: () -> Unit, modifier: Modifier = Modifier) {
-    val settings by env.store.settings.collectAsState()
-    val offline = env.offline()
+fun SettingsScreen(env: SettingsEnv, onBack: () -> Unit, modifier: Modifier = Modifier, initialCategory: String? = null) {
+    val categories = remember(env) { settingsCategories(env) }
+    var openId by rememberSaveable { mutableStateOf(initialCategory) }
+    var query by rememberSaveable { mutableStateOf("") }
+    val open = categories.firstOrNull { it.id == openId }
+    BackHandler(enabled = open != null) { openId = null }
     Column(
         modifier
             .fillMaxSize()
@@ -90,14 +101,10 @@ fun SettingsScreen(env: SettingsEnv, onBack: () -> Unit, modifier: Modifier = Mo
             .windowInsetsPadding(WindowInsets.statusBars)
             .testTag("settings_screen"),
     ) {
-        Row(Modifier.fillMaxWidth().padding(horizontal = 8.dp), verticalAlignment = Alignment.CenterVertically) {
-            val back = stringResource(R.string.settings_back)
-            BasicText(
-                "‹ $back",
-                style = Mapas.typography.body.copy(color = Mapas.colors.accent),
-                modifier = Modifier.clickable(role = Role.Button, onClick = onBack).padding(12.dp).testTag("settings_back"),
-            )
-        }
+        SettingsTopBar(
+            title = stringResource(open?.title ?: R.string.settings_title),
+            onBack = { if (open != null) openId = null else onBack() },
+        )
         Column(
             Modifier
                 .weight(1f)
@@ -105,27 +112,32 @@ fun SettingsScreen(env: SettingsEnv, onBack: () -> Unit, modifier: Modifier = Mo
                 .windowInsetsPadding(WindowInsets.navigationBars)
                 .padding(horizontal = Mapas.dimens.screenMargin),
         ) {
-            BasicText(stringResource(R.string.settings_title), style = Mapas.typography.largeTitle.copy(color = Mapas.colors.label))
-            // A restore bumps the revision: the sections are rebuilt so they show the restored values.
+            // A restore bumps the revision: the screens are rebuilt so they show the restored values.
             key(env.backup?.state?.revision ?: 0) {
-                PrivacySection(env, settings, offline)
-                FuelSection(env, settings, offline)
-                env.cameras?.let { CamerasSection(it) }
-                env.navigation?.let { NavigationSection(it) }
-                env.history?.let { HistorySection(it) }
-                env.recording?.let { RecordingSection(it) }
+                if (open == null) {
+                    SettingsHub(categories, query, onQuery = { query = it }, onOpen = { openId = it.id })
+                } else {
+                    key(open.id) { open.content() }
+                }
             }
-            env.backup?.let { BackupSection(it) }
             Spacer(Modifier.height(32.dp))
         }
     }
 }
 
-// ---------------------------------------------------------------- Privacy
+// ---------------------------------------------------------------- Maps and network
 
+/** Category "Maps and network": offline mode, the region catalog and the list of possible connections. */
 @Composable
-private fun PrivacySection(env: SettingsEnv, settings: FuelSettings, offline: Boolean) {
+internal fun NetworkSettingsContent(env: SettingsEnv) {
+    val offline = env.offline()
     SectionTitle(stringResource(R.string.settings_privacy_title))
+    BasicText(
+        stringResource(R.string.hub_privacy_note),
+        style = Mapas.typography.callout.copy(color = Mapas.colors.secondaryLabel),
+        modifier = Modifier.testTag("privacy_note"),
+    )
+    Spacer(Modifier.height(8.dp))
     Card("privacy_offline_card") {
         SwitchRow(
             title = stringResource(R.string.settings_offline_title),
@@ -135,7 +147,7 @@ private fun PrivacySection(env: SettingsEnv, settings: FuelSettings, offline: Bo
             onChange = env.setOffline,
         )
     }
-    Spacer(Modifier.height(10.dp))
+    SectionTitle(stringResource(R.string.hub_group_maps))
     Card("privacy_regions_card") {
         BasicText(stringResource(R.string.settings_regions_title), style = Mapas.typography.body.copy(color = Mapas.colors.label))
         val url = env.catalogUrl()
@@ -145,16 +157,15 @@ private fun PrivacySection(env: SettingsEnv, settings: FuelSettings, offline: Bo
         )
         TextButton(stringResource(R.string.settings_regions_open), "open_maps_from_settings", onClick = env.openMaps)
     }
-    Spacer(Modifier.height(10.dp))
+    SectionTitle(stringResource(R.string.settings_connections_title))
     Card("privacy_connections_card") {
-        BasicText(stringResource(R.string.settings_connections_title), style = Mapas.typography.body.copy(color = Mapas.colors.label))
         // Read on every composition (cheap): the policy is not observable and the fuel host is added asynchronously.
         val connections = env.policy.possibleConnections()
         if (connections.isEmpty()) {
             BasicText(stringResource(R.string.settings_connections_none), style = Mapas.typography.callout.copy(color = Mapas.colors.secondaryLabel))
         }
-        connections.forEach { c ->
-            Spacer(Modifier.height(6.dp))
+        connections.forEachIndexed { i, c ->
+            if (i > 0) Spacer(Modifier.height(6.dp))
             BasicText(c.host, style = Mapas.typography.callout.copy(color = Mapas.colors.label), modifier = Modifier.testTag("conn_host"))
             val status = when {
                 offline -> stringResource(R.string.conn_status_blocked_offline)
@@ -185,9 +196,10 @@ private fun purposeLabel(p: ConnectionPurpose) = stringResource(
 // ---------------------------------------------------------------- Petrol stations
 
 @Composable
-private fun FuelSection(env: SettingsEnv, s: FuelSettings, offline: Boolean) {
+internal fun FuelSettingsContent(env: SettingsEnv) {
+    val s by env.store.settings.collectAsState()
+    val offline = env.offline()
     var confirming by remember { mutableStateOf(false) }
-    SectionTitle(stringResource(R.string.fuel_title))
     Card("fuel_enable_card") {
         SwitchRow(
             title = stringResource(R.string.fuel_switch_title),
@@ -245,18 +257,20 @@ private fun FuelSection(env: SettingsEnv, s: FuelSettings, offline: Boolean) {
         }
     }
     Spacer(Modifier.height(10.dp))
-    Card("fuel_refresh_card") {
-        BasicText(stringResource(R.string.fuel_refresh_title), style = Mapas.typography.body.copy(color = Mapas.colors.label))
-        REFRESH_CHOICES_MINUTES.forEach { m ->
-            ChoiceRow(refreshLabel(m), s.refreshMinutes == m, radio = true, tag = "fuel_refresh_$m") {
-                env.store.update { cur -> cur.copy(refreshMinutes = m) }
+    UpdateCard(env, s)
+    Spacer(Modifier.height(10.dp))
+    AdvancedGroup("fuel_advanced") {
+        Card("fuel_refresh_card") {
+            BasicText(stringResource(R.string.fuel_refresh_title), style = Mapas.typography.body.copy(color = Mapas.colors.label))
+            REFRESH_CHOICES_MINUTES.forEach { m ->
+                ChoiceRow(refreshLabel(m), s.refreshMinutes == m, radio = true, tag = "fuel_refresh_$m") {
+                    env.store.update { cur -> cur.copy(refreshMinutes = m) }
+                }
             }
         }
+        Spacer(Modifier.height(10.dp))
+        UrlCard(env, s)
     }
-    Spacer(Modifier.height(10.dp))
-    UrlCard(env, s)
-    Spacer(Modifier.height(10.dp))
-    UpdateCard(env, s)
 }
 
 @Composable
@@ -397,73 +411,3 @@ private fun ConfirmDialog(server: String, offline: Boolean, onConfirm: () -> Uni
     }
 }
 
-// ---------------------------------------------------------------- Parts
-
-@Composable
-internal fun SectionTitle(text: String) {
-    Spacer(Modifier.height(20.dp))
-    BasicText(text, style = Mapas.typography.title.copy(color = Mapas.colors.label))
-    Spacer(Modifier.height(8.dp))
-}
-
-@Composable
-internal fun Card(tag: String, content: @Composable () -> Unit) {
-    Column(Modifier.fillMaxWidth().clip(Mapas.shapes.control).background(Mapas.colors.field).padding(12.dp).testTag(tag)) { content() }
-}
-
-@Composable
-internal fun TextButton(label: String, tag: String, enabled: Boolean = true, onClick: () -> Unit) {
-    BasicText(
-        label,
-        style = Mapas.typography.callout.copy(color = if (enabled) Mapas.colors.accent else Mapas.colors.secondaryLabel),
-        modifier = Modifier
-            .then(if (enabled) Modifier.clickable(role = Role.Button, onClick = onClick) else Modifier)
-            .padding(horizontal = 10.dp, vertical = 10.dp)
-            .testTag(tag),
-    )
-}
-
-@Composable
-internal fun SwitchRow(title: String, body: String, checked: Boolean, tag: String, onChange: (Boolean) -> Unit) {
-    Row(
-        Modifier.fillMaxWidth().toggleable(value = checked, role = Role.Switch, onValueChange = onChange).testTag(tag),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
-    ) {
-        Column(Modifier.weight(1f)) {
-            BasicText(title, style = Mapas.typography.body.copy(color = Mapas.colors.label))
-            BasicText(body, style = Mapas.typography.callout.copy(color = Mapas.colors.secondaryLabel))
-        }
-        Box(
-            Modifier
-                .size(width = 51.dp, height = 31.dp)
-                .clip(CircleShape)
-                .background(if (checked) Mapas.colors.accent else Mapas.colors.separator)
-                .padding(2.dp),
-            contentAlignment = if (checked) Alignment.CenterEnd else Alignment.CenterStart,
-        ) {
-            Box(Modifier.size(27.dp).clip(CircleShape).background(Mapas.colors.onAccent))
-        }
-    }
-}
-
-@Composable
-internal fun ChoiceRow(label: String, selected: Boolean, radio: Boolean, tag: String, onChange: (Boolean) -> Unit) {
-    val mark = when {
-        radio -> if (selected) "◉" else "○"
-        else -> if (selected) "☑" else "☐"
-    }
-    val modifier = if (radio) {
-        Modifier.selectable(selected = selected, role = Role.RadioButton, onClick = { onChange(true) })
-    } else {
-        Modifier.toggleable(value = selected, role = Role.Checkbox, onValueChange = onChange)
-    }
-    Row(
-        Modifier.fillMaxWidth().then(modifier).padding(vertical = 8.dp).testTag(tag),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(10.dp),
-    ) {
-        BasicText(mark, style = Mapas.typography.body.copy(color = if (selected) Mapas.colors.accent else Mapas.colors.secondaryLabel))
-        BasicText(label, style = Mapas.typography.body.copy(color = Mapas.colors.label))
-    }
-}

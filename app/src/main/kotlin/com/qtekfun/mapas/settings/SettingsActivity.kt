@@ -25,7 +25,7 @@ import java.util.Date
 import java.util.Locale
 import java.util.concurrent.Executors
 
-/** The Settings screen (privacy, petrol stations, navigation). Opened from the gear on the map. */
+/** The Settings screen (a hub of categories). Opened from the gear in the map buttons. */
 class SettingsActivity : ComponentActivity() {
     // Backup and restore: the system pickers (no storage permission, the app never sees a path). Created here, as the
     // result launchers must exist before the activity is started.
@@ -65,6 +65,10 @@ class SettingsActivity : ComponentActivity() {
             ),
             recording = RecordingSettingsEnv(app.recording),
             backup = backupEnv(app),
+            about = AboutSettingsEnv(
+                version = runCatching { packageManager.getPackageInfo(packageName, 0).versionName }.getOrNull().orEmpty(),
+                transitAttributions = { app.transit.attributions },
+            ),
         )
         setContent {
             MapasTheme(darkTheme = isSystemInDarkTheme()) { SettingsScreen(env, onBack = ::finish) }
