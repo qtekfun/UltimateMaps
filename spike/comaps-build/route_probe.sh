@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Lanza una ruta por intent comaps://route y guarda logcat completo y captura. Uso: route_probe.sh <tipo> <slat,slon> <dlat,dlon> <prefijo>
+# Launches a route via the comaps://route intent and saves the full logcat and a screenshot. Usage: route_probe.sh <type> <slat,slon> <dlat,dlon> <prefix>
 TYPE=$1; S=$2; D=$3; P=$4
 exec 9>/tmp/claude-1000/device.lock
 flock 9

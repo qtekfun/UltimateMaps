@@ -24,7 +24,7 @@ first = [r[0][1] for r in rows if r[0][1] is not None and r[0][0] > 0]
 total = [r[1] for r in rows]
 def p(v, q):
     v = sorted(v); return v[min(len(v) - 1, int(math.ceil(q * len(v))) - 1)]
-print(f"busquedas (tras descartar {skip} frias): {len(rows)}; con resultados: {len(first)}")
+print(f"searches (after discarding {skip} cold): {len(rows)}; with results: {len(first)}")
 for name, v in (("primer_lote_ms", first), ("fin_busqueda_ms", total)):
     if v:
         print(f"{name}: min={min(v)} p50={statistics.median(v)} p95={p(v, .95)} max={max(v)}")

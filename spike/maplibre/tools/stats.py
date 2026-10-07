@@ -24,7 +24,7 @@ def pct(v, p):
     return s[f] + (s[c] - s[f]) * (k - f)
 
 def row(name, v):
-    if not v: return f"{name}: sin frames"
+    if not v: return f"{name}: no frames"
     return (f"{name}: n={len(v)} p50={pct(v,50):.1f} p95={pct(v,95):.1f} p99={pct(v,99):.1f} "
             f"max={max(v):.1f} ms; >16.6ms={sum(x>16.6 for x in v)} >8.3ms={sum(x>8.33 for x in v)}")
 

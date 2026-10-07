@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Arranque en frio: N veces force-stop + `am start -W` (+ evento "Displayed" de logcat). Todo bajo el lock del dispositivo.
+# Cold start: N times force-stop + `am start -W` (+ logcat "Displayed" event). All under the device lock.
 N=${1:-10}
 OUT=${2:-spike/comaps-build/traces/07-startup}
 PKG=app.comaps.fdroid

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# Teclea consultas en la UI de busqueda de CoMaps caracter a caracter (input text) y guarda logcat con las lineas
-# "Search ended in N ms" / "Emitting a new batch ... ms since the search has started" del nucleo.
-# Uso: search_typing.sh <prefijo salida> <consulta1> [consulta2 ...]   (espacios como %s)
+# Types queries into the CoMaps search UI character by character (input text) and saves a logcat with the lines
+# "Search ended in N ms" / "Emitting a new batch ... ms since the search has started" from the core.
+# Usage: search_typing.sh <output prefix> <query1> [query2 ...]   (spaces as %s)
 P=$1; shift
 exec 9>/tmp/claude-1000/device.lock
 flock 9
@@ -9,10 +9,10 @@ adb shell am force-stop app.comaps.fdroid
 sleep 1
 adb shell "am start -W -a android.intent.action.VIEW -d 'geo:40.4168,-3.7038?z=15' app.comaps.fdroid" | grep TotalTime
 sleep 5
-adb shell input tap 1006 1999   # cierra hoja de lugar
+adb shell input tap 1006 1999   # closes the place sheet
 sleep 1
 adb logcat -c
-adb shell input tap 444 2254    # boton de busqueda
+adb shell input tap 444 2254    # search button
 sleep 2
 for q in "$@"; do
   echo "### query $q" >> "$P.keys.txt"
@@ -24,7 +24,7 @@ for q in "$@"; do
     sleep 1.5
   done
   sleep 1
-  # borrar el texto: 30 backspaces
+  # delete the text: 30 backspaces
   adb shell 'for i in $(seq 1 30); do input keyevent KEYCODE_DEL; done'
   sleep 2
 done
