@@ -43,21 +43,29 @@ object AlertPhrases {
 
 /**
  * Speaks the alerts through the navigation's [VoiceGuide], honouring the navigation voice settings (voice on/off,
- * language, units). Without voice the alert is dropped: it is informational only.
+ * language, units). Without voice the alert is not spoken (the visual alert still shows).
  */
 class AlertVoice(
     private val guide: VoiceGuide,
     private val settings: StateFlow<NavSettings>,
+    /** True while a maneuver is about to be announced: the alert is then not spoken (see [ManeuverGuard]). */
+    private val maneuverImminent: () -> Boolean = { false },
     private val locale: () -> Locale = Locale::getDefault,
 ) {
+    /**
+     * Speaks [e] unless the navigation voice is off or muted (the same switch as the Mute button; it does not depend on
+     * "important prompts only", which is about maneuvers) or a maneuver is imminent. Alerts use [VoicePriority.ADVISORY]:
+     * they wait behind every driving instruction and never interrupt or discard one.
+     */
     fun onAlert(e: AlertEvent) {
         val s = settings.value
         if (!s.voiceEnabled) return
+        if (maneuverImminent()) return
         val lang = s.voiceLanguage.resolve(locale())
         guide.setVolume(s.volumePercent) // free driving has no navigation controller to have set it
         guide.speak(
             Utterance(
-                AlertPhrases.of(e, s.units.resolve(locale()), lang), VoicePriority.NORMAL, lang,
+                AlertPhrases.of(e, s.units.resolve(locale()), lang), VoicePriority.ADVISORY, lang,
                 key = "alert:" + e.target.group, maxAgeMillis = MAX_AGE_MILLIS,
             ),
         )

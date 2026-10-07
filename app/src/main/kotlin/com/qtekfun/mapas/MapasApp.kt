@@ -18,7 +18,9 @@ import com.qtekfun.mapas.fuel.PrefsFuelSettingsStore
 import com.qtekfun.mapas.cameras.AlertNavSink
 import com.qtekfun.mapas.cameras.CameraAlerts
 import com.qtekfun.mapas.cameras.PrefsCameraSettingsStore
+import com.qtekfun.mapas.core.cameras.AlertBannerTracker
 import com.qtekfun.mapas.core.cameras.AlertVoice
+import com.qtekfun.mapas.core.cameras.ManeuverGuard
 import com.qtekfun.mapas.core.cameras.CameraAsset
 import com.qtekfun.mapas.core.cameras.CameraDataManager
 import com.qtekfun.mapas.core.cameras.CameraSettingsStore
@@ -90,7 +92,7 @@ class MapasApp : Application() {
      * `cameras` entry through [networkPolicy], cached, and absent-tolerant. Nothing is downloaded when it is created.
      */
     val cameraData: CameraDataManager by lazy {
-        CameraDataManager(cameraSettings, policy, ::cameraAsset, File(filesDir, "cameras"))
+        CameraDataManager(cameraSettings, policy, ::cameraAsset, File(filesDir, "cameras"), syncCatalog = { force -> regions.syncCatalog(force) })
     }
 
     private fun cameraAsset(): CameraAsset? =
@@ -101,9 +103,17 @@ class MapasApp : Application() {
         IncidentDataManager(cameraSettings, policy, policy::addEndpoint, policy::removeEndpoint, IncidentCache(File(filesDir, "incidents")))
     }
 
+    /** The visual alert ahead (chip on the map and the navigation screen); created with the app so the screens can observe it before any switch is on. */
+    val alertBanner = AlertBannerTracker()
+
     /** Alerts ahead (cameras, zones, incidents): route-based while navigating, free-driving while the app is on screen. */
     val cameraAlerts: CameraAlerts by lazy {
-        val voice by lazy { AlertVoice(VoiceModule.guide(this), VoiceModule.settings(this).settings) }
+        val voice by lazy {
+            AlertVoice(
+                VoiceModule.guide(this), VoiceModule.settings(this).settings,
+                maneuverImminent = { navigation.state.value?.let { ManeuverGuard.blocksVoice(it.nextManeuver?.distanceMeters, it.speedMps) } ?: false },
+            )
+        }
         CameraAlerts(
             scope = CoroutineScope(SupervisorJob() + Dispatchers.Default),
             settings = cameraSettings,
@@ -116,6 +126,7 @@ class MapasApp : Application() {
                     checkSelfPermission(android.Manifest.permission.ACCESS_COARSE_LOCATION) == android.content.pm.PackageManager.PERMISSION_GRANTED
             },
             onAlert = { voice.onAlert(it) },
+            banner = alertBanner,
         )
     }
 
@@ -131,6 +142,11 @@ class MapasApp : Application() {
         alertsStarted = true
         cameraAlerts.start()
         cameraAlerts.onForeground(startedActivities > 0)
+    }
+
+    /** The location permission was answered or the switches changed outside the camera settings: re-evaluates the free-driving alerts. */
+    fun refreshCameraAlerts() {
+        if (alertsStarted) cameraAlerts.refreshFree()
     }
 
     /**
