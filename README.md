@@ -11,6 +11,7 @@ An Android maps and navigation app that is **offline and private**: map, search 
 - Offline search for places and addresses (core from [CoMaps](https://codeberg.org/comaps/comaps), running in its own process so a crash cannot take the app down).
 - Route preview by car, on foot or by bike, with up to 5 stops.
 - **Petrol stations (optional, off by default):** choose the fuels in Settings (LPG, petrol, diesel, CNG…), see the price over each station on the map, tap one to go there or add it as a stop. Prices come from the Spanish Ministry for the Ecological Transition (unofficial).
+- **Speed cameras and traffic (optional, off by default, one switch per category):** fixed cameras and average-speed sections, stretches where the DGT says mobile radars may operate (never exact points), live traffic incidents and V16 beacons, on the map and as spoken alerts ahead. Data from the DGT (CC BY) and OpenStreetMap (ODbL); traffic is downloaded only when you turn it on and never with your position. Informational and possibly out of date.
 - **Navigation screen with voice** (new, not yet verified on a device): turn banner, lanes, speed limit, arrival time, night and glove modes, a route simulator, and voice guidance in English and Spanish.
 - Saved places and lists, with GPX and KML import and export.
 - Opens Google Maps, Apple Maps, Waze and `geo:` links.

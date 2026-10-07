@@ -4,6 +4,11 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 
 ## [Unreleased]
 
+### Added
+
+- **Speed cameras and traffic (all optional, off by default, each with its own switch in Settings).** Fixed cameras and average-speed sections; stretches of road where the DGT says mobile radars may operate (shown as rough dashed stretches, never as points); live traffic incidents; and stopped vehicles with a connected V16 beacon. On the map and as a spoken alert ahead (route-based while navigating, free-driving while the app is on screen), with the posted limit when known. Camera data comes from a small file in the map data release (DGT, CC BY, and OpenStreetMap, ODbL) and the app works without it; traffic data is the DGT national feed, downloaded only when you turn it on, with your position never sent. Verified on the JVM and with downloaded real data only; not seen or heard on a device. See `docs/phase2/cameras-implementation.md` and `docs/phase2/cameras-data.md`.
+- The catalog may carry an optional `cameras` entry; `scripts/build-cameras.py` builds the file and `scripts/gen-region-catalog.py --cameras-file` lists it.
+
 ## [0.1.0-rc.5] - pending
 
 ### Added
