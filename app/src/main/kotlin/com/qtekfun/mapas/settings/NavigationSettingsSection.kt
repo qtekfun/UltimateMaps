@@ -34,6 +34,8 @@ class NavigationSettingsEnv(
     val locale: () -> Locale = Locale::getDefault,
     /** Live Update chips exist from Android 16 (API 36); below it the switch is hidden. */
     val liveUpdateAvailable: Boolean = android.os.Build.VERSION.SDK_INT >= 36,
+    /** How the step-by-step public-transport trip announces itself; null hides the card (tests, no transit). */
+    val transitTrip: com.qtekfun.mapas.transit.follow.TransitTripSettingsStore? = null,
 )
 
 /**
@@ -147,6 +149,24 @@ fun NavigationSection(env: NavigationSettingsEnv) {
                 tag = "nav_live_update_switch",
                 onChange = { on -> env.store.update { it.copy(liveUpdateChip = on) } },
             )
+        }
+    }
+    env.transitTrip?.let { trip ->
+        Spacer(Modifier.height(10.dp))
+        val mode by trip.promptMode.collectAsState()
+        Card("nav_transit_prompts_card") {
+            BasicText(stringResource(R.string.trip_prompts_title), style = Mapas.typography.body.copy(color = Mapas.colors.label))
+            BasicText(stringResource(R.string.trip_prompts_body), style = Mapas.typography.callout.copy(color = Mapas.colors.secondaryLabel))
+            com.qtekfun.mapas.core.cameras.AlertSoundMode.entries.forEach { m ->
+                val label = when (m) {
+                    com.qtekfun.mapas.core.cameras.AlertSoundMode.SOUND -> R.string.alert_mode_sound
+                    com.qtekfun.mapas.core.cameras.AlertSoundMode.VOICE -> R.string.alert_mode_voice
+                    com.qtekfun.mapas.core.cameras.AlertSoundMode.SILENT -> R.string.alert_mode_silent
+                }
+                ChoiceRow(stringResource(label), mode == m, radio = true, tag = "nav_transit_prompts_${m.name.lowercase()}") { trip.setPromptMode(m) }
+            }
+            Spacer(Modifier.height(4.dp))
+            BasicText(stringResource(R.string.trip_prompts_note), style = Mapas.typography.callout.copy(color = Mapas.colors.secondaryLabel))
         }
     }
     Spacer(Modifier.height(10.dp))

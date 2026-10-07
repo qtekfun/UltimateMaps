@@ -276,6 +276,23 @@ private fun ItineraryCard(controller: TransitController, it: Itinerary) {
             BasicText(stringResource(R.string.transit_times, depart, arrive), style = Mapas.typography.body.copy(color = colors.label))
             BasicText("$changes · $walking", style = Mapas.typography.callout.copy(color = colors.secondaryLabel))
         }
+        if (controller.canStartTrip && !it.isWalkOnly) {
+            Spacer(Modifier.height(8.dp))
+            val startDescription = stringResource(R.string.trip_start_description)
+            Box(
+                Modifier
+                    .fillMaxWidth()
+                    .heightIn(min = maxOf(56.dp, target))
+                    .clip(Mapas.shapes.control)
+                    .background(colors.accent)
+                    .clickable(role = Role.Button) { controller.startTrip() }
+                    .semantics { contentDescription = startDescription }
+                    .testTag("transit_trip_start"),
+                contentAlignment = Alignment.Center,
+            ) {
+                BasicText(stringResource(R.string.trip_start), style = Mapas.typography.title.copy(color = colors.onAccent))
+            }
+        }
         Spacer(Modifier.height(8.dp))
         it.legs.forEachIndexed { i, leg ->
             when (leg) {

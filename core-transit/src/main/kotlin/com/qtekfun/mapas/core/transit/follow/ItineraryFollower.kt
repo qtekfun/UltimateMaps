@@ -394,7 +394,7 @@ class ItineraryFollower(
                     walkMeters = meters, walkSeconds = sec,
                     boardAt = next?.departAt, secondsToBoard = next?.let { it.departAt - nowSec },
                     planOffsetSec = plan.offset, plan = plan.status, planMinutes = plan.minutes,
-                    connection = conn, connectionMarginSec = margin?.toInt(),
+                    connection = conn, connectionMarginSec = margin?.toInt(), connectionLine = next?.line?.shortName,
                     canReplan = offPlan || conn == ConnectionStatus.MISSED, etaAt = itinerary.arriveAt + (plan.offset ?: 0),
                 )
             }
@@ -417,7 +417,7 @@ class ItineraryFollower(
                 line = ride.line, headsign = ride.headsign, targetName = ride.boarding.name,
                 boardAt = ride.departAt, secondsToBoard = toBoard,
                 planOffsetSec = plan.offset, plan = plan.status, planMinutes = plan.minutes,
-                connection = conn, connectionMarginSec = toBoard.toInt(), changeHere = previousIsRide,
+                connection = conn, connectionMarginSec = toBoard.toInt(), connectionLine = ride.line.shortName, changeHere = previousIsRide,
                 canReplan = offPlan || conn == ConnectionStatus.MISSED, etaAt = itinerary.arriveAt + (plan.offset ?: 0),
             )
         }
@@ -432,7 +432,7 @@ class ItineraryFollower(
             line = ride.line, headsign = ride.headsign, targetName = ride.boarding.name,
             walkMeters = meters, walkSeconds = sec, boardAt = ride.departAt, secondsToBoard = toBoard,
             planOffsetSec = plan.offset, plan = plan.status, planMinutes = plan.minutes,
-            connection = conn, connectionMarginSec = margin?.toInt(), changeHere = previousIsRide,
+            connection = conn, connectionMarginSec = margin?.toInt(), connectionLine = ride.line.shortName, changeHere = previousIsRide,
             canReplan = offPlan || conn == ConnectionStatus.MISSED, etaAt = itinerary.arriveAt + (plan.offset ?: 0),
         )
     }
@@ -461,7 +461,7 @@ class ItineraryFollower(
             nextStopName = ride.stops[next].name, nextStopAt = ride.stops[next].arriveAt,
             alightName = ride.alighting.name, alightAt = ride.alighting.arriveAt,
             planOffsetSec = plan.offset, plan = plan.status, planMinutes = plan.minutes,
-            connection = conn, connectionMarginSec = margin?.toInt(),
+            connection = conn, connectionMarginSec = margin?.toInt(), connectionLine = nextRide?.line?.shortName,
             canReplan = offPlan || conn == ConnectionStatus.MISSED, etaAt = itinerary.arriveAt + (plan.offset ?: 0),
         )
     }

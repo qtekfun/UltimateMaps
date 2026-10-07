@@ -118,6 +118,7 @@ class PanelHost(
                 io = Dispatchers.IO,
                 source = repo,
                 showItinerary = { engine.showTransitItinerary(it) },
+                onStartTrip = { itinerary, zone -> (activity.application as MapasApp).transitTrip.start(itinerary, zone) },
             )
         }
 

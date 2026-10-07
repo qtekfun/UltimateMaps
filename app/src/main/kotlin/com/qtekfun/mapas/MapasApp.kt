@@ -232,6 +232,43 @@ class MapasApp : Application() {
         }
     }
 
+    /** How the step-by-step public-transport trip announces boarding, changes and getting off (Settings > Navigation). */
+    val transitTripSettings: com.qtekfun.mapas.transit.follow.TransitTripSettingsStore by lazy {
+        com.qtekfun.mapas.transit.follow.PrefsTransitTripSettings(this)
+    }
+
+    /**
+     * The step-by-step public-transport trip (see `docs/phase2/transit.md`): the follower over its own location source, the
+     * saved state (private, 3 h expiry), the prompts through the navigation voice, and the model of its screen. Kept running
+     * in the background by [com.qtekfun.mapas.transit.follow.TransitTripService]. Re-planning only runs when the user presses
+     * Re-plan: it asks the installed transit index for a trip from the current position.
+     */
+    val transitTrip: com.qtekfun.mapas.transit.follow.TransitTripHost by lazy {
+        val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+        val replanner = com.qtekfun.mapas.core.transit.follow.TransitReplanner { from, to, at ->
+            kotlinx.coroutines.withContext(Dispatchers.IO) {
+                val ready = transit.lookup(from, to) as? com.qtekfun.mapas.transit.TransitLookup.Ready
+                (ready?.service?.plan(from, to, at) as? com.qtekfun.mapas.core.transit.TransitPlan.Found)?.itineraries?.firstOrNull()
+            }
+        }
+        val controller = com.qtekfun.mapas.core.transit.follow.TransitTripController(
+            scope = scope,
+            location = AndroidLocationSource(this),
+            store = com.qtekfun.mapas.core.transit.follow.TransitTripStore(File(noBackupFilesDir, "transit/trip.bin")),
+            replanner = replanner,
+        )
+        val navSettings = VoiceModule.settings(this)
+        val speaker = com.qtekfun.mapas.transit.follow.TransitTripSpeaker(
+            guide = VoiceModule.guide(this),
+            settings = navSettings.settings,
+            mode = { transitTripSettings.promptMode.value },
+            player = com.qtekfun.mapas.voice.AndroidAlertChimePlayer(this),
+        )
+        com.qtekfun.mapas.transit.follow.TransitTripHost(
+            scope, controller, com.qtekfun.mapas.transit.follow.AndroidTripServiceControl(this), SharedNavUiPrefs(this), navSettings, speaker,
+        )
+    }
+
     override fun onCreate() {
         super.onCreate()
         // The native core runs in its own process (`:core`), which also creates an Application: it must not start

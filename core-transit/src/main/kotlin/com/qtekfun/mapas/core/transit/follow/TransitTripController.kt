@@ -146,10 +146,13 @@ class TransitTripController(
         val current = _state.value ?: return
         _state.value = current.copy(follow = update.state)
         update.prompts.forEach { _prompts.tryEmit(it) }
-        // Arrived: nothing left to resume.
+        // Arrived: nothing left to resume and nothing left to watch; the state stays until stop() so the screen can say so.
         if (update.state.phase == FollowPhase.ARRIVED) {
             store.clear()
             lastSavedKey = ""
+            ticker?.cancel()
+            ticker = null
+            location.stop()
         } else {
             val snap = f.snapshot()
             saveLocked(force = false, key = "${snap.legIndex}|${snap.boarded}|${snap.progress.toInt()}")

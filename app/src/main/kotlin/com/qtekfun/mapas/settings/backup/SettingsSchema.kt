@@ -17,6 +17,7 @@ import com.qtekfun.mapas.recording.PrefsRecordingSettings
 import com.qtekfun.mapas.regions.RegionsController
 import com.qtekfun.mapas.search.PrefsHistorySettings
 import com.qtekfun.mapas.settings.PrefsNavSettingsStore
+import com.qtekfun.mapas.transit.follow.PrefsTransitTripSettings
 
 /** The value types a settings file can carry. [json] is the explicit type name written next to every value. */
 enum class SettingType(val json: String) {
@@ -129,6 +130,8 @@ object SettingsSchema {
         bool(GROUP_NAVIGATION, navPrefs, PrefsNavSettingsStore.KEY_BUILDINGS_3D, nav.buildings3d),
         bool(GROUP_NAVIGATION, navPrefs, PrefsNavSettingsStore.KEY_LIVE_UPDATE_CHIP, nav.liveUpdateChip),
         bool(GROUP_NAVIGATION_UI, SharedNavUiPrefs.PREFS, SharedNavUiPrefs.KEY_GLOVE, false),
+        // Public-transport trip prompts (sound, voice or silent).
+        enum(GROUP_NAVIGATION, PrefsTransitTripSettings.PREFS, PrefsTransitTripSettings.KEY_PROMPTS, PrefsTransitTripSettings.DEFAULT, AlertSoundMode.entries.map { it.name }),
 
         // Petrol stations: the switch needs consent (it starts downloads); the rest is plain preference.
         bool(GROUP_FUEL, fuelPrefs, PrefsFuelSettingsStore.KEY_ENABLED, fuel.enabled, RestorePolicy.NEEDS_CONSENT),
