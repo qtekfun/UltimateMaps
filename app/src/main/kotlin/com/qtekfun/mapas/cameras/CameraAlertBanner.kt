@@ -27,7 +27,6 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
@@ -66,15 +65,14 @@ private val WarnBrown = Color(0xFF9A4A00) // same, for incidents
 @Composable
 fun CameraAlertChip(state: AlertBannerState?, modifier: Modifier = Modifier, glove: Boolean = false) {
     val s = state ?: return
-    val context = LocalContext.current
     val locale: Locale = LocalConfiguration.current.locales[0]
     val title = stringResource(titleRes(s.category))
     val distance = RouteFormat.distance(s.distanceMeters.toDouble(), locale)
     val limit = s.limitKmh
     val description = if (limit != null) {
-        context.getString(R.string.camalert_description_limit, title, distance, limit)
+        stringResource(R.string.camalert_description_limit, title, distance, limit)
     } else {
-        context.getString(R.string.camalert_description, title, distance)
+        stringResource(R.string.camalert_description, title, distance)
     }
     val background = if (s.category.isCamera) CameraRed else WarnBrown
     val iconSize = if (glove) 40.dp else 28.dp
