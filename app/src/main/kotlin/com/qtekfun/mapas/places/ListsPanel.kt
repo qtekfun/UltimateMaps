@@ -34,12 +34,13 @@ fun ListsPanel(
     onExport: (GeoFormat) -> Unit,
     onFocus: () -> Unit,
     modifier: Modifier = Modifier,
+    tracks: TrackLayerController? = null,
 ) {
     val state = controller.state
     val open = state.openList
     Column(modifier.testTag("lists_panel")) {
         if (open == null) {
-            Overview(controller, onImport, onExport, onFocus)
+            Overview(controller, onImport, onExport, onFocus, tracks)
         } else {
             val comma = LocalConfiguration.current.locales[0].language == "es"
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -105,7 +106,10 @@ fun ListsPanel(
 }
 
 @Composable
-private fun ColumnScope.Overview(controller: PlacesController, onImport: () -> Unit, onExport: (GeoFormat) -> Unit, onFocus: () -> Unit) {
+private fun ColumnScope.Overview(
+    controller: PlacesController, onImport: () -> Unit, onExport: (GeoFormat) -> Unit, onFocus: () -> Unit,
+    tracks: TrackLayerController?,
+) {
     val state = controller.state
     var newName by remember { mutableStateOf("") }
     BasicText(stringResource(R.string.lists_title), style = Mapas.typography.title.copy(color = Mapas.colors.label))
@@ -121,6 +125,7 @@ private fun ColumnScope.Overview(controller: PlacesController, onImport: () -> U
                 tag = "list_row",
             )
         }
+        tracksItems(tracks)
     }
     Spacer(Modifier.height(8.dp))
     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {

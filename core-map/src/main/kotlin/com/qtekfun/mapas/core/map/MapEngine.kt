@@ -57,6 +57,9 @@ data class GeoBounds(val south: Double, val west: Double, val north: Double, val
  */
 data class FuelPin(val id: String, val point: LatLon, val label: String, val cheap: Boolean, val rank: Int)
 
+/** One imported GPX track (or route) drawn as a line: [segments] are drawn separately, [color] is ARGB. */
+class TrackLine(val id: Long, val segments: List<List<LatLon>>, val color: Int)
+
 /** Minimal map-engine contract; the concrete engine (spike option A/B/C) lives behind it. */
 interface MapEngine : AutoCloseable {
     /** Moves the camera. Must be cheap: it can be called on every gesture frame. */
@@ -111,6 +114,11 @@ interface MapEngine : AutoCloseable {
 
     /** Reports taps on the bare map (to pick a route origin); null removes the listener. Never called per frame. */
     fun setMapTapListener(listener: ((LatLon) -> Unit)?) {}
+
+    // --- Imported tracks ---
+
+    /** Draws exactly these tracks as lines, below the route line; an empty list removes them. Never called per frame. */
+    fun showTracks(tracks: List<TrackLine>) {}
 
     // --- Petrol stations (RF-15) ---
 

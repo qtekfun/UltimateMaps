@@ -22,6 +22,7 @@ sealed interface PlacesMessage {
     data class Saved(val listName: String) : PlacesMessage
     data object Removed : PlacesMessage
     data class Imported(val result: ImportResult) : PlacesMessage
+    data class TakeoutImported(val summary: com.qtekfun.mapas.core.data.TakeoutSummary) : PlacesMessage
     data object ImportFailed : PlacesMessage
     data class Exported(val places: Int) : PlacesMessage
     data object ExportFailed : PlacesMessage
@@ -58,6 +59,8 @@ class PlacesController(
     private val service: Lazy<PlacesService>,
     private val near: () -> LatLon?,
     private val onMarkers: (List<LatLon>) -> Unit,
+    /** Called after every reload (imports and deletes end in one), for views of other stored data such as tracks. */
+    private val onReloaded: () -> Unit = {},
 ) {
     val state = PlacesState()
     private var refreshJob: Job? = null
@@ -190,6 +193,7 @@ class PlacesController(
             state.openList = loaded.second
             state.rows = loaded.third
             onMarkers(loaded.third.map { it.place.point })
+            onReloaded()
         }
     }
 
@@ -199,13 +203,18 @@ class PlacesController(
         val into = state.openList?.id
         scope.launch {
             val result = try {
-                withContext(io) { service.value.import(open(), fileName, into) }
+                withContext(io) { service.value.importAny(open(), fileName, into) }
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
                 null
             }
-            state.message = if (result == null) PlacesMessage.ImportFailed else PlacesMessage.Imported(result)
+            state.message = when (result) {
+                null -> PlacesMessage.ImportFailed
+                is ImportOutcome.Geo -> PlacesMessage.Imported(result.result)
+                is ImportOutcome.Takeout ->
+                    if (result.summary.isEmpty) PlacesMessage.ImportFailed else PlacesMessage.TakeoutImported(result.summary)
+            }
             reload()
         }
     }

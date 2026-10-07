@@ -16,6 +16,7 @@ import com.qtekfun.mapas.fuel.FuelCardState
 import com.qtekfun.mapas.map.FuelMapLayer
 import com.qtekfun.mapas.map.NoFuelData
 import com.qtekfun.mapas.map.StaticFuelSettings
+import com.qtekfun.mapas.core.map.CameraPadding
 import com.qtekfun.mapas.core.map.CameraState
 import com.qtekfun.mapas.core.map.MapEngine
 import com.qtekfun.mapas.places.DocumentLaunchers
@@ -28,6 +29,7 @@ import com.qtekfun.mapas.places.QuickPlacesController
 import com.qtekfun.mapas.emergency.EmergencyActivity
 import com.qtekfun.mapas.shortcuts.AppShortcuts
 import com.qtekfun.mapas.shortcuts.ShortcutTarget
+import com.qtekfun.mapas.places.TrackLayerController
 import com.qtekfun.mapas.places.openPlacesService
 import com.qtekfun.mapas.places.toPlaceInfo
 import com.qtekfun.mapas.core.search.SearchResult
@@ -129,6 +131,20 @@ class PanelHost(
         service = placesService,
         near = { userLocation ?: engine.cameraState().center },
         onMarkers = engine::showMarkers,
+        onReloaded = { tracks.refresh() },
+    )
+
+    /** Imported GPX tracks drawn as map lines (toggle and fit per track in the lists overview). */
+    val tracks = TrackLayerController(
+        scope = activity.lifecycleScope,
+        io = Dispatchers.IO,
+        service = placesService,
+        render = engine::showTracks,
+        fit = { points ->
+            val d = activity.resources.displayMetrics.density
+            // The bottom sheet covers roughly the lower half of the screen.
+            engine.frameRoute(points, CameraPadding((40 * d).toInt(), (80 * d).toInt(), (40 * d).toInt(), (300 * d).toInt()))
+        },
     )
 
     /** Home, Work and the parked car (on this device only). */
@@ -289,7 +305,7 @@ class PanelHost(
         }
         SheetPanel(
             search, places, actions, route = route, fuel = fuel, navStart = navStart,
-            quick = quick, history = history, onEmergency = ::openEmergency,
+            quick = quick, history = history, onEmergency = ::openEmergency, tracks = tracks,
         )
     }
 

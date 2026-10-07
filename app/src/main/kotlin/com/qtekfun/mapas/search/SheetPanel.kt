@@ -33,6 +33,7 @@ import com.qtekfun.mapas.places.PanelNote
 import com.qtekfun.mapas.places.PanelRow
 import com.qtekfun.mapas.places.PanelTextField
 import com.qtekfun.mapas.places.PlaceCard
+import com.qtekfun.mapas.places.TrackLayerController
 import com.qtekfun.mapas.places.PlaceInfo
 import com.qtekfun.mapas.places.PlacesController
 import com.qtekfun.mapas.places.PlacesMessage
@@ -87,6 +88,7 @@ fun SheetPanel(
     /** Recent searches under the search field while it is empty; null hides them. */
     history: SearchHistory? = null,
     onEmergency: () -> Unit = {},
+    tracks: TrackLayerController? = null,
 ) {
     val card = places.state.card
     Column(modifier.fillMaxWidth().testTag("sheet_panel")) {
@@ -135,7 +137,7 @@ fun SheetPanel(
                     if (history != null) recentSearchItems(history) { search.onQueryChange(it); actions.onFocusField() }
                 }
             } else {
-                ListsPanel(places, actions.onShowSaved, actions.onImport, actions.onExport, actions.onFocusField, Modifier.weight(1f, fill = false))
+                ListsPanel(places, actions.onShowSaved, actions.onImport, actions.onExport, actions.onFocusField, Modifier.weight(1f, fill = false), tracks)
             }
         }
         places.state.message?.let {
@@ -163,6 +165,10 @@ private fun messageText(m: PlacesMessage): String = when (m) {
     PlacesMessage.Removed -> stringResource(R.string.msg_removed)
     is PlacesMessage.Imported -> stringResource(
         R.string.msg_imported, m.result.placesAdded, m.result.placesDuplicate, m.result.tracksAdded,
+    )
+    is PlacesMessage.TakeoutImported -> stringResource(
+        R.string.msg_takeout_imported, m.summary.lists.size, m.summary.placesAdded, m.summary.placesDuplicate,
+        m.summary.noCoordinates,
     )
     PlacesMessage.ImportFailed -> stringResource(R.string.msg_import_failed)
     is PlacesMessage.Exported -> stringResource(R.string.msg_exported, m.places)

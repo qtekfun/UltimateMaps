@@ -12,6 +12,7 @@ import com.qtekfun.mapas.core.map.CameraState
 import com.qtekfun.mapas.core.map.CameraStateStore
 import com.qtekfun.mapas.core.map.MapEngine
 import com.qtekfun.mapas.core.map.MapTheme
+import com.qtekfun.mapas.core.map.TrackLine
 import org.maplibre.android.MapLibre
 import org.maplibre.android.camera.CameraPosition
 import org.maplibre.android.camera.CameraUpdateFactory
@@ -38,6 +39,7 @@ import org.maplibre.android.style.layers.LineLayer
 import org.maplibre.android.style.layers.PropertyFactory.lineCap
 import org.maplibre.android.style.layers.PropertyFactory.lineColor
 import org.maplibre.android.style.layers.PropertyFactory.lineJoin
+import org.maplibre.android.style.layers.PropertyFactory.lineOpacity
 import org.maplibre.android.style.layers.PropertyFactory.lineWidth
 import org.maplibre.android.style.layers.Property
 import org.maplibre.android.style.layers.PropertyFactory.circleColor
@@ -98,6 +100,8 @@ class MapLibreEngine(
     private var routeFit = false
     private var tapListener: ((LatLon) -> Unit)? = null
     private var routeSource: GeoJsonSource? = null
+    private var pendingTracks: List<TrackLine> = emptyList()
+    private var tracksSource: GeoJsonSource? = null
     private var pendingFuel: List<FuelPin> = emptyList()
     private var fuelSource: GeoJsonSource? = null
     private var fuelTapListener: ((String) -> Unit)? = null
@@ -269,6 +273,36 @@ class MapLibreEngine(
         pendingRoute = points
         routeFit = fit
         pushRoute()
+    }
+
+    override fun showTracks(tracks: List<TrackLine>) {
+        pendingTracks = tracks
+        pushTracks()
+    }
+
+    private fun pushTracks() {
+        val source = tracksSource ?: return
+        if (map == null) return
+        source.setGeoJson(TrackFeatures.collection(pendingTracks))
+    }
+
+    /** Imported tracks: a thin translucent casing plus the coloured line, under the route and the markers. */
+    private fun addTracksLayer(style: Style, dark: Boolean) {
+        val source = GeoJsonSource(TRACKS_SOURCE).also { tracksSource = it }
+        style.addSource(source)
+        style.addLayer(
+            LineLayer(TRACKS_CASING_LAYER, TRACKS_SOURCE).withProperties(
+                lineColor(if (dark) 0xFF1C1C1E.toInt() else WHITE), lineWidth(routeWidth(TRACKS_CASING_EXTRA - 2f)),
+                lineOpacity(0.7f), lineCap(Property.LINE_CAP_ROUND), lineJoin(Property.LINE_JOIN_ROUND),
+            ),
+        )
+        style.addLayer(
+            LineLayer(TRACKS_LAYER, TRACKS_SOURCE).withProperties(
+                lineColor(Expression.toColor(Expression.get(TrackFeatures.COLOR))), lineWidth(routeWidth(-2f)),
+                lineCap(Property.LINE_CAP_ROUND), lineJoin(Property.LINE_JOIN_ROUND),
+            ),
+        )
+        pushTracks()
     }
 
     override fun clearRoute() = showRoute(emptyList(), fit = false)
@@ -473,6 +507,7 @@ class MapLibreEngine(
             )
             val user = GeoJsonSource(USER_SOURCE).also { userSource = it }
             val pin = GeoJsonSource(PIN_SOURCE).also { pinSource = it }
+            addTracksLayer(style, wanted == MapTheme.DARK) // below the route line
             addRouteLayer(style, wanted == MapTheme.DARK) // below the markers, pin and user dots
             addFuelLayer(style, wanted == MapTheme.DARK)
             style.addSource(user)
@@ -585,6 +620,10 @@ class MapLibreEngine(
         const val ROUTE_LAYER = "mapas-route"
         const val ROUTE_CASING_LAYER = "mapas-route-casing"
         const val ROUTE_CASING_EXTRA = 4f
+        const val TRACKS_SOURCE = "mapas-tracks-src"
+        const val TRACKS_LAYER = "mapas-tracks"
+        const val TRACKS_CASING_LAYER = "mapas-tracks-casing"
+        const val TRACKS_CASING_EXTRA = 4f
         const val USER_ARROW_LAYER = "mapas-user-arrow"
         const val USER_BEARING = "bearing"
         const val MAX_PITCH = 60.0
