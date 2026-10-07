@@ -21,3 +21,8 @@ Installed `0.1.0-rc.8` over rc.6 (same package and key: the update kept settings
 
 ## Not tested in this session
 Navigation and 3D (seen in the rc.6 test), camera and incident alerts (the switches are off and the data file was not downloaded), the incident banner, public transport (the index is not in the data release yet), voice, GPS (no permission), bike options, add stop, track recording, Live Update chip and alert chimes (not in rc.8).
+
+## Second pass (same day): speed cameras
+- Settings > Radares y tráfico (the old long list): everything is off by default; turning on "Radares fijos" shows the consent dialog (DGT CC BY and OSM ODbL sources, mobile zones are DGT road stretches only, no police controls or user reports, nothing about the position is sent, informative only). After accepting, the camera file was downloaded from the data release (no manual step) and the map draws fixed cameras as red circles with an R (`rc8-camera-pins.png`, zoom about 13 near Moncloa).
+- Not seen: the alert chip, the incident banner or any sound, because no route through a camera was driven. A test route started from a tapped map point that fell inside a restricted compound came out as a 1.7 km spiral inside it, which says nothing about camera alerts; a better test is a route along an urban motorway with a camera on it.
+- Observed: the consent text is long; the Settings page is hard to scan (the redesign is in progress).
