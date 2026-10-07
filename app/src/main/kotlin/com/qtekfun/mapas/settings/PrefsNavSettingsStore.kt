@@ -32,6 +32,7 @@ class PrefsNavSettingsStore(private val prefs: SharedPreferences) : NavSettingsS
             .putBoolean(KEY_AVOID_TOLLS, next.avoidTolls)
             .putBoolean(KEY_AVOID_FERRIES, next.avoidFerries)
             .putBoolean(KEY_AVOID_UNPAVED, next.avoidUnpaved)
+            .putString(KEY_BIKE_CYCLEWAYS, next.bikeCycleways.name)
             .putBoolean(KEY_VIEW_3D, next.view3d)
             .putBoolean(KEY_BUILDINGS_3D, next.buildings3d)
             .apply()
@@ -50,6 +51,7 @@ class PrefsNavSettingsStore(private val prefs: SharedPreferences) : NavSettingsS
             avoidTolls = bool(KEY_AVOID_TOLLS, d.avoidTolls),
             avoidFerries = bool(KEY_AVOID_FERRIES, d.avoidFerries),
             avoidUnpaved = bool(KEY_AVOID_UNPAVED, d.avoidUnpaved),
+            bikeCycleways = enumValue(KEY_BIKE_CYCLEWAYS, d.bikeCycleways),
             view3d = bool(KEY_VIEW_3D, d.view3d),
             buildings3d = bool(KEY_BUILDINGS_3D, d.buildings3d),
         ).normalized()
@@ -71,6 +73,7 @@ class PrefsNavSettingsStore(private val prefs: SharedPreferences) : NavSettingsS
         const val KEY_AVOID_TOLLS = "avoid_tolls"
         const val KEY_AVOID_FERRIES = "avoid_ferries"
         const val KEY_AVOID_UNPAVED = "avoid_unpaved"
+        const val KEY_BIKE_CYCLEWAYS = "bike_cycleways"
         const val KEY_VIEW_3D = "view_3d"
         const val KEY_BUILDINGS_3D = "buildings_3d"
     }

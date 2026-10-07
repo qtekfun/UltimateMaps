@@ -13,6 +13,7 @@ import androidx.compose.ui.test.assertIsOn
 import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.assertWidthIsAtLeast
 import androidx.compose.ui.unit.dp
+import com.qtekfun.mapas.core.routing.BikeCycleways
 import com.qtekfun.mapas.core.routing.RouteOptions
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.junit4.createComposeRule
@@ -173,5 +174,41 @@ class RoutePanelTest {
         rule.onNodeWithTag("route_options_toggle").performClick()
         rule.onNodeWithTag("avoid_tolls").assertIsOn().assert(SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.Checkbox))
         rule.onNodeWithTag("avoid_unpaved").assertIsOff()
+    }
+
+    @Test
+    fun theCycleInfrastructureRowOnlyExistsForTheBikeProfileAndChoosesTheLevel() {
+        route.start(PlaceInfo("Plaza Mayor", LatLon(40.1, -3.1)))
+        settle { route.state.status == RouteStatus.DONE }
+        route.setProfile(RoutingProfile.BIKE)
+        settle { profiles.size == 2 && route.state.status == RouteStatus.DONE }
+        show()
+        rule.onNodeWithTag("route_bike_cycleways").assertIsDisplayed()
+        rule.onNodeWithTag("bike_cycleways_off").assertIsOn()
+        rule.onNodeWithTag("bike_cycleways_only").assertIsOff()
+        rule.onNodeWithText("Standard bike routing, which already favours cycleways and tagged cycle lanes.").assertIsDisplayed()
+
+        rule.onNodeWithTag("bike_cycleways_strongly_prefer").performClick()
+        assertEquals(BikeCycleways.STRONGLY_PREFER, route.state.options.bikeCycleways)
+        settle { profiles.size == 3 && route.state.status == RouteStatus.DONE }
+        rule.onNodeWithTag("bike_cycleways_strongly_prefer").assertIsOn()
+        rule.onNodeWithTag("bike_cycleways_off").assertIsOff()
+
+        rule.onNodeWithTag("profile_car").performClick()
+        settle { profiles.size == 4 && route.state.status == RouteStatus.DONE }
+        rule.onNodeWithTag("route_bike_cycleways").assertDoesNotExist()
+    }
+
+    @Test
+    fun theOnlyLevelFailureTellsTheUserToTryPrefer() {
+        outcome = RouteOutcome(RouteCode.NO_CYCLE_ROUTE, null)
+        route.setProfile(RoutingProfile.BIKE)
+        route.start(PlaceInfo("Far", LatLon(10.0, 10.0)))
+        settle { route.state.status == RouteStatus.ERROR }
+        route.setOptions(RouteOptions(bikeCycleways = BikeCycleways.ONLY))
+        settle { profiles.size == 2 && route.state.status == RouteStatus.ERROR }
+        show()
+        rule.onNodeWithText("No route found using only cycle infrastructure. Try Prefer.").assertIsDisplayed()
+        rule.onNodeWithTag("bike_cycleways_prefer").assertIsDisplayed() // the row stays so the level can be relaxed
     }
 }

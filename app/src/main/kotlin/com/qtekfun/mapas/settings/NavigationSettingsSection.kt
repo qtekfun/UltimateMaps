@@ -12,6 +12,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.qtekfun.mapas.R
+import com.qtekfun.mapas.core.routing.BikeCycleways
 import com.qtekfun.mapas.core.voice.InstructionText
 import com.qtekfun.mapas.core.voice.NavSettings
 import com.qtekfun.mapas.core.voice.NavSettingsStore
@@ -21,6 +22,7 @@ import com.qtekfun.mapas.core.voice.VoiceGuide
 import com.qtekfun.mapas.core.voice.VoiceLanguagePref
 import com.qtekfun.mapas.core.voice.VoicePriority
 import com.qtekfun.mapas.core.voice.VoiceStatus
+import com.qtekfun.mapas.route.BikeCyclewaysText
 import com.qtekfun.mapas.ui.theme.Mapas
 import com.qtekfun.mapas.voice.VoiceProblemNotice
 import java.util.Locale
@@ -142,6 +144,17 @@ fun NavigationSection(env: NavigationSettingsEnv) {
         SwitchRow(stringResource(R.string.nav_avoid_tolls), "", s.avoidTolls, "nav_avoid_tolls") { on -> env.store.update { it.copy(avoidTolls = on) } }
         SwitchRow(stringResource(R.string.nav_avoid_ferries), "", s.avoidFerries, "nav_avoid_ferries") { on -> env.store.update { it.copy(avoidFerries = on) } }
         SwitchRow(stringResource(R.string.nav_avoid_unpaved), "", s.avoidUnpaved, "nav_avoid_unpaved") { on -> env.store.update { it.copy(avoidUnpaved = on) } }
+    }
+    Spacer(Modifier.height(10.dp))
+    Card("nav_bike_cycleways_card") {
+        BasicText(stringResource(R.string.bike_cycleways_title), style = Mapas.typography.body.copy(color = Mapas.colors.label))
+        BasicText(stringResource(R.string.bike_cycleways_settings_body), style = Mapas.typography.callout.copy(color = Mapas.colors.secondaryLabel))
+        BikeCycleways.entries.forEach { level ->
+            ChoiceRow(
+                stringResource(BikeCyclewaysText.full(level)), s.bikeCycleways == level, radio = true,
+                tag = "nav_bike_cycleways_${level.name.lowercase()}",
+            ) { env.store.update { it.copy(bikeCycleways = level) } }
+        }
     }
 }
 
