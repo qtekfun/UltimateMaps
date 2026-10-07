@@ -4,6 +4,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.qtekfun.mapas.core.geo.LatLon
+import com.qtekfun.mapas.core.geo.distanceTo
 import com.qtekfun.mapas.core.routing.RouteOptions
 import com.qtekfun.mapas.core.routing.RoutePlan
 import com.qtekfun.mapas.core.routing.RouteRequest
@@ -27,7 +28,10 @@ import kotlinx.coroutines.withTimeoutOrNull
 enum class RouteStatus { IDLE, NEEDS_ORIGIN, COMPUTING, DONE, ERROR }
 
 /** Why there is no route; mapped to a message by the UI. */
-enum class RouteError { NO_REGIONS, NEED_MORE_MAPS, START_NOT_FOUND, END_NOT_FOUND, ROUTE_NOT_FOUND, TIMEOUT, INTERNAL }
+enum class RouteError { NO_REGIONS, NEED_MORE_MAPS, START_NOT_FOUND, END_NOT_FOUND, STOP_NOT_FOUND, ROUTE_NOT_FOUND, TIMEOUT, INTERNAL }
+
+/** Outcome of [RoutePreviewController.addStop]; everything but [ADDED] leaves the route as it was. */
+enum class StopResult { ADDED, DUPLICATE, SAME_AS_DESTINATION, LIMIT, NO_ROUTE }
 
 sealed interface RouteOrigin {
     /** The user's current position (in memory, from the location source). */
@@ -41,6 +45,9 @@ sealed interface RouteOrigin {
 class RouteState {
     var active by mutableStateOf(false)
     var destination by mutableStateOf<PlaceInfo?>(null)
+
+    /** Intermediate stops, in driving order: the route is [origin, stops..., destination]. */
+    var stops by mutableStateOf<List<PlaceInfo>>(emptyList())
     var origin by mutableStateOf<RouteOrigin>(RouteOrigin.Current)
     var profile by mutableStateOf(RoutingProfile.CAR)
     var options by mutableStateOf(RouteOptions())
@@ -62,6 +69,9 @@ fun interface RouteBackend {
 /** Latency record for R12. Only the profile, milliseconds and a result name: no positions, no names. */
 fun interface RouteLog {
     fun computed(profile: RoutingProfile, millis: Long, result: String)
+
+    /** Same record with the number of intermediate stops (a count, never their positions). */
+    fun computed(profile: RoutingProfile, millis: Long, result: String, stops: Int) = computed(profile, millis, result)
 }
 
 /**
@@ -100,8 +110,40 @@ class RoutePreviewController(
     fun start(destination: PlaceInfo) {
         state.active = true
         state.destination = destination
+        state.stops = emptyList()
         state.origin = RouteOrigin.Current
         state.pickingOrigin = false
+        compute()
+    }
+
+    /**
+     * Inserts [place] as the last stop, right before the destination, and recalculates. Refused (route unchanged)
+     * when there is no active route, the stop is at most [SAME_PLACE_METERS] from the destination or from another
+     * stop, or [MAX_STOPS] stops already exist.
+     */
+    fun addStop(place: PlaceInfo): StopResult {
+        val destination = state.destination
+        if (!state.active || destination == null) return StopResult.NO_ROUTE
+        if (state.stops.size >= MAX_STOPS) return StopResult.LIMIT
+        if (samePlace(place, destination)) return StopResult.SAME_AS_DESTINATION
+        if (state.stops.any { samePlace(place, it) }) return StopResult.DUPLICATE
+        state.stops = state.stops + place
+        compute()
+        return StopResult.ADDED
+    }
+
+    fun removeStop(index: Int) {
+        if (!state.active || index !in state.stops.indices) return
+        state.stops = state.stops.filterIndexed { i, _ -> i != index }
+        compute()
+    }
+
+    /** Moves the stop at [index] one place earlier ([delta] = -1) or later (+1); ignored at the ends of the list. */
+    fun moveStop(index: Int, delta: Int) {
+        val to = index + delta
+        val stops = state.stops
+        if (!state.active || index !in stops.indices || to !in stops.indices || delta == 0) return
+        state.stops = stops.toMutableList().also { java.util.Collections.swap(it, index, to) }
         compute()
     }
 
@@ -109,6 +151,7 @@ class RoutePreviewController(
         job?.cancel()
         state.active = false
         state.destination = null
+        state.stops = emptyList()
         state.pickingOrigin = false
         state.status = RouteStatus.IDLE
         state.error = null
@@ -169,7 +212,8 @@ class RoutePreviewController(
             return
         }
         val profile = state.profile
-        val request = RouteRequest(from, to.point, profile = profile, options = state.options)
+        val stops = state.stops.size
+        val request = RouteRequest(from, to.point, via = state.stops.map { it.point }, profile = profile, options = state.options)
         state.status = RouteStatus.COMPUTING
         job = scope.launch {
             val t0 = clock()
@@ -178,31 +222,31 @@ class RoutePreviewController(
                 withTimeoutOrNull(timeoutMs) { work.await() }
             } catch (e: CancellationException) {
                 work.cancel()
-                log.computed(profile, clock() - t0, "cancelled")
+                log.computed(profile, clock() - t0, "cancelled", stops)
                 throw e
             }
             if (native == null) {
                 work.cancel() // cannot stop a running native call; its result is dropped
-                finish(profile, clock() - t0, null, RouteError.TIMEOUT)
+                finish(profile, stops, clock() - t0, null, RouteError.TIMEOUT)
                 return@launch
             }
             when (native) {
                 is Native.Done -> {
                     val plan = native.outcome.plan
                     if (plan != null && plan.geometry.size >= 2) {
-                        finish(profile, clock() - t0, plan, null)
+                        finish(profile, stops, clock() - t0, plan, null)
                     } else {
-                        finish(profile, clock() - t0, null, errorFor(native.outcome))
+                        finish(profile, stops, clock() - t0, null, errorFor(native.outcome))
                     }
                 }
-                Native.NoRegions -> finish(profile, clock() - t0, null, RouteError.NO_REGIONS)
-                Native.Failed -> finish(profile, clock() - t0, null, RouteError.INTERNAL)
+                Native.NoRegions -> finish(profile, stops, clock() - t0, null, RouteError.NO_REGIONS)
+                Native.Failed -> finish(profile, stops, clock() - t0, null, RouteError.INTERNAL)
             }
         }
     }
 
-    private fun finish(profile: RoutingProfile, millis: Long, plan: RoutePlan?, error: RouteError?) {
-        log.computed(profile, millis, error?.name?.lowercase() ?: "ok")
+    private fun finish(profile: RoutingProfile, stops: Int, millis: Long, plan: RoutePlan?, error: RouteError?) {
+        log.computed(profile, millis, error?.name?.lowercase() ?: "ok", stops)
         if (plan != null) {
             state.distanceMeters = plan.distanceMeters
             state.durationSeconds = plan.durationSeconds
@@ -244,11 +288,20 @@ class RoutePreviewController(
         /** Generous because the spike measured ~18 s for a long route; the R12 target is 2 s. */
         const val TIMEOUT_MS = 30_000L
 
+        /** Intermediate stops allowed (the native router does one leg per stop, so the time grows with them). */
+        const val MAX_STOPS = 5
+
+        /** Two points this close count as the same place (a station tapped twice, or the destination itself). */
+        const val SAME_PLACE_METERS = 30.0
+
+        fun samePlace(a: PlaceInfo, b: PlaceInfo) = a.point.distanceTo(b.point) <= SAME_PLACE_METERS
+
         fun errorFor(outcome: RouteOutcome): RouteError = when (outcome.code) {
             RouteCode.NEED_MORE_MAPS -> RouteError.NEED_MORE_MAPS
             RouteCode.START_NOT_FOUND -> RouteError.START_NOT_FOUND
             RouteCode.END_NOT_FOUND -> RouteError.END_NOT_FOUND
-            RouteCode.ROUTE_NOT_FOUND, RouteCode.INTERMEDIATE_NOT_FOUND, RouteCode.NO_ERROR, RouteCode.HAS_WARNINGS ->
+            RouteCode.INTERMEDIATE_NOT_FOUND -> RouteError.STOP_NOT_FOUND
+            RouteCode.ROUTE_NOT_FOUND, RouteCode.NO_ERROR, RouteCode.HAS_WARNINGS ->
                 RouteError.ROUTE_NOT_FOUND
             RouteCode.CANCELLED -> RouteError.TIMEOUT // the native router gave up on its own budget
             else -> RouteError.INTERNAL

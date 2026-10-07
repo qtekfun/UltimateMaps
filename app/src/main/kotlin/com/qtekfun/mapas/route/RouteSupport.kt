@@ -39,7 +39,10 @@ class CoMapsRouteBackend(private val context: Context) : RouteBackend {
 object LogcatRouteLog : RouteLog {
     private const val TAG = "UMROUTE"
 
-    override fun computed(profile: RoutingProfile, millis: Long, result: String) {
-        Log.i(TAG, "route profile=${profile.name.lowercase()} ms=$millis result=$result")
+    override fun computed(profile: RoutingProfile, millis: Long, result: String) = computed(profile, millis, result, 0)
+
+    override fun computed(profile: RoutingProfile, millis: Long, result: String, stops: Int) {
+        val withStops = if (stops > 0) " stops=$stops" else "" // only a count, never where
+        Log.i(TAG, "route profile=${profile.name.lowercase()}$withStops ms=$millis result=$result")
     }
 }

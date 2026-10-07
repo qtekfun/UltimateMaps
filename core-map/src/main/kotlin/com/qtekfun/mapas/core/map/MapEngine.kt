@@ -29,6 +29,16 @@ interface CameraStateStore {
     fun save(state: CameraState)
 }
 
+/** A visible map rectangle in degrees (`west <= east`: no antimeridian crossing). */
+data class GeoBounds(val south: Double, val west: Double, val north: Double, val east: Double)
+
+/**
+ * One petrol station drawn on the map: a pump icon and [label] (the price, already formatted). [cheap] marks the
+ * cheapest of the view; the engine must show it with a different SHAPE and size, not only a different colour.
+ * [rank] orders label collisions (0 = wins first).
+ */
+data class FuelPin(val id: String, val point: LatLon, val label: String, val cheap: Boolean, val rank: Int)
+
 /** Minimal map-engine contract; the concrete engine (spike option A/B/C) lives behind it. */
 interface MapEngine : AutoCloseable {
     /** Moves the camera. Must be cheap: it can be called on every gesture frame. */
@@ -68,4 +78,15 @@ interface MapEngine : AutoCloseable {
 
     /** Reports taps on the bare map (to pick a route origin); null removes the listener. Never called per frame. */
     fun setMapTapListener(listener: ((LatLon) -> Unit)?) {}
+
+    // --- Petrol stations (RF-15) ---
+
+    /** Draws exactly these stations (price labels); an empty list removes the layer content. Never called per frame. */
+    fun showFuel(pins: List<FuelPin>) {}
+
+    /** Reports taps on a station (its id), before [setMapTapListener]; null removes the listener. */
+    fun setFuelTapListener(listener: ((String) -> Unit)?) {}
+
+    /** Reports the visible rectangle and zoom when a camera gesture or animation ends (never per frame); null removes it. */
+    fun setViewportListener(listener: ((GeoBounds, Double) -> Unit)?) {}
 }
