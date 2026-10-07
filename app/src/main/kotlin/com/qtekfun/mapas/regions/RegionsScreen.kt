@@ -23,7 +23,13 @@ import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.selection.toggleable
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -85,10 +91,31 @@ fun RegionsScreen(state: RegionsUiState, actions: RegionsActions, modifier: Modi
     var confirmDelete by remember { mutableStateOf<Pair<String, String>?>(null) } // id to display name
     val installedVersions = state.installed.associate { it.region.id to it.region.version }
     val catalog = (state.catalog as? CatalogState.Loaded)?.catalog
-    val rows = remember(catalog, expanded, state.installed, state.downloads) {
-        catalog?.let { RegionsModel.rows(it, expanded.toSet(), installedVersions, state.downloads) }.orEmpty()
+    var query by rememberSaveable { mutableStateOf("") }
+    val searching = RegionSearch.normalize(query).isNotEmpty()
+    // Normalized keys are computed once per catalog; typing only scans them.
+    val index = remember(catalog) { catalog?.let { RegionSearch.Index(it) } }
+    val rows = remember(catalog, index, expanded, state.installed, state.downloads, query) {
+        when {
+            catalog == null || index == null -> emptyList()
+            searching -> RegionsModel.searchRows(index, query, installedVersions, state.downloads)
+            else -> RegionsModel.rows(catalog, expanded.toSet(), installedVersions, state.downloads)
+        }
     }
-    val orphans = RegionsModel.orphans(catalog, installedVersions).mapNotNull { id -> state.installed.firstOrNull { it.region.id == id } }
+    val allOrphans = RegionsModel.orphans(catalog, installedVersions).mapNotNull { id -> state.installed.firstOrNull { it.region.id == id } }
+    val orphans = if (searching) {
+        val tokens = RegionSearch.normalize(query).split(' ')
+        allOrphans.filter { e -> RegionSearch.normalize(e.region.id).let { k -> tokens.all { it in k } } }
+    } else allOrphans
+    val listState = rememberLazyListState()
+    // A new query starts at the top; a restored one (same text as before the recreation) keeps its scroll.
+    var shownQuery by rememberSaveable { mutableStateOf(query) }
+    LaunchedEffect(query) {
+        if (query != shownQuery) {
+            shownQuery = query
+            listState.scrollToItem(0)
+        }
+    }
 
     Column(
         modifier
@@ -101,13 +128,29 @@ fun RegionsScreen(state: RegionsUiState, actions: RegionsActions, modifier: Modi
             BasicText(stringResource(R.string.regions_title), Modifier.weight(1f), style = Mapas.typography.largeTitle.copy(color = Mapas.colors.label))
             TextButton(stringResource(R.string.close), "regions_close", onClick = actions.onClose)
         }
-        LazyColumn(Modifier.fillMaxSize().testTag("regions_list"), verticalArrangement = Arrangement.spacedBy(0.dp)) {
-            item(key = "settings") { SettingsSection(state, actions) }
+        if (catalog != null) SearchField(query, { query = it })
+        LazyColumn(Modifier.fillMaxSize().testTag("regions_list"), state = listState, verticalArrangement = Arrangement.spacedBy(0.dp)) {
+            if (!searching) item(key = "settings") { SettingsSection(state, actions) }
             item(key = "status") { CatalogStatus(state, catalog, actions) }
+            if (searching && rows.isEmpty() && orphans.isEmpty()) item(key = "search-empty") {
+                BasicText(
+                    stringResource(R.string.regions_search_empty, query.trim()),
+                    Modifier.padding(16.dp).testTag("regions_search_empty"),
+                    style = Mapas.typography.body.copy(color = Mapas.colors.secondaryLabel),
+                )
+            }
             items(rows, key = { it.region.id }) { row ->
                 RegionRowView(
                     row, actions,
-                    onToggle = { expanded = if (row.region.id in expanded) expanded - row.region.id else expanded + row.region.id },
+                    onToggle = {
+                        if (row.path != null) {
+                            // A group found by search: leave the search and open it in the tree.
+                            expanded = (expanded + RegionsModel.ancestors(catalog!!, row.region.id) + row.region.id).distinct()
+                            query = ""
+                        } else {
+                            expanded = if (row.region.id in expanded) expanded - row.region.id else expanded + row.region.id
+                        }
+                    },
                     onAskDelete = { confirmDelete = row.region.id to row.region.name },
                 )
             }
@@ -130,6 +173,43 @@ fun RegionsScreen(state: RegionsUiState, actions: RegionsActions, modifier: Modi
     confirmDelete?.let { (id, name) ->
         val bytes = state.installed.firstOrNull { it.region.id == id }?.bytes ?: 0L
         DeleteDialog(name, RegionsModel.formatBytes(bytes), onConfirm = { actions.onDelete(id); confirmDelete = null }, onDismiss = { confirmDelete = null })
+    }
+}
+
+@Composable
+private fun SearchField(query: String, onChange: (String) -> Unit) {
+    val clear = stringResource(R.string.regions_search_clear)
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 4.dp)
+            .clip(Mapas.shapes.field)
+            .background(Mapas.colors.field)
+            .padding(start = 12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Box(Modifier.weight(1f).padding(vertical = 10.dp)) {
+            if (query.isEmpty()) BasicText(stringResource(R.string.regions_search_hint), style = Mapas.typography.body.copy(color = Mapas.colors.secondaryLabel))
+            BasicTextField(
+                value = query, onValueChange = onChange, singleLine = true,
+                textStyle = Mapas.typography.body.copy(color = Mapas.colors.label),
+                cursorBrush = SolidColor(Mapas.colors.accent),
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+                modifier = Modifier.fillMaxWidth().testTag("regions_search"),
+            )
+        }
+        if (query.isNotEmpty()) {
+            BasicText(
+                "✕",
+                Modifier
+                    .clickable(role = Role.Button, onClickLabel = clear) { onChange("") }
+                    .semantics { contentDescription = clear }
+                    .size(48.dp)
+                    .wrapContentSize(Alignment.Center)
+                    .testTag("regions_search_clear"),
+                style = Mapas.typography.body.copy(color = Mapas.colors.secondaryLabel),
+            )
+        }
     }
 }
 
@@ -276,7 +356,8 @@ private fun RegionRowView(row: RegionRow, actions: RegionsActions, onToggle: () 
         Row(verticalAlignment = Alignment.CenterVertically) {
             if (row.isGroup) BasicText(if (row.expanded) "▾" else "▸", Modifier.width(22.dp), style = Mapas.typography.body.copy(color = Mapas.colors.secondaryLabel))
             Column(Modifier.weight(1f)) {
-                BasicText(r.name, style = Mapas.typography.body.copy(color = Mapas.colors.label))
+                BasicText(if (row.path != null) RegionSearch.segments(r.name).last() else r.name, style = Mapas.typography.body.copy(color = Mapas.colors.label))
+                if (row.path != null && row.path != RegionSearch.segments(r.name).last()) BasicText(row.path, Modifier.testTag("path_" + r.id), style = Mapas.typography.callout.copy(color = Mapas.colors.secondaryLabel))
                 BasicText(subtitle(row), style = Mapas.typography.callout.copy(color = Mapas.colors.secondaryLabel))
             }
             if (!row.isGroup) RowActions(row, actions, onAskDelete)

@@ -35,6 +35,11 @@
 
     <!-- Maps screen (regions) -->
     <string name="regions_title">Maps</string>
+    <string name="regions_search_hint">Search maps (e.g. Catalonia)</string>
+    <string name="regions_search_clear">Clear search</string>
+    <string name="regions_search_empty">No maps match “%1$s”.</string>
+    <string name="sheet_action_expand">Expand panel</string>
+    <string name="sheet_action_collapse">Collapse panel</string>
     <string name="maps_entry_title">Maps</string>
     <string name="maps_entry_body">Download and manage regions</string>
     <string name="offline_title">Offline mode</string>
