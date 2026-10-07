@@ -1,65 +1,69 @@
 # Releases
 
-Misma mecánica que UltimateDeck: un tag `vX.Y.Z` dispara el workflow **Release**, que compila el APK firmado y lo publica en GitHub Releases con las notas de `CHANGELOG.md`.
+Same mechanics as UltimateDeck: a `vX.Y.Z` tag triggers the **Release** workflow, which builds the signed APK and publishes it to GitHub Releases with the notes from `CHANGELOG.md`.
 
-## Versiones
+## Versions
 
-- La versión vive en un solo sitio: `appVersion` en `gradle.properties`, en SemVer (`1.2.3`) o `1.2.3-rc.N` para una candidata. Antes de 1.0.0 la app es `0.x`.
-- El `versionCode` de Android se deriva, nunca se escribe a mano: `(MAJOR*10000 + MINOR*100 + PATCH) * 100 + N`, con `N = 99` para una versión final. `0.1.0-rc.1` es `10001`; `1.0.0` es `1000099`. Una final siempre ordena después de sus candidatas y nada depende de fechas ni de la máquina (builds reproducibles).
+- The version lives in one place: `appVersion` in `gradle.properties`, as SemVer (`1.2.3`) or `1.2.3-rc.N` for a release candidate. Before 1.0.0 the app is `0.x`.
+- The Android version code is derived, never written by hand: `(MAJOR*10000 + MINOR*100 + PATCH) * 100 + N`, with `N = 99` for a final release. `0.1.0-rc.1` is `10001`; `1.0.0` is `1000099`. A final version always sorts after its candidates and nothing depends on dates or on the machine (reproducible builds).
 
-## Firma (una sola vez)
+## Signing (one time)
 
-Se firma con la clave propia del proyecto. **Si se pierde, los usuarios tendrían que desinstalar para actualizar:** guárdala con copia de seguridad.
+Releases are signed with the project's own key. **If it is lost, users would have to uninstall to update:** keep it backed up.
 
-1. Crear la clave (fuera del repo):
+1. Create the key (outside the repo):
    ```sh
    keytool -genkeypair -v -keystore ultimatemaps-release.jks -alias ultimatemaps \
      -keyalg RSA -keysize 4096 -validity 10000
    ```
-2. Añadir estos secretos en GitHub (Settings → Secrets and variables → Actions):
+2. Add these secrets to GitHub (Settings → Secrets and variables → Actions):
    - `UM_KEYSTORE_BASE64`: `base64 -w0 ultimatemaps-release.jks`
    - `UM_KEYSTORE_PASSWORD`, `UM_KEY_ALIAS` (`ultimatemaps`), `UM_KEY_PASSWORD`
-3. Para F-Droid, la huella del certificado (`AllowedAPKSigningKeys`):
+3. For F-Droid, the certificate fingerprint (`AllowedAPKSigningKeys`):
    ```sh
    keytool -list -v -keystore ultimatemaps-release.jks -alias ultimatemaps | grep SHA256
    ```
 
-Sin esas variables, `./gradlew :app:assembleFossRelease` genera un APK **sin firmar** (`app-foss-release-unsigned.apk`), que es lo que compara F-Droid. El workflow **falla** si falta el secreto, para no publicar nunca un APK sin firmar.
+Without those variables, `./gradlew :app:assembleFossRelease` produces an **unsigned** APK (`app-foss-release-unsigned.apk`), which is what F-Droid compares against. The workflow **fails** if the secret is missing, so an unsigned APK is never published.
 
-## Hacer un release
+## Making a release
 
-1. Mover las notas de `[Unreleased]` en `CHANGELOG.md` bajo `## [X.Y.Z] - AAAA-MM-DD`.
-2. Poner `appVersion=X.Y.Z` en `gradle.properties`.
-3. Commit (`chore: release X.Y.Z`), merge a `master`, y entonces el tag:
+1. Move the `[Unreleased]` notes in `CHANGELOG.md` under `## [X.Y.Z] - YYYY-MM-DD`.
+2. Set `appVersion=X.Y.Z` in `gradle.properties`.
+3. Commit (`chore: release X.Y.Z`), merge to `master`, then tag:
    ```sh
    git tag vX.Y.Z && git push origin vX.Y.Z
    ```
-4. El workflow comprueba que el tag coincide con `appVersion` y que hay notas, ejecuta `test`, `lintFossRelease`, compila el APK firmado y publica la Release con `UltimateMaps-X.Y.Z.apk` y su `.sha256`. Las candidatas (`-rc.N`) salen como pre-release.
+4. The workflow checks that the tag matches `appVersion` and that there are notes, runs `test` and `lintFossRelease`, builds the signed APK and publishes the Release with `UltimateMaps-X.Y.Z.apk` and its `.sha256`. Release candidates (`-rc.N`) are published as pre-releases.
 
-## Estado de la preparación (2026-10-07)
+## Test pre-releases (what has been published so far)
 
-**Preparado en el repo** (verificado en local, no en GitHub): `LICENSE` (GPL-3.0), `README.md`, `PRIVACY.md` (es/en), `CHANGELOG.md` con notas de `0.1.0-rc.1`, `fastlane/metadata/android/{en-US,es-ES}` (título, descripciones y changelog 10001), borrador `fdroid/com.qtekfun.mapas.yml` (sin la sección `Builds`), versión única `appVersion` con `versionCode` derivado, firma por entorno, `release.yml` (instala NDK y CMake exactos, prepara el submódulo, falla sin clave, publica APK y `.sha256`), `usesCleartextTraffic="false"`, `allowBackup="false"`, y `LICENSES.md` al día (incluido `kdtree++`, Artistic License 2.0 verificada en cabeceras).
+Test builds are published by hand as **pre-releases signed with the debug key**, tagged `test-v0.1.0-rc.N` (never `v*`: that would trigger the release workflow without the signing secrets). Each one points at the exact commit it was built from and says in its notes what was and was not tested on a device. They cannot be updated to an official build signed with the project key: users must uninstall first.
 
-### Solo puedes hacerlo tú (CLAUDE.md, «Cuándo preguntar» nº 4 y 5)
+## Status (2026-10-07)
 
-1. **Clave y secretos** `UM_KEYSTORE_BASE64`, `UM_KEYSTORE_PASSWORD`, `UM_KEY_ALIAS`, `UM_KEY_PASSWORD` (sección «Firma»). Guarda la clave con copia: si se pierde, hay que desinstalar para actualizar.
-2. **Crear `master` en GitHub**: hoy `origin` está vacío y el flujo prohíbe empujar a `master` directamente. Hay que autorizar un primer `git push origin master` (o hacerlo tú) y proteger la rama (plantilla en `~/repos/ruleset-master.json`).
-3. **CI (`ci.yml`)**: existe `mapas-ci.yml` en la raíz, con `main` en vez de `master`; tocar `.github/workflows/` requiere tu visto bueno. Sin CI el merge automático no tiene puerta.
-4. **Primer tag** `v0.1.0-rc.1` tras poner fecha en `CHANGELOG.md`: `git tag v0.1.0-rc.1 && git push origin v0.1.0-rc.1`.
-5. **Avisar al proyecto CoMaps** de que alojamos copias de sus `.mwm` (no encontramos condiciones de uso del CDN) y decidir si se anuncia antes.
-6. **Icono y capturas** para las tiendas (`fastlane/.../images/`): hoy hay un `ic_launcher` provisional y ninguna captura.
+**Ready in the repo** (checked locally, not on GitHub): `LICENSE` (GPL-3.0), `README.md`, `PRIVACY.md` (English and Spanish), `CHANGELOG.md`, `fastlane/metadata/android/{en-US,es-ES}` (title, descriptions and changelog), a draft `fdroid/com.qtekfun.mapas.yml` (without the `Builds` section), a single `appVersion` with a derived `versionCode`, environment-based signing, `release.yml` (installs the exact NDK and CMake, prepares the submodule, fails without the key, publishes the APK and `.sha256`), `usesCleartextTraffic="false"`, `allowBackup="false"`, and an up-to-date `LICENSES.md`.
 
-### Necesita el Pixel 8 (prohibido hasta nuevo aviso del usuario)
+### Only the project owner can do these (see CLAUDE.md, "When to ask" items 4 and 5)
 
-- Descarga de una región **desde la app** con la URL por defecto (no probada nunca), con pausa y reanudación.
-- Captura de tráfico con el **modo sin red** activo (RF-12: cero conexiones salientes) y al arrancar (debe ser cero).
-- Latencia de búsqueda (umbral 100 ms; medida 484-4201 ms) y ruta larga con las 25 regiones (umbral 2 s).
-- Fluidez con etiquetas y varias regiones, memoria, y un segundo dispositivo (gama media, sin GMS).
-- **Minificado (R8):** hoy desactivado; activarlo exige probar JNI y MapLibre minificados.
+1. **Key and secrets** `UM_KEYSTORE_BASE64`, `UM_KEYSTORE_PASSWORD`, `UM_KEY_ALIAS`, `UM_KEY_PASSWORD` (see "Signing").
+2. **Protect `master`** (a template is in `~/repos/ruleset-master.json`).
+3. **CI (`ci.yml`)**: a `mapas-ci.yml` sits in the repository root with `main` instead of `master`; touching `.github/workflows/` needs the owner's approval. Without CI there is no gate for automatic merging.
+4. **First tag** `v0.1.0-rc.3` (or later) after dating the `CHANGELOG`: `git tag v0.1.0-rc.3 && git push origin v0.1.0-rc.3`.
+5. **Tell the CoMaps project** that we host copies of their `.mwm` files (we found no terms of use for their CDN) and decide whether to announce before that.
+6. **Icon and screenshots** for the stores (`fastlane/.../images/`): there is only a provisional `ic_launcher` and no screenshot.
 
-### Riesgos conocidos para F-Droid
+### Needs a device (the Pixel 8 only with the user's explicit permission)
 
-- **Compilar el núcleo necesita red y PyPI** (`scripts/comaps-prepare.sh` instala `protobuf` con pip y clona ~2 GB de submódulos). Los servidores de F-Droid limitan la red durante la compilación: probablemente haya que **versionar los ficheros generados** (clasificador, categorías, reglas de estilo, cadenas; <3 MB) y dejar el script solo para regenerarlos.
-- La entrada `Builds` (versión, `versionCode`, commit, `submodules: true`, `sudo` con JDK 21) se escribe al tener el tag; ver `~/repos/ultimatedeck/fdroid/` como modelo.
-- Anti-features: por descargar de GitHub puede aplicarse `NonFreeNet` o similar; lo decide la revisión.
-- El texto de la Artistic License 2.0 de `kdtree++` no viene en el submódulo: incluirlo en un `NOTICE` o en «Acerca de» (la app aún no tiene pantalla «Acerca de»; la atribución de OSM sí está siempre en el mapa).
+- Navigation screen, voice and the navigation service on a real device.
+- Traffic capture with **offline mode** on (RF-12: zero outgoing connections) and at start-up (must be zero).
+- Search latency (target 100 ms; measured 300–4000 ms) and long routes with all 25 regions (target 2 s); the cause of `ROUTE_NOT_FOUND` on long routes.
+- Smoothness with labels and several regions, memory, and a second device (mid-range, without GMS).
+- **Minification (R8):** currently off; enabling it requires testing JNI and MapLibre minified.
+
+### Known F-Droid risks
+
+- **Building the core needs network and PyPI** (`scripts/comaps-prepare.sh` installs `protobuf` with pip and clones ~2 GB of submodules). F-Droid's build servers restrict network access during builds: the generated files (classificator, categories, style rules, strings; <3 MB) will probably have to be **committed**, keeping the script only to regenerate them.
+- The `Builds` entry (version, `versionCode`, commit, `submodules: true`, `sudo` with JDK 21) is written once the tag exists; use `~/repos/ultimatedeck/fdroid/` as a model.
+- Anti-features: downloading from GitHub may attract `NonFreeNet` or similar; the review decides.
+- The Artistic License 2.0 text of `kdtree++` does not ship in the submodule: include it in a `NOTICE` or an "About" screen (the app has no "About" screen yet; the OSM attribution is always on the map).
