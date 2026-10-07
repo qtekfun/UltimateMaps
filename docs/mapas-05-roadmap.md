@@ -38,6 +38,15 @@ Total orientativo hasta F5: 6-12 meses. Cada fase termina con una versión utili
 | R16 | Un solo dispositivo de prueba (gama alta con GMS) | Cierta | Alto | Conseguir gama media, ROM china sin GMS y de-Googled |
 | R17 | Volumen de datos de C (≈ 5,3 GB para España) | Media | Medio | Descarga por regiones; valorar estilo con datos .mwm |
 
+## Ideas pendientes de decidir (propuestas del usuario, 2026-10-07)
+
+| Idea | Encaje | Notas y lo que falta verificar |
+| --- | --- | --- |
+| **Precios de gasolineras por combustible** (GLP, gasolina, diésel…) | Bueno, si es opcional y se descarga entero (no se envía la ubicación) | Fuente candidata: servicio abierto del Ministerio (Geoportal de gasolineras), un único JSON nacional con precios por combustible. **De memoria, sin verificar:** URL, campos, frecuencia de actualización, tamaño, condiciones de reutilización. Los datos son una foto (diaria), no tiempo real |
+| **Transporte público en tiempo real** (Cercanías, Metro…) | Regular: choca con «Qué no hacemos» y con la regla de todo en el dispositivo; es opcional y con red | Cada operador tiene su API (Renfe publica datos abiertos; Metro de Madrid y otros pueden pedir clave). **Sin verificar:** disponibilidad, formato, claves, licencias. Una clave embebida en una app libre queda expuesta. Alternativa: GTFS estático sin conexión (horarios) y tiempo real solo bajo petición |
+
+Ambas requieren una decisión de producto y un spike de verificación antes de escribir código. Reglas que se mantienen: todo pasa por `NetworkPolicy`, desactivado por defecto, sin enviar ubicación del usuario.
+
 ## Qué no hacemos (de momento)
 
 Tráfico, transporte público, reseñas y fotos, iOS, cuentas y servidores propios.
