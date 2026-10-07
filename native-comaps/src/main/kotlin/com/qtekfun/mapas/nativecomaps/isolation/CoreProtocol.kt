@@ -29,6 +29,9 @@ object CoreProtocol {
     const val OP_RELEASE = 6
     const val OP_PING = 7
 
+    /** Same payload as [OP_SEARCH] ([SearchArgs]); the query is a category name and the core searches it as a pure category. */
+    const val OP_SEARCH_CATEGORY = 8
+
     /** Not a normal call: `oneway`, makes the core process kill itself (the only way to stop a native calculation). */
     const val OP_KILL = 99
 
@@ -89,7 +92,9 @@ object CoreProtocol {
         InitArgs(readText(i) ?: "", readText(i) ?: "", readText(i) ?: "", readText(i) ?: "en")
     }
 
-    class SearchArgs(val query: String, val near: LatLon?, val limit: Int, val locale: String, val timeoutMs: Int)
+    class SearchArgs(
+        val query: String, val near: LatLon?, val limit: Int, val locale: String, val timeoutMs: Int,
+    )
 
     fun encodeSearch(a: SearchArgs): ByteArray = write { out ->
         writeText(out, a.query)

@@ -76,7 +76,7 @@ public:
   int RefreshMaps();
 
   std::vector<SearchHit> Search(std::string const & query, bool hasPos, double lat, double lon, int limit,
-                                int timeoutMs, std::string const & locale);
+                                int timeoutMs, std::string const & locale, bool categorial = false);
 
   // withGuidance = false leaves the route exactly as before (no extra cost).
   RouteOut Route(Profile profile, std::vector<double> const & latLonPoints, int32_t avoidFlags, int timeoutSec,

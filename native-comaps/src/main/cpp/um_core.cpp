@@ -380,7 +380,7 @@ int Core::RefreshMaps()
 }
 
 std::vector<SearchHit> Core::Search(std::string const & query, bool hasPos, double lat, double lon, int limit,
-                                    int timeoutMs, std::string const & locale)
+                                    int timeoutMs, std::string const & locale, bool categorial)
 {
   std::vector<SearchHit> out;
   if (!m_impl->initialized)
@@ -404,6 +404,8 @@ std::vector<SearchHit> Core::Search(std::string const & query, bool hasPos, doub
   params.m_suggestsEnabled = false;
   params.m_needAddress = true;
   params.m_needHighlighting = false;
+  // Pure category results (the query is a category name such as "pharmacy"): no matching on feature names.
+  params.m_categorialRequest = categorial;
   params.m_timeout = std::chrono::milliseconds(timeoutMs > 0 ? timeoutMs : 8000);
   if (hasPos)
   {

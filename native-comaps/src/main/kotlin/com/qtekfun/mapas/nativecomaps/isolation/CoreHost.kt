@@ -61,10 +61,15 @@ class CoreHost(private val core: CoreHandle, private val maxParked: Int = 4) {
                 if (!initialized) return errorReply(CoreProtocol.ERR_NOT_INITIALIZED, "not initialized")
                 ok(CoreProtocol.write { it.writeInt(core.refreshMaps()) })
             }
-            CoreProtocol.OP_SEARCH -> {
+            CoreProtocol.OP_SEARCH, CoreProtocol.OP_SEARCH_CATEGORY -> {
                 if (!initialized) return errorReply(CoreProtocol.ERR_NOT_INITIALIZED, "not initialized")
                 val a = CoreProtocol.decodeSearch(payload)
-                val results = core.searchEngine(a.locale, a.timeoutMs).search(a.query, a.near, a.limit)
+                val engine = core.searchEngine(a.locale, a.timeoutMs)
+                val results = if (op == CoreProtocol.OP_SEARCH_CATEGORY) {
+                    engine.searchCategory(a.query, a.near, a.limit)
+                } else {
+                    engine.search(a.query, a.near, a.limit)
+                }
                 respond(CoreProtocol.encodeSearchResults(results))
             }
             CoreProtocol.OP_ROUTE -> {

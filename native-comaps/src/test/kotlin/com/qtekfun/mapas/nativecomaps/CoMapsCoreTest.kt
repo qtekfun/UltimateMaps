@@ -15,12 +15,26 @@ internal class FakeBridge : NativeBridge {
     var lastRoute: Triple<Int, List<Double>, Int>? = null
     var routeReply = doubleArrayOf(0.0, 1500.0, 120.0, 40.0, -3.0, 40.1, -3.1)
     var searchReply = arrayOf("Cafe Central", "Calle Mayor 1", "cafe", "40.4168", "-3.7038")
+    var plainSearches = 0
+    var categorySearches = 0
+    var lastCategoryQuery: String? = null
 
     override fun init(apk: String, writableDir: String, tmpDir: String, locale: String) = initError
     override fun refreshMaps() = 3
     override fun search(
         query: String, hasPos: Boolean, lat: Double, lon: Double, limit: Int, timeoutMs: Int, locale: String,
-    ) = searchReply
+    ): Array<String> {
+        plainSearches++
+        return searchReply
+    }
+
+    override fun searchCategory(
+        query: String, hasPos: Boolean, lat: Double, lon: Double, limit: Int, timeoutMs: Int, locale: String,
+    ): Array<String> {
+        categorySearches++
+        lastCategoryQuery = query
+        return searchReply
+    }
 
     override fun route(profile: Int, points: DoubleArray, avoidFlags: Int, timeoutSec: Int): DoubleArray {
         lastRoute = Triple(profile, points.toList(), avoidFlags)
@@ -57,6 +71,21 @@ class CoMapsCoreTest {
         assertEquals("Cafe Central", r[0].name)
         assertEquals("cafe", r[0].category)
         assertEquals(LatLon(40.4168, -3.7038), r[0].point)
+    }
+
+    @Test fun `category search uses the category mode of the bridge`() {
+        val f = FakeBridge()
+        val r = core(f).searchEngine().searchCategory(" pharmacy ", a)
+        assertEquals(1, r.size)
+        assertEquals(1, f.categorySearches)
+        assertEquals(0, f.plainSearches)
+        assertEquals("pharmacy", f.lastCategoryQuery)
+    }
+
+    @Test fun `blank category never reaches the engine`() {
+        val f = FakeBridge()
+        assertTrue(core(f).searchEngine().searchCategory(" ").isEmpty())
+        assertEquals(0, f.categorySearches)
     }
 
     @Test fun `blank query never reaches the engine`() {

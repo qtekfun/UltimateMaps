@@ -26,6 +26,7 @@ class IsolatedCoreTest {
     private class Bridge : NativeBridge {
         val inits = AtomicInteger()
         val searches = AtomicInteger()
+        val categorySearches = AtomicInteger()
         val routes = AtomicInteger()
         @Volatile var routePoints = 2
         @Volatile var onRoute: () -> Unit = {}
@@ -36,6 +37,10 @@ class IsolatedCoreTest {
         override fun search(query: String, hasPos: Boolean, lat: Double, lon: Double, limit: Int, timeoutMs: Int, locale: String): Array<String> {
             searches.incrementAndGet()
             return arrayOf("Cafe Central", "Calle Mayor 1", "cafe", "40.4168", "-3.7038")
+        }
+        override fun searchCategory(query: String, hasPos: Boolean, lat: Double, lon: Double, limit: Int, timeoutMs: Int, locale: String): Array<String> {
+            categorySearches.incrementAndGet()
+            return arrayOf("Farmacia Sol", "Calle Luna 2", "pharmacy", "40.42", "-3.70")
         }
         override fun route(profile: Int, points: DoubleArray, avoidFlags: Int, timeoutSec: Int): DoubleArray {
             routes.incrementAndGet()
@@ -112,6 +117,15 @@ class IsolatedCoreTest {
         assertEquals(1, t.connects.get())
         assertEquals(1, t.bridge.inits.get())
         assertEquals(3, t.bridge.searches.get())
+    }
+
+    @Test fun `a category search crosses the process boundary as a category search`() {
+        val t = FakeTransport(Bridge())
+        val c = client(t)
+        val r = c.searchEngine().searchCategory("pharmacy", a)
+        assertEquals("Farmacia Sol", r.single().name)
+        assertEquals(1, t.bridge.categorySearches.get())
+        assertEquals(0, t.bridge.searches.get())
     }
 
     @Test fun `refresh is remembered and replayed after a restart`() {
