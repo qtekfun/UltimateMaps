@@ -1,1 +1,0 @@
-Versión candidata: panel de ruta más claro, vista 3D al navegar y botón de Ajustes más visible. Mapa sin conexión, descarga de regiones, búsqueda sin conexión, navegación paso a paso con voz y precios de gasolineras (opcional). Solo España.
