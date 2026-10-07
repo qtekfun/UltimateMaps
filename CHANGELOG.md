@@ -4,6 +4,11 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 
 ## [Unreleased]
 
+### Added
+
+- **Add a stop while navigating.** Tapping a petrol station during navigation now offers "Add stop": the trip is planned again from where you are through the stops still ahead and the new one (placed where it adds the least detour) to the same destination, and the navigation, voice and camera carry on without restarting. At most 5 stops ahead; if no route is found the trip goes on as before and says so. Verified with simulated trips and a fake route provider only; not tried on a device.
+- **Track recording** (optional, off by default, Settings, Track recording). Start and Stop recording in the Tracks list saves your own trip as a track on the device only: a sparse sample of your fixes (denser when slow, sparser when fast), paused by itself after a long stop, written to a private journal as it goes so a crash loses almost nothing. The track works with the existing GPX export and the "tracks on the map" layer, and recorded tracks can be deleted with one tap (one by one, or all of them in Settings). It records while the app is open or while you navigate; there is no background service for free recording. Verified with simulated fixes and a fake clock only; not tried on a device.
+
 ## [0.1.0-rc.6] - pending
 
 ### Added
