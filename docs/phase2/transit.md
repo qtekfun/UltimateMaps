@@ -1,8 +1,8 @@
 # Transit routing spike (schedule-based, Madrid)
 
-Status: spike, branch `spike/transit-madrid`, 2026-10-07. Covers rows N10 (public transit directions) and M6 (static
+Status: spike (`spike/transit-madrid`), then built into a feature on `feat/transit` (section 7), 2026-10-07. Covers rows N10 (public transit directions) and M6 (static
 transit layer) of `feature-gap-analysis.md`. Goal chosen by the owner: **theoretical (timetable) routes computed fully
-offline on the device from static GTFS. Real time is out of scope.** No UI was built.
+offline on the device from static GTFS. Real time is out of scope.** The spike itself built no UI; section 7 describes what was built afterwards.
 
 Rule for this document: every number below comes from a run on the real feeds (log files kept in
 `docs/phase2/transit-bench-2026-10-07.txt` (decimal commas in that log are the JVM locale)) or from a file I read; anything else is marked *not measured* or *not verified*.
@@ -238,3 +238,36 @@ curl -sL -o renfe_cercanias.zip https://ssl.renfe.com/ftransit/Fichero_CER_FOMEN
 ./gradlew --no-daemon -Dorg.gradle.workers.max=2 -Dorg.gradle.jvmargs=-Xmx1536m :core-transit:test
 ./gradlew --no-daemon -Dorg.gradle.workers.max=2 -Dorg.gradle.jvmargs=-Xmx1536m :core-transit:transitBench -PtransitData=$HOME/mapas-data/transit/raw
 ```
+
+## 7. The feature as built (branch `feat/transit`)
+
+What exists, verified by JVM and Robolectric tests only (nothing was tried on a device; no `adb` was used):
+
+| Piece | Where |
+|---|---|
+| Itinerary model for UI and follower | `core-transit/.../Itinerary.kt`: `Itinerary`, `ItineraryLeg.Walk`, `ItineraryLeg.Ride` (line, headsign, every stop from boarding to alighting with name, coordinates and arrival/departure as absolute epoch seconds, `shape` null for now), `LineInfo` (GTFS colours or a per-mode default, readable text colour) |
+| Planning with validity | `TransitService.plan(origin, destination, departAt: Instant)` returns `Found` (up to 3 itineraries, sorted by arrival; fewer distinct options are completed with the next departures), `NoRoute`, `Expired(lastDay)` or `NotYetValid(firstDay)`; the schedule is converted with the city's time zone (GTFS "noon minus 12 h" day start, so a clock-change day is right) |
+| Index validity | `TransitIndex.validity()`: intersection of the feeds' calendar ranges, derived from the services of the kept trips (feeds without `feed_info`, like EMT, would otherwise look unbounded); feeds built with the range ignored are counted as unverified |
+| Data build | `TransitBuildCli` (`./gradlew :core-transit:buildTransit`, wrapper `scripts/build-transit.sh MANIFEST INPUT_DIR OUTPUT_DIR [DATE]`), manifest `scripts/transit/madrid.json` (feeds, namespaces, attribution text, bounding box). Downloads nothing. Leaves out and reports expired feeds, drops non-positive-duration trips, writes `transit-<id>.umti` and `transit-<id>.json` |
+| Catalog | `gen-region-catalog.py --transit-file transit-madrid.umti --transit-base URL` (repeatable) adds `"transit": [{id, city, url, size, sha256, file, validFrom, validTo, timezone, bounds, attribution[]}]`; `RegionCatalog.transit` parses and validates it (schema stays 1; old catalogs and old apps are unaffected) |
+| Download | `TransitDataManager` (`:core-transit`): `ResumableDownloader` through the NetworkPolicy (`MAP_DOWNLOAD`), size and SHA-256 checked, parsed before it replaces the installed file, refused when expired; `TransitRepository` (app) lists catalog rows and installed cities, runs downloads only when the user presses Download in Maps, "Public transport" section (`TransitMapsSection`) |
+| Route panel | fourth segment `profile_transit` in `RoutePanel` (only when a `TransitController` is given; `RoutingProfile` is untouched), `TransitSection`: leave now / leave at (date and 15-minute steppers), option list, itinerary card, "theoretical times" note, validity and attribution with links; `TransitController` uses an injectable `TransitClock` |
+| Map | `MapEngine.showTransitItinerary(legs, fit)` (default no-op), implemented in `MapLibreEngine` (rides solid in the line colour, walking legs dashed) |
+| Attribution | itinerary footer and the About dialog (`TransitAboutBlock`) show the lines recorded in the index with tappable links; `LICENSES.md` has the CRTM and Renfe rows |
+
+### Real build of the Madrid index (2026-10-07, build date 2026-10-07, JVM, this laptop)
+
+`scripts/build-transit.sh scripts/transit/madrid.json ~/mapas-data/transit/raw ~/mapas-data/transit/out 2026-10-07`:
+5.9 s; 12,683 stops, 692 lines, 2,358 patterns, 196,396 trips, 4,662,559 stop_times; file 3,431,742 bytes (gzip -9: 1,239,993 bytes); 2,310 non-positive-duration trips dropped.
+Feed ranges read from the data: Metro Ligero 2026-01-01..2027-07-22, EMT 2026-09-29..2026-12-31, interurban 2026-09-10..2027-10-10, other urban 2026-09-10..2027-10-10, Renfe 2026-10-07..2026-11-05. **Metro de Madrid: ended 2026-05-27, left out.** The index is therefore valid 2026-10-07 to 2026-11-05 (limited by Renfe's rolling window) and has no Metro de Madrid lines.
+Metro Ligero shows a start of 2026-01-01 in this derivation (earlier than the feed's published 2026-07-22 version date): the start comes from its calendar, not from `feed_info`; harmless for validity (the intersection start is Renfe's 2026-10-07).
+
+### What the live step-by-step follower needs (next task)
+
+- The `Itinerary` as it is: ride stops with scheduled arrival/departure and coordinates are enough to show "next stop", "stops left", "get off at" and to compare time with the schedule ("I am X min ahead/behind"). Nothing in the model depends on the index.
+- Missing today: **shapes** (to project the position along the line instead of to the nearest stop; the index has none, a first follower can snap to the stop sequence), **a matching rule** between GNSS fixes and the current leg (nearest stop within a radius plus the stop order; metro has no GNSS underground, so it has to tolerate gaps and fall back to the schedule), **time zone and clock** (use `TransitClock` and the city zone; the model times are absolute), **a foreground service** if guidance must run with the screen off (owner decision, as for recording), **prompts** ("get off at the next stop", "transfer to line X, walk 120 m") through the existing voice queue, and a **"you are off the plan" re-plan** with `TransitService.plan` from the current position (it already takes any origin and instant).
+- The planner is synchronized and reuses a workspace: re-plans must run on one worker thread (the controller uses the IO dispatcher).
+
+### Not built / open
+
+Arrive-by, shapes, real time, accessibility and fares; pickup/drop-off restrictions and route-specific transfers; the speed plausibility filter for interurban trips (needs the publisher's answer); the EMT frequency semantics (section 3, item 2); the licence question about "always up to date" (`docs/decisions.md`); a static transit layer on the map (M6); the weekly workflow step that downloads the zips, runs the build and passes the files to `gen-region-catalog.py` (not touched: `.github/workflows/` is the owner's); a measurement on a device.
