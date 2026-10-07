@@ -4,9 +4,16 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 
 ## [Unreleased]
 
+## [0.1.0-rc.5] - pending
+
 ### Added
 
 - Navigation 3D view: tilted "course up" camera with the marker in the lower third, zoom by speed and by the next maneuver, a 2D/3D toggle (also in Settings, Navigation), a route overview button, a heading arrow and, optionally, 3D buildings. Not seen on a device yet; see `docs/phase2/nav-3d.md`.
+
+### Changed
+
+- The route panel has a clear hierarchy: a header with a close icon, one From/To card, an options row that expands, and a single primary action (Start) with Simulate as a secondary one.
+- The Settings gear on the map now sits on the same chip as the other map buttons, so it no longer disappears over the map.
 
 ## [0.1.0-rc.4] - pending
 
