@@ -74,6 +74,8 @@ class SettingsEnv(
     val cameras: CamerasSettingsEnv? = null,
     /** Track recording section (switch and delete); null hides it. */
     val recording: RecordingSettingsEnv? = null,
+    /** Language of place information section (search results and place card); null hides it. */
+    val placeLanguage: PlaceLanguageSettingsEnv? = null,
     /** Backup and restore section (export, import, export everything); null hides it. */
     val backup: BackupSettingsEnv? = null,
 )
@@ -110,6 +112,7 @@ fun SettingsScreen(env: SettingsEnv, onBack: () -> Unit, modifier: Modifier = Mo
             key(env.backup?.state?.revision ?: 0) {
                 PrivacySection(env, settings, offline)
                 FuelSection(env, settings, offline)
+                env.placeLanguage?.let { PlaceLanguageSection(it) }
                 env.cameras?.let { CamerasSection(it) }
                 env.navigation?.let { NavigationSection(it) }
                 env.history?.let { HistorySection(it) }

@@ -12,6 +12,7 @@ import com.qtekfun.mapas.MapasApp
 import com.qtekfun.mapas.places.openPlacesService
 import com.qtekfun.mapas.regions.RegionsActivity
 import com.qtekfun.mapas.search.PrefsHistorySettings
+import com.qtekfun.mapas.search.PrefsPlaceLanguageStore
 import com.qtekfun.mapas.settings.backup.AndroidPlacesBackup
 import com.qtekfun.mapas.settings.backup.AndroidSettingsStorage
 import com.qtekfun.mapas.settings.backup.PrefsPendingRestore
@@ -64,6 +65,7 @@ class SettingsActivity : ComponentActivity() {
                 app.cameraSettings, app.cameraData, app.incidents, offline = { regions.offline }, onChanged = app::ensureCameraAlerts,
             ),
             recording = RecordingSettingsEnv(app.recording),
+            placeLanguage = PlaceLanguageSettingsEnv(PrefsPlaceLanguageStore(this)),
             backup = backupEnv(app),
         )
         setContent {
