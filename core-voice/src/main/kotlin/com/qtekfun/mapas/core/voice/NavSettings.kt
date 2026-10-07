@@ -57,6 +57,10 @@ data class NavSettings(
     val avoidTolls: Boolean = false,
     val avoidFerries: Boolean = false,
     val avoidUnpaved: Boolean = false,
+    /** The navigation screen follows the user with a tilted 3D camera (false: flat 2D, north or course up). */
+    val view3d: Boolean = true,
+    /** Extruded 3D buildings in the 3D view. Its cost on mid-range phones has not been measured. */
+    val buildings3d: Boolean = true,
 ) {
     fun normalized(): NavSettings = copy(volumePercent = volumePercent.coerceIn(MIN_VOLUME, 100))
 
