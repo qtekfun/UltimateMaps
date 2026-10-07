@@ -8,6 +8,8 @@ data class SearchResult(
     val address: String? = null,
     /** Human-readable feature type (e.g. "cafe"), when the engine provides it. */
     val category: String? = null,
+    /** Phone, website, wheelchair and opening hours from the OSM tags; null while the engine does not provide them. */
+    val extras: PlaceExtras? = null,
 )
 
 /** On-device search/geocoding contract. */
