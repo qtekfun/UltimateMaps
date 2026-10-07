@@ -26,6 +26,7 @@ import com.qtekfun.mapas.nav.SimulationAwareEnvironment
 import com.qtekfun.mapas.nav.SwitchableLocationSource
 import com.qtekfun.mapas.regions.CoreLinks
 import com.qtekfun.mapas.regions.RegionsController
+import com.qtekfun.mapas.voice.VoiceNavSink
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -84,7 +85,7 @@ class MapasApp : Application() {
 
     /**
      * The model of the navigation screen (start, stop, simulate, resume, arrival summary). Lives with the application
-     * so the screen survives the activity. The voice (someone else's work) plugs in with [NavScreenController.addSink].
+     * so the screen survives the activity. The voice plugs in with [NavScreenController.addSink] ([VoiceNavSink]).
      */
     val navScreen: NavScreenController by lazy {
         val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
@@ -95,7 +96,7 @@ class MapasApp : Application() {
             location = navLocation,
             service = AndroidNavServiceControl(this),
             prefs = SharedNavUiPrefs(this),
-        )
+        ).also { it.addSink(VoiceNavSink(this)) }
     }
 
     override fun onCreate() {

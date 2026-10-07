@@ -55,6 +55,12 @@ import com.qtekfun.mapas.ui.NavIcons
 import com.qtekfun.mapas.ui.theme.Mapas
 import com.qtekfun.mapas.ui.theme.NavTheme
 import com.qtekfun.mapas.ui.theme.NavigationTheme
+import android.content.Intent
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import com.qtekfun.mapas.settings.SettingsActivity
+import com.qtekfun.mapas.voice.VoiceModule
+import com.qtekfun.mapas.voice.VoiceProblemBanner
 
 /** What the buttons of the navigation screen do. */
 class NavActions(
@@ -108,9 +114,13 @@ fun NavScreen(ui: NavUi, actions: NavActions, dark: Boolean, modifier: Modifier 
 @Composable
 private fun BoxScope.Driving(ui: NavUi, nav: NavState, actions: NavActions) {
     val c = NavTheme.colors
+    val context = LocalContext.current
+    val voiceStatus by VoiceModule.guide(context).status.collectAsState()
     Column(Modifier.align(Alignment.TopCenter).fillMaxWidth()) {
         Banner(ui, nav)
         StatusStrip(ui)
+        // Without a text-to-speech engine (frequent without Google) the trip goes on silently: say so, and where to fix it.
+        VoiceProblemBanner(voiceStatus, onClick = { context.startActivity(Intent(context, SettingsActivity::class.java)) })
     }
     Column(
         Modifier.align(Alignment.BottomStart).fillMaxWidth().windowInsetsPadding(WindowInsets.navigationBars),
