@@ -32,6 +32,8 @@ class NavigationSettingsEnv(
     val store: NavSettingsStore,
     val guide: VoiceGuide,
     val locale: () -> Locale = Locale::getDefault,
+    /** Live Update chips exist from Android 16 (API 36); below it the switch is hidden. */
+    val liveUpdateAvailable: Boolean = android.os.Build.VERSION.SDK_INT >= 36,
 )
 
 /**
@@ -132,6 +134,18 @@ fun NavigationSection(env: NavigationSettingsEnv) {
                 checked = s.buildings3d,
                 tag = "nav_buildings3d_switch",
                 onChange = { on -> env.store.update { it.copy(buildings3d = on) } },
+            )
+        }
+    }
+    if (env.liveUpdateAvailable) {
+        Spacer(Modifier.height(10.dp))
+        Card("nav_live_update_card") {
+            SwitchRow(
+                title = stringResource(R.string.live_update_title),
+                body = stringResource(R.string.live_update_body),
+                checked = s.liveUpdateChip,
+                tag = "nav_live_update_switch",
+                onChange = { on -> env.store.update { it.copy(liveUpdateChip = on) } },
             )
         }
     }

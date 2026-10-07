@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="live_update_title">Mostrar la distancia en la barra de estado</string>
+    <string name="live_update_body">En Android 16 y posteriores, la distancia al próximo giro aparece como una burbuja en la barra de estado mientras navegas. También puedes desactivar las notificaciones promocionadas de esta app en los ajustes del sistema.</string>
+    <!-- Chip texts: the status bar chip fits about 7 characters. -->
+    <string name="live_update_chip_reroute">Recalc.</string>
+    <string name="live_update_chip_no_signal">Sin GPS</string>
+</resources>
