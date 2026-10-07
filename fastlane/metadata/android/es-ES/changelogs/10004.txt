@@ -1,0 +1,1 @@
+Versión candidata (MVP): mapa sin conexión, descarga de regiones, búsqueda sin conexión, ruta con paradas, pantalla de navegación con voz y simulación de ruta, precios de gasolineras (opcional), Ajustes, GPX/KML y enlaces de mapas. Solo España.

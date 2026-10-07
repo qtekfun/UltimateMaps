@@ -4,9 +4,9 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 
 ## [Unreleased]
 
-## [0.1.0-rc.3] - pending
+## [0.1.0-rc.4] - pending
 
-First release candidate (`rc.1` and `rc.2` only existed as test pre-releases): an MVP under development (see `docs/mvp-plan.md`), not a finished app. Spain only.
+First release candidate (`rc.1` to `rc.3` only existed as test pre-releases): an MVP under development (see `docs/mvp-plan.md`), not a finished app. Spain only.
 
 ### Added
 
@@ -19,16 +19,21 @@ First release candidate (`rc.1` and `rc.2` only existed as test pre-releases): a
 - Location without Google Play Services.
 - **Settings screen** (gear on the map): privacy (offline mode, catalog, list of possible connections), petrol stations and navigation.
 - **Petrol stations and prices** (optional, off by default): downloads only the fuels you tick (LPG, petrols, diesels, CNG…), draws the price of the chosen fuel over each station, and opens a card on tap with **Go** and **Add stop**. Prices are published by the Spanish Ministry for the Ecological Transition and are unofficial; the location never leaves the device.
-- **Navigation screen** (not yet tested on a device): *Start* and *Simulate* buttons in the route panel; banner with the turn, street and lanes, speed limit with a warning, arrival time, night mode and glove mode, screen kept on, resume after an unexpected close.
+- **Navigation screen** (seen working on one device; long trips untested): *Start* and *Simulate* buttons in the route panel; banner with the turn, street and lanes, speed limit with a warning, arrival time, night mode and glove mode, screen kept on, resume after an unexpected close.
 - **Voice guidance** (not yet tested on a device): English and Spanish phrases, km/mi, a prioritized queue, audio-focus ducking, and a guide to install a free text-to-speech engine without GMS; voice, volume, units, language and "avoid by default" options in Settings.
 - Search box in the maps list and a bottom sheet that is easier to drag.
 - The search and routing engine runs in its own process: if it fails, the app keeps running.
 - English and Spanish strings.
 
+### Fixed since rc.3
+
+- The status-bar icons (clock, battery, signal) were unreadable on the dark navigation banner; they are now white while navigating.
+- Imported places without a name are now called "(unnamed)" instead of a Spanish placeholder.
+
 ### Known limitations
 
 - **Speed:** search takes 0.3 to 4 s per query on a Pixel 8 with 7 regions (the target was 0.1 s). Long routes (for example Madrid–Barcelona) return "route not found" with the 7 regions tested.
-- The navigation screen and the voice have only automated tests; nothing has been verified on a device yet.
+- The navigation screen has been seen working on one real device (banner, next maneuver, arrival time, speed); the voice, battery use and long trips have only automated tests so far.
 - Lanes have only been seen on urban routes; speed limits exist for car routes only; there is no motorcycle profile.
 - With many regions installed, map performance has not been measured.
 - Tested on a single device (high-end, with GMS). Not tested: Chinese ROMs, devices without Google, mid-range phones.
