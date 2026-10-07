@@ -14,7 +14,8 @@ import java.util.Locale
 object CoordinateQuery {
     enum class Kind { DECIMAL, DMS, PLUS_CODE, PLUS_CODE_SHORT }
 
-    data class Parsed(val point: LatLon, val kind: Kind)
+    /** [plusCode] is the full upper-case code for the Plus Code kinds (a short code completed), null for degrees. */
+    data class Parsed(val point: LatLon, val kind: Kind, val plusCode: String? = null)
 
     /**
      * [reference] (the map centre) is only used to complete a short Plus Code; without it short codes are not
@@ -31,10 +32,10 @@ object CoordinateQuery {
     private fun plusCode(t: String, reference: LatLon?): Parsed? {
         if (t.indexOf('+') < 0 || t.any { it.isWhitespace() }) return null
         if (!OpenLocationCode.isValid(t)) return null
-        if (OpenLocationCode.isFull(t)) return Parsed(OpenLocationCode.decode(t).center, Kind.PLUS_CODE)
+        if (OpenLocationCode.isFull(t)) return Parsed(OpenLocationCode.decode(t).center, Kind.PLUS_CODE, t.uppercase())
         if (reference == null || t.indexOf('+') < MIN_SHORT_PREFIX) return null
         val full = OpenLocationCode.recoverNearest(t, reference)
-        return Parsed(OpenLocationCode.decode(full).center, Kind.PLUS_CODE_SHORT)
+        return Parsed(OpenLocationCode.decode(full).center, Kind.PLUS_CODE_SHORT, full)
     }
 
     // ---- degrees ---------------------------------------------------------------------------------------------

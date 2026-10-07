@@ -14,6 +14,7 @@ import com.qtekfun.mapas.core.geo.LatLon
 import com.qtekfun.mapas.core.geo.distanceTo
 import com.qtekfun.mapas.core.geo.io.GpxExporter
 import com.qtekfun.mapas.core.geo.io.KmlExporter
+import com.qtekfun.mapas.core.search.PlaceExtras
 import com.qtekfun.mapas.core.search.SearchResult
 import java.io.InputStream
 import java.io.OutputStream
@@ -21,9 +22,16 @@ import java.net.URLEncoder
 import kotlin.math.roundToLong
 
 /** What the place card shows: a search result, or a saved place re-opened from a list. */
-data class PlaceInfo(val name: String, val point: LatLon, val address: String? = null, val category: String? = null)
+data class PlaceInfo(
+    val name: String,
+    val point: LatLon,
+    val address: String? = null,
+    val category: String? = null,
+    /** Phone, website, wheelchair and opening hours when the map data has them (null otherwise). */
+    val extras: PlaceExtras? = null,
+)
 
-fun SearchResult.toPlaceInfo() = PlaceInfo(name, point, address, category)
+fun SearchResult.toPlaceInfo() = PlaceInfo(name, point, address, category, extras)
 
 /** A row of a list screen. [distanceMeters] is null when the position of reference is unknown. */
 data class PlaceRow(val place: Place, val distanceMeters: Double?)
