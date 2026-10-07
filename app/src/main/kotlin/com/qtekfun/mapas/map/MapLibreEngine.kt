@@ -13,6 +13,7 @@ import com.qtekfun.mapas.core.map.CameraStateStore
 import com.qtekfun.mapas.core.map.MapEngine
 import com.qtekfun.mapas.core.map.MapTheme
 import com.qtekfun.mapas.core.map.TrackLine
+import com.qtekfun.mapas.core.map.TransitMapLeg
 import org.maplibre.android.MapLibre
 import org.maplibre.android.camera.CameraPosition
 import org.maplibre.android.camera.CameraUpdateFactory
@@ -107,6 +108,9 @@ class MapLibreEngine(
     private var routeSource: GeoJsonSource? = null
     private var pendingAlternatives: List<List<LatLon>> = emptyList()
     private var alternativesSource: GeoJsonSource? = null
+    private var pendingTransit: List<TransitMapLeg> = emptyList()
+    private var transitFit = false
+    private var transitSource: GeoJsonSource? = null
     private var pendingCategory: List<LatLon> = emptyList()
     private var categoryFit = false
     private var categorySource: GeoJsonSource? = null
@@ -340,6 +344,62 @@ class MapLibreEngine(
                 org.maplibre.geojson.MultiLineString.fromLngLats(lines.map { l -> l.map { Point.fromLngLat(it.lon, it.lat) } }),
             ),
         )
+    }
+
+    override fun showTransitItinerary(legs: List<TransitMapLeg>, fit: Boolean) {
+        pendingTransit = legs
+        transitFit = fit
+        pushTransit()
+    }
+
+    private fun pushTransit() {
+        val source = transitSource ?: return
+        if (map == null) return
+        val legs = pendingTransit.filter { it.points.size >= 2 }
+        if (legs.isEmpty()) {
+            source.setGeoJson(EMPTY_COLLECTION)
+            return
+        }
+        source.setGeoJson(
+            org.maplibre.geojson.FeatureCollection.fromFeatures(
+                legs.map { leg ->
+                    Feature.fromGeometry(org.maplibre.geojson.LineString.fromLngLats(leg.points.map { Point.fromLngLat(it.lon, it.lat) })).also {
+                        it.addStringProperty(TRANSIT_COLOR, "#%06X".format(leg.color and 0xFFFFFF))
+                        it.addBooleanProperty(TRANSIT_DASHED, leg.dashed)
+                    }
+                },
+            ),
+        )
+        if (transitFit) {
+            transitFit = false
+            val d = view.resources.displayMetrics.density
+            fitPoints(legs.flatMap { it.points }, (40 * d).toInt(), (80 * d).toInt(), (40 * d).toInt(), (300 * d).toInt(), 600)
+        }
+    }
+
+    /** Transit itinerary: white casing, solid line-coloured rides and dashed walking legs, under the markers. */
+    private fun addTransitLayer(style: Style, dark: Boolean) {
+        val source = GeoJsonSource(TRANSIT_SOURCE).also { transitSource = it }
+        style.addSource(source)
+        style.addLayer(
+            LineLayer(TRANSIT_CASING_LAYER, TRANSIT_SOURCE).withProperties(
+                lineColor(if (dark) 0xFF1C1C1E.toInt() else WHITE), lineWidth(routeWidth(ROUTE_CASING_EXTRA)),
+                lineCap(Property.LINE_CAP_ROUND), lineJoin(Property.LINE_JOIN_ROUND),
+            ).withFilter(Expression.eq(Expression.get(TRANSIT_DASHED), false)),
+        )
+        style.addLayer(
+            LineLayer(TRANSIT_LAYER, TRANSIT_SOURCE).withProperties(
+                lineColor(Expression.toColor(Expression.get(TRANSIT_COLOR))), lineWidth(routeWidth(0f)),
+                lineCap(Property.LINE_CAP_ROUND), lineJoin(Property.LINE_JOIN_ROUND),
+            ).withFilter(Expression.eq(Expression.get(TRANSIT_DASHED), false)),
+        )
+        style.addLayer(
+            LineLayer(TRANSIT_WALK_LAYER, TRANSIT_SOURCE).withProperties(
+                lineColor(Expression.toColor(Expression.get(TRANSIT_COLOR))), lineWidth(routeWidth(-1f)),
+                lineDasharray(arrayOf(1f, 1.5f)), lineCap(Property.LINE_CAP_BUTT), lineJoin(Property.LINE_JOIN_ROUND),
+            ).withFilter(Expression.eq(Expression.get(TRANSIT_DASHED), true)),
+        )
+        pushTransit()
     }
 
     override fun showCategoryPins(points: List<LatLon>, fit: Boolean) {
@@ -657,6 +717,7 @@ class MapLibreEngine(
             val pin = GeoJsonSource(PIN_SOURCE).also { pinSource = it }
             addTracksLayer(style, wanted == MapTheme.DARK) // below the route line
             addRouteLayer(style, wanted == MapTheme.DARK) // below the markers, pin and user dots
+            addTransitLayer(style, wanted == MapTheme.DARK)
             addHazardLayers(style, wanted == MapTheme.DARK)
             addFuelLayer(style, wanted == MapTheme.DARK)
             style.addSource(user)
@@ -782,6 +843,12 @@ class MapLibreEngine(
         const val ROUTE_LAYER = "mapas-route"
         const val ROUTE_CASING_LAYER = "mapas-route-casing"
         const val ROUTE_CASING_EXTRA = 4f
+        const val TRANSIT_SOURCE = "mapas-transit-src"
+        const val TRANSIT_LAYER = "mapas-transit"
+        const val TRANSIT_CASING_LAYER = "mapas-transit-casing"
+        const val TRANSIT_WALK_LAYER = "mapas-transit-walk"
+        const val TRANSIT_COLOR = "color"
+        const val TRANSIT_DASHED = "dashed"
         const val TRACKS_SOURCE = "mapas-tracks-src"
         const val TRACKS_LAYER = "mapas-tracks"
         const val TRACKS_CASING_LAYER = "mapas-tracks-casing"

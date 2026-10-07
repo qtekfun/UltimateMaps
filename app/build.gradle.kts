@@ -97,6 +97,7 @@ dependencies {
     implementation(project(":core-search"))
     implementation(project(":core-routing"))
     implementation(project(":core-fuel")) // gas stations: data contract (RF-15)
+    implementation(project(":core-transit")) // public-transport timetables: index, planner, data manager
     implementation(project(":core-cameras")) // optional speed-camera and traffic layers, warner
     implementation(project(":core-nav")) // route tracking and NavigationController (navigation service)
     implementation(project(":core-voice")) // instruction text, voice queue and navigation settings

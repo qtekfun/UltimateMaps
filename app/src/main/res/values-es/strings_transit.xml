@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Panel de ruta: cuarto modo de viaje -->
+    <string name="route_profile_transit">Transporte</string>
+    <string name="transit_group_departure">Salida</string>
+    <string name="transit_depart_now">Salir ahora</string>
+    <string name="transit_depart_later">Salir a las</string>
+    <string name="transit_depart_value">%1$s, %2$s</string>
+    <string name="transit_time_earlier">15 minutos antes</string>
+    <string name="transit_time_later">15 minutos después</string>
+    <string name="transit_day_earlier">Día anterior</string>
+    <string name="transit_day_later">Día siguiente</string>
+
+    <string name="transit_computing">Buscando conexiones…</string>
+    <string name="transit_needs_origin">Esperando tu ubicación. Elige un punto de partida o activa la ubicación.</string>
+    <string name="transit_err_no_data">No hay datos de transporte público instalados y el servidor de mapas no ofrece ninguno. Abre Mapas para buscarlos.</string>
+    <string name="transit_err_not_downloaded">Los horarios de %1$s aún no están descargados. Descárgalos en Mapas, en Transporte público.</string>
+    <string name="transit_err_outside">Los horarios de transporte público no cubren este trayecto.</string>
+    <string name="transit_err_expired">Los horarios caducaron el %1$s, por eso no se planifican viajes posteriores. Elige una fecha anterior o actualiza los datos en Mapas.</string>
+    <string name="transit_err_not_yet">Los horarios empiezan el %1$s. Elige una fecha posterior.</string>
+    <string name="transit_err_no_route">No hay conexión a esa hora. Prueba con otra hora.</string>
+    <string name="transit_err_internal">No se pudo leer el archivo de horarios. Bórralo y vuelve a descargarlo en Mapas.</string>
+
+    <!-- Lista de itinerarios -->
+    <string name="transit_options_title">Opciones</string>
+    <string name="transit_direct">Directo</string>
+    <plurals name="transit_transfers">
+        <item quantity="one">%d transbordo</item>
+        <item quantity="other">%d transbordos</item>
+    </plurals>
+    <string name="transit_walk_only">Solo a pie</string>
+    <string name="transit_times">%1$s – %2$s</string>
+    <string name="transit_walking">%1$s a pie</string>
+    <string name="transit_option_description">Opción %1$d: %2$s, llegada %3$s, %4$s, %5$s</string>
+    <string name="transit_chip_walk">A pie</string>
+
+    <!-- Tarjeta del itinerario -->
+    <string name="transit_back">Volver a las opciones</string>
+    <string name="transit_card_summary">%1$s, salida %2$s, llegada %3$s</string>
+    <string name="transit_place_start">tu punto de partida</string>
+    <string name="transit_place_destination">tu destino</string>
+    <string name="transit_leg_walk">Camina %1$s hasta %2$s</string>
+    <string name="transit_leg_towards">Dirección %1$s</string>
+    <string name="transit_leg_board">Sube en %1$s</string>
+    <string name="transit_leg_alight">Baja en %1$s</string>
+    <plurals name="transit_leg_stops">
+        <item quantity="one">%d parada</item>
+        <item quantity="other">%d paradas</item>
+    </plurals>
+    <string name="transit_leg_line">Línea %1$s</string>
+
+    <!-- Honestidad y datos -->
+    <string name="transit_theoretical_note">Los horarios son teóricos, tomados de los horarios publicados. No incluyen retrasos, cancelaciones ni información en tiempo real.</string>
+    <string name="transit_valid_range">Horarios válidos del %1$s al %2$s.</string>
+    <string name="transit_unverified">Parte de estos datos no se pudo comprobar con su calendario.</string>
+    <string name="transit_link_description">Abrir %1$s</string>
+
+    <!-- Acerca de -->
+    <string name="transit_about_title">Datos de transporte público</string>
+
+    <!-- Pantalla Mapas: sección -->
+    <string name="transit_maps_title">Transporte público</string>
+    <string name="transit_maps_intro">Horarios para rutas teóricas. Una ciudad se descarga solo al pulsar Descargar; todo se calcula en tu teléfono y no se envía ninguna posición.</string>
+    <string name="transit_maps_valid">Válido del %1$s al %2$s</string>
+    <string name="transit_maps_expired">Caducó el %1$s: los datos publicados están desactualizados</string>
+    <string name="transit_maps_update_available">Hay un archivo más reciente</string>
+    <string name="transit_maps_installed">Instalado</string>
+    <string name="transit_maps_download">Descargar</string>
+    <string name="transit_maps_update">Actualizar</string>
+    <string name="transit_maps_delete">Borrar</string>
+    <string name="transit_maps_downloading">Descargando…</string>
+    <string name="transit_maps_row_description">%1$s, %2$s</string>
+    <string name="transit_fail_offline">El modo sin conexión está activado: no se descargó nada.</string>
+    <string name="transit_fail_not_allowed">La lista de conexiones no permite este servidor.</string>
+    <string name="transit_fail_network">La descarga falló. Inténtalo más tarde.</string>
+    <string name="transit_fail_integrity">El archivo no coincidía con el catálogo y se descartó.</string>
+    <string name="transit_fail_invalid">El archivo no es un índice de horarios válido.</string>
+    <string name="transit_fail_expired">Los horarios publicados ya han caducado.</string>
+    <string name="transit_fail_cancelled">La descarga se canceló.</string>
+</resources>

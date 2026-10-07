@@ -52,6 +52,7 @@ import com.qtekfun.mapas.nav.NavStartHost
 import com.qtekfun.mapas.nav.RouteFailureMessages
 import com.qtekfun.mapas.places.PanelButton
 import com.qtekfun.mapas.places.PanelNote
+import com.qtekfun.mapas.transit.TransitSection
 import com.qtekfun.mapas.ui.theme.Mapas
 
 /**
@@ -83,11 +84,16 @@ fun RoutePanel(
             Spacer(Modifier.height(SECTION_GAP))
             ProfileSelector(route)
             Spacer(Modifier.height(SECTION_GAP))
-            ResultAndStart(s, navStart)
-            AlternativesSection(route)
-            Spacer(Modifier.height(4.dp))
-            RouteOptionsSection(route)
-            if (s.profile == RoutingProfile.BIKE) BikeCyclewaysRow(route)
+            val transit = route.transit
+            if (s.transitMode && transit != null) {
+                TransitSection(transit)
+            } else {
+                ResultAndStart(s, navStart)
+                AlternativesSection(route)
+                Spacer(Modifier.height(4.dp))
+                RouteOptionsSection(route)
+                if (s.profile == RoutingProfile.BIKE) BikeCyclewaysRow(route)
+            }
         }
     }
 }
@@ -277,24 +283,34 @@ private fun ProfileSelector(route: RoutePreviewController) {
         horizontalArrangement = Arrangement.spacedBy(2.dp),
     ) {
         profiles.forEach { (profile, label, tag) ->
-            val selected = route.state.profile == profile
-            Row(
-                Modifier
-                    .weight(1f)
-                    .heightIn(min = target)
-                    .clip(Mapas.shapes.field)
-                    .background(if (selected) colors.segmentThumb else Color.Transparent)
-                    .selectable(selected = selected, role = Role.RadioButton) { route.setProfile(profile) }
-                    .testTag(tag),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                val fg = if (selected) colors.label else colors.secondaryLabel
-                Icon(profileIcon(profile), fg, 20.dp)
-                Spacer(Modifier.width(6.dp))
-                BasicText(stringResource(label), style = Mapas.typography.callout.copy(color = fg), maxLines = 1)
-            }
+            val selected = route.state.profile == profile && !route.state.transitMode
+            ProfileSegment(selected, profileIcon(profile), stringResource(label), tag, Modifier.weight(1f)) { route.setProfile(profile) }
         }
+        if (route.transit != null) {
+            ProfileSegment(
+                route.state.transitMode, RouteIcons.transit, stringResource(R.string.route_profile_transit), "profile_transit", Modifier.weight(1f),
+            ) { route.setTransitMode(true) }
+        }
+    }
+}
+
+@Composable
+private fun ProfileSegment(selected: Boolean, icon: ImageVector, label: String, tag: String, modifier: Modifier, onSelect: () -> Unit) {
+    val colors = Mapas.colors
+    Row(
+        modifier
+            .heightIn(min = target)
+            .clip(Mapas.shapes.field)
+            .background(if (selected) colors.segmentThumb else Color.Transparent)
+            .selectable(selected = selected, role = Role.RadioButton) { onSelect() }
+            .testTag(tag),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        val fg = if (selected) colors.label else colors.secondaryLabel
+        Icon(icon, fg, 20.dp)
+        Spacer(Modifier.width(6.dp))
+        BasicText(label, style = Mapas.typography.callout.copy(color = fg), maxLines = 1)
     }
 }
 

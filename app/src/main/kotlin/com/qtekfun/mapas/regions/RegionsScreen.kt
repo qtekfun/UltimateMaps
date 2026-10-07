@@ -63,6 +63,8 @@ data class RegionsUiState(
     val restartForSearch: Boolean = false,
     /** Some installed map could not be linked for the search. */
     val linkProblem: Boolean = false,
+    /** Public-transport cities of the catalog (the optional `transit` block); empty hides the section. */
+    val transit: List<com.qtekfun.mapas.transit.TransitCityRow> = emptyList(),
 )
 
 fun RegionsController.uiState() = RegionsUiState(
@@ -83,6 +85,8 @@ class RegionsActions(
     val onCancel: (String) -> Unit = {},
     val onDelete: (String) -> Unit = {},
     val onDismissFailure: (String) -> Unit = {},
+    val onTransitDownload: (String) -> Unit = {},
+    val onTransitDelete: (String) -> Unit = {},
 )
 
 @Composable
@@ -131,6 +135,9 @@ fun RegionsScreen(state: RegionsUiState, actions: RegionsActions, modifier: Modi
         if (catalog != null) SearchField(query, { query = it })
         LazyColumn(Modifier.fillMaxSize().testTag("regions_list"), state = listState, verticalArrangement = Arrangement.spacedBy(0.dp)) {
             if (!searching) item(key = "settings") { SettingsSection(state, actions) }
+            if (!searching && state.transit.isNotEmpty()) item(key = "transit") {
+                com.qtekfun.mapas.transit.TransitMapsSection(state.transit, state.offline, actions.onTransitDownload, actions.onTransitDelete)
+            }
             item(key = "status") { CatalogStatus(state, catalog, actions) }
             if (searching && rows.isEmpty() && orphans.isEmpty()) item(key = "search-empty") {
                 BasicText(

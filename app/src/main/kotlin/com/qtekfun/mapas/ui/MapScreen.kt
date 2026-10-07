@@ -268,6 +268,9 @@ private fun AboutDialog(onDismiss: () -> Unit) {
             BasicText(stringResource(R.string.about_title), style = Mapas.typography.title.copy(color = Mapas.colors.label))
             Spacer(Modifier.height(8.dp))
             BasicText(stringResource(R.string.about_osm_body), style = Mapas.typography.body.copy(color = Mapas.colors.label))
+            // Public-transport data licences ask for their attribution wherever the data is used (empty without transit data).
+            val app = androidx.compose.ui.platform.LocalContext.current.applicationContext as? com.qtekfun.mapas.MapasApp
+            com.qtekfun.mapas.transit.TransitAboutBlock(app?.transit?.attributions.orEmpty())
             Spacer(Modifier.height(16.dp))
             BasicText(
                 stringResource(R.string.close),
