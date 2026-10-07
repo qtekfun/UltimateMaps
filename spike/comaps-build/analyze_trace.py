@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Analiza una .pftrace: el motor GL de CoMaps no aparece en frametimeline (0 filas por capa), asi que se usa
-como proxy de 'frame presentado' el slice de SurfaceFlinger `setBuffer ... SurfaceView[app.comaps...](BLAST)... hasBuffer=true`
-(un slice por buffer enganchado). Se toma la rafaga continua mas larga (huecos > 100 ms la parten).
-Salida: intervalos entre buffers consecutivos (ms): p50/p90/p95/p99/max, fps medio, % de intervalos > 16.7 y > 8.4 ms.
-Uso: analyze_trace.py <traza.pftrace> <salida.json>"""
+"""Analyzes a .pftrace: the CoMaps GL engine does not show up in frametimeline (0 rows per layer), so the SurfaceFlinger
+slice `setBuffer ... SurfaceView[app.comaps...](BLAST)... hasBuffer=true` is used as a proxy for 'frame presented'
+(one slice per queued buffer). The longest continuous burst is taken (gaps > 100 ms split it).
+Output: intervals between consecutive buffers (ms): p50/p90/p95/p99/max, mean fps, % of intervals > 16.7 and > 8.4 ms.
+Usage: analyze_trace.py <trace.pftrace> <output.json>"""
 import json, sys, math
 from perfetto.trace_processor import TraceProcessor
 

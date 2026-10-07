@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""Inyecta gestos reproducibles (pan 1 dedo, pinch-zoom 2 dedos, giro 2 dedos) escribiendo eventos
-multitouch (protocolo B) en /dev/input/event3 (goodix_ts0) a ~120 Hz, y mide los intervalos de presentacion
-de la capa SurfaceView del mapa con `dumpsys SurfaceFlinger --latency`. Todo bajo el lock compartido del
-dispositivo (fcntl.flock sobre /tmp/claude-1000/device.lock, equivalente a flock(1)).
+"""Injects reproducible gestures (1-finger pan, 2-finger pinch-zoom, 2-finger rotation) by writing
+multitouch events (protocol B) to /dev/input/event3 (goodix_ts0) at ~120 Hz, and measures the presentation intervals
+of the map's SurfaceView layer with `dumpsys SurfaceFlinger --latency`. All under the device's shared
+lock (fcntl.flock on /tmp/claude-1000/device.lock, equivalent to flock(1)).
 
-Uso: gesture_bench.py <pan|zoom|rotate|idle> <segundos> <salida_prefijo>
-Salidas: <prefijo>.latency.txt (volcados crudos), <prefijo>.json (estadisticas)
+Usage: gesture_bench.py <pan|zoom|rotate|idle> <seconds> <output_prefix>
+Outputs: <prefix>.latency.txt (raw dumps), <prefix>.json (statistics)
 """
 import fcntl, json, math, re, struct, subprocess, sys, time, statistics, threading
 
@@ -91,7 +91,7 @@ def run_gesture(kind, secs):
             time.sleep(max(0, t0 + (i + 1) * dt - time.perf_counter()))
         tp.up([0, 1])
     elif kind == "rotate":
-        # 2 fingers at radius 250 px rotating 360 degrees per 3 s
+        # 2 fingers at radius 250 px rotating 360 degrees over 3 s
         r = 250
         tp.down([(0, CX - r, CY), (1, CX + r, CY)])
         t0 = time.perf_counter()
@@ -153,7 +153,7 @@ def main():
             t = adb("shell", "dumpsys", "SurfaceFlinger", "--latency", f'"{layer}"')
             raw.write(f"## poll {time.time()}\n{t}\n")
             for r in parse_latency(t):
-                frames[r[1]] = r  # key: actualPresentTime (ns)
+                frames[r[1]] = r  # clave: actualPresentTime (ns)
             time.sleep(0.3)
         th.join()
         t = adb("shell", "dumpsys", "SurfaceFlinger", "--latency", f'"{layer}"')

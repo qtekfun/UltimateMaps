@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-"""Perfetto + gesto: graba frametimeline/gfx durante un gesto (de gesture_bench.run_gesture) bajo el lock del dispositivo.
-Uso: gesture_trace.py <pan|zoom|rotate|idle> <segundos> <salida.pftrace>   (trazas binarias van a /tmp, NO al repo)
+"""Perfetto + gesture: records frametimeline/gfx during a gesture (from gesture_bench.run_gesture) under the device lock.
+Usage: gesture_trace.py <pan|zoom|rotate|idle> <seconds> <output.pftrace>   (binary traces go to /tmp, NOT to the repo)
 """
 import fcntl, os, subprocess, sys, time, threading, importlib.util
 

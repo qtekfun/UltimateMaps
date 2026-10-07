@@ -63,15 +63,15 @@ class RoutePanelTest {
     }
 
     /**
-     * Espera (sin tocar la interfaz) a que el controlador termine el cálculo en su hilo de fondo. Los tests componen la
-     * pantalla DESPUÉS, para que la primera composición lea ya el estado final: esperar a una recomposición provocada
-     * desde otro hilo hacía que el test fallase 1 de cada 2 veces en la suite completa (diagnóstico: el estado era
-     * ERROR pero la pantalla seguía en «Calculando…»).
+     * Waits (without touching the UI) for the controller to finish the computation on its background thread. The tests compose the
+     * screen AFTER, so that the first composition already reads the final state: waiting for a recomposition triggered
+     * from another thread made the test fail 1 time out of 2 in the full suite (diagnosis: the state was
+     * ERROR but the screen was still on "Calculating…").
      */
     private fun settle(condition: () -> Boolean) {
         val end = System.nanoTime() + 5_000_000_000L
         while (!condition()) {
-            check(System.nanoTime() < end) { "el cálculo no terminó en 5 s: ${route.state.status}" }
+            check(System.nanoTime() < end) { "the computation did not finish in 5 s: ${route.state.status}" }
             Thread.sleep(10)
         }
     }
@@ -85,7 +85,7 @@ class RoutePanelTest {
         rule.onNodeWithTag("route_summary").assertIsDisplayed()
         rule.onNodeWithText("12.3 km · 25 min").assertIsDisplayed()
 
-        // Cambiar de perfil: el clic y el perfil están en el hilo principal (determinista); el cálculo, en segundo plano.
+        // Switch profile: the click and the profile are on the main thread (deterministic); the computation, in the background.
         rule.onNodeWithTag("profile_foot").performClick()
         settle { profiles.size == 2 && route.state.status == RouteStatus.DONE }
         assertEquals(listOf(RoutingProfile.CAR, RoutingProfile.FOOT), profiles)

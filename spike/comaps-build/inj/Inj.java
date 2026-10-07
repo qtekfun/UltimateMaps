@@ -6,8 +6,8 @@ import java.lang.reflect.Method;
 
 /**
  * Multitouch injector for `app_process` (shell user): 1-finger pan, pinch-zoom and 2-finger rotation, at 120 Hz with
- * local timing. Usage: app_process -cp /data/local/tmp/inj.dex /system/bin Inj <pan|zoom|rotate> <segundos> [hz]
- * Injects with InputManagerGlobal.injectInputEvent via reflection (same as scrcpy / the `input` command).
+ * local timing. Usage: app_process -cp /data/local/tmp/inj.dex /system/bin Inj <pan|zoom|rotate> <seconds> [hz]
+ * Injects with InputManagerGlobal.injectInputEvent by reflection (same as scrcpy / the `input` command).
  */
 public class Inj {
     static Object im;

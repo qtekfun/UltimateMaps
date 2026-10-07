@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-"""Extrae del logcat del nucleo el tiempo hasta el primer lote de resultados y la duracion total de cada busqueda
-(una por pulsacion de tecla). Uso: analyze_search.py <logcat> [n_descartar_frias=1]"""
+"""Extracts from the core's logcat the time to the first batch of results and the total duration of each search
+(one per key press). Usage: analyze_search.py <logcat> [n_discard_cold=1]"""
 import re, sys, statistics, math
 
 emit = re.compile(r"Emitting a new batch of results: (\d+) , (\d+) ms since")
@@ -25,6 +25,6 @@ total = [r[1] for r in rows]
 def p(v, q):
     v = sorted(v); return v[min(len(v) - 1, int(math.ceil(q * len(v))) - 1)]
 print(f"searches (after discarding {skip} cold): {len(rows)}; with results: {len(first)}")
-for name, v in (("primer_lote_ms", first), ("fin_busqueda_ms", total)):
+for name, v in (("first_batch_ms", first), ("search_end_ms", total)):
     if v:
         print(f"{name}: min={min(v)} p50={statistics.median(v)} p95={p(v, .95)} max={max(v)}")

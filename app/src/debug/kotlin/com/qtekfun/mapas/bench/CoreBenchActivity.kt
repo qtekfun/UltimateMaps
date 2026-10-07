@@ -14,26 +14,26 @@ import java.io.File
 import kotlin.concurrent.thread
 
 /**
- * Banco de pruebas del núcleo de CoMaps (solo debug). Se lanza con
- * `am start -n com.qtekfun.mapas/.bench.CoreBenchActivity` (con `--ez guidance true` solo vuelca el guiado) y escribe en logcat con la etiqueta UMBENCH.
- * Los mapas van en `filesDir/maps-core/<versión>/` con los ficheros .mwm (incluido World.mwm). No guarda ubicaciones del usuario.
+ * CoMaps core test bench (debug only). Launched with
+ * `am start -n com.qtekfun.mapas/.bench.CoreBenchActivity` (with `--ez guidance true` it only dumps the guidance) and writes to logcat under the UMBENCH tag.
+ * The maps go in `filesDir/maps-core/<version>/` with the .mwm files (including World.mwm). It does not store user locations.
  */
 class CoreBenchActivity : Activity() {
     private val tag = "UMBENCH"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(TextView(this).apply { text = "Banco de pruebas del núcleo: mira logcat (UMBENCH)" })
-        // `--ez guidance true`: en vez del banco completo, vuelca el guiado de rutas de prueba (maniobras, carriles, límites).
+        setContentView(TextView(this).apply { text = "Core test bench: see logcat (UMBENCH)" })
+        // `--ez guidance true`: instead of the full bench, dumps the guidance of test routes (maneuvers, lanes, limits).
         val guidanceOnly = intent?.getBooleanExtra("guidance", false) == true
-        // `--ez matrix true`: rutas largas entre ciudades para localizar dónde falla el routing entre regiones.
+        // `--ez matrix true`: long routes between cities to find where routing fails between regions.
         val matrix = intent?.getBooleanExtra("matrix", false) == true
         thread(name = "umbench") {
-            runCatching { if (matrix) dumpMatrix() else if (guidanceOnly) dumpGuidance() else run() }.onFailure { Log.e(tag, "FALLO: $it", it) }
+            runCatching { if (matrix) dumpMatrix() else if (guidanceOnly) dumpGuidance() else run() }.onFailure { Log.e(tag, "FAILED: $it", it) }
         }
     }
 
-    /** Pares de ciudades en coche: código del núcleo, tiempo y longitud (sin coordenadas en el log, solo nombres de ciudad). */
+    /** City pairs by car: core code, time and length (no coordinates in the log, only city names). */
     private fun dumpMatrix() {
         val core = CoMapsCore()
         core.init(applicationInfo.sourceDir, File(filesDir, "maps-core").absolutePath, cacheDir.absolutePath, "es")
@@ -57,7 +57,7 @@ class CoreBenchActivity : Activity() {
         Log.i(tag, "FIN matrix")
     }
 
-    /** Vuelca a logcat el guiado de una ruta urbana de Madrid en coche, bici y a pie. Sin ejecutar aún: ver docs/phase2/maneuvers.md. */
+    /** Dumps to logcat the guidance of an urban route in Madrid by car, bike and on foot. Not run yet: see docs/phase2/maneuvers.md. */
     private fun dumpGuidance() {
         val mapsDir = File(filesDir, "maps-core")
         val core = CoMapsCore()
@@ -93,7 +93,7 @@ class CoreBenchActivity : Activity() {
 
     private fun run() {
         val mapsDir = File(filesDir, "maps-core")
-        Log.i(tag, "mapas: ${mapsDir.walkTopDown().filter { it.extension == "mwm" }.map { it.name }.toList()}")
+        Log.i(tag, "maps: ${mapsDir.walkTopDown().filter { it.extension == "mwm" }.map { it.name }.toList()}")
         val core = CoMapsCore()
         val initMs = ms { core.init(applicationInfo.sourceDir, mapsDir.absolutePath, cacheDir.absolutePath, "es") }
         Log.i(tag, "init_ms=$initMs maps=${core.refreshMaps()}")

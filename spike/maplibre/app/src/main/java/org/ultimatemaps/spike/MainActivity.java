@@ -22,10 +22,10 @@ import java.io.FileInputStream;
 import java.nio.charset.StandardCharsets;
 
 /**
- * Discardable prototype: MapLibre Native + local PMTiles (protomaps basemaps style).
+ * Throwaway prototype: MapLibre Native + local PMTiles (protomaps basemaps style).
  * Extras (am start --es/--ez/--ed): style (name in getExternalFilesDir, default style.json),
- * lat, lon, zoom (double), texture (bool, default true: TextureView so gfxinfo sees the frames),
- * demo (bool: programmatic zoom+rotation sequence after the first full render).
+ * lat, lon, zoom (double), texture (bool, default true: TextureView so that gfxinfo sees the frames),
+ * demo (bool: programmatic zoom+rotation sequence after the first complete render).
  */
 public class MainActivity extends Activity {
     private static final String TAG = "SPIKE";
@@ -85,10 +85,10 @@ public class MainActivity extends Activity {
         CameraPosition p = map.getCameraPosition();
         double z = p.zoom;
         long[] t = {0};
-        step(t, 2000, z - 3, 0, 40);   // zoom out 3 levels
+        step(t, 2000, z - 3, 0, 40);   // zoom out 3 niveles
         step(t, 2000, z, 0, 40);       // zoom in
-        step(t, 2000, z, 120, 40);     // rotate 120 degrees with tilt
-        step(t, 2000, z, -120, 0);     // reverse rotation
+        step(t, 2000, z, 120, 40);     // 120 degree rotation with tilt
+        step(t, 2000, z, -120, 0);     // giro inverso
         h.postDelayed(() -> Log.i(TAG, "demo_end"), t[0] + 100);
     }
 

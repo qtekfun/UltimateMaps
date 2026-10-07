@@ -1,7 +1,7 @@
 // Generates the light/dark styles from @protomaps/basemaps (BSD-3) as templates for the app.
 // Placeholders the app substitutes at runtime: @MAPDIR@ (internal directory with sprites and glyphs)
 // and @PMTILES@ (path of the .pmtiles file). Label language: second argument (default `es`; if
-// name:es is missing, the local name is used). NOTE: without `lang`, basemaps does NOT generate label (symbol) layers.
+// name:es is missing the local name is used). NOTE: without `lang` basemaps does NOT generate label layers (symbol).
 // Usage: node gen-map-style.mjs <output_dir> [lang]   (with @protomaps/basemaps installed in node_modules)
 import {layers, namedFlavor} from '@protomaps/basemaps';
 import fs from 'fs';

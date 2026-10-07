@@ -102,7 +102,7 @@ class GenCatalogTest(unittest.TestCase):
         p = os.environ.get("COUNTRIES_TXT") or os.path.join(
             os.path.dirname(__file__), "..", "third_party", "comaps", "data", "countries.txt")
         if not os.path.isfile(p):
-            self.skipTest("submodule not initialised")
+            self.skipTest("submodule not initialized")
         import json
         with open(p, encoding="utf-8") as f:
             c = gen.build(json.load(f), catalog_version="t")

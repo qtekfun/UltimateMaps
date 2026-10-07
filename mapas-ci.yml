@@ -1,7 +1,7 @@
-# Copiar al repo como .github/workflows/ci.yml
+# Copy into the repo as .github/workflows/ci.yml
 #
 # Minimal CI so that automatic merging makes sense: the "build" job must be
-# a required check in the branch protection (see the playbook, section "Push, PR and automatic merge").
+# a required check in branch protection (see playbook, section "Push, PR and automatic merge").
 # Adjust the action and Java versions to the current ones when you copy it,
 # and extend the job after the spike (NDK, CMake, instrumented tests).
 
@@ -32,7 +32,7 @@ jobs:
         run: |
           if grep -rEi "play-services|firebase|com\.google\.android\.gms" \
               --include='*.gradle' --include='*.kts' --include='*.toml' .; then
-            echo "Dependencia propietaria detectada: no permitida en el sabor foss"
+            echo "Proprietary dependency detected: not allowed in the foss flavor"
             exit 1
           fi
 

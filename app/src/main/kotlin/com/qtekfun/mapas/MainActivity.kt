@@ -62,7 +62,7 @@ class MainActivity : ComponentActivity() {
             onCameraIdle = { state.bearing = it.bearing.toFloat() },
         )
         lifecycle.addObserver(engine)
-        // Los avisos de voz de la navegación usan el volumen multimedia: las teclas de volumen deben controlarlo.
+        // The navigation voice prompts use the media volume: the volume keys must control it.
         volumeControlStream = android.media.AudioManager.STREAM_MUSIC
         val app = application as MapasApp
         panel = PanelHost(

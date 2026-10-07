@@ -1,11 +1,11 @@
-# Nucleo de CoMaps (busqueda + routing + storage + platform minima), SIN drape,
-# drape_frontend, map (Framework), bookmarks ni UI. Ver docs/phase1/native-core.md.
+# CoMaps core (search + routing + storage + minimal platform), WITHOUT drape,
+# drape_frontend, map (Framework), bookmarks or UI. See docs/phase1/native-core.md.
 cmake_minimum_required(VERSION 3.22.1)
 project(umcomaps C CXX)
 
 get_filename_component(OMIM_ROOT "${CMAKE_CURRENT_LIST_DIR}/../../../../third_party/comaps" ABSOLUTE)
 if (NOT EXISTS "${OMIM_ROOT}/CMakeLists.txt")
-  message(FATAL_ERROR "Falta el submodulo third_party/comaps: git submodule update --init third_party/comaps")
+  message(FATAL_ERROR "Missing submodule third_party/comaps: git submodule update --init third_party/comaps")
 endif()
 set(UM_ROOT "${CMAKE_CURRENT_LIST_DIR}")
 
@@ -19,8 +19,8 @@ set(CMAKE_VISIBILITY_INLINES_HIDDEN ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${OMIM_ROOT}/cmake")
 
-# Compilacion siempre "release" (los ASSERT de CoMaps solo con DEBUG) y sin LTO:
-# el enlace ThinLTO provoco OOM con ~5 GB libres (docs/spike/comaps-build.md).
+# Always a "release" build (CoMaps ASSERTs only with DEBUG) and no LTO:
+# ThinLTO linking caused an OOM with ~5 GB free (docs/spike/comaps-build.md).
 set(SKIP_TESTS ON)
 set(SKIP_TOOLS ON)
 set(USE_CCACHE OFF)
@@ -42,7 +42,7 @@ find_package(Threads REQUIRED)
 find_package(ZLIB REQUIRED)
 include_directories("${OMIM_ROOT}" "${OMIM_ROOT}/libs" "${OMIM_ROOT}/tools" "${OMIM_ROOT}/3party/boost")
 
-# ---------------------------------------------------------------- 3party (solo lo necesario)
+# ---------------------------------------------------------------- 3party (only what is needed)
 set(CMAKE_WARN_DEPRECATED OFF CACHE BOOL "" FORCE)
 set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
 set(CMAKE_POLICY_DEFAULT_CMP0063 NEW)
@@ -79,23 +79,23 @@ add_subdirectory(${OMIM_ROOT}/3party/open-location-code 3party/open-location-cod
 add_subdirectory(${OMIM_ROOT}/3party/opening_hours 3party/opening_hours)
 add_subdirectory(${OMIM_ROOT}/3party/succinct 3party/succinct)
 add_subdirectory(${OMIM_ROOT}/3party/monocypher 3party/monocypher)
-# NO se compilan: bsdiff-courgette (BSD Protection License, no GPL), freetype,
-# harfbuzz, agg, stb_image, vulkan_wrapper, libtess2, glfw, imgui (solo drape/desktop).
+# NOT built: bsdiff-courgette (BSD Protection License, not GPL), freetype,
+# harfbuzz, agg, stb_image, vulkan_wrapper, libtess2, glfw, imgui (drape/desktop only).
 
-# ---------------------------------------------------------------- sustitutos propios
-# `drape` solo se usaba por drape/color.hpp (cabecera). Sin codigo de render.
+# ---------------------------------------------------------------- own substitutes
+# `drape` was only used for drape/color.hpp (a header). No render code.
 add_library(drape INTERFACE)
-# `mwm_diff` sin bsdiff: las actualizaciones por diff quedan desactivadas (siempre mwm completo).
+# `mwm_diff` without bsdiff: diff updates are disabled (always the full mwm).
 add_library(mwm_diff STATIC "${UM_ROOT}/stubs/mwm_diff_stub.cpp")
 target_link_libraries(mwm_diff PRIVATE base)
 
-# ---------------------------------------------------------------- libs de CoMaps (sin drape, drape_frontend, map, shaders)
+# ---------------------------------------------------------------- CoMaps libs (without drape, drape_frontend, map, shaders)
 foreach(lib base coding geometry i18n cppjansson descriptions ge0 kml indexer platform
             routing_common routing storage search editor traffic transit)
   add_subdirectory(${OMIM_ROOT}/libs/${lib} libs/${lib})
 endforeach()
 
-# ---------------------------------------------------------------- nuestra libreria JNI
+# ---------------------------------------------------------------- our JNI library
 add_library(umcomaps SHARED
   um_platform.cpp
   um_core.cpp
