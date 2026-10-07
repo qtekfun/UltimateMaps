@@ -89,6 +89,13 @@
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
 
+        <!-- Settings: privacy and petrol stations -->
+        <activity
+            android:name=".settings.SettingsActivity"
+            android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize|keyboard|keyboardHidden|uiMode|density"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+
         <!-- Region downloads keep running with the screen off: foreground service of type dataSync (Android 14+) -->
         <service
             android:name=".regions.RegionDownloadService"

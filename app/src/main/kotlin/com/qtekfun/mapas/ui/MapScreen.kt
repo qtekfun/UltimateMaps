@@ -55,6 +55,9 @@ class MapScreenState {
 
     /** Opens the "Maps" screen (regions); set by the activity. */
     var onOpenMaps: () -> Unit = {}
+
+    /** Opens Settings (the discreet gear on the map); set by the activity. */
+    var onOpenSettings: () -> Unit = {}
 }
 
 @Composable
@@ -82,6 +85,14 @@ fun MapScreen(
                 .align(Alignment.TopStart)
                 .windowInsetsPadding(WindowInsets.statusBars)
                 .padding(start = margin, top = 8.dp),
+        )
+        SettingsGear(
+            description = stringResource(R.string.settings_open),
+            onClick = state.onOpenSettings,
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .windowInsetsPadding(WindowInsets.statusBars)
+                .padding(start = margin, top = 44.dp),
         )
         MapButtons(
             bearingDegrees = state.bearing,
