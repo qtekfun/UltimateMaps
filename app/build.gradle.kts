@@ -88,17 +88,36 @@ android {
     lint {
         abortOnError = true
     }
-
-    // The repository's NOTICE (third-party notices and licence texts) is shown in the About settings as an asset.
-    sourceSets.getByName("main").assets.srcDir(layout.buildDirectory.dir("generated/notice"))
 }
 
-val copyNotice = tasks.register<Copy>("copyNotice") {
-    from(rootProject.layout.projectDirectory.file("NOTICE"))
-    rename { "NOTICE.txt" }
-    into(layout.buildDirectory.dir("generated/notice"))
+// The repository's NOTICE (third-party notices and licence texts) is shown in the About settings as an asset.
+abstract class CopyNotice @Inject constructor(private val fs: FileSystemOperations) : DefaultTask() {
+    @get:InputFile
+    @get:PathSensitive(PathSensitivity.NONE)
+    abstract val notice: RegularFileProperty
+
+    @get:OutputDirectory
+    abstract val outDir: DirectoryProperty
+
+    @TaskAction
+    fun copy() {
+        fs.copy {
+            from(notice)
+            rename { "NOTICE.txt" }
+            into(outDir)
+        }
+    }
 }
-tasks.matching { it.name.startsWith("merge") && it.name.endsWith("Assets") }.configureEach { dependsOn(copyNotice) }
+
+val copyNotice = tasks.register<CopyNotice>("copyNotice") {
+    notice.set(rootProject.layout.projectDirectory.file("NOTICE"))
+}
+
+androidComponents {
+    onVariants { variant ->
+        variant.sources.assets?.addGeneratedSourceDirectory(copyNotice, CopyNotice::outDir)
+    }
+}
 
 kotlin { jvmToolchain(21) }
 
