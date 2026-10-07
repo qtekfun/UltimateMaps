@@ -136,6 +136,10 @@ private fun messageText(m: PlacesMessage): String = when (m) {
     is PlacesMessage.Imported -> stringResource(
         R.string.msg_imported, m.result.placesAdded, m.result.placesDuplicate, m.result.tracksAdded,
     )
+    is PlacesMessage.TakeoutImported -> stringResource(
+        R.string.msg_takeout_imported, m.summary.lists.size, m.summary.placesAdded, m.summary.placesDuplicate,
+        m.summary.noCoordinates,
+    )
     PlacesMessage.ImportFailed -> stringResource(R.string.msg_import_failed)
     is PlacesMessage.Exported -> stringResource(R.string.msg_exported, m.places)
     PlacesMessage.ExportFailed -> stringResource(R.string.msg_export_failed)

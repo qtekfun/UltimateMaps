@@ -140,6 +140,31 @@ class PlacesServiceTest {
         assertNull(s.import("hello".byteInputStream(), "notes.txt", null))
     }
 
+    private fun zipOf(vararg entries: Pair<String, String>): ByteArray = ByteArrayOutputStream().also { o ->
+        java.util.zip.ZipOutputStream(o).use { z ->
+            for ((name, text) in entries) { z.putNextEntry(java.util.zip.ZipEntry(name)); z.write(text.toByteArray()); z.closeEntry() }
+        }
+    }.toByteArray()
+
+    @Test
+    fun importAnyRoutesTakeoutZipAndCsvAwayFromTheKmzPath() {
+        val s = service()
+        val csv = "Title,Note,URL\nA,,\"https://maps.google.com/?q=40.4,-3.7\"\nB,,https://maps.google.com/?cid=1\n"
+        val takeout = assertIs<ImportOutcome.Takeout>(
+            s.importAny(zipOf("Takeout/Saved/Trip.csv" to csv).inputStream(), "takeout-0001.zip", null),
+        )
+        assertEquals(1, takeout.summary.placesAdded)
+        assertEquals(1, takeout.summary.noCoordinates)
+        val single = assertIs<ImportOutcome.Takeout>(s.importAny(csv.byteInputStream(), "Trip.csv", null))
+        assertEquals(1, single.summary.placesDuplicate)
+        assertEquals(1, s.lists().count { it.name == "Trip" })
+
+        val kml = "<kml xmlns=\"http://www.opengis.net/kml/2.2\"><Placemark><name>K</name><Point><coordinates>-3.7,40.4,0</coordinates></Point></Placemark></kml>"
+        val geo = assertIs<ImportOutcome.Geo>(s.importAny(zipOf("doc.kml" to kml).inputStream(), "x.zip", null))
+        assertEquals(1, geo.result.placesAdded)
+        assertNull(s.importAny("hello".byteInputStream(), "notes.txt", null))
+    }
+
     @Test
     fun formatIsDetectedFromTheNameThenFromTheContent() {
         assertEquals(GeoFormat.GPX, GeoFormat.detect("a.GPX", ByteArray(0)))
