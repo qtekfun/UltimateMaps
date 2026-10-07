@@ -18,6 +18,7 @@ val INCIDENT_REFRESH_CHOICES_MINUTES = listOf(5, 10, 30, 60)
  * - [incidentsEnabled]: accidents, closures, slow traffic, obstacles, bad weather (live feed, explicit opt-in).
  * - [v16Enabled]: stopped vehicles with a connected V16 beacon (same live feed).
  * - [roadworksEnabled]: also show roadworks (only with [incidentsEnabled]); there can be hundreds.
+ * - [voiceEnabled]: speak the alerts (the visual chip is unaffected); default on.
  * - [acknowledged]: the user read and accepted the notice about camera data (required for the two camera switches).
  */
 data class CameraSettings(
@@ -29,6 +30,11 @@ data class CameraSettings(
     /** Warn about a camera only when the known limit is exceeded (cameras with an unknown limit always warn). */
     val warnOnlyIfSpeeding: Boolean = false,
     val acknowledged: Boolean = false,
+    /**
+     * Speak the alerts (cameras, zones, incidents). Its own switch, independent of the navigation Mute: the chip shows
+     * either way, and the navigation Mute still silences everything. On by default (it matters only while a category is on).
+     */
+    val voiceEnabled: Boolean = true,
     val incidentRefreshMinutes: Int = 10,
 ) {
     val anyCamera: Boolean get() = fixedEnabled || mobileZonesEnabled
