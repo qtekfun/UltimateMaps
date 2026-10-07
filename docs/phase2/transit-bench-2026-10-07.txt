@@ -1,0 +1,123 @@
+== machine
+cpu: Intel(R) Core(TM) Ultra 7 265U
+logical cores: 14, RAM total: 32255824 kB
+jvm: OpenJDK 64-Bit Server VM 21.0.12.1, max heap 3072 MB
+== build
+CRTM Metro de Madrid             zip    1,4 MB  trips     120  stopTimes     2216  freqWindows    790  read    0,0 s  merge   0,0 s
+CRTM Metro Ligero                zip    0,4 MB  trips    3001  stopTimes    38983  freqWindows      0  read    0,0 s  merge   0,0 s
+CRTM EMT Madrid buses            zip   20,1 MB  trips   86871  stopTimes  2233315  freqWindows  86871  read    0,7 s  merge   0,1 s
+CRTM interurban buses            zip   70,7 MB  trips   56118  stopTimes  1448978  freqWindows      0  read    0,6 s  merge   0,1 s
+CRTM other urban buses           zip    8,7 MB  trips   16022  stopTimes   436295  freqWindows      0  read    0,2 s  merge   0,0 s
+Renfe Cercanias (Madrid bbox)    zip   13,5 MB  trips  115051  stopTimes   565730  freqWindows      0  read    0,9 s  merge   0,0 s
+index finalise 0,0 s; total read+build 2,7 s
+stops=13185 lines=721 patterns=2585 trips=199496 stopTimes=4738657
+peak RSS of this JVM so far (VmHWM): 660 MB
+== file
+write 0,1 s; raw size 3,35 MB
+gzip size 1,20 MB (gzip 0,1 s)
+source: CRTM Metro de Madrid version=20250527 calendarRangeIgnored=true attribution='Powered by CRTM (https://www.crtm.es/), processed data'
+source: CRTM Metro Ligero version=20260722 calendarRangeIgnored=false attribution='Powered by CRTM (https://www.crtm.es/), processed data'
+source: CRTM EMT Madrid buses version= calendarRangeIgnored=false attribution='Powered by CRTM (https://www.crtm.es/), processed data'
+source: CRTM interurban buses version=20260910 calendarRangeIgnored=false attribution='Powered by CRTM (https://www.crtm.es/), processed data'
+source: CRTM other urban buses version=20260910 calendarRangeIgnored=false attribution='Powered by CRTM (https://www.crtm.es/), processed data'
+source: Renfe Cercanias (Madrid bbox) version= calendarRangeIgnored=false attribution='Renfe Operadora, CC BY 4.0, processed data'
+== load
+load 0,09 s; heap held by the loaded index ~ 45 MB (before 64, after 109; builder still referenced? no)
+planner init 0,04 s (footpath edges 83270); extra heap ~ 4 MB
+== sanity of coverage
+query date 2026-10-14 (Wednesday), departure 09:00 for sanity trips, 08:30 for timing
+== sanity trips
+--- Puerta del Sol -> Atocha station: 1 pareto itineraries (13,1 ms, cold JIT)
+09:00-09:06 (6 min, 0 transfers)
+  walk 68 m origin -> Sol 09:00-09:01
+  ride C4a to '' Sol 09:01 -> Madrid-Atocha Cercanías 09:06 (1 stops)
+  walk 26 m Madrid-Atocha Cercanías -> destination 09:06-09:06
+--- Chamartin station -> Nuevos Ministerios: 1 pareto itineraries (8,8 ms, cold JIT)
+09:00-09:06 (6 min, 0 transfers)
+  walk 1 m origin -> CHAMARTIN 09:00-09:00
+  ride 10 to 'PUERTA DEL SUR' CHAMARTIN 09:00 -> NUEVOS MINISTERIOS 09:06 (4 stops)
+  walk 34 m NUEVOS MINISTERIOS -> destination 09:06-09:06
+--- Atocha station -> Airport T4: 2 pareto itineraries (19,5 ms, cold JIT)
+09:14-10:01 (47 min, 0 transfers)
+  walk 73 m origin -> Estación De Atocha 09:14-09:15
+  ride 203 to 'Aeropuerto' Estación De Atocha 09:15 -> Aeropuerto T4 09:59 (5 stops)
+  walk 129 m Aeropuerto T4 -> destination 09:59-10:01
+09:00-09:32 (31 min, 1 transfers)
+  walk 26 m origin -> Madrid-Atocha Cercanías 09:00-09:01
+  ride C2 to '' Madrid-Atocha Cercanías 09:01 -> Madrid-Nuevos Ministerios 09:07 (2 stops)
+  walk 13 m Madrid-Nuevos Ministerios -> NUEVOS MINISTERIOS 09:07-09:07
+  ride 8 to 'AEROPUERTO T-4' NUEVOS MINISTERIOS 09:10 -> AEROPUERTO T-4 09:31 (7 stops)
+  walk 73 m AEROPUERTO T-4 -> destination 09:31-09:32
+--- Puerta del Sol -> Principe Pio: 2 pareto itineraries (4,3 ms, cold JIT)
+09:01-09:25 (23 min, 0 transfers)
+  walk 535 m origin -> Sevilla 09:01-09:09
+  ride 46 to 'Moncloa' Sevilla 09:09 -> Intercambiador De Príncipe Pío 09:24 (9 stops)
+  walk 56 m Intercambiador De Príncipe Pío -> destination 09:24-09:25
+09:01-09:10 (8 min, 1 transfers)
+  walk 27 m origin -> SOL 09:01-09:01
+  ride 2 to 'CUATRO CAMINOS' SOL 09:01 -> OPERA 09:03 (1 stops)
+  walk 15 m OPERA -> OPERA 09:03-09:03
+  ride R to 'PRINCIPE PIO' OPERA 09:06 -> PRINCIPE PIO 09:09 (1 stops)
+  walk 51 m PRINCIPE PIO -> destination 09:09-09:10
+--- Alcala de Henares (Renfe station) -> Chamartin station: 3 pareto itineraries (15,6 ms, cold JIT)
+09:04-09:59 (54 min, 0 transfers)
+  walk 5 m origin -> Alcalá de Henares 09:04-09:05
+  ride C2 to '' Alcalá de Henares 09:05 -> Madrid-Chamartín-Clara Campoamor 09:58 (14 stops)
+  walk 138 m Madrid-Chamartín-Clara Campoamor -> destination 09:58-09:59
+09:01-09:48 (46 min, 1 transfers)
+  walk 653 m origin -> VÍA COMPLUTENSE-PINTOR PICASSO 09:01-09:10
+  ride 223 to 'INTERCAMBIADOR DE AVENIDA AMÉRICA' VÍA COMPLUTENSE-PINTOR PICASSO 09:10 -> INTERCAMBIADOR DE AVENIDA AMÉRICA 09:23 (16 stops)
+  walk 57 m INTERCAMBIADOR DE AVENIDA AMÉRICA -> AVENIDA DE AMERICA 09:23-09:25
+  ride 9 to 'PACO DE LUCIA' AVENIDA DE AMERICA 09:28 -> DUQUE DE PASTRANA 09:36 (5 stops)
+  walk 885 m DUQUE DE PASTRANA -> destination 09:36-09:48
+09:01-09:43 (41 min, 2 transfers)
+  walk 653 m origin -> VÍA COMPLUTENSE-PINTOR PICASSO 09:01-09:10
+  ride 223 to 'INTERCAMBIADOR DE AVENIDA AMÉRICA' VÍA COMPLUTENSE-PINTOR PICASSO 09:10 -> INTERCAMBIADOR DE AVENIDA AMÉRICA 09:23 (16 stops)
+  walk 57 m INTERCAMBIADOR DE AVENIDA AMÉRICA -> AVENIDA DE AMERICA 09:23-09:25
+  ride 7 to 'PITIS' AVENIDA DE AMERICA 09:26 -> GREGORIO MARAÑON 09:29 (1 stops)
+  walk 106 m GREGORIO MARAÑON -> GREGORIO MARAÑON 09:29-09:30
+  ride 10 to 'TRES OLIVOS' GREGORIO MARAÑON 09:35 -> CHAMARTIN 09:43 (5 stops)
+  walk 1 m CHAMARTIN -> destination 09:43-09:43
+== timing (20 pairs, 08:30, warm-up pass then 5 measured passes)
+Sol            -> Atocha         dep 08:31 arr 08:37 (6 min) rides=1 walk-only=false  [1,9 ms]
+Chamartin      -> NuevosMin      dep 08:31 arr 08:37 (6 min) rides=1 walk-only=false  [2,6 ms]
+Sol            -> PrincipePio    dep 08:33 arr 08:42 (9 min) rides=2 walk-only=false  [3,9 ms]
+PlazaCastilla  -> Moncloa        dep 08:31 arr 08:54 (22 min) rides=2 walk-only=false  [7,5 ms]
+Atocha         -> T4             dep 08:32 arr 09:04 (31 min) rides=2 walk-only=false  [10,1 ms]
+Chamartin      -> Atocha         dep 08:31 arr 08:46 (15 min) rides=1 walk-only=false  [3,1 ms]
+Moncloa        -> Vallecas       dep 08:31 arr 08:58 (26 min) rides=3 walk-only=false  [8,0 ms]
+Bernabeu       -> Retiro         dep 08:30 arr 08:52 (22 min) rides=2 walk-only=false  [3,9 ms]
+Sol            -> Getafe         dep 08:34 arr 09:07 (33 min) rides=2 walk-only=false  [9,3 ms]
+Alcobendas     -> Sol            dep 08:35 arr 09:14 (39 min) rides=1 walk-only=false  [2,6 ms]
+Leganes        -> NuevosMin      dep 08:32 arr 09:14 (41 min) rides=3 walk-only=false  [7,2 ms]
+LasRozas       -> Atocha         dep 08:35 arr 09:16 (41 min) rides=2 walk-only=false  [4,8 ms]
+Alcala         -> Chamartin      dep 08:30 arr 09:08 (37 min) rides=4 walk-only=false  [7,9 ms]
+Torrejon       -> Sol            dep 08:39 arr 09:05 (26 min) rides=3 walk-only=false  [8,6 ms]
+Elliptica      -> PlazaCastilla  dep 08:31 arr 09:08 (36 min) rides=2 walk-only=false  [9,1 ms]
+Alcorcon       -> Moncloa        dep 08:31 arr 09:11 (40 min) rides=2 walk-only=false  [5,4 ms]
+Fuenlabrada    -> Atocha         dep 08:32 arr 09:06 (34 min) rides=1 walk-only=false  [1,6 ms]
+Mostoles       -> PrincipePio    dep 08:31 arr 09:07 (35 min) rides=3 walk-only=false  [3,9 ms]
+Rivas          -> Vallecas       dep 08:32 arr 09:13 (40 min) rides=3 walk-only=false  [6,7 ms]
+Colmenar       -> Chamartin      dep 08:32 arr 08:59 (26 min) rides=1 walk-only=false  [0,5 ms]
+query time over 100 samples: median 5,2 ms, p95 10,1 ms, min 0,5 ms, max 10,7 ms
+== next departures fallback (Sol -> Atocha, 09:00, next 4)
+09:00-09:06 (6 min, 0 transfers)
+  walk 68 m origin -> Sol 09:00-09:01
+  ride C4a to '' Sol 09:01 -> Madrid-Atocha Cercanías 09:06 (1 stops)
+  walk 26 m Madrid-Atocha Cercanías -> destination 09:06-09:06
+09:04-09:10 (6 min, 0 transfers)
+  walk 68 m origin -> Sol 09:04-09:05
+  ride C3 to '' Sol 09:05 -> Madrid-Atocha Cercanías 09:10 (1 stops)
+  walk 26 m Madrid-Atocha Cercanías -> destination 09:10-09:10
+09:07-09:13 (6 min, 0 transfers)
+  walk 68 m origin -> Sol 09:07-09:08
+  ride C4b to '' Sol 09:08 -> Madrid-Atocha Cercanías 09:13 (1 stops)
+  walk 26 m Madrid-Atocha Cercanías -> destination 09:13-09:13
+09:11-09:17 (6 min, 0 transfers)
+  walk 26 m origin -> SOL 09:11-09:11
+  ride 1 to 'VALDECARROS' SOL 09:11 -> ATOCHA 09:17 (4 stops)
+  walk 19 m ATOCHA -> destination 09:17-09:17
+next-4-departures query: 8,1 ms
+peak RSS final (VmHWM): 660 MB
+BUILD SUCCESSFUL in 11s
+6 actionable tasks: 2 executed, 4 up-to-date
