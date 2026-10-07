@@ -34,6 +34,9 @@ the one that matches the user's language and falls back to `name`. `World` and `
 `--cameras-file` (with `--cameras-base`) adds the optional `cameras` block for the speed-camera file; without it the catalog is
 unchanged and the app works without camera data.
 
+`--chargers-file` (with `--chargers-base`) adds the optional `chargers` block for the EV-charging-station file
+(`chargers-es.bin`, built by `scripts/build-chargers.py`); without it the catalog is unchanged and the app works without it.
+
 `--transit-file` (repeatable, with `--transit-base`) adds the optional `transit` array, one entry per city index
 `transit-<id>.umti` built by `scripts/build-transit.sh`. Each file needs its sidecar `transit-<id>.json` (written by the same
 tool: id, city, timezone, bounds, validFrom, validTo, attribution). Without the option the catalog is unchanged and the app
@@ -155,18 +158,28 @@ def build_base(version, base_dir, base_url, log=lambda m: None):
     return out
 
 
+def build_static_file(block, option, path, base, log=lambda m: None):
+    """Optional small-file block (`cameras`, `chargers`): url, size, sha256, file. None when there is no file."""
+    if not path:
+        return None
+    if not os.path.isfile(path):
+        log(f"WARNING {path} is missing; the catalog will not carry `{block}`")
+        return None
+    if not base:
+        raise SystemExit(f"--{option}-file needs --{option}-base")
+    base = base if base.endswith("/") else base + "/"
+    name = os.path.basename(path)
+    return {"url": base + name, "size": os.path.getsize(path), "sha256": sha256_of(path), "file": name}
+
+
 def build_cameras(cameras_file, cameras_base, log=lambda m: None):
     """Optional `cameras` block for `speedcams-es.bin` (see scripts/build-cameras.py) or None when there is no file."""
-    if not cameras_file:
-        return None
-    if not os.path.isfile(cameras_file):
-        log(f"WARNING {cameras_file} is missing; the catalog will not carry `cameras`")
-        return None
-    if not cameras_base:
-        raise SystemExit("--cameras-file needs --cameras-base")
-    cameras_base = cameras_base if cameras_base.endswith("/") else cameras_base + "/"
-    name = os.path.basename(cameras_file)
-    return {"url": cameras_base + name, "size": os.path.getsize(cameras_file), "sha256": sha256_of(cameras_file), "file": name}
+    return build_static_file("cameras", "cameras", cameras_file, cameras_base, log)
+
+
+def build_chargers(chargers_file, chargers_base, log=lambda m: None):
+    """Optional `chargers` block for `chargers-es.bin` (see scripts/build-chargers.py) or None when there is no file."""
+    return build_static_file("chargers", "chargers", chargers_file, chargers_base, log)
 
 
 TRANSIT_META_KEYS = ("id", "city", "timezone", "validFrom", "validTo", "attribution")
@@ -204,7 +217,7 @@ def build_transit(transit_files, transit_base, log=lambda m: None):
 def build(countries, mwm_dir=None, pmtiles_dir=None, mwm_base=None, pmtiles_base=None, catalog_version=None,
           fetch=(), max_download_bytes=20 << 20, log=lambda m: None, mwm_url_by_slug=False,
           base_dir=None, base_url=None, cameras_file=None, cameras_base=None,
-          transit_files=(), transit_base=None, names=None):
+          transit_files=(), transit_base=None, names=None, chargers_file=None, chargers_base=None):
     version = str(countries["v"])
     series = countries.get("map_series", "")
     mwm_base = (mwm_base or DEFAULT_MWM_BASE.format(series=series, v=version))
@@ -274,6 +287,9 @@ def build(countries, mwm_dir=None, pmtiles_dir=None, mwm_base=None, pmtiles_base
     cams = build_cameras(cameras_file, cameras_base, log)
     if cams:
         cat["cameras"] = cams
+    chargers = build_chargers(chargers_file, chargers_base, log)
+    if chargers:
+        cat["chargers"] = chargers
     transit = build_transit(transit_files, transit_base, log)
     if transit:
         cat["transit"] = transit
@@ -297,6 +313,8 @@ def main(argv=None):
     ap.add_argument("--base-url", help="base URL of World*.mwm (by default, --mwm-base)")
     ap.add_argument("--cameras-file", help="speedcams-es.bin from scripts/build-cameras.py (adds the optional `cameras` block)")
     ap.add_argument("--cameras-base", help="base URL of the cameras file (required with --cameras-file)")
+    ap.add_argument("--chargers-file", help="chargers-es.bin from scripts/build-chargers.py (adds the optional `chargers` block)")
+    ap.add_argument("--chargers-base", help="base URL of the chargers file (required with --chargers-file)")
     ap.add_argument("--transit-file", action="append", default=[], help="transit-<id>.umti (repeatable; adds the optional `transit` array)")
     ap.add_argument("--transit-base", help="base URL of the transit files (required with --transit-file)")
     ap.add_argument("--names-dir", default=os.path.join(os.path.dirname(__file__), "..", "third_party", "comaps", "data",
@@ -315,6 +333,7 @@ def main(argv=None):
                 set(a.fetch_mwm), a.max_download_mb << 20, log=lambda m: print(m, file=sys.stderr),
                 mwm_url_by_slug=a.mwm_url_by_slug, base_dir=a.base_dir, base_url=a.base_url,
                 cameras_file=a.cameras_file, cameras_base=a.cameras_base,
+                chargers_file=a.chargers_file, chargers_base=a.chargers_base,
                 transit_files=a.transit_file, transit_base=a.transit_base, names=names)
     text = json.dumps(cat, indent=1, ensure_ascii=False) + "\n"
     if a.output == "-":

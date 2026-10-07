@@ -61,4 +61,18 @@ class CatalogBaseTest {
         }
         assertFailsWith<CatalogException> { RegionCatalog.parse(json(base = ""","cameras":${asset("x", "../evil.bin")}""")) }
     }
+
+    @Test
+    fun `optional chargers file round trips with a relative url and is validated`() {
+        val c = RegionCatalog.parse(json(base = ""","chargers":${asset("chargers-es.bin", "chargers-es.bin")}"""), baseUrl = "https://h.example/rel/catalog.json")
+        val file = assertNotNull(c.chargers)
+        assertEquals("https://h.example/rel/chargers-es.bin", file.url)
+        assertEquals(RegionCatalog.parse(c.toJson()).chargers, file)
+        assertNull(c.cameras, "the two optional files are independent")
+        assertNull(RegionCatalog.parse(json()).chargers, "catalogs without it stay valid")
+        assertFailsWith<CatalogException> {
+            RegionCatalog.parse(json(base = ""","chargers":{"url":"x","size":5,"sha256":"zz","file":"chargers-es.bin"}"""))
+        }
+        assertFailsWith<CatalogException> { RegionCatalog.parse(json(base = ""","chargers":${asset("x", "../evil.bin")}""")) }
+    }
 }
