@@ -25,6 +25,7 @@ import com.qtekfun.mapas.map.MapFiles
 import com.qtekfun.mapas.map.MapLibreEngine
 import com.qtekfun.mapas.map.PrefsCameraStateStore
 import com.qtekfun.mapas.regions.RegionsActivity
+import com.qtekfun.mapas.settings.SettingsActivity
 import com.qtekfun.mapas.ui.MapScreen
 import com.qtekfun.mapas.ui.MapScreenState
 import com.qtekfun.mapas.ui.Notice
@@ -60,6 +61,7 @@ class MainActivity : ComponentActivity() {
         panel = PanelHost(this, engine, state)
         panel.onRequestLocation = ::onLocate
         state.onOpenMaps = { startActivity(Intent(this, RegionsActivity::class.java)) }
+        state.onOpenSettings = { startActivity(Intent(this, SettingsActivity::class.java)) }
         state.bearing = engine.cameraState().bearing.toFloat()
 
         setContent {

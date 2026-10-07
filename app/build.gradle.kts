@@ -100,6 +100,7 @@ dependencies {
     implementation(project(":core-data")) // sitios y listas (M3)
     implementation(libs.androidx.sqlite.framework) // driver SQLite de Android para :core-data (M3)
     implementation(project(":core-regions"))
+    implementation(project(":core-fuel")) // gasolineras: datos y ajustes (F2b)
 
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.compose.ui)
