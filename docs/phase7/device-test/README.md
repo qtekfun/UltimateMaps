@@ -17,3 +17,9 @@ Cadena probada con el servicio real del Ministerio, tocando la pantalla (`adb in
 - Con el mapa alejado, una nota «Lugar · Abierto desde un enlace de mapa» queda encima del panel de ruta (estorba un poco; solo ocurre tras abrir un enlace `geo:`).
 - Solo se vio GLP (pocas estaciones: salen 1-4 por pantalla en Madrid); no se probó gasolina 95 (más de 10.000 estaciones), así que el coste del índice y del dibujado con muchas estaciones sigue sin medir.
 - Sin probar aún: quitar/reordenar paradas, «Guardar» la gasolinera, modo oscuro/claro de la capa, actualización en segundo plano al volver a la app, y el modo sin red bloqueando la descarga.
+
+## Gasolina 95 E5 (la mayor: unas 11.000 estaciones), misma sesión
+- Descarga real y caché de ~0,9 MB; en Madrid a zoom 13 salen ~10 estaciones con precio, espaciadas (por debajo de zoom 14 se deja la más barata de cada celda) (captura 08).
+- Memoria del proceso principal: 281 MB PSS antes de dibujarla → 366 MB PSS con la capa dibujada (`dumpsys meminfo`).
+- `dumpsys gfxinfo`: 353 fotogramas, 14 con tirones (3,97 %), acumulado desde el arranque (incluye la carga); no es una medida de fluidez de gesto.
+- **Detalles a pulir:** (1) con el panel inferior translúcido se transparentan los precios de abajo y ensucian el texto del panel; (2) «Última actualización» muestra 12:49 aunque 95 E5 se bajó a las 13:01 (probablemente el más antiguo de los combustibles): puede confundir.
