@@ -112,7 +112,6 @@ private fun BoxScope.Driving(ui: NavUi, nav: NavState, actions: NavActions) {
         Banner(ui, nav)
         StatusStrip(ui)
     }
-    GloveToggle(ui, actions, Modifier.align(Alignment.TopEnd).windowInsetsPadding(WindowInsets.statusBars).padding(top = 168.dp, end = 12.dp))
     Column(
         Modifier.align(Alignment.BottomStart).fillMaxWidth().windowInsetsPadding(WindowInsets.navigationBars),
         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -120,11 +119,14 @@ private fun BoxScope.Driving(ui: NavUi, nav: NavState, actions: NavActions) {
         Row(Modifier.fillMaxWidth().padding(horizontal = 12.dp), verticalAlignment = Alignment.Bottom) {
             SpeedCluster(nav)
             Spacer(Modifier.weight(1f))
-            if (!ui.following) {
-                NavButton(
-                    stringResource(R.string.nav_ui_recenter), actions.onRecenter, Modifier.testTag("nav_recenter"),
-                    container = c.statusInfo, content = c.onStatus,
-                )
+            Column(horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                if (!ui.following) {
+                    NavButton(
+                        stringResource(R.string.nav_ui_recenter), actions.onRecenter, Modifier.testTag("nav_recenter"),
+                        container = c.statusInfo, content = c.onStatus,
+                    )
+                }
+                GloveToggle(ui, actions, Modifier)
             }
         }
         if (ui.simulated) SimulationBar(ui, actions)
