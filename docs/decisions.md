@@ -557,3 +557,8 @@ Format: date · decision · reason · discarded alternatives · how to revert it
 - **Effect for users of test builds:** the new id is a different app to Android. It installs next to the old one (`com.qtekfun.mapas`, rc.2 to rc.8) without updating it, and starts empty: export the settings from the old app (Settings, Data, Backup and restore, Export settings or Export everything), install the new one and import the file, then uninstall the old one. Downloaded maps are not carried over (re-download them from Maps, or copy them manually).
 - **Not renamed:** internal class names (`MapasApp`, `Theme.Mapas`, the `Mapas` design-system object).
 
+## 2026-10-07 · The transit index tool was missing from the repository (ignored by .gitignore)
+- **Finding:** the first data-workflow run that tried to build the Madrid index failed with `ClassNotFoundException ...transit.build.TransitBuildCliKt`: the source file lives in a package directory called `build`, and `.gitignore` ignored every directory named `build`, so it was never committed (it only existed in the agent's worktree).
+- **Decision:** restore `TransitBuildCli.kt` (package renamed to `com.qtekfun.ultimatemaps`), force-added, and narrow the ignore rules to the module build outputs (`/build/` and `/*/build/`). No other ignored source files were found.
+- **Verified:** `scripts/build-transit.sh scripts/transit/madrid.json` runs locally on the six real feeds and writes `transit-madrid.umti` (3,431,742 bytes) and its sidecar.
+
