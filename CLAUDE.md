@@ -1,77 +1,89 @@
-# Proyecto Mapas (nombre provisional)
+# Mapas project (working name)
 
-App Android de mapas y navegación 100 % offline y privada, con UI estilo Apple Maps, muy fluida. GPLv3, para F-Droid y GitHub. Documentación completa en `docs/` (empieza por `docs/mapas-README.md`).
+100 % offline, private Android maps and navigation app with an Apple Maps–style UI that stays very smooth. GPLv3, for F-Droid and GitHub. Full documentation in `docs/` (start with `docs/mapas-README.md`).
 
-## Decisiones inamovibles
+## Language (hard rule)
 
-- Solo Android. Kotlin + Compose para la UI; C++ (NDK/JNI) para el núcleo.
-- Mapa, búsqueda y routing en el dispositivo. Sin tráfico. Sin Google, Waze ni Apple como proveedores (solo se interpretan sus enlaces).
-- Cero telemetría. Toda la red pasa por `NetworkPolicy`; sin librerías de analítica ni informes de fallos remotos.
-- Funciona sin Google Play Services. Prohibido usar `play-services-*`, Firebase o cualquier SDK propietario en el sabor `foss`. Si hay GMS, se aprovecha solo por vías sin dependencias (por ejemplo, `LocationManager.FUSED_PROVIDER`).
-- Licencia GPLv3. Antes de añadir una dependencia, comprobar que su licencia es compatible y registrarla en `LICENSES.md`.
-- Datos de OpenStreetMap con atribución visible (ODbL).
-- Rendimiento: 60/120 fps y arranque en frío ≤ 1 s son requisitos, no deseos. Ver `docs/mapas-02-requisitos.md`.
+**Everything in the project is written in English**: documentation (`docs/`, `README`, `CHANGELOG`, `RELEASING`), GitHub releases and their notes, pull request titles and bodies, issues, commit messages, code comments and KDoc, identifiers, log messages and test names. The app UI is localized (English is the default `values/`, Spanish in `values-es/`) and the privacy policy keeps a Spanish section; those are the only Spanish content. Talk to the user in Spanish in the chat, but never write Spanish into the repository or GitHub.
 
-## Estado actual
+## Non-negotiable decisions
 
-Fase 1 en curso con la opción **C** (híbrido, decidida por el usuario el 2026-10-06; ver `docs/decisions.md`). Informe del spike en `docs/spike-informe.md`. El código está en GitHub (`qtekfun/UltimateMaps`, rama `master`, público desde 2026-10-07), pero **sin CI ni protección de rama todavía**: no hay checks que esperar, así que las PR quedan abiertas hasta que el usuario las revise o configure CI. El Pixel 8 no se usa sin permiso explícito del usuario. Riesgos abiertos: latencia de ruta larga y búsqueda del núcleo de CoMaps, y licencias heredadas (bsdiff, code2000, Entypo).
+- Android only. Kotlin + Compose for the UI; C++ (NDK/JNI) for the core.
+- Map, search and routing run on the device. No traffic. No Google, Waze or Apple as providers (only their links are parsed).
+- Zero telemetry. All network access goes through `NetworkPolicy`; no analytics libraries and no remote crash reporting.
+- Works without Google Play Services. `play-services-*`, Firebase and any proprietary SDK are forbidden in the `foss` flavor. If GMS is present it is used only through dependency-free paths (for example `LocationManager.FUSED_PROVIDER`).
+- GPLv3 license. Before adding a dependency, check that its license is compatible and record it in `LICENSES.md`.
+- OpenStreetMap data with visible attribution (ODbL).
+- Performance: 60/120 fps and a cold start ≤ 1 s are requirements, not wishes. See `docs/mapas-02-requisitos.md`.
 
-## Comandos
+## Current state
 
-- Preparar el núcleo nativo (una vez por clon; descarga ~2 GB de submódulos, necesita red y PyPI): `git submodule update --init third_party/comaps && scripts/comaps-prepare.sh`. Sin esto, `assembleDebug` falla en `:native-comaps:configureCMake` (submódulo vacío).
-- Compilar: `./gradlew assembleDebug -Dorg.gradle.workers.max=2` (poca RAM: nada de LTO)
-- Tests unitarios (153, no necesitan el submódulo): `./gradlew test`
-- Núcleo nativo de CoMaps: inicializar el submódulo `third_party/comaps`, ejecutar `scripts/comaps-prepare.sh` (una vez) y `./gradlew :native-comaps:assembleDebug`. Ver `docs/phase1/native-core.md`.
-- Tests instrumentados: `./gradlew connectedDebugAndroidTest`
-- Lint: `./gradlew lint`
-- Spike CoMaps (fuera del repo, `~/repos/comaps-spike`, tag `v2026.10.05-19`): `spike/comaps-build/03-build.sh` (necesita JDK 21, NDK 28.2, CMake 3.31.6 del SDK, `uconv` compilado a mano; ver `docs/spike/comaps-build.md`).
-- Medir: `spike/comaps-build/startup.sh`, `route_probe.sh`; MapLibre: `spike/maplibre/tools/`. Todo uso del dispositivo con `flock /tmp/claude-1000/device.lock`.
+Phase 1 plus the first navigation work, with **option C** (hybrid: MapLibre renders, the CoMaps core searches and routes; chosen by the user on 2026-10-06, see `docs/decisions.md`). Spike report: `docs/spike-informe.md`. The code is on GitHub (`qtekfun/UltimateMaps`, branch `master`, public since 2026-10-07) but there is **no CI and no branch protection yet**: there are no checks to wait for, so pull requests stay open until the user reviews them or sets up CI. Open risks: long-route and search latency of the CoMaps core, long routes returning `ROUTE_NOT_FOUND`, and inherited licenses (bsdiff, code2000, Entypo).
 
-## Cómo trabajar (autonomía)
+## Standing rules from the user
 
-- Trabaja sin pedir aprobación para editar código, compilar, ejecutar tests, medir, instalar en dispositivos conectados, hacer commits, empujar ramas, abrir PR y mergearlas cuando los checks pasen.
-- Divide el trabajo en tareas pequeñas; un commit por tarea con un mensaje claro.
-- Antes de dar algo por hecho: compila, pasa los tests y, si afecta a rendimiento, mide.
-- Actualiza `docs/` cuando cambie una decisión o un requisito.
+- **The Pixel 8 is used only with the user's explicit permission, each time.** Every `adb` call that touches the device goes through `flock /tmp/pixel-device.lock` (another session shares the phone) and first checks which app is in the foreground before sending taps or text.
+- **At most 3 subagents at a time.** Native builds are serialized across agents with `flock /tmp/claude-1000/native-build.lock` (little RAM).
+- Test builds published to GitHub are **pre-releases signed with the debug key**, tagged `test-v…` (never `v*`, which triggers the release workflow), pointing at the exact commit they were built from, with notes that say what was and was not tested on a device.
 
-## Flujo de ramas y PR (autónomo)
+## Commands
 
-1. Una rama por tarea (`feat/<tarea>`, `fix/<tarea>` o `spike/<tema>`). Nunca trabajes ni empujes directamente a `master`.
-2. Commits pequeños y push de la rama con `git push -u origin <rama>`, sin pedir permiso.
-3. Abre la PR con `gh pr create`: qué cambia, cómo se probó y qué requisito (RF/RNF) cubre. Una tarea por PR.
-4. Espera a los checks con `gh pr checks --watch`. Si todos pasan, mergea con squash y borra la rama: `gh pr merge --squash --delete-branch` (o `--auto` si el repo tiene el auto-merge activado).
-5. Si un check falla, arregla en la misma rama y vuelve a empujar. Tras 3 intentos con el mismo fallo, anótalo en `docs/decisions.md`, deja la PR abierta y sigue con otra tarea.
-6. Nunca mergees con checks en rojo o pendientes, ni uses `--admin`, ni debilites, borres o desactives tests o checks para que pasen. Si un test es incorrecto, corrígelo y explícalo en la PR.
-7. Tras el merge: `git switch master && git pull` y siguiente tarea.
+- Prepare the native core (once per clone; downloads ~2 GB of submodules, needs network and PyPI): `git submodule update --init third_party/comaps && scripts/comaps-prepare.sh`. Without it, `assembleDebug` fails at `:native-comaps:configureCMake` (empty submodule).
+- Build: `./gradlew assembleDebug -Dorg.gradle.workers.max=2` (little RAM: no LTO).
+- Unit tests (JVM; they do not need the submodule): `./gradlew test`.
+- Instrumented tests: `./gradlew connectedDebugAndroidTest`.
+- Lint: `./gradlew lint`.
+- Release build: `./gradlew :app:assembleFossRelease` (unsigned unless the `UM_*` signing variables are set; see `RELEASING.md`).
+- Debug bench for the native core (debug builds only): `am start -n com.qtekfun.mapas/.bench.CoreBenchActivity` with `--ez guidance true` or `--ez matrix true`.
+- CoMaps spike (outside the repo, `~/repos/comaps-spike`, tag `v2026.10.05-19`): `spike/comaps-build/03-build.sh` (needs JDK 21, NDK 28.2, the SDK's CMake 3.31.6 and a hand-built `uconv`; see `docs/spike/comaps-build.md`).
 
-## Protocolo de decisiones
+## How to work (autonomy)
 
-Ante una duda, decide con el criterio más razonable según los documentos, y regístralo en `docs/decisions.md` (fecha, decisión, motivo, alternativa descartada). No te detengas a preguntar por detalles reversibles.
+- Work without asking for approval to edit code, build, run tests, measure, make commits, push branches and open pull requests; merge them when the checks pass.
+- Split the work into small tasks; one commit per task with a clear message.
+- Before calling something done: build it, pass the tests and, if it affects performance, measure.
+- Update `docs/` when a decision or a requirement changes.
 
-## Cuándo preguntar (y solo entonces)
+## Branch and pull request flow (autonomous)
 
-1. Cambiar de licencia, o añadir una dependencia propietaria o de licencia dudosa.
-2. Cambiar una decisión inamovible de este archivo.
-3. Cambiar la opción de motor (A, B, C) ya decidida en el informe del spike.
-4. Cualquier acción irreversible fuera del repositorio, publicar, enviar datos a terceros o gastar dinero.
-5. Tocar lo que decide si algo se mergea: `.github/workflows/`, la protección de rama o los permisos del repo; reescribir historial o borrar ramas protegidas.
+1. One branch per task (`feat/<task>`, `fix/<task>` or `spike/<topic>`). Never work on or push directly to `master`.
+2. Small commits; push the branch with `git push -u origin <branch>` without asking.
+3. Open the PR with `gh pr create`: what changes, how it was tested and which requirement (RF/RNF) it covers. One task per PR.
+4. Wait for checks with `gh pr checks --watch`. If they all pass, squash-merge and delete the branch: `gh pr merge --squash --delete-branch` (or `--auto` if auto-merge is enabled).
+5. If a check fails, fix it on the same branch and push again. After 3 attempts at the same failure, note it in `docs/decisions.md`, leave the PR open and move on.
+6. Never merge with red or pending checks, never use `--admin`, and never weaken, delete or disable tests or checks to make them pass. If a test is wrong, fix it and explain why in the PR.
+7. After the merge: `git switch master && git pull`, then the next task.
 
-## Privacidad y datos del usuario
+## Decision protocol
 
-- Las ubicaciones del usuario nunca se escriben en logs por defecto ni salen del dispositivo.
-- Las credenciales (WebDAV) van en Android Keystore.
-- No leas ni escribas claves de firma, `.env` ni `keystore.properties`.
+When in doubt, decide with the most reasonable judgment from the documents and record it in `docs/decisions.md` (date, decision, reason, discarded alternative). Do not stop to ask about reversible details.
 
-## Estilo de código
+## When to ask (and only then)
 
-- Kotlin idiomático, módulos pequeños, interfaces para los motores (`MapEngine`, `SearchEngine`, `RoutingEngine`, `LocationSource`, `VoiceGuide`, `NetworkPolicy`).
-- Sin asignaciones en el bucle de render ni en hilos críticos de navegación.
-- Cadenas externalizadas (español e inglés) desde el primer día.
-- Tests para parsers de enlaces, importadores GPX/KML/Takeout y sync; las pruebas de navegación usan una `LocationSource` simulada.
+1. Changing the license, or adding a proprietary dependency or one with a doubtful license.
+2. Changing a non-negotiable decision in this file.
+3. Changing the engine option (A, B, C) already decided in the spike report.
+4. Any irreversible action outside the repository, publishing, sending data to third parties or spending money.
+5. Touching what decides whether something gets merged: `.github/workflows/`, branch protection or repository permissions; rewriting history or deleting protected branches.
 
-## Referencias
+## Privacy and user data
 
-- Requisitos: `docs/mapas-02-requisitos.md`
-- Arquitectura y diseño sin GMS: `docs/mapas-03-arquitectura.md`
-- Spike y criterios de decisión: `docs/mapas-04-spike.md`
-- Roadmap y riesgos: `docs/mapas-05-roadmap.md`
+- The user's locations are never written to logs by default and never leave the device.
+- Credentials (WebDAV) go in the Android Keystore.
+- Never read or write signing keys, `.env` or `keystore.properties`.
+
+## Code style
+
+- Idiomatic Kotlin, small modules, interfaces for the engines (`MapEngine`, `SearchEngine`, `RoutingEngine`, `LocationSource`, `VoiceGuide`, `NetworkPolicy`).
+- No allocations in the render loop or in critical navigation threads.
+- Externalized strings (English default, Spanish translation) from day one.
+- Tests for link parsers, GPX/KML/Takeout importers and sync; navigation tests use a simulated `LocationSource`.
+- Tests must not depend on real time or on recomposition from other threads (three flaky tests have already been fixed for that).
+
+## References
+
+- Requirements: `docs/mapas-02-requisitos.md`
+- Architecture and no-GMS design: `docs/mapas-03-arquitectura.md`
+- Spike and decision criteria: `docs/mapas-04-spike.md`
+- Roadmap and risks: `docs/mapas-05-roadmap.md`
+- Release process: `RELEASING.md`
