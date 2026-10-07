@@ -8,6 +8,7 @@ composeBom = "2026.09.00"
 activityCompose = "1.13.0"
 maplibre = "13.6.1"
 robolectric = "4.17"
+coroutines = "1.11.0"
 junit4 = "4.13.2"
 
 androidxSqlite = "2.7.0"
@@ -21,6 +22,8 @@ junit-jupiter = { group = "org.junit.jupiter", name = "junit-jupiter" }
 junit-platform-launcher = { group = "org.junit.platform", name = "junit-platform-launcher" }
 kotlin-test-junit5 = { group = "org.jetbrains.kotlin", name = "kotlin-test-junit5", version.ref = "kotlin" }
 kxml2 = { group = "net.sf.kxml", name = "kxml2", version.ref = "kxml2" }
+kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "coroutines" }
+kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutines" }
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "serializationJson" }
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
 androidx-compose-ui = { group = "androidx.compose.ui", name = "ui" }

@@ -232,3 +232,10 @@ Formato: fecha · decisión · motivo · alternativas descartadas · cómo rever
 - **Hallazgos:** bici usa `CarDirectionsEngine` (no `PedestrianDirection`); límite por segmento sí existe pero solo se rellena en coche; no hay MERGE, ARRIVE_LEFT/RIGHT ni salida (DEPART) en el núcleo.
 - **Estado:** compila y enlaza; no ejecutado (sin dispositivo). `Guidance.kt` no se tocó.
 - **Alternativa descartada:** codificar el guiado dentro de `nativeRoute` (rompe el formato y obliga a pagar el coste siempre).
+## 2026-10-07 · Motor de seguimiento de ruta `:core-nav` (rama `feat/nav-following`)
+- **Decisión:** módulo Kotlin JVM puro con un núcleo síncrono (`RouteTracker`) y un envoltorio de corrutinas (`NavigationSession`, `StateFlow<NavState>` + `SharedFlow<Announcement>`). Umbrales y su porqué en `docs/phase2/following.md`. Identificadores de estado en inglés (`ON_ROUTE`, `OFF_ROUTE`, `REROUTING`, `ARRIVED`, `NO_SIGNAL`) como el resto del código.
+- **Dependencia nueva:** `kotlinx-coroutines` 1.11.0 (core y test), Apache-2.0, registrada en `LICENSES.md`. Alternativa descartada: callbacks propios (reinventar `StateFlow`, y la UI Compose ya espera flujos).
+- **Motivo del núcleo síncrono:** el tiempo sale solo de los fijos y los ticks, así que las pruebas son exactas sin dormir; la sesión solo añade concurrencia (un único consumidor, sin locks).
+- **Descartado:** emparejar con el mapa de calles (no hay datos en JVM puro; la ventana monótona + rumbo basta para bucles y solapes); proyectar siempre al segmento global más cercano (salta de paso en rutas con bucles).
+- **Medido:** ≈ 0,5-0,8 µs por fijo y 0 B asignados en `onFix` (JVM de escritorio; no es el Pixel 8). Detalle en el doc.
+- **Revertir:** `git revert` de los commits de la rama; no toca ningún otro módulo (solo `settings.gradle.kts`, `libs.versions.toml` y `LICENSES.md`).
