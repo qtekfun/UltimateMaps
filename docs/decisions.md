@@ -552,3 +552,8 @@ Format: date · decision · reason · discarded alternatives · how to revert it
 - **Behaviour change:** Automatic now prefers the Spanish name of a place over the local one on a Spanish phone (Catalan `Lleida` shows as `Lérida` unless Local names is chosen). Before, the English stub with CoMaps' default handling put the local name first.
 - **Owner to decide:** whether Automatic should rather default to local names; whether the map labels must follow the setting (then a style regeneration per mode); more category languages (about 75 kB each); whether the published catalog should carry `names` for `ca`, `eu` too.
 
+## 2026-10-07 · Package and application id renamed to com.qtekfun.ultimatemaps (owner)
+- **Decision:** the application id, namespace and Kotlin/JNI packages moved from `com.qtekfun.mapas` to `com.qtekfun.ultimatemaps` (directories moved with `git mv`, JNI symbols `Java_com_qtekfun_ultimatemaps_nativecomaps_*`, shortcuts, debug manifest, F-Droid draft file name, docs and scripts). This history file and the CHANGELOG keep the old id where they describe the past.
+- **Effect for users of test builds:** the new id is a different app to Android. It installs next to the old one (`com.qtekfun.mapas`, rc.2 to rc.8) without updating it, and starts empty: export the settings from the old app (Settings, Data, Backup and restore, Export settings or Export everything), install the new one and import the file, then uninstall the old one. Downloaded maps are not carried over (re-download them from Maps, or copy them manually).
+- **Not renamed:** internal class names (`MapasApp`, `Theme.Mapas`, the `Mapas` design-system object).
+

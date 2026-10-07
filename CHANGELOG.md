@@ -12,6 +12,7 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 
 ### Changed
 
+- **New application id `com.qtekfun.ultimatemaps`** (the app is called UltimateMaps). It installs next to the old test builds instead of updating them: export your settings from the old app, install the new one and import the file (see `docs/decisions.md`).
 - **Settings redesigned as a hub.** Settings now opens on a short list of categories (Navigation and voice, Alerts, Petrol stations, Maps and network, Data, About), each with an icon and a one-line summary of its current state, plus a search field. Each category has its own screen with a back arrow; rarely changed items (source addresses, refresh intervals) are under a closed "Advanced" group and delete actions are set apart. No setting was removed or renamed. See `docs/phase2/settings-hub.md`.
 - **Settings button moved** to the right-hand map button column, under my location (and the compass when it shows). The OpenStreetMap mark stays top-left.
 

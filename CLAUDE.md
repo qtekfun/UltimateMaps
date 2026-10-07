@@ -34,7 +34,7 @@ Phase 1 plus the first navigation work, with **option C** (hybrid: MapLibre rend
 - Instrumented tests: `./gradlew connectedDebugAndroidTest`.
 - Lint: `./gradlew lint`.
 - Release build: `./gradlew :app:assembleFossRelease` (unsigned unless the `UM_*` signing variables are set; see `RELEASING.md`).
-- Debug bench for the native core (debug builds only): `am start -n com.qtekfun.mapas/.bench.CoreBenchActivity` with `--ez guidance true` or `--ez matrix true`.
+- Debug bench for the native core (debug builds only): `am start -n com.qtekfun.ultimatemaps/.bench.CoreBenchActivity` with `--ez guidance true` or `--ez matrix true`.
 - CoMaps spike (outside the repo, `~/repos/comaps-spike`, tag `v2026.10.05-19`): `spike/comaps-build/03-build.sh` (needs JDK 21, NDK 28.2, the SDK's CMake 3.31.6 and a hand-built `uconv`; see `docs/spike/comaps-build.md`).
 
 ## How to work (autonomy)

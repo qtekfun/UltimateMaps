@@ -42,7 +42,7 @@ Test builds are published by hand as **pre-releases signed with the debug key**,
 
 ## Status (2026-10-07)
 
-**Ready in the repo** (checked locally, not on GitHub): `LICENSE` (GPL-3.0), `README.md`, `PRIVACY.md` (English and Spanish), `CHANGELOG.md`, `fastlane/metadata/android/{en-US,es-ES}` (title, descriptions and changelog), a draft `fdroid/com.qtekfun.mapas.yml` (without the `Builds` section), a single `appVersion` with a derived `versionCode`, environment-based signing, `release.yml` (installs the exact NDK and CMake, prepares the submodule, fails without the key, publishes the APK and `.sha256`), `usesCleartextTraffic="false"`, `allowBackup="false"`, and an up-to-date `LICENSES.md`.
+**Ready in the repo** (checked locally, not on GitHub): `LICENSE` (GPL-3.0), `README.md`, `PRIVACY.md` (English and Spanish), `CHANGELOG.md`, `fastlane/metadata/android/{en-US,es-ES}` (title, descriptions and changelog), a draft `fdroid/com.qtekfun.ultimatemaps.yml` (without the `Builds` section), a single `appVersion` with a derived `versionCode`, environment-based signing, `release.yml` (installs the exact NDK and CMake, prepares the submodule, fails without the key, publishes the APK and `.sha256`), `usesCleartextTraffic="false"`, `allowBackup="false"`, and an up-to-date `LICENSES.md`.
 
 ### Only the project owner can do these (see CLAUDE.md, "When to ask" items 4 and 5)
 
