@@ -4,6 +4,16 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 
 ## [Unreleased]
 
+### Added
+
+- A **visual alert** for cameras and incidents ahead: a chip with the camera icon, what is ahead, the distance counting down and the posted limit when known. It shows on the map when driving without a navigation and under the maneuver banner during navigation, also when the voice is muted, with a screen-reader description and a bigger size in glove mode. Checklist for the phone: `docs/phase2/camera-alerts-checklist.md`.
+
+### Fixed
+
+- Speed-camera alerts never had data to work with unless the catalog the app had cached already listed the camera file, and the catalog was refreshed only by opening "Maps": turning a camera switch on, "Update now" and the first foreground now refresh the catalog first (same server and rules as the map downloads; offline mode blocks it).
+- A navigation resumed by the foreground service after the system killed the process, or a camera switch turned on in the middle of a trip, did not get route-based alerts; the alerts now follow the navigation controller itself.
+- Camera and incident voice alerts no longer discard or interrupt a pending turn instruction (new `ADVISORY` voice priority), and are not spoken while a maneuver is about to be announced (the chip still shows).
+
 ## [0.1.0-rc.6] - pending
 
 ### Added
