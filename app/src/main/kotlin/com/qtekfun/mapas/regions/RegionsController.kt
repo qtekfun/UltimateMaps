@@ -352,7 +352,7 @@ class RegionsController(
         internal val GITHUB_HOSTS = listOf("github.com", "release-assets.githubusercontent.com", "objects.githubusercontent.com")
 
         internal const val PREFS = "regions"
-        private const val KEY_URL = "catalog_url"
+        internal const val KEY_URL = "catalog_url"
         internal const val KEY_OFFLINE = "offline_mode"
         private const val KEY_LOCATION = "install_location"
         private const val CACHE_NAME = "regions-catalog.json"
