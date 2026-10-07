@@ -4,6 +4,10 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 
 ## [Unreleased]
 
+### Added
+
+- **Third-party notices in About.** Settings, About now has a collapsed *Third-party notices* section with the `NOTICE` text: the licence texts and copyright lines that the libraries inside the app (the CoMaps core and its third-party code, the Artistic License 2.0 of `libkdtree++`, and others) ask to be shipped with the app.
+
 ### Fixed
 
 - **Quick chips (Home, Work, Park, SOS)** stay on one line each with less padding and an ellipsis if a label is too long (the label is now "Park" / "Aparcar"), so the row is even in English, Spanish and with a large font.

@@ -71,6 +71,7 @@ class SettingsActivity : ComponentActivity() {
             about = AboutSettingsEnv(
                 version = runCatching { packageManager.getPackageInfo(packageName, 0).versionName }.getOrNull().orEmpty(),
                 transitAttributions = { app.transit.attributions },
+                notice = { runCatching { assets.open("NOTICE.txt").bufferedReader().use { it.readText() } }.getOrDefault("") },
             ),
         )
         setContent {
