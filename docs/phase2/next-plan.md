@@ -16,6 +16,11 @@ Date: 2026-10-07. Sources: `docs/phase2/feature-gap-analysis.md` (Google/Apple M
 | `feat/personal-quick-wins` | Parked-here marker, Home/Work shortcuts, recent searches (with clear and off switch), list emoji/colour/notes, launcher shortcuts, emergency screen (coordinates, 112, share by SMS) | about 8 d |
 | `feat/data-import-tracks` | Google Takeout import, GPX tracks drawn as lines, stop reordering in the route panel | about 6 d |
 
+## Reported by the owner on 2026-10-07 (after using rc.6)
+
+- **Repeated "no GPS signal, estimated position" while navigating.** Suspect (not confirmed on a device): on API 31+ the app asks the fused provider through the legacy provider-string call, which does not request high accuracy, and the follower discards fixes worse than 100 m and declares signal loss after 5 s. Plan: request high accuracy explicitly, base loss detection on arrival time instead of the fix timestamp, and measure fix gaps on a real drive.
+- **Camera (radar) warnings while navigating "not working".** The camera data file was not in the data release yet (the layer and alerts had nothing to warn about); the weekly data workflow now builds it. Still to do: verify the alerts end to end with the real file, add a visual banner (voice alone is easy to miss), and confirm the alert reaches the voice queue and the notification.
+
 ## Wave 2 (as slots free up)
 
 - Category browse in search (needs a one-day core spike), place-card extras from OSM tags (phone, website, opening hours text), Plus Codes and coordinate search.
