@@ -27,6 +27,9 @@ Examples (no network):
 `--base-dir` adds the `base` block with `World.mwm` and `WorldCoasts.mwm` (they are not a region, but the core requires them
 next to each region; the app downloads them once per version). Without it, the catalog has no `base`.
 
+`--cameras-file` (with `--cameras-base`) adds the optional `cameras` block for the speed-camera file; without it the catalog is
+unchanged and the app works without camera data.
+
 With network, only on explicit request and with a size cap: --fetch-mwm <comapsId> downloads THAT .mwm
 (by default <= 20 MB) to --mwm-dir to compute its SHA-256.
 """
@@ -116,9 +119,23 @@ def build_base(version, base_dir, base_url, log=lambda m: None):
     return out
 
 
+def build_cameras(cameras_file, cameras_base, log=lambda m: None):
+    """Optional `cameras` block for `speedcams-es.bin` (see scripts/build-cameras.py) or None when there is no file."""
+    if not cameras_file:
+        return None
+    if not os.path.isfile(cameras_file):
+        log(f"WARNING {cameras_file} is missing; the catalog will not carry `cameras`")
+        return None
+    if not cameras_base:
+        raise SystemExit("--cameras-file needs --cameras-base")
+    cameras_base = cameras_base if cameras_base.endswith("/") else cameras_base + "/"
+    name = os.path.basename(cameras_file)
+    return {"url": cameras_base + name, "size": os.path.getsize(cameras_file), "sha256": sha256_of(cameras_file), "file": name}
+
+
 def build(countries, mwm_dir=None, pmtiles_dir=None, mwm_base=None, pmtiles_base=None, catalog_version=None,
           fetch=(), max_download_bytes=20 << 20, log=lambda m: None, mwm_url_by_slug=False,
-          base_dir=None, base_url=None):
+          base_dir=None, base_url=None, cameras_file=None, cameras_base=None):
     version = str(countries["v"])
     series = countries.get("map_series", "")
     mwm_base = (mwm_base or DEFAULT_MWM_BASE.format(series=series, v=version))
@@ -177,6 +194,9 @@ def build(countries, mwm_dir=None, pmtiles_dir=None, mwm_base=None, pmtiles_base
     base = build_base(version, base_dir, base_url or mwm_base, log)
     if base:
         cat["base"] = base
+    cams = build_cameras(cameras_file, cameras_base, log)
+    if cams:
+        cat["cameras"] = cams
     cat["regions"] = regions
     return cat
 
@@ -195,6 +215,8 @@ def main(argv=None):
     ap.add_argument("--max-download-mb", type=int, default=20)
     ap.add_argument("--base-dir", help="directory with World.mwm and WorldCoasts.mwm (the catalog's `base` block)")
     ap.add_argument("--base-url", help="base URL of World*.mwm (by default, --mwm-base)")
+    ap.add_argument("--cameras-file", help="speedcams-es.bin from scripts/build-cameras.py (adds the optional `cameras` block)")
+    ap.add_argument("--cameras-base", help="base URL of the cameras file (required with --cameras-file)")
     ap.add_argument("--mwm-url-by-slug", action="store_true",
                     help="the .mwm URL uses the own id (`<slug>.mwm`), e.g. on GitHub Releases, which renames spaces")
     ap.add_argument("-o", "--output", default="-")
@@ -203,7 +225,8 @@ def main(argv=None):
         countries = json.load(f)
     cat = build(countries, a.mwm_dir, a.pmtiles_dir, a.mwm_base, a.pmtiles_base, a.catalog_version,
                 set(a.fetch_mwm), a.max_download_mb << 20, log=lambda m: print(m, file=sys.stderr),
-                mwm_url_by_slug=a.mwm_url_by_slug, base_dir=a.base_dir, base_url=a.base_url)
+                mwm_url_by_slug=a.mwm_url_by_slug, base_dir=a.base_dir, base_url=a.base_url,
+                cameras_file=a.cameras_file, cameras_base=a.cameras_base)
     text = json.dumps(cat, indent=1, ensure_ascii=False) + "\n"
     if a.output == "-":
         sys.stdout.write(text)

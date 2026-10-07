@@ -57,7 +57,16 @@ data class BaseMaps(val version: String, val world: RegionAsset, val worldCoasts
 class CatalogException(message: String, cause: Throwable? = null) : Exception(message, cause)
 
 /** Versioned catalog of regions. Immutable. */
-class RegionCatalog(val catalogVersion: String, regions: List<Region>, val base: BaseMaps? = null) {
+class RegionCatalog(
+    val catalogVersion: String,
+    regions: List<Region>,
+    val base: BaseMaps? = null,
+    /**
+     * Optional small file with speed-camera data (`speedcams-es.bin`, built by `scripts/build-cameras.py`). Catalogs
+     * without it are valid; the app then simply has no camera data.
+     */
+    val cameras: RegionAsset? = null,
+) {
     val regions: List<Region> = regions.toList()
     private val byId = this.regions.associateBy { it.id }
 
@@ -75,6 +84,7 @@ class RegionCatalog(val catalogVersion: String, regions: List<Region>, val base:
             checkAsset(it.world, "base.world")
             checkAsset(it.worldCoasts, "base.worldCoasts")
         }
+        cameras?.let { checkAsset(it, "cameras") }
         this.regions.forEach { r ->
             var cur: String? = r.parentId
             var hops = 0
@@ -109,6 +119,7 @@ class RegionCatalog(val catalogVersion: String, regions: List<Region>, val base:
             put("world", assetJson(base.world))
             put("worldCoasts", assetJson(base.worldCoasts))
         })
+        if (cameras != null) put("cameras", assetJson(cameras))
         put("regions", buildJsonArray {
             regions.forEach { r ->
                 add(buildJsonObject {
@@ -160,6 +171,7 @@ class RegionCatalog(val catalogVersion: String, regions: List<Region>, val base:
                     asset(b.getValue("world").jsonObject), asset(b.getValue("worldCoasts").jsonObject),
                 )
             }
+            val cameras = (root["cameras"] as? JsonObject)?.let { asset(it) }
             val regions = root.getValue("regions").jsonArray.map { e ->
                 val o = e.jsonObject
                 val assets = (o["assets"] as? JsonObject)?.let { a ->
@@ -176,7 +188,7 @@ class RegionCatalog(val catalogVersion: String, regions: List<Region>, val base:
                     comapsId = (o["comapsId"] as? JsonPrimitive)?.takeIf { it !is JsonNull }?.content,
                 )
             }
-            RegionCatalog(root.getValue("catalogVersion").jsonPrimitive.content, regions, baseMaps)
+            RegionCatalog(root.getValue("catalogVersion").jsonPrimitive.content, regions, baseMaps, cameras)
         } catch (e: CatalogException) {
             throw e
         } catch (e: Exception) { // malformed JSON, missing fields, failed invariants
