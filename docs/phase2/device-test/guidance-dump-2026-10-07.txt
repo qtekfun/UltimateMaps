@@ -1,5 +1,5 @@
-# Prueba del guiado del núcleo en el Pixel 8 (2026-10-07, debug, 7 regiones + World)
-# Comando: am start -W -n com.qtekfun.mapas/.bench.CoreBenchActivity --ez guidance true; salida de logcat UMBENCH (sin coordenadas)
+# Core guidance test on the Pixel 8 (2026-10-07, debug, 7 regions + World)
+# Command: am start -W -n com.qtekfun.mapas/.bench.CoreBenchActivity --ez guidance true; logcat output of UMBENCH (no coordinates)
 .443 I/UMBENCH (24141): guidance init maps=9
 .129 I/UMBENCH (24141): guidance profile=car code=0 plain_ms=418 guided_ms=267 points=179 maneuvers=11 limits=11 err=null
 .129 I/UMBENCH (24141):   maneuver idx=7 type=LEFT street='Plaza del Carmen' exit=null lanes=[]

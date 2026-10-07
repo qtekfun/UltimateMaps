@@ -1,44 +1,44 @@
-# Arrastre del panel inferior (3 detents)
+# Bottom panel drag (3 detents)
 
-Rama `feat/ui-regions-search-sheet`. Archivos: `app/.../ui/sheet/BottomSheet.kt`, `ui/MapScreen.kt`, `ui/theme/Theme.kt`.
+Branch `feat/ui-regions-search-sheet`. Files: `app/.../ui/sheet/BottomSheet.kt`, `ui/MapScreen.kt`, `ui/theme/Theme.kt`.
 
-**Aviso honesto: la sensación real NO está medida.** No se usó el Pixel 8. Todo lo de abajo son cambios razonados por lectura del código y comprobados con gestos sintéticos de Robolectric (que verifican la lógica: qué detent, quién hace scroll), no cómo se siente el dedo. Los valores nuevos son una primera estimación y hay que probarlos en el teléfono.
+**Honest warning: the real feel is NOT measured.** The Pixel 8 was not used. Everything below is changes reasoned from reading the code and checked with synthetic Robolectric gestures (which verify the logic: which detent, who scrolls), not how it feels under a finger. The new values are a first estimate and must be tried on the phone.
 
-## Qué había (y por qué «cuesta un pelín»)
+## What there was (and why it "takes a bit of effort")
 
-| Punto | Antes | Problema probable |
+| Point | Before | Probable problem |
 |---|---|---|
-| Zona de arrastre | Solo el tirador: 5 dp de pastilla + 2×10 dp = 25 dp de alto | Muy por debajo de 48 dp; el resto de la cabecera (pestañas, campo) no arrastraba |
-| Slop táctil | `draggable` descarta ~8 dp (`touchSlop`) antes del primer delta | El panel va ~8 dp por detrás del dedo todo el gesto |
-| Aplicar el delta | `scope.launch { animatable.snapTo(...) }` en cada delta | Cada evento pasa por una corrutina: posible retardo de un frame |
-| Soltar lento | El detent más cercano (hay que pasar la mitad del hueco) | Para subir de MEDIO a COMPLETO hay que arrastrar ~625 px (≈ 240 dp) |
-| Fling | 800 px/s fijos (≈ 300 dp/s a 2,6x; distinto según densidad) | Umbral alto y dependiente de la densidad |
-| Listas | Sin `nestedScroll` | Arrastrar sobre resultados/listas desplaza la lista; con la lista arriba del todo el gesto «se atasca», el panel no baja |
-| Animación | Muelle amortiguamiento 0,85, rigidez 400 (`MediumLow`); al soltar se arrancaba sin velocidad del fling y a veces dos animaciones seguidas (efecto + explícita) | Asentamiento lento (~0,6 s) y con tirón |
-| Teclado | Al enfocar un campo el panel pasa a COMPLETO; arrastrar hacia abajo dejaba el teclado y el foco abiertos | El panel y el teclado se «pelean» |
-| TalkBack | Solo el clic del tirador (cicla COLLAPSED→MEDIUM→FULL→COLLAPSED) | Sin acciones explícitas de subir/bajar |
+| Drag area | Only the handle: 5 dp pill + 2×10 dp = 25 dp tall | Far below 48 dp; the rest of the header (tabs, field) did not drag |
+| Touch slop | `draggable` discards ~8 dp (`touchSlop`) before the first delta | The panel trails the finger by ~8 dp for the whole gesture |
+| Applying the delta | `scope.launch { animatable.snapTo(...) }` on every delta | Every event goes through a coroutine: possible one-frame delay |
+| Slow release | The nearest detent (you have to pass half the gap) | To go from MEDIUM to FULL you have to drag ~625 px (≈ 240 dp) |
+| Fling | Fixed 800 px/s (≈ 300 dp/s at 2.6x; differs by density) | High, density-dependent threshold |
+| Lists | No `nestedScroll` | Dragging over results/lists scrolls the list; with the list at the very top the gesture "gets stuck", the panel does not go down |
+| Animation | Spring damping 0.85, stiffness 400 (`MediumLow`); on release it started without the fling velocity and sometimes two animations in a row (effect + explicit) | Slow settling (~0.6 s) and with a jerk |
+| Keyboard | Focusing a field moves the panel to FULL; dragging down left the keyboard and focus open | The panel and the keyboard "fight" |
+| TalkBack | Only the handle's click (cycles COLLAPSED→MEDIUM→FULL→COLLAPSED) | No explicit up/down actions |
 
-## Qué cambia
+## What changes
 
-| Punto | Después |
+| Point | After |
 |---|---|
-| Tirador | Caja de **48 dp** de alto a todo el ancho (pastilla centrada). La altura contraída pasa de 84 a **107 dp** para que el contenido visible sea el mismo (+23 dp) |
-| Zona de arrastre | **Todo el panel** (`draggable` en la columna): tirador, título, pestañas y cualquier zona que no haga scroll |
-| Slop | Se devuelve el `touchSlop` en el primer delta (el panel queda bajo el dedo). Medido en Robolectric: 150 px de dedo = 150 px de panel |
-| Delta | Síncrono (`mutableFloatState` leído en la fase de layout, sin recomponer el contenido ni corrutinas por evento) |
-| Soltar lento | Si el gesto empezó en un detent, basta **25 %** del hueco hacia el siguiente (antes 50 %); si se pasa de la mitad, el más cercano |
-| Fling | **200 dp/s** (antes 800 px/s); fling hacia arriba o abajo va al detent siguiente en esa dirección, sin saltarse ninguno (se mantienen 3 detents) |
-| Animación | Muelle amortiguamiento **0,9**, rigidez **800** (antes 0,85 / 400), con la **velocidad del dedo** como velocidad inicial; una sola animación (se ignora la del efecto si ya se va al mismo destino); sin sobrepaso fuera de [colapsado, completo] |
-| Listas | `nestedScroll`: deslizar hacia arriba **sube el panel antes** de que la lista se mueva; hacia abajo con la lista arriba del todo **baja el panel**; con la lista desplazada, solo hace scroll la lista. Al soltar entre dos detents, el panel se asienta con la velocidad y la lista no hace fling; si el panel llegó a COMPLETO, la lista sigue con su fling. Flings de la propia lista no mueven el panel (decisión: no colapsar el panel al volver arriba con un fling largo) |
-| Teclado | Al asentarse en un detent distinto de COMPLETO por gesto se quita el foco y se oculta el teclado |
-| TalkBack | El tirador expone acciones personalizadas «Ampliar el panel» / «Reducir el panel» (solo las posibles, sin dar la vuelta) además del clic existente |
+| Handle | **48 dp** tall box across the full width (centred pill). The collapsed height goes from 84 to **107 dp** so the visible content is the same (+23 dp) |
+| Drag area | **The whole panel** (`draggable` on the column): handle, title, tabs and any area that does not scroll |
+| Slop | The `touchSlop` is given back in the first delta (the panel stays under the finger). Measured in Robolectric: 150 px of finger = 150 px of panel |
+| Delta | Synchronous (`mutableFloatState` read in the layout phase, without recomposing the content or per-event coroutines) |
+| Slow release | If the gesture started at a detent, **25 %** of the gap towards the next one is enough (before 50 %); if it goes past half, the nearest one |
+| Fling | **200 dp/s** (before 800 px/s); a fling up or down goes to the next detent in that direction, skipping none (3 detents are kept) |
+| Animation | Spring damping **0.9**, stiffness **800** (before 0.85 / 400), with the **finger velocity** as the initial velocity; a single animation (the effect's one is ignored if it is already heading to the same target); no overshoot outside [collapsed, full] |
+| Lists | `nestedScroll`: swiping up **raises the panel before** the list moves; down with the list at the very top **lowers the panel**; with the list scrolled, only the list scrolls. On release between two detents, the panel settles with the velocity and the list does not fling; if the panel reached FULL, the list continues with its fling. Flings of the list itself do not move the panel (decision: do not collapse the panel when returning to the top with a long fling) |
+| Keyboard | When settling at a detent other than FULL by gesture, focus is cleared and the keyboard is hidden |
+| TalkBack | The handle exposes custom actions "Expand the panel" / "Shrink the panel" (only the possible ones, without wrapping around) in addition to the existing click |
 
-## Pruebas
+## Tests
 
-- `SheetMathTest`: umbral de fling (límites), regla del 25 %, drag que pasa de largo, reparto del scroll anidado, vecinos de detent.
-- `SheetGestureTest` (Robolectric): tirador ≥ 48 dp; arrastre iniciado fuera del tirador; fling corto y rápido entre los 3 detents; arrastre lento por debajo/por encima del 25 %; `swipeUp`/`swipeDown` sin lista; con `LazyColumn`: subir antes de hacer scroll, bajar con la lista arriba, lista a pantalla completa, lista desplazada; acciones de semántica.
-- Nota de test: `swipe()` del framework interrumpía los arrastres lentos a mitad (la inyección, no el panel), así que los gestos lentos usan `down/moveBy/up`.
+- `SheetMathTest`: fling threshold (limits), the 25 % rule, a drag that overshoots, nested scroll distribution, detent neighbours.
+- `SheetGestureTest` (Robolectric): handle ≥ 48 dp; drag started outside the handle; short, fast fling between the 3 detents; slow drag below/above 25 %; `swipeUp`/`swipeDown` without a list; with `LazyColumn`: up before scrolling, down with the list at the top, full-screen list, scrolled list; semantics actions.
+- Test note: the framework's `swipe()` interrupted slow drags midway (the injection, not the panel), so slow gestures use `down/moveBy/up`.
 
-## Pendiente de medir en el teléfono
+## Still to measure on the phone
 
-Umbral de 200 dp/s y 25 %, rigidez 800, 107 dp de altura contraída, y si el teclado se oculta en el momento adecuado. Si algo se siente mal, los valores están en `SheetMath` y `SheetMotion.SPRING`.
+The 200 dp/s and 25 % thresholds, stiffness 800, 107 dp collapsed height, and whether the keyboard hides at the right moment. If anything feels wrong, the values are in `SheetMath` and `SheetMotion.SPRING`.

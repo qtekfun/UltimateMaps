@@ -1,78 +1,78 @@
-# Maniobras, carriles y límites de velocidad desde el núcleo de CoMaps
+# Maneuvers, lanes and speed limits from the CoMaps core
 
-Rama `feat/nav-maneuvers` (sobre `feat/nav-model`). Versión del núcleo: `v2026.10.05-19`. **Estado: compila y enlaza; NO ejecutado** (sin dispositivo; el Pixel 8 está vetado). Lo que sigue distingue lo leído en el código [L], lo probado en la JVM [T] y lo que falta [N].
+Branch `feat/nav-maneuvers` (on top of `feat/nav-model`). Core version: `v2026.10.05-19`. **Status: compiles and links; NOT run** (no device; the Pixel 8 is off limits). What follows distinguishes what was read in the code [L], what was tested on the JVM [T] and what is missing [N].
 
-## Qué existe de verdad en esta versión [L]
+## What actually exists in this version [L]
 
-Todo en `third_party/comaps/libs/routing/`:
+All in `third_party/comaps/libs/routing/`:
 
-| Dato | Dónde | Notas |
+| Data | Where | Notes |
 |---|---|---|
-| Lista de segmentos de la ruta | `Route::GetRouteSegments()` (`route.hpp`) | Un `RouteSegment` por tramo; `GetPoly()` tiene un punto más que segmentos y no deduplica (`JunctionsToPoints`, `road_graph.hpp:336`; `FollowedPolyline::Update`). El segmento *i* une los puntos *i* e *i+1*. |
-| Giro | `RouteSegment::GetTurn()` -> `turns::TurnItem` (`turns.hpp`) | `m_index` = índice de segmento + 1 = índice de punto de `GetPoly()` donde se gira (`directions_engine.cpp:366`). `m_turn` (`CarDirection`), `m_pedestrianTurn`, `m_exitNum`, `m_lanes`. `None` = sin maniobra. |
-| Rotonda | `FixupCarTurns` (`car_directions.cpp:57`) | Borra los `StayOnRoundAbout` y pone la salida en `EnterRoundAbout` y `LeaveRoundAbout` (`SetTurnExits(exitNum + 1)`). |
-| Carriles | `TurnItem::m_lanes` (`lanes::LanesInfo`, `lane_info.hpp`) | Se rellenan solo si hay giro (`car_directions.cpp:156-160`) desde `FMD_TURN_LANES*`. `SelectRecommendedLanes` marca `recommendedWay != None` en los carriles que llevan a la ruta, o vacía la lista si no puede (`lanes_recommendation.cpp:20-44`). Cada `LaneInfo.laneWays` es un bitset de `LaneWay`. |
-| Calle destino | `Route::GetClosestStreetNameAfterIdx(m_index, RoadNameInfo&)` (`route.cpp:228`) | `RoadNameInfo` trae `m_name`, `m_ref`, `m_destination`, `m_junction_ref`... Solo el primer segmento de cada tramo cargado lleva nombre; la función busca hacia delante hasta 400 m (`kSteetNameLinkMeters`). |
-| Límite de velocidad **por segmento** | `RouteSegment::GetSpeedLimit()` -> `SpeedInUnits` (`route.hpp`), relleno en `index_router.cpp:1720` desde `SingleVehicleWorldGraph::GetSpeedLimit` (`single_vehicle_world_graph.cpp:193`) | **Sí existe.** `IsValid()`, `IsNumeric()`, `GetSpeedKmPH()` (convierte mph). Valores no numéricos: `none` (autopista sin límite), `walk`, `common`. |
+| List of route segments | `Route::GetRouteSegments()` (`route.hpp`) | One `RouteSegment` per stretch; `GetPoly()` has one more point than segments and does not deduplicate (`JunctionsToPoints`, `road_graph.hpp:336`; `FollowedPolyline::Update`). Segment *i* joins points *i* and *i+1*. |
+| Turn | `RouteSegment::GetTurn()` -> `turns::TurnItem` (`turns.hpp`) | `m_index` = segment index + 1 = index of the `GetPoly()` point where the turn happens (`directions_engine.cpp:366`). `m_turn` (`CarDirection`), `m_pedestrianTurn`, `m_exitNum`, `m_lanes`. `None` = no maneuver. |
+| Roundabout | `FixupCarTurns` (`car_directions.cpp:57`) | Deletes the `StayOnRoundAbout` entries and sets the exit on `EnterRoundAbout` and `LeaveRoundAbout` (`SetTurnExits(exitNum + 1)`). |
+| Lanes | `TurnItem::m_lanes` (`lanes::LanesInfo`, `lane_info.hpp`) | Filled only if there is a turn (`car_directions.cpp:156-160`) from `FMD_TURN_LANES*`. `SelectRecommendedLanes` marks `recommendedWay != None` on the lanes that lead to the route, or empties the list if it cannot (`lanes_recommendation.cpp:20-44`). Each `LaneInfo.laneWays` is a bitset of `LaneWay`. |
+| Destination street | `Route::GetClosestStreetNameAfterIdx(m_index, RoadNameInfo&)` (`route.cpp:228`) | `RoadNameInfo` carries `m_name`, `m_ref`, `m_destination`, `m_junction_ref`... Only the first segment of each loaded stretch carries a name; the function searches forward up to 400 m (`kSteetNameLinkMeters`). |
+| Speed limit **per segment** | `RouteSegment::GetSpeedLimit()` -> `SpeedInUnits` (`route.hpp`), filled in `index_router.cpp:1720` from `SingleVehicleWorldGraph::GetSpeedLimit` (`single_vehicle_world_graph.cpp:193`) | **It does exist.** `IsValid()`, `IsNumeric()`, `GetSpeedKmPH()` (converts mph). Non-numeric values: `none` (motorway with no limit), `walk`, `common`. |
 
-## Hallazgos que contradicen lo supuesto [L]
+## Findings that contradict what was assumed [L]
 
-1. **Bici NO usa `PedestrianDirection`**: `CreateDirectionsEngine` (`index_router.cpp:129-146`) da `CarDirectionsEngine` a `Bicycle` y `Car`; solo `Pedestrian` y `Transit` usan `PedestrianDirectionsEngine`. Por tanto bici produce `CarDirection` (con rotondas, giros suaves y posiblemente carriles). El puente mira los dos campos sea cual sea el perfil, así que no depende de esta suposición.
-2. **Límites de velocidad solo en coche**: `index_router.cpp:1710` rellena `SetSpeedLimit` solo si `m_vehicleType == VehicleType::Car`. En bici y a pie todo es «sin dato».
-3. **Peatón** solo tiene `GoStraight`, `TurnRight`, `TurnLeft`, `ReachedYourDestination`: sin giros suaves/cerrados, sin carriles, sin rotondas.
-4. **No hay maniobra de salida** (`DEPART`) salvo `StartAtEndOfStreet` (rara). El núcleo no emite «sal por tal calle» en el punto 0 (`GetTurnDirection` devuelve nada para `m_index == 2`). Si la UI la quiere, hay que sintetizarla desde la geometría y el nombre de la primera calle.
-5. **Sin `MERGE`, `ARRIVE_LEFT`, `ARRIVE_RIGHT`**: `CarDirection` no tiene incorporación ni lado de llegada (`m_isEndOfRoad` no es lado). `MERGE_LEFT/RIGHT` solo existen como dirección de carril (`LaneWay::MergeToLeft/Right`). `ARRIVE` es el único código de llegada que se emite.
-6. `ExitHighwayToLeft/Right` sí existen y se mapean a `EXIT_LEFT/EXIT_RIGHT`.
+1. **Bicycle does NOT use `PedestrianDirection`**: `CreateDirectionsEngine` (`index_router.cpp:129-146`) gives `CarDirectionsEngine` to `Bicycle` and `Car`; only `Pedestrian` and `Transit` use `PedestrianDirectionsEngine`. So bicycle produces `CarDirection` (with roundabouts, slight turns and possibly lanes). The bridge looks at both fields whatever the profile, so it does not depend on this assumption.
+2. **Speed limits only for car**: `index_router.cpp:1710` fills `SetSpeedLimit` only if `m_vehicleType == VehicleType::Car`. For bicycle and on foot everything is "no data".
+3. **Pedestrian** only has `GoStraight`, `TurnRight`, `TurnLeft`, `ReachedYourDestination`: no slight/sharp turns, no lanes, no roundabouts.
+4. **There is no departure maneuver** (`DEPART`) except `StartAtEndOfStreet` (rare). The core does not emit "leave via such-and-such street" at point 0 (`GetTurnDirection` returns nothing for `m_index == 2`). If the UI wants it, it has to be synthesised from the geometry and the name of the first street.
+5. **No `MERGE`, `ARRIVE_LEFT`, `ARRIVE_RIGHT`**: `CarDirection` has no merge or arrival side (`m_isEndOfRoad` is not a side). `MERGE_LEFT/RIGHT` only exist as a lane direction (`LaneWay::MergeToLeft/Right`). `ARRIVE` is the only arrival code that is emitted.
+6. `ExitHighwayToLeft/Right` do exist and are mapped to `EXIT_LEFT/EXIT_RIGHT`.
 
-## Mapeo
+## Mapping
 
 | `CarDirection` / `PedestrianDirection` | `TurnType` |
 |---|---|
 | `GoStraight` | `STRAIGHT` |
-| `TurnRight/SharpRight/SlightRight` | `RIGHT/SHARP_RIGHT/SLIGHT_RIGHT` (idem izquierda) |
+| `TurnRight/SharpRight/SlightRight` | `RIGHT/SHARP_RIGHT/SLIGHT_RIGHT` (same for left) |
 | `UTurnLeft/UTurnRight` | `U_TURN_LEFT/U_TURN_RIGHT` |
-| `EnterRoundAbout` / `LeaveRoundAbout` | `ROUNDABOUT_ENTER` / `ROUNDABOUT_LEAVE`, ambos con `roundaboutExit = m_exitNum` |
+| `EnterRoundAbout` / `LeaveRoundAbout` | `ROUNDABOUT_ENTER` / `ROUNDABOUT_LEAVE`, both with `roundaboutExit = m_exitNum` |
 | `ExitHighwayToLeft/Right` | `EXIT_LEFT/EXIT_RIGHT` |
 | `StartAtEndOfStreet` | `DEPART` |
-| `ReachedYourDestination` (coche o peatón) | `ARRIVE` |
-| `None`, `StayOnRoundAbout` | se omiten |
-| Peatón `GoStraight/TurnRight/TurnLeft` | `STRAIGHT/RIGHT/LEFT` |
+| `ReachedYourDestination` (car or pedestrian) | `ARRIVE` |
+| `None`, `StayOnRoundAbout` | omitted |
+| Pedestrian `GoStraight/TurnRight/TurnLeft` | `STRAIGHT/RIGHT/LEFT` |
 
-Carriles (`LaneWay` -> `LaneDirection`): `ReverseLeft` y `ReverseRight` -> `U_TURN`; `SharpLeft/Left/SlightLeft/Through/SlightRight/Right/SharpRight` uno a uno; `MergeToLeft/Right` -> `MERGE_LEFT/MERGE_RIGHT`; `None` = carril sin restricción = conjunto vacío. `Lane.recommended = recommendedWay != None`. Orden: el del núcleo (izquierda a derecha).
+Lanes (`LaneWay` -> `LaneDirection`): `ReverseLeft` and `ReverseRight` -> `U_TURN`; `SharpLeft/Left/SlightLeft/Through/SlightRight/Right/SharpRight` one to one; `MergeToLeft/Right` -> `MERGE_LEFT/MERGE_RIGHT`; `None` = unrestricted lane = empty set. `Lane.recommended = recommendedWay != None`. Order: the core's (left to right).
 
-Calle: `m_name`, si está vacía `m_ref`, si no `m_destination`; vacía si no hay.
+Street: `m_name`, if empty `m_ref`, otherwise `m_destination`; empty if there is none.
 
-Límites: se agrupan rachas de segmentos con el mismo valor numérico en `SpeedLimit(startIndex, endIndex, kmh)` con índices de punto (`[i, j+1]`). `kmh = null` para «sin dato» y también para `none`/`walk`/`common` (no son numéricos; el modelo no distingue «sin límite»). Si ningún segmento tiene dato, la lista es vacía (así bici y a pie no traen un único tramo nulo inútil). Los tramos falsos (salto desde el punto de partida a la carretera) salen como sin dato.
+Limits: runs of segments with the same numeric value are grouped into `SpeedLimit(startIndex, endIndex, kmh)` with point indices (`[i, j+1]`). `kmh = null` for "no data" and also for `none`/`walk`/`common` (they are not numeric; the model does not distinguish "no limit"). If no segment has data, the list is empty (so bicycle and on foot do not carry a single useless null stretch). Fake stretches (the jump from the start point to the road) come out as no data.
 
 ## API
 
-- C++: `um::Core::Route(profile, pts, avoid, timeoutSec, bool withGuidance = false)`. Con `false` el código ejecutado es el mismo de antes. `FillGuidance` (`um_core.cpp`) recorre los segmentos una vez (coste lineal, despreciable frente a A*) y va en su propio `try/catch`: si falla, la ruta sigue sin guiado.
-- JNI: `nativeRoute` intacto; nuevo `nativeRouteGuidance` -> `Object[3] { double[] ruta (mismo formato), double[] guiado, String[] nombres }`.
-- Kotlin: `CoMapsCore.routingEngine(timeoutSec, withGuidance = false)`. Por defecto la vista previa no cambia (no llama al método nuevo). Con `true`, `RoutePlan.guidance` se rellena. Si el guiado llega mal formado, la ruta se conserva con `RouteGuidance.EMPTY` y `RouteOutcome.guidanceError` (campo nuevo con valor por defecto) lo explica; la parte de ruta sigue validándose estrictamente como antes.
-- **No se tocó `Guidance.kt`** ni ninguna clase de `:core-routing`.
+- C++: `um::Core::Route(profile, pts, avoid, timeoutSec, bool withGuidance = false)`. With `false` the executed code is the same as before. `FillGuidance` (`um_core.cpp`) walks the segments once (linear cost, negligible compared with A*) and has its own `try/catch`: if it fails, the route continues without guidance.
+- JNI: `nativeRoute` untouched; new `nativeRouteGuidance` -> `Object[3] { double[] route (same format), double[] guidance, String[] names }`.
+- Kotlin: `CoMapsCore.routingEngine(timeoutSec, withGuidance = false)`. By default the preview does not change (it does not call the new method). With `true`, `RoutePlan.guidance` is filled. If the guidance arrives malformed, the route is kept with `RouteGuidance.EMPTY` and `RouteOutcome.guidanceError` (new field with a default value) explains it; the route part is still validated strictly as before.
+- **`Guidance.kt` was not touched**, nor any class of `:core-routing`.
 
-### Formato del array de guiado (versión 1, todo entero exacto en `double`)
+### Guidance array format (version 1, every integer exact in a `double`)
 
 ```
-[version=1, nManiobras, nLimites,
- por maniobra: indiceGeometria, giro, salidaRotonda(-1), indiceNombre(-1), nCarriles, (mascaraLaneWay, recomendado 0/1) * nCarriles,
- por límite:   desde, hasta, kmh(-1)]
+[version=1, nManeuvers, nLimits,
+ per maneuver: geometryIndex, turn, roundaboutExit(-1), nameIndex(-1), nLanes, (laneWayMask, recommended 0/1) * nLanes,
+ per limit:    from, to, kmh(-1)]
 ```
 
-`giro` = `um::WireTurn` (mismo orden que `TurnType`; en Kotlin se traduce con un `when` explícito, no por ordinal). `mascaraLaneWay`: bit *i* = `LaneWay` de valor *i*. `indiceNombre` apunta a la tabla de nombres. Array vacío = sin guiado.
+`turn` = `um::WireTurn` (same order as `TurnType`; in Kotlin it is translated with an explicit `when`, not by ordinal). `laneWayMask`: bit *i* = `LaneWay` with value *i*. `nameIndex` points into the names table. Empty array = no guidance.
 
-Validación en `GuidanceWire.decode` (`:native-comaps`): versión, cabecera, recuentos acotados (carriles <= 16), enteros exactos (rechaza NaN y fraccionarios), `indiceGeometria` y tramos dentro de la geometría, índice de nombre dentro de la tabla, giro conocido, máscara de 12 bits, marca de recomendado 0/1, `kmh` en 1..400 o -1, sin datos sobrantes ni truncados.
+Validation in `GuidanceWire.decode` (`:native-comaps`): version, header, bounded counts (lanes <= 16), exact integers (rejects NaN and fractional values), `geometryIndex` and stretches inside the geometry, name index inside the table, known turn, 12-bit mask, recommended flag 0/1, `kmh` in 1..400 or -1, no leftover or truncated data.
 
-## Verificado
+## Verified
 
-- [T] Tests JVM en `GuidanceWireTest` (arrays hechos a mano): sin giros, giro simple, giro sin nombre, rotonda con salida (entrar y salir), salida en giro no rotonda ignorada, carriles con recomendados y orden, carril sin restricción y los dos U-turn, límite nulo, los 18 códigos de giro, 20 arrays mal formados, y la fachada (no pide guiado salvo `withGuidance`; guiado roto conserva la ruta; ruta no encontrada).
-- [L] Todas las firmas y semánticas de la tabla anterior, con archivo:línea.
-- Compila y enlaza `:native-comaps:assembleDebug` (ver el commit y la salida abajo): **compila, no ejecutado**.
+- [T] JVM tests in `GuidanceWireTest` (hand-made arrays): no turns, simple turn, turn without a name, roundabout with exit (enter and leave), exit on a non-roundabout turn ignored, lanes with recommended ones and order, unrestricted lane and the two U-turns, null limit, the 18 turn codes, 20 malformed arrays, and the facade (does not ask for guidance unless `withGuidance`; broken guidance keeps the route; route not found).
+- [L] All the signatures and semantics in the table above, with file:line.
+- `:native-comaps:assembleDebug` compiles and links (see the commit and the output below): **compiles, not run**.
 
-## No verificado [N]
+## Not verified [N]
 
-- Que `FillGuidance` no dispare ningún `CHECK` del núcleo con rutas reales (`GetClosestStreetNameAfterIdx` hace `m_poly.GetIterToIndex`; solo se llama con `m_index < nº de segmentos`).
-- Que los índices de maniobra caigan en el punto correcto sobre la geometría real (se deduce del código, no de una ruta).
-- Cuántas rutas reales traen carriles (depende de que OSM tenga `turn:lanes` en esa vía) y la calidad de los nombres (`m_name` es el nombre por defecto, no el localizado).
-- El coste real: se espera despreciable. Medir con `CoreBenchActivity` (`am start -n com.qtekfun.mapas/.bench.CoreBenchActivity --ez guidance true`, etiqueta `UMBENCH`): vuelca, por perfil, `plain_ms` frente a `guided_ms`, número de maniobras/límites y cada maniobra con sus carriles.
-- `kmh` de `none`/`walk` y de límites en mph (la conversión la hace el núcleo, `GetSpeedKmPH`).
+- That `FillGuidance` does not trigger any core `CHECK` with real routes (`GetClosestStreetNameAfterIdx` does `m_poly.GetIterToIndex`; it is only called with `m_index < number of segments`).
+- That the maneuver indices land on the right point on the real geometry (deduced from the code, not from a route).
+- How many real routes carry lanes (depends on OSM having `turn:lanes` on that road) and the quality of the names (`m_name` is the default name, not the localised one).
+- The real cost: expected to be negligible. Measure with `CoreBenchActivity` (`am start -n com.qtekfun.mapas/.bench.CoreBenchActivity --ez guidance true`, tag `UMBENCH`): it dumps, per profile, `plain_ms` versus `guided_ms`, the number of maneuvers/limits and each maneuver with its lanes.
+- `kmh` for `none`/`walk` and for limits in mph (the conversion is done by the core, `GetSpeedKmPH`).

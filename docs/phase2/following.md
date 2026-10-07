@@ -1,105 +1,105 @@
-# Seguimiento de ruta (`:core-nav`)
+# Route following (`:core-nav`)
 
-Cubre RF-05 (giro a giro, recálculo, carriles, límite de velocidad, simulación de ruta) y la parte de lógica de RNF-05
-(el servicio en primer plano solo alimenta y observa este motor). Módulo Kotlin JVM puro: `./gradlew :core-nav:test`
-corre en segundos y sin Android.
+Covers RF-05 (turn-by-turn, rerouting, lanes, speed limit, route simulation) and the logic part of RNF-05
+(the foreground service only feeds and observes this engine). Pure Kotlin JVM module: `./gradlew :core-nav:test`
+runs in seconds and without Android.
 
-## Piezas
+## Components
 
-| Pieza | Qué hace |
+| Component | What it does |
 |---|---|
-| `RouteGeometry` | Polilínea medida (distancias por haversine, proyección plana local por segmento). Búsqueda en ventana sin asignaciones. |
-| `RouteTracker` | Núcleo síncrono y determinista: `onFix`, `onTick`, `snapshot`. El tiempo sale solo de los fijos y los ticks. No es thread-safe. |
-| `NavigationSession` | Envoltorio de corrutinas: lee una `LocationSource`, publica `state: StateFlow<NavState>`, `announcements: SharedFlow<Announcement>` y `route: StateFlow<RoutePlan>`. Lanza y cancela los recálculos. |
-| `RouteSimulator` | Fijos de alguien que recorre la ruta a velocidad constante, con ruido gaussiano reproducible (`java.util.Random(seed)`) y huecos. Sirve para los tests y para la simulación de ruta de la app. |
-| `NavConfig` | Todos los umbrales (abajo). |
+| `RouteGeometry` | Measured polyline (haversine distances, local flat projection per segment). Allocation-free window search. |
+| `RouteTracker` | Synchronous, deterministic core: `onFix`, `onTick`, `snapshot`. Time comes only from fixes and ticks. Not thread-safe. |
+| `NavigationSession` | Coroutine wrapper: reads a `LocationSource`, publishes `state: StateFlow<NavState>`, `announcements: SharedFlow<Announcement>` and `route: StateFlow<RoutePlan>`. Launches and cancels reroutes. |
+| `RouteSimulator` | Fixes of someone walking the route at constant speed, with reproducible Gaussian noise (`java.util.Random(seed)`) and gaps. Used by the tests and by the app's route simulation. |
+| `NavConfig` | All thresholds (below). |
 
-`NavStatus`: `ON_ROUTE`, `OFF_ROUTE`, `REROUTING`, `ARRIVED`, `NO_SIGNAL` (EN_RUTA, FUERA_DE_RUTA, RECALCULANDO, LLEGADO, SIN_SEÑAL; identificadores en inglés como el resto del código).
+`NavStatus`: `ON_ROUTE`, `OFF_ROUTE`, `REROUTING`, `ARRIVED`, `NO_SIGNAL` (identifiers in English like the rest of the code).
 
-El tracker solo se toca desde una corrutina (un único consumidor de una cola de fijos que descarta el más antiguo si se
-atasca): no hay locks. El resultado de un recálculo vuelve por otro canal conflado y lo aplica esa misma corrutina.
+The tracker is only touched from one coroutine (a single consumer of a fix queue that drops the oldest fix if it
+backs up): there are no locks. The result of a reroute comes back through another conflated channel and is applied by that same coroutine.
 
-## Avance por la ruta
+## Progress along the route
 
-1. **Ventana.** Se busca el segmento más cercano solo entre `anchor - (40 m + 2·precisión)` y
-   `anchor + 80 m + 3·precisión + max(2·v, 15 m/s)·Δt`, donde `anchor` es el avance del último fijo bueno y Δt el tiempo
-   desde él (tope 5 km). Es lo que evita que una ruta con bucles o cruces salte a otro paso por el mismo punto: el otro paso
-   queda fuera de la ventana. El primer fijo usa 2 km (la ruta puede empezar donde acaba y gana el menor avance en empate).
-2. **Rumbo.** El score es `distancia + 25 m · diferencia_de_rumbo/180°` (solo con rumbo y velocidad ≥ 1,5 m/s). Sirve de
-   desempate en tramos solapados u opuestos (U, ida y vuelta por la misma calle). No descarta nada: solo penaliza.
-3. **Filtro alfa-beta del avance.** Predicción `anchor + v·Δt`; corrección `α = 1/(1 + (precisión/8)²)` (precisión 5 m → 0,72;
-   20 m → 0,14). Con ruido de 20 m el avance se alisa en vez de saltar; con 5 m sigue casi sin retraso. Si el fijo trae
-   velocidad se usa (media móvil 0,5); si no, se aprende de la innovación.
-4. **Monotonía.** `progreso = max(anchor, filtrado)`. La única vez que puede retroceder es al resincronizar (primer fijo,
-   tras SIN_SEÑAL, tras >10 s sin fijos o al reengancharse), porque la estimación pudo pasarse.
-5. **Parado.** Con velocidad del fijo < 0,5 m/s el avance no se mueve: sin esto el `max()` hace derivar el avance hacia
-   delante con ruido (probado: 600 fijos de ruido de 8 m parado dejan el avance en ±1 m).
+1. **Window.** The nearest segment is searched only between `anchor - (40 m + 2·accuracy)` and
+   `anchor + 80 m + 3·accuracy + max(2·v, 15 m/s)·Δt`, where `anchor` is the progress of the last good fix and Δt the time
+   since it (capped at 5 km). This is what keeps a route with loops or crossings from jumping to another pass through the same point: the other pass
+   falls outside the window. The first fix uses 2 km (the route may start where it ends, and the lower progress wins a tie).
+2. **Heading.** The score is `distance + 25 m · heading_difference/180°` (only with heading and speed ≥ 1.5 m/s). It acts as a
+   tie-breaker on overlapping or opposite stretches (U-turns, out and back along the same street). It discards nothing: it only penalises.
+3. **Alpha-beta filter of the progress.** Prediction `anchor + v·Δt`; correction `α = 1/(1 + (accuracy/8)²)` (accuracy 5 m → 0.72;
+   20 m → 0.14). With 20 m of noise the progress is smoothed instead of jumping; with 5 m it follows with almost no lag. If the fix carries
+   a speed it is used (moving average 0.5); otherwise the speed is learned from the innovation.
+4. **Monotonicity.** `progress = max(anchor, filtered)`. The only time it may go backwards is when resynchronising (first fix,
+   after NO_SIGNAL, after >10 s without fixes, or on re-engaging), because the estimate may have overshot.
+5. **Stopped.** With a fix speed < 0.5 m/s the progress does not move: without this the `max()` makes the progress drift
+   forward with noise (tested: 600 fixes of 8 m noise while stopped leave the progress within ±1 m).
 
-## Fuera de ruta (histéresis)
+## Off route (hysteresis)
 
-Umbral `max(30 m, 2·precisión)`: 30 m cubre el ancho de calzada y el error típico de un buen GPS; 2·precisión (la
-precisión de Android es un radio del 68 %) deja fuera la cola de ruido en cañón urbano.
+Threshold `max(30 m, 2·accuracy)`: 30 m covers the road width and the typical error of a good GPS; 2·accuracy (Android's
+accuracy is a 68 % radius) leaves out the noise tail in an urban canyon.
 
-Un fijo es «fuera» si `distancia > umbral` o si va en sentido contrario (rumbo a > 135° del tramo con ≥ 3 m/s). Se confirma
-`OFF_ROUTE` cuando se cumple cualquiera de:
+A fix is "off" if `distance > threshold` or if it goes the opposite way (heading more than 135° from the segment at ≥ 3 m/s). `OFF_ROUTE`
+is confirmed when any of the following holds:
 
-- ≥ 5 fijos fuera seguidos **y** ≥ 3 s desde el primero (el caso normal; 3 s evita que una ráfaga de fijos repetidos cuente como 5);
-- ≥ 2 fijos y ≥ 10 s (fijos escasos: 1 cada 5 s tardaría 25 s con la regla anterior);
-- ≥ 3 fijos seguidos a más de 3× el umbral (desvío claro: no hace falta esperar más).
+- ≥ 5 consecutive off fixes **and** ≥ 3 s since the first (the normal case; 3 s keeps a burst of repeated fixes from counting as 5);
+- ≥ 2 fixes and ≥ 10 s (sparse fixes: 1 every 5 s would take 25 s with the previous rule);
+- ≥ 3 consecutive fixes at more than 3× the threshold (clear deviation: no need to wait longer).
 
-Un fijo a ≤ 0,7·umbral resetea la cuenta (banda de histéresis: entre 0,7 y 1×umbral no cuenta ni resetea). Un fijo basura
-aislado (3 km al lado) cuenta como uno y el siguiente bueno lo borra; un fijo con precisión > 100 m se ignora entero (ni
-mueve el avance ni oculta una pérdida de señal). Mientras hay fijos «fuera» sin confirmar, el avance se queda quieto.
+A fix at ≤ 0.7·threshold resets the count (hysteresis band: between 0.7 and 1× the threshold it neither counts nor resets). An isolated garbage
+fix (3 km away) counts as one and the next good one clears it; a fix with accuracy > 100 m is ignored entirely (it neither
+moves the progress nor hides a signal loss). While there are unconfirmed "off" fixes, the progress stays still.
 
-**Reenganche:** en `OFF_ROUTE`/`REROUTING`, un fijo a ≤ 0,7·umbral vuelve a `ON_ROUTE` y resincroniza (la ventana crece con
-el tiempo fuera, así que cubre atajos). La sesión cancela entonces el recálculo en curso y descarta su resultado.
+**Re-engage:** in `OFF_ROUTE`/`REROUTING`, a fix at ≤ 0.7·threshold goes back to `ON_ROUTE` and resynchronises (the window grows with
+the time spent off route, so it covers shortcuts). The session then cancels the reroute in progress and discards its result.
 
-## Recálculo (`NavigationSession`)
+## Reroute (`NavigationSession`)
 
-`suspend (desde: LatLon, rumbo: Float?) -> RoutePlan?` inyectado. Solo uno a la vez. Hasta 3 intentos por ciclo, 2 s entre
-ellos (más lo que tarde cada uno); si fallan todos se vuelve a `OFF_ROUTE` y se espera 8 s antes de otro ciclo mientras
-siga fuera. Una excepción cuenta como fallo; una ruta con < 2 puntos, también. `CancellationException` se propaga (`stop()`
-cancela). Con éxito se crea un `RouteTracker` nuevo (`routeRevision + 1`) y se le reenvía el último fijo.
+Injected `suspend (from: LatLon, heading: Float?) -> RoutePlan?`. Only one at a time. Up to 3 attempts per cycle, 2 s between
+them (plus however long each takes); if all fail it goes back to `OFF_ROUTE` and waits 8 s before another cycle while
+still off route. An exception counts as a failure; so does a route with < 2 points. `CancellationException` is propagated (`stop()`
+cancels). On success a new `RouteTracker` is created (`routeRevision + 1`) and the last fix is forwarded to it.
 
-## Llegada
+## Arrival
 
-`ARRIVED` (final) si faltan ≤ 25 m de ruta (el radio de un portal/aparcamiento) o si faltan ≤ 60 m y lleva ≥ 8 s parado
-(< 0,8 m/s): aparcar antes de la puerta también es llegar. Se mide sobre el avance proyectado, no la distancia al punto, para que
-una ruta que acaba donde empieza no «llegue» en la salida. Al llegar se emite el aviso `NOW` pendiente de la última maniobra.
+`ARRIVED` (final) if ≤ 25 m of route remain (the radius of a doorway/parking spot) or if ≤ 60 m remain and it has been stopped for ≥ 8 s
+(< 0.8 m/s): parking before the door also counts as arriving. It is measured on the projected progress, not the distance to the point, so that
+a route that ends where it starts does not "arrive" at the departure. On arrival the pending `NOW` announcement of the last maneuver is emitted.
 
-## Pérdida de señal
+## Signal loss
 
-Sin fijo útil durante 5 s (`onTick`, que la sesión llama cada 1 s) → `NO_SIGNAL`, `estimated = true`, avance = último avance
-+ velocidad · tiempo (tope 30 s de estimación, sin pasar nunca del último metro: no se llega en un túnel). Los avisos
-siguen saliendo con la estimación. Al volver un fijo gana el real y se resincroniza. Si ya estaba fuera de ruta no se pasa a
+With no usable fix for 5 s (`onTick`, which the session calls every 1 s) → `NO_SIGNAL`, `estimated = true`, progress = last progress
++ speed · time (capped at 30 s of estimation, never going past the last metre: you do not arrive inside a tunnel). Announcements
+keep coming out using the estimate. When a fix returns the real one wins and it resynchronises. If it was already off route it does not switch to
 `NO_SIGNAL`.
 
-## Avisos de voz
+## Voice announcements
 
-Tres niveles por maniobra, `clamp(v·segundos, mín, máx)`:
+Three levels per maneuver, `clamp(v·seconds, min, max)`:
 
-| Nivel | segundos | mín | máx | A 10 m/s | A 36 m/s | A pie (1,4 m/s) |
+| Level | seconds | min | max | At 10 m/s | At 36 m/s | On foot (1.4 m/s) |
 |---|---|---|---|---|---|---|
 | `FAR` | 30 | 200 m | 2000 m | 300 m | 1080 m | 200 m |
 | `NEAR` | 10 | 60 m | 400 m | 100 m | 360 m | 60 m |
 | `NOW` | 3 | 20 m | 80 m | 30 m | 80 m | 20 m |
 
-Cada nivel se emite como mucho una vez por maniobra y solo avanza en urgencia. Si un fijo cruza varios umbrales a la vez
-(rápido o con huecos) solo se emite el más urgente y los menos urgentes quedan descartados: no se lee «en 500 m» a 60 m.
-Solo se anuncia la próxima maniobra; `DEPART` y las maniobras ya rebasadas se dan por pasadas.
-Límite conocido: si entre dos fijos el coche salva toda la banda `NOW` (80 m como máximo, es decir ~2,2 s a 36 m/s) y la
-maniobra queda atrás, no se emite su `NOW`; el test de 36 m/s con fijos cada 2 s (72 m) comprueba que aún no ocurre.
+Each level is emitted at most once per maneuver and only moves up in urgency. If a fix crosses several thresholds at once
+(fast, or with gaps) only the most urgent is emitted and the less urgent ones are dropped: "in 500 m" is not read out at 60 m.
+Only the next maneuver is announced; `DEPART` and maneuvers already passed are considered done.
+Known limit: if between two fixes the car clears the whole `NOW` band (80 m at most, i.e. ~2.2 s at 36 m/s) and the
+maneuver is left behind, its `NOW` is not emitted; the 36 m/s test with fixes every 2 s (72 m) checks that this does not happen yet.
 
-## Límite de velocidad
+## Speed limit
 
-Por segmento (se rellena una vez al cargar la ruta; `kmh = null` borra el límite). Superación con tolerancia configurable
-(0 por defecto) e histéresis de 2 km/h para que el aviso no parpadee con el ruido de la velocidad del GPS.
+Per segment (filled once when the route is loaded; `kmh = null` clears the limit). Exceeding it uses a configurable tolerance
+(0 by default) and 2 km/h of hysteresis so the warning does not flicker with the noise in the GPS speed.
 
-## Rendimiento
+## Performance
 
-Microbenchmark (`TrackerBenchmarkTest`, `./gradlew :core-nav:test --tests '*Benchmark*' -i`). Ruta de 100 km (5001
-puntos, 250 maniobras), 3995 fijos a 25 m/s con ruido de 5 m. Solo se mide el bucle por fijo (sin construir el tracker).
-Salida pegada de una ejecución, en este PC (Intel Core Ultra 7 265U, JDK 21, JIT caliente tras 40 pasadas):
+Microbenchmark (`TrackerBenchmarkTest`, `./gradlew :core-nav:test --tests '*Benchmark*' -i`). 100 km route (5001
+points, 250 maneuvers), 3995 fixes at 25 m/s with 5 m noise. Only the per-fix loop is measured (without building the tracker).
+Output pasted from one run, on this PC (Intel Core Ultra 7 265U, JDK 21, JIT warm after 40 passes):
 
 ```
 BENCH route=5001 points, 250 maneuvers, 3995 fixes/pass
@@ -107,26 +107,26 @@ BENCH onFix only:      516 ns/fix, 0,0 B/fix allocated
 BENCH onFix+snapshot:  818 ns/fix, 167,9 B/fix allocated
 ```
 
-Otras ejecuciones dieron 620-756 ns (solo `onFix`): el ruido entre ejecuciones es de ±30 %. Es CPU de escritorio con JVM;
-**no** es una medida del Pixel 8 ni de ART. `onFix` no asigna; el `NavState` publicado (≈ 170 B, uno por fijo) es la única
-asignación por fijo, y se hace en el publicador, no en la búsqueda. Construir la geometría de esta ruta (una vez) asigna ≈ 400 KB.
+Other runs gave 620-756 ns (`onFix` only): the run-to-run noise is ±30 %. This is a desktop CPU with a JVM;
+it is **not** a measurement of the Pixel 8 or of ART. `onFix` does not allocate; the published `NavState` (≈ 170 B, one per fix) is the only
+per-fix allocation, and it happens in the publisher, not in the search. Building this route's geometry (once) allocates ≈ 400 KB.
 
-## Pruebas
+## Tests
 
-`RouteTrackerTest` (síncrono): recta, L, rotonda, U, bucle con dos pasos por el mismo tramo (con y sin rumbo), ruido de 5 m y
-de 20 m (20 semillas cada una, sin salir de ruta, error < 15 m / 45 m), fijo basura aislado, confirmación de fuera de ruta
-(por fijos, por tiempo y por desvío claro), reset por fijo bueno, precisión que ensancha el umbral, reenganche, sentido contrario,
-llegada (radio y parado), ruta que acaba donde empieza, avisos rápidos (36 m/s con fijos cada 2 s) y a pie, maniobras
-cercanas, primer fijo a mitad de ruta, límite y exceso con histéresis, carriles, túnel, parado con ruido.
-`NavigationSessionTest` (corrutinas con tiempo virtual): seguimiento completo, recálculo (falso por fijo malo; real; reintentos y
-espera sin solaparse; excepción; ruta inservible; cancelación al parar; cancelación al reengancharse), túnel y silencio inicial.
-`RouteSimulatorTest`: velocidad, reproducibilidad, desviación típica del ruido, huecos.
+`RouteTrackerTest` (synchronous): straight, L, roundabout, U, loop with two passes through the same stretch (with and without heading), 5 m and
+20 m noise (20 seeds each, without leaving the route, error < 15 m / 45 m), isolated garbage fix, off-route confirmation
+(by fixes, by time and by clear deviation), reset by a good fix, accuracy that widens the threshold, re-engage, opposite direction,
+arrival (radius and stopped), route that ends where it starts, fast announcements (36 m/s with fixes every 2 s) and on foot, nearby
+maneuvers, first fix mid-route, limit and excess with hysteresis, lanes, tunnel, stopped with noise.
+`NavigationSessionTest` (coroutines with virtual time): full following, reroute (false from a bad fix; real; retries and
+wait without overlapping; exception; unusable route; cancellation on stop; cancellation on re-engage), tunnel and initial silence.
+`RouteSimulatorTest`: speed, reproducibility, standard deviation of the noise, gaps.
 
-## Pendiente / límites
+## Pending / limits
 
-- La estimación de tiempo restante es lineal en distancia (`duración · restante/total`); no usa la velocidad real ni los límites.
-- Sin mapa de carreteras: la ventana y el rumbo resuelven los solapes, pero una ruta que pasa dos veces por el mismo sitio
-  *en la misma ventana de 100-150 m* (p. ej. un cruce en 8 muy cerrado) puede elegir el paso equivocado hasta que se aleje.
-- Persistir el estado para sobrevivir a la muerte del proceso (arquitectura, «Servicio de navegación») y el servicio en primer plano
-  quedan para la capa Android; `NavigationSession(plan, …)` puede reanudarse con el último fijo conocido (primer fijo: ventana de 2 km).
-- Las cadenas de voz y su traducción (es/en) pertenecen a la capa `VoiceGuide`; aquí solo salen `Announcement`.
+- The remaining-time estimate is linear in distance (`duration · remaining/total`); it uses neither the real speed nor the limits.
+- No road map: the window and the heading resolve overlaps, but a route that passes twice through the same place
+  *within the same 100-150 m window* (e.g. a very tight figure-8 crossing) may pick the wrong pass until it moves away.
+- Persisting the state to survive process death (architecture, "Navigation service") and the foreground service
+  are left for the Android layer; `NavigationSession(plan, …)` can be resumed with the last known fix (first fix: 2 km window).
+- The voice strings and their translation (es/en) belong to the `VoiceGuide` layer; only `Announcement` comes out here.

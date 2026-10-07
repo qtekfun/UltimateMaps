@@ -1,4 +1,4 @@
-# Banco de pruebas normal en el Pixel 8 (2026-10-07, debug nativo; las cifras de una build de depuración NO son representativas de release)
+# Normal benchmark on the Pixel 8 (2026-10-07, native debug; figures from a debug build are NOT representative of release)
 .680 I/UMBENCH (23978): mapas: [World.mwm, WorldCoasts.mwm, Spain_Community of Madrid.mwm, Spain_Aragon.mwm, Spain_Castile-La Mancha.mwm, Spain_Castile and Leon_East.mwm, Spain_Catalonia_Provincia de Lleida.mwm, Spain_Catalonia_Provinci
 .955 I/UMBENCH (23978): init_ms=254 maps=9
 .467 I/UMBENCH (23978): search q='c' results=10 ms=2512
