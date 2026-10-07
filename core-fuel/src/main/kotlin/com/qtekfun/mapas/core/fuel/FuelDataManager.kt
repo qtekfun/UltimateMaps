@@ -103,6 +103,11 @@ class FuelDataManager(
         scope.launch { refresh(FuelTrigger.FOREGROUND) }
     }
 
+    /** Runs [refresh] in the manager's own scope, so leaving a screen does not abandon a download half-way. */
+    fun refreshAsync(trigger: FuelTrigger) {
+        scope.launch { refresh(trigger) }
+    }
+
     /** Minutes of validity of a download: the user's choice, never below the service's own 30 minutes. */
     private fun ttlMillis(s: FuelSettings) = s.refreshMinutes.coerceAtLeast(MIN_REFRESH_MINUTES) * 60_000L
 
