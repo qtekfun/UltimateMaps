@@ -245,13 +245,13 @@ class PanelHost(
         render = engine::showFuel,
     )
 
-    val hazardCard = HazardCardController(
+    val hazardCard: HazardCardController = HazardCardController(
         describer = { id -> hazards?.describer?.describe(id) },
         card = HazardCardState(),
         onOpened = { screen.notice = null; screen.detent = SheetDetent.MEDIUM; chargerCard.card.close() },
     )
 
-    val chargerCard = ChargerCardController(
+    val chargerCard: ChargerCardController = ChargerCardController(
         repository = chargers?.repository ?: com.qtekfun.ultimatemaps.core.chargers.ChargerRepository(),
         route = route,
         card = ChargerCardState(),
