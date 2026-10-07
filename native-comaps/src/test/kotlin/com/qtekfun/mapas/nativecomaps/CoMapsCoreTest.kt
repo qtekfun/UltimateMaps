@@ -43,7 +43,7 @@ class CoMapsCoreTest {
     private fun core(f: FakeBridge = FakeBridge()) = CoMapsCore(f).also { it.init("a.apk", "/maps", "/tmp") }
 
     @Test fun `init failure is reported`() {
-        val f = FakeBridge().apply { initError = "sin classificator" }
+        val f = FakeBridge().apply { initError = "missing classificator" }
         assertFailsWith<IllegalStateException> { CoMapsCore(f).init("a.apk", "/maps", "/tmp") }
     }
 

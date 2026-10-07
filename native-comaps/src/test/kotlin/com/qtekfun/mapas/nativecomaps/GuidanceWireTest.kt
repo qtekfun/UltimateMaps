@@ -15,7 +15,7 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
-/** Arrays construidos a mano con el formato de `um_core.hpp`; no hay nucleo nativo en la JVM. */
+/** Hand-built arrays in the format of `um_core.hpp`; there is no native core on the JVM. */
 class GuidanceWireTest {
     private fun d(vararg v: Number) = DoubleArray(v.size) { v[it].toDouble() }
     private fun decode(raw: DoubleArray, names: Array<String> = emptyArray(), points: Int = 10) =
@@ -30,7 +30,7 @@ class GuidanceWireTest {
     }
 
     @Test fun `simple turn with street name`() {
-        // maniobra: indice 4, giro LEFT(6), sin salida, nombre 0, sin carriles
+        // maneuver: index 4, turn LEFT(6), no exit, name 0, no lanes
         val g = decode(d(1, 1, 0, 4, 6, -1, 0, 0), arrayOf("Calle Mayor"))
         assertEquals(listOf(Maneuver(4, TurnType.LEFT, "Calle Mayor")), g.maneuvers)
         assertTrue(g.speedLimits.isEmpty())
@@ -58,7 +58,7 @@ class GuidanceWireTest {
     }
 
     @Test fun `lanes keep order, directions and recommended flag`() {
-        // 3 carriles: [Left] no rec, [Through|Right] rec, [Right] rec. Mascara = suma de 1 << LaneWay
+        // 3 lanes: [Left] not rec, [Through|Right] rec, [Right] rec. Mask = sum of 1 << LaneWay
         val left = 1 shl 3
         val throughRight = (1 shl 6) or (1 shl 9)
         val right = 1 shl 9
@@ -118,7 +118,7 @@ class GuidanceWireTest {
         }
     }
 
-    // --- integracion con la fachada ---
+    // --- integration with the facade ---
 
     private val a = LatLon(40.0, -3.0)
     private val b = LatLon(40.1, -3.1)
@@ -150,7 +150,7 @@ class GuidanceWireTest {
         val out = core(f).routingEngine(withGuidance = true).routeDetailed(RouteRequest(a, b))
         assertEquals(3, out.plan!!.geometry.size)
         assertEquals(RouteGuidance.EMPTY, out.plan.guidance)
-        assertTrue(out.guidanceError!!.contains("fuera de rango"))
+        assertTrue(out.guidanceError!!.contains("out of range"))
     }
 
     @Test fun `guided route not found returns the code without a plan`() {

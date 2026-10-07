@@ -1,4 +1,4 @@
-// JNI de com.qtekfun.mapas.nativecomaps.NativeCore. Solo traduce tipos; la logica esta en um_core.cpp.
+// JNI of com.qtekfun.mapas.nativecomaps.NativeCore. It only translates types; the logic is in um_core.cpp.
 #include "um_core.hpp"
 
 #include <jni.h>
@@ -37,7 +37,7 @@ JNIEXPORT jint JNICALL Java_com_qtekfun_mapas_nativecomaps_NativeCore_nativeRefr
   return um::Core::Instance().RefreshMaps();
 }
 
-// Devuelve 5 cadenas por resultado: nombre, direccion, categoria, lat, lon.
+// Returns 5 strings per result: name, address, category, lat, lon.
 JNIEXPORT jobjectArray JNICALL Java_com_qtekfun_mapas_nativecomaps_NativeCore_nativeSearch(
     JNIEnv * env, jobject, jstring query, jboolean hasPos, jdouble lat, jdouble lon, jint limit, jint timeoutMs,
     jstring locale)
@@ -92,7 +92,7 @@ std::vector<double> ReadDoubles(JNIEnv * env, jdoubleArray a)
 
 extern "C"
 {
-// Devuelve [code, distanciaM, duracionS, lat0, lon0, lat1, lon1, ...].
+// Returns [code, distanceM, durationS, lat0, lon0, lat1, lon1, ...].
 JNIEXPORT jdoubleArray JNICALL Java_com_qtekfun_mapas_nativecomaps_NativeCore_nativeRoute(
     JNIEnv * env, jobject, jint profile, jdoubleArray points, jint avoidFlags, jint timeoutSec)
 {
@@ -101,8 +101,8 @@ JNIEXPORT jdoubleArray JNICALL Java_com_qtekfun_mapas_nativecomaps_NativeCore_na
   return ToJDoubles(env, RouteFlat(r));
 }
 
-// Como nativeRoute pero con guiado. Devuelve Object[3]: { double[] ruta (mismo formato que nativeRoute),
-// double[] guiado (ver um_core.hpp; vacio si no hay), String[] nombres de calle }.
+// Like nativeRoute but with guidance. Returns Object[3]: { double[] route (same format as nativeRoute),
+// double[] guidance (see um_core.hpp; empty if none), String[] street names }.
 JNIEXPORT jobjectArray JNICALL Java_com_qtekfun_mapas_nativecomaps_NativeCore_nativeRouteGuidance(
     JNIEnv * env, jobject, jint profile, jdoubleArray points, jint avoidFlags, jint timeoutSec)
 {

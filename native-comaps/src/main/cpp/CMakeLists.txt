@@ -5,7 +5,7 @@ project(umcomaps C CXX)
 
 get_filename_component(OMIM_ROOT "${CMAKE_CURRENT_LIST_DIR}/../../../../third_party/comaps" ABSOLUTE)
 if (NOT EXISTS "${OMIM_ROOT}/CMakeLists.txt")
-  message(FATAL_ERROR "Falta el submodulo third_party/comaps: git submodule update --init third_party/comaps")
+  message(FATAL_ERROR "Missing submodule third_party/comaps: git submodule update --init third_party/comaps")
 endif()
 set(UM_ROOT "${CMAKE_CURRENT_LIST_DIR}")
 
@@ -82,7 +82,7 @@ add_subdirectory(${OMIM_ROOT}/3party/monocypher 3party/monocypher)
 # NOT built: bsdiff-courgette (BSD Protection License, not GPL), freetype,
 # harfbuzz, agg, stb_image, vulkan_wrapper, libtess2, glfw, imgui (drape/desktop only).
 
-# ---------------------------------------------------------------- sustitutos propios
+# ---------------------------------------------------------------- own substitutes
 # `drape` was only used for drape/color.hpp (a header). No render code.
 add_library(drape INTERFACE)
 # `mwm_diff` without bsdiff: diff updates are disabled (always the full mwm).
@@ -95,7 +95,7 @@ foreach(lib base coding geometry i18n cppjansson descriptions ge0 kml indexer pl
   add_subdirectory(${OMIM_ROOT}/libs/${lib} libs/${lib})
 endforeach()
 
-# ---------------------------------------------------------------- nuestra libreria JNI
+# ---------------------------------------------------------------- our JNI library
 add_library(umcomaps SHARED
   um_platform.cpp
   um_core.cpp

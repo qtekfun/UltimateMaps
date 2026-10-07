@@ -62,7 +62,7 @@ abstract class PrepareComapsAssets @Inject constructor(private val fs: FileSyste
         val data = dataDir.get().asFile
         val needed = listOf("classificator.txt", "categories.txt", "countries.txt", "packed_polygons.bin")
         val missing = needed.filter { !File(data, it).exists() }
-        if (missing.isNotEmpty()) throw GradleException("Faltan datos de CoMaps $missing: ejecuta scripts/comaps-prepare.sh")
+        if (missing.isNotEmpty()) throw GradleException("Missing CoMaps data $missing: run scripts/comaps-prepare.sh")
         fs.sync {
             from(data) {
                 include(
