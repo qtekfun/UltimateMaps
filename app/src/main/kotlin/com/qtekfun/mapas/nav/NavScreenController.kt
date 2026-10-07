@@ -226,8 +226,8 @@ class NavScreenController(
                 // Stopped from the notification (or the process restarted without a trip): close the screen.
                 simulation.stop()
                 location.endSimulation()
-                _ui.update { NavUi(glove = prefs.glove) }
                 sinks.forEach { runCatching { it.onNavigationEnded(false) } }
+                _ui.update { NavUi(glove = prefs.glove) }
             }
             return
         }
@@ -250,6 +250,7 @@ class NavScreenController(
     private fun finishArrival(st: NavState) {
         simulation.stop()
         val now = clock()
+        sinks.forEach { runCatching { it.onNavigationEnded(true) } }
         _ui.update {
             it.copy(
                 phase = NavPhase.ARRIVED,
@@ -258,7 +259,6 @@ class NavScreenController(
                 summary = NavSummary(st.traveledMeters.coerceAtLeast(0.0), (now - tripStartMillis).coerceAtLeast(0L), it.stopsReached, it.simulated),
             )
         }
-        sinks.forEach { runCatching { it.onNavigationEnded(true) } }
     }
 
     private fun onEvent(e: NavEvent) {

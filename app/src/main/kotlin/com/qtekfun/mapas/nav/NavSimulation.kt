@@ -18,6 +18,8 @@ class NavSimulation(
     private val source: SwitchableLocationSource,
     private val clock: () -> Long = System::currentTimeMillis,
     private val tickMillis: Long = 1_000L,
+    /** Waits between fixes; tests replace it (with `yield`) to run a whole trip deterministically. */
+    private val pause: suspend (Long) -> Unit = { delay(it) },
 ) {
     private var job: Job? = null
     private var plan: RoutePlan? = null
@@ -40,7 +42,7 @@ class NavSimulation(
         job = scope.launch {
             for (fix in simulator.fixes()) {
                 source.emitSimulated(fix.copy(timeMillis = clock()))
-                delay(tickMillis)
+                pause(tickMillis)
             }
         }
     }
