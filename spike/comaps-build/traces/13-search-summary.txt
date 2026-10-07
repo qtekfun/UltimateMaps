@@ -1,3 +1,3 @@
 busquedas (tras descartar 1 frias): 46; con resultados: 31
-primer_lote_ms: min=143 p50=631 p95=1734 max=2898
-fin_busqueda_ms: min=27 p50=660.5 p95=1852 max=2898
+first_batch_ms: min=143 p50=631 p95=1734 max=2898
+search_end_ms: min=27 p50=660.5 p95=1852 max=2898

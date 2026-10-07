@@ -1,5 +1,5 @@
 #!/bin/bash
-# Capturas de Madrid centro a z12/15/17.5 con es.pmtiles (cada llamada adb bajo flock)
+# Screenshots of central Madrid at z12/15/17.5 with es.pmtiles (each adb call under flock)
 cd "$(dirname "$(readlink -f "$0")")/.."
 for z in 12 15 17.5; do
   bash tools/launch.sh --es style style-es.json --ed zoom $z | grep TotalTime

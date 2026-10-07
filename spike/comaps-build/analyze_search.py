@@ -25,6 +25,6 @@ total = [r[1] for r in rows]
 def p(v, q):
     v = sorted(v); return v[min(len(v) - 1, int(math.ceil(q * len(v))) - 1)]
 print(f"searches (after discarding {skip} cold): {len(rows)}; with results: {len(first)}")
-for name, v in (("primer_lote_ms", first), ("fin_busqueda_ms", total)):
+for name, v in (("first_batch_ms", first), ("search_end_ms", total)):
     if v:
         print(f"{name}: min={min(v)} p50={statistics.median(v)} p95={p(v, .95)} max={max(v)}")
