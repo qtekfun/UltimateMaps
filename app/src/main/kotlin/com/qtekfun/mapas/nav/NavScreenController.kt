@@ -54,6 +54,10 @@ data class NavUi(
     val buildings3d: Boolean = true,
     /** Spoken guidance is on (false: muted). Persisted in the navigation settings, like [view3d]. */
     val voiceOn: Boolean = true,
+    /** Some camera or incident category is on, so the alerts' own mute button is offered. */
+    val cameraAlertsOn: Boolean = false,
+    /** The camera/incident voice is on (false: only that voice is muted; the chip still shows). */
+    val cameraVoiceOn: Boolean = true,
     /** The whole remaining route is framed for a moment ([NavScreenController.showOverview]); the camera does not follow meanwhile. */
     val overview: Boolean = false,
 ) {
@@ -99,8 +103,15 @@ class NavScreenController(
     private val clock: () -> Long = System::currentTimeMillis,
     private val stopFlashMillis: Long = STOP_FLASH_MILLIS,
     private val overviewMillis: Long = OVERVIEW_MILLIS,
+    /** The camera/incident alert settings, for the alerts' own mute button; null: no alerts in this build or test. */
+    private val cameraSettings: com.qtekfun.mapas.core.cameras.CameraSettingsStore? = null,
 ) {
-    private fun idleUi() = NavUi(glove = prefs.glove, view3d = settings.settings.value.view3d, buildings3d = settings.settings.value.buildings3d, voiceOn = settings.settings.value.voiceEnabled)
+    private fun cameraUi(ui: NavUi): NavUi {
+        val cs = cameraSettings?.settings?.value ?: return ui
+        return if (ui.cameraAlertsOn == cs.anything && ui.cameraVoiceOn == cs.voiceEnabled) ui else ui.copy(cameraAlertsOn = cs.anything, cameraVoiceOn = cs.voiceEnabled)
+    }
+
+    private fun idleUi() = cameraUi(NavUi(glove = prefs.glove, view3d = settings.settings.value.view3d, buildings3d = settings.settings.value.buildings3d, voiceOn = settings.settings.value.voiceEnabled))
 
     private val _ui = MutableStateFlow(idleUi())
     val ui: StateFlow<NavUi> = _ui.asStateFlow()
@@ -128,6 +139,7 @@ class NavScreenController(
         scope.launch {
             settings.settings.collect { st -> _ui.update { if (it.view3d == st.view3d && it.buildings3d == st.buildings3d && it.voiceOn == st.voiceEnabled) it else it.copy(view3d = st.view3d, buildings3d = st.buildings3d, voiceOn = st.voiceEnabled) } }
         }
+        cameraSettings?.let { store -> scope.launch { store.settings.collect { _ui.update(::cameraUi) } } }
         scope.launch { controller.state.collect(::onState) }
         scope.launch { controller.problem.collect { p -> _ui.update { it.copy(problem = p) } } }
         scope.launch { controller.events.collect(::onEvent) }
@@ -211,6 +223,11 @@ class NavScreenController(
 
     /** Mutes or unmutes the spoken guidance (the same switch as Settings, Navigation, Voice guidance). */
     fun setVoice(on: Boolean) = settings.update { it.copy(voiceEnabled = on) }
+
+    /** Mutes or unmutes only the camera/incident voice (the chip keeps showing; the navigation Mute still silences everything). */
+    fun setCameraVoice(on: Boolean) {
+        cameraSettings?.update { it.copy(voiceEnabled = on) }
+    }
 
     /**
      * Frames the whole remaining route for [overviewMillis] (the map side is [NavHost]'s), then goes back to following.

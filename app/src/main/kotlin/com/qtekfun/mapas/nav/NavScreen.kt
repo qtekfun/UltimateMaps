@@ -70,6 +70,8 @@ class NavActions(
     val onGlove: (Boolean) -> Unit = {},
     val onView3d: (Boolean) -> Unit = {},
     val onVoice: (Boolean) -> Unit = {},
+    /** Mutes or unmutes only the camera/incident voice (the alerts' own switch). */
+    val onCameraVoice: (Boolean) -> Unit = {},
     val onOverview: () -> Unit = {},
     val onFaster: () -> Unit = {},
     val onSlower: () -> Unit = {},
@@ -145,6 +147,7 @@ private fun BoxScope.Driving(ui: NavUi, nav: NavState, actions: NavActions) {
                     )
                 }
                 MuteToggle(ui, actions)
+                if (ui.cameraAlertsOn) CameraMuteToggle(ui, actions)
                 ViewToggle(ui, actions)
                 if (!ui.overview) {
                     NavButton(
@@ -425,6 +428,17 @@ private fun MuteToggle(ui: NavUi, actions: NavActions) {
         stringResource(if (ui.voiceOn) R.string.nav_ui_mute else R.string.nav_ui_unmute), { actions.onVoice(!ui.voiceOn) }, Modifier.testTag("nav_mute"),
         container = if (ui.voiceOn) c.panel else c.laneRecommended, content = if (ui.voiceOn) c.onPanel else c.onLaneRecommended,
         description = stringResource(if (ui.voiceOn) R.string.nav_ui_mute_description else R.string.nav_ui_unmute_description),
+    )
+}
+
+/** Mutes only the camera/incident voice; highlighted while muted. The navigation Mute still silences everything. */
+@Composable
+private fun CameraMuteToggle(ui: NavUi, actions: NavActions) {
+    val c = NavTheme.colors
+    NavButton(
+        stringResource(if (ui.cameraVoiceOn) R.string.nav_ui_alerts_mute else R.string.nav_ui_alerts_unmute), { actions.onCameraVoice(!ui.cameraVoiceOn) }, Modifier.testTag("nav_camera_mute"),
+        container = if (ui.cameraVoiceOn) c.panel else c.laneRecommended, content = if (ui.cameraVoiceOn) c.onPanel else c.onLaneRecommended,
+        description = stringResource(if (ui.cameraVoiceOn) R.string.nav_ui_alerts_mute_description else R.string.nav_ui_alerts_unmute_description),
     )
 }
 

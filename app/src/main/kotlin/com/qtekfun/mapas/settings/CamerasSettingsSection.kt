@@ -78,6 +78,14 @@ fun CamerasSection(env: CamerasSettingsEnv) {
             ) { on -> env.store.update { it.copy(warnOnlyIfSpeeding = on) } }
         }
     }
+    if (s.anything) {
+        Spacer(Modifier.height(10.dp))
+        Card("cam_voice_card") {
+            SwitchRow(
+                stringResource(R.string.cam_voice_title), stringResource(R.string.cam_voice_body), s.voiceEnabled, "cam_voice_switch",
+            ) { on -> env.store.update { it.copy(voiceEnabled = on) } }
+        }
+    }
     Spacer(Modifier.height(10.dp))
     Card("cam_traffic_card") {
         SwitchRow(
