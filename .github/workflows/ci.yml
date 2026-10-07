@@ -1,0 +1,97 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [master]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # Fast gate: the pure-JVM modules and the "no proprietary dependency" rule. No native code, no submodule.
+  core:
+    name: core (JVM modules)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: No proprietary dependencies (Play Services, Firebase)
+        run: |
+          if grep -rEi "play-services|firebase|com\.google\.android\.gms" \
+              --include='*.gradle' --include='*.kts' --include='*.toml' . --exclude-dir=third_party; then
+            echo "Proprietary dependency detected: not allowed in the foss flavor"
+            exit 1
+          fi
+
+      - uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
+        with:
+          distribution: temurin
+          java-version: 21
+
+      # Also validates the Gradle wrapper checksum.
+      - uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
+
+      - name: Tests of the JVM modules
+        run: >
+          ./gradlew --no-daemon
+          :core-geo:test :core-data:test :core-net:test :core-regions:test :core-map:test :core-search:test
+          :core-routing:test :core-fuel:test :core-nav:test :core-voice:test :core-cameras:test :core-transit:test
+
+      - name: Upload reports
+        if: failure()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: core-reports
+          path: "*/build/reports/"
+          retention-days: 14
+
+  # Full gate: prepares the CoMaps core (submodule, generated files), then the app tests and lint.
+  app:
+    name: app (tests and lint)
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
+
+      - name: CoMaps submodule
+        run: git submodule update --init --depth 1 third_party/comaps
+
+      - name: Prepare the CoMaps core (generated files)
+        run: sudo apt-get install -y -qq jq && scripts/comaps-prepare.sh
+
+      - name: Python script tests
+        run: |
+          cd scripts
+          for t in test_*.py; do python3 -m unittest "${t%.py}"; done
+
+      - name: App tests and lint
+        run: ./gradlew --no-daemon test :app:lintFossDebug
+
+      - name: Upload reports
+        if: failure()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: app-reports
+          path: |
+            app/build/reports/
+            */build/reports/
+          retention-days: 14
