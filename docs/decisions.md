@@ -203,3 +203,10 @@ Formato: fecha · decisión · motivo · alternativas descartadas · cómo rever
 - **Qué debe hacer quien ya tiene una región instalada:** la app solo baja `World` al **instalar** una región cuando aún no lo tiene; una región ya instalada no lo dispara. Basta descargar cualquier otra región (p. ej. Ceuta, 1,5 MB, + 62 MB de World) o borrar y volver a bajar la región.
 - **Salvaguarda:** `scripts/gen-region-catalog.py` avisa ahora si hay regiones descargables pero no `--base-dir`.
 - **Lo que no detectaron los tests:** ninguno cubría «catálogo real publicado → buscar»; el circuito descarga → enlace → búsqueda no se probó de punta a punta con la release real. Pendiente (con el teléfono, cuando el usuario lo permita).
+
+## 2026-10-07 · Hasta 3 subagentes a la vez
+- **Decisión:** el límite de subagentes simultáneos sube de 2 a 3 por indicación del usuario («Pon hasta 3 subagentes»). Sustituye a las entradas anteriores de 4 y 2.
+- **Reparto en curso:** A `feat/nav-maneuvers` (giros, carriles y límites desde el núcleo), B `feat/nav-following` (módulo `:core-nav`: seguimiento de ruta y recálculo), C `feat/ui-regions-search-sheet` (buscador de regiones y arrastre del panel inferior). Modelo común en `feat/nav-model` (`97d77ac`).
+
+## 2026-10-07 · Ideas del usuario: precios de gasolineras y transporte en tiempo real (sin decidir)
+- **Estado:** solo anotadas en `docs/mapas-05-roadmap.md`, sin código. Tocan «Qué no hacemos» (transporte público) y la regla de que todo ocurre en el dispositivo, así que necesitan decisión del usuario y un spike que verifique APIs, formatos, claves y licencias.
