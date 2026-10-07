@@ -539,3 +539,10 @@ Format: date · decision · reason · discarded alternatives · how to revert it
 - **Kept:** every preference key and test tag; long privacy and honesty texts unchanged. "Storage location" and "mute defaults" do not exist in the code yet, so there is no row for them.
 - **Verified:** JVM tests (hub rows and summaries, navigation in and out, system Back, rotation, search, map button order, glove sizes) and renders in `docs/phase2/settings-hub/`. Not verified on a device.
 - **Owner to decide:** whether the search field earns its place; the category names and order.
+
+## 2026-10-07 · Cause of the long-route failures found: World registered as a routable map
+- **Finding (Pixel 8, `CoreBenchActivity --ez matrix true` with live logging):** all long pairs returned route-not-found. `countries.txt` of this CoMaps version lists `World` and `WorldCoasts` as leaves, so `Core::Impl::Router` registered them in `NumMwmIds`; the planet-sized `World` made `IndexRouter::AreMwmsNear` always true (slow `Joints` mode on long trips) and flooded the log with 28,147 cross-mwm warnings.
+- **Decision:** skip `WORLD_FILE_NAME` and `WORLD_COASTS_FILE_NAME` when filling `NumMwmIds` (`um_core.cpp`). Search still uses them.
+- **Result:** 12 of 12 pairs found; Madrid to Barcelona 620 km in 20.1 s on a debug build (details and caveats in `docs/phase2/device-test/route-bench-2026-10-07.md`). The 2 s target is still not met and the reverse trip took 47 s: next step is to measure with an optimised native core and profile.
+- **Not verified:** release-build timings, the effect on rerouting during navigation, other regions.
+
