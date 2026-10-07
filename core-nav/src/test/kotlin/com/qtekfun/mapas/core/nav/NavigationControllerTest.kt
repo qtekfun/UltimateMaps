@@ -173,7 +173,7 @@ class NavigationControllerTest {
         val plan = RoutePlan(b.points.toList(), 2400.0, 240.0, RouteGuidance(listOf(maneuver(0, TurnType.DEPART), maneuver(b.lastIndex, TurnType.ARRIVE)), stops = listOf(s1, s2)))
         val seen = ArrayList<Triple<LatLon, List<LatLon>, LatLon>>()
         val source = SimulatedLocationSource()
-        val provider = RouteProvider { from, _, via, destination ->
+        val provider = RouteProvider { from, _, via, destination, _ ->
             seen += Triple(from, via, destination)
             RoutePlan(listOf(from, pt(0.0, 1600.0), pt(0.0, 2400.0)), 2000.0, 200.0)
         }

@@ -12,6 +12,8 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
+    <!-- Turn-by-turn navigation keeps reading the location with the screen off: foreground service of type location. -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <uses-feature android:name="android.hardware.location" android:required="false" />
@@ -94,5 +96,11 @@
             android:name=".regions.RegionDownloadService"
             android:exported="false"
             android:foregroundServiceType="dataSync" />
+
+        <!-- Navigation in the background: a foreground service of type location (Android 14+: needs the permission above). -->
+        <service
+            android:name=".nav.NavigationService"
+            android:exported="false"
+            android:foregroundServiceType="location" />
     </application>
 </manifest>

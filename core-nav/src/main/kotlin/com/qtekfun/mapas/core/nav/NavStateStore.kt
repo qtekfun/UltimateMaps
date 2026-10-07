@@ -1,7 +1,9 @@
 package com.qtekfun.mapas.core.nav
 
+import com.qtekfun.mapas.core.routing.RouteOptions
 import com.qtekfun.mapas.core.routing.RoutePlan
 import com.qtekfun.mapas.core.routing.RoutePlanCodec
+import com.qtekfun.mapas.core.routing.RoutingProfile
 import java.io.BufferedInputStream
 import java.io.BufferedOutputStream
 import java.io.DataInputStream
@@ -13,8 +15,11 @@ import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.StandardCopyOption
 
+/** How the route was asked for: the reroutes of the trip must use the same profile and avoid options. */
+data class NavTrip(val profile: RoutingProfile = RoutingProfile.CAR, val options: RouteOptions = RouteOptions())
+
 /** What survives the death of the process: the route being followed and how far along it the user was. */
-data class PersistedNav(val plan: RoutePlan, val progressMeters: Double, val savedAtMillis: Long)
+data class PersistedNav(val plan: RoutePlan, val progressMeters: Double, val savedAtMillis: Long, val trip: NavTrip = NavTrip())
 
 /**
  * Saves the navigation in progress so it can be resumed after the system kills the process (low memory, battery
@@ -31,7 +36,7 @@ class NavStateStore(
     private val maxAgeMillis: Long = DEFAULT_MAX_AGE_MILLIS,
 ) {
     /** Returns false (and keeps the old file) when the disk write failed. */
-    fun save(plan: RoutePlan, progressMeters: Double): Boolean = try {
+    fun save(plan: RoutePlan, progressMeters: Double, trip: NavTrip = NavTrip()): Boolean = try {
         file.absoluteFile.parentFile?.mkdirs()
         val tmp = File(file.absolutePath + ".tmp")
         FileOutputStream(tmp).use { fos ->
@@ -40,6 +45,8 @@ class NavStateStore(
             out.writeByte(FORMAT)
             out.writeLong(clock())
             out.writeDouble(progressMeters)
+            out.writeByte(trip.profile.ordinal)
+            out.writeByte(flags(trip.options))
             RoutePlanCodec.write(out, plan)
             out.flush()
             fos.fd.sync()
@@ -59,8 +66,10 @@ class NavStateStore(
                 if (input.readInt() != MAGIC || input.readUnsignedByte() != FORMAT) throw IOException("not a navigation file")
                 val savedAt = input.readLong()
                 val progress = input.readDouble()
+                val profile = RoutingProfile.entries.getOrNull(input.readUnsignedByte()) ?: throw IOException("bad profile")
+                val options = options(input.readUnsignedByte())
                 val plan = RoutePlanCodec.read(input)
-                PersistedNav(plan, progress, savedAt)
+                PersistedNav(plan, progress, savedAt, NavTrip(profile, options))
             }
         } catch (_: IOException) {
             null
@@ -84,8 +93,13 @@ class NavStateStore(
 
     companion object {
         private const val MAGIC = 0x554D4E56 // "UMNV"
-        private const val FORMAT = 1
+        private const val FORMAT = 2
         private const val CLOCK_SLACK_MILLIS = 60_000L
+
+        private fun flags(o: RouteOptions) =
+            (if (o.avoidMotorways) 1 else 0) or (if (o.avoidTolls) 2 else 0) or (if (o.avoidFerries) 4 else 0) or (if (o.avoidUnpaved) 8 else 0)
+
+        private fun options(f: Int) = RouteOptions(f and 1 != 0, f and 2 != 0, f and 4 != 0, f and 8 != 0)
 
         /** A trip is not resumed after this long: the user is surely somewhere else by then. */
         const val DEFAULT_MAX_AGE_MILLIS = 3 * 60 * 60 * 1000L

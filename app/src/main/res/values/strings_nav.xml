@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Navigation service notification -->
+    <string name="nav_channel_name">Navigation</string>
+    <string name="nav_notification_stop">Stop</string>
+    <string name="nav_notification_open">Open</string>
+    <string name="nav_remaining">%1$s · %2$s</string>
+    <string name="nav_in_distance">%1$s: %2$s</string>
+    <string name="nav_onto_street">%1$s onto %2$s</string>
+    <string name="nav_waiting_gps">Waiting for GPS signal…</string>
+    <string name="nav_recalculating">Recalculating the route…</string>
+    <string name="nav_arrived">You have arrived</string>
+    <string name="nav_stop_reached">Stop reached</string>
+    <string name="nav_problem_permission">Location permission was removed. Allow it to keep navigating.</string>
+    <string name="nav_problem_gps_off">Location is off. Turn it on to keep navigating.</string>
+    <string name="nav_resumed">Navigation resumed</string>
+    <string name="nav_turn_depart">Start</string>
+    <string name="nav_turn_straight">Continue straight</string>
+    <string name="nav_turn_slight_right">Bear right</string>
+    <string name="nav_turn_right">Turn right</string>
+    <string name="nav_turn_sharp_right">Sharp right</string>
+    <string name="nav_turn_slight_left">Bear left</string>
+    <string name="nav_turn_left">Turn left</string>
+    <string name="nav_turn_sharp_left">Sharp left</string>
+    <string name="nav_turn_u_turn">Make a U-turn</string>
+    <string name="nav_turn_roundabout_enter">Enter the roundabout</string>
+    <string name="nav_turn_roundabout_leave">Leave the roundabout</string>
+    <string name="nav_turn_exit_left">Take the exit on the left</string>
+    <string name="nav_turn_exit_right">Take the exit on the right</string>
+    <string name="nav_turn_merge">Merge</string>
+    <string name="nav_turn_arrive">Arrive at your destination</string>
+    <string name="nav_turn_arrive_left">Your destination is on the left</string>
+    <string name="nav_turn_arrive_right">Your destination is on the right</string>
+</resources>
