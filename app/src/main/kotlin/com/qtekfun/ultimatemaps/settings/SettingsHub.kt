@@ -80,7 +80,10 @@ fun settingsCategories(env: SettingsEnv): List<SettingsCategory> = buildList {
         SettingsCategory(
             "fuel", R.string.fuel_title, R.string.hub_fuel_keywords, { drawFuelIcon(it) },
             summary = { fuelSummary(env) },
-            content = { FuelSettingsContent(env) },
+            content = {
+                FuelSettingsContent(env)
+                env.chargers?.let { ChargersSection(it) }
+            },
         ),
     )
     add(

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Electric chargers: Settings group (inside the Fuel stations category), map card and attribution -->
+    <string name="ev_group_title">Electric chargers</string>
+    <string name="ev_switch_title">Show EV chargers</string>
+    <string name="ev_switch_body">Shows charging stations from OpenStreetMap on the map. It downloads one small data file from your map server (the same one as the maps); your position is never sent.</string>
+    <string name="ev_sockets_title">Plug types</string>
+    <string name="ev_sockets_body">With all four selected every station is shown, including those with no plug information. Select fewer to show only stations that list one of them.</string>
+    <string name="ev_socket_type2">Type 2</string>
+    <string name="ev_socket_ccs">CCS</string>
+    <string name="ev_socket_chademo">CHAdeMO</string>
+    <string name="ev_socket_schuko">Schuko (household socket)</string>
+    <string name="ev_socket_type1">Type 1</string>
+    <string name="ev_socket_tesla">Tesla</string>
+    <string name="ev_socket_other">Other plug</string>
+    <string name="ev_power_title">Minimum power</string>
+    <string name="ev_power_body">Stations whose power is not known are hidden when a minimum is set.</string>
+    <string name="ev_power_any">Any</string>
+    <string name="ev_power_22">22 kW or more</string>
+    <string name="ev_power_50">50 kW or more</string>
+    <string name="ev_power_100">100 kW or more</string>
+    <string name="ev_data_title">Charger data</string>
+    <string name="ev_data_count">%1$d stations, data from %2$s</string>
+    <string name="ev_data_never">No charger data downloaded yet.</string>
+    <string name="ev_attribution">EV charging stations from OpenStreetMap, © OpenStreetMap contributors (ODbL).</string>
+    <string name="ev_unit_kw">%1$s kW</string>
+
+    <!-- Card of a tapped charger -->
+    <string name="ev_category">EV charger</string>
+    <string name="ev_card_title_unknown">EV charging station</string>
+    <string name="ev_card_network">Network: %1$s</string>
+    <string name="ev_card_capacity">Charging points: %1$d</string>
+    <string name="ev_card_sockets">Plugs</string>
+    <string name="ev_card_sockets_unknown">Plugs: not specified in OpenStreetMap</string>
+    <string name="ev_card_socket_count">%1$d × %2$s</string>
+    <string name="ev_card_socket_power">%1$s, %2$s kW</string>
+    <string name="ev_card_fee_paid">Fee: yes</string>
+    <string name="ev_card_fee_free">Fee: free</string>
+    <string name="ev_card_fee_unknown">Fee: not specified</string>
+    <string name="ev_card_hours">Hours: %1$s</string>
+    <string name="ev_card_access_customers">Access: customers only</string>
+    <string name="ev_card_access_private">Access: private or restricted</string>
+    <string name="ev_card_access_public">Access: public</string>
+    <string name="ev_card_auth">Start with: %1$s</string>
+    <string name="ev_auth_none">no account needed</string>
+    <string name="ev_auth_app">app</string>
+    <string name="ev_auth_card">membership card</string>
+    <string name="ev_auth_nfc">contactless</string>
+    <string name="ev_card_note">Community data: availability, price and working order are not known. Check before you rely on it.</string>
+    <string name="ev_card_data_date">Data from %1$s</string>
+    <string name="ev_card_close">Close</string>
+    <string name="ev_go">Go</string>
+    <string name="ev_add_stop">Add stop</string>
+
+    <!-- Backup and restore -->
+    <string name="backup_item_chargers">EV chargers</string>
+    <string name="backup_group_chargers">EV chargers</string>
+</resources>

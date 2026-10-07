@@ -74,6 +74,8 @@ class SettingsEnv(
     val history: HistorySettingsEnv? = null,
     /** Alerts category (speed cameras and traffic); null hides it. */
     val cameras: CamerasSettingsEnv? = null,
+    /** "Electric chargers" group of the Fuel stations category (switch, plug and power filters); null hides it. */
+    val chargers: ChargersSettingsEnv? = null,
     /** Track recording part of the Data category (switch and delete); null hides it. */
     val recording: RecordingSettingsEnv? = null,
     /** Language of place information section (search results and place card); null hides it. */

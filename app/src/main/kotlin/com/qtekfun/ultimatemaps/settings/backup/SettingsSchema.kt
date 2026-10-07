@@ -4,6 +4,10 @@ import com.qtekfun.ultimatemaps.cameras.PrefsCameraSettingsStore
 import com.qtekfun.ultimatemaps.core.cameras.AlertSoundMode
 import com.qtekfun.ultimatemaps.core.cameras.CameraSettings
 import com.qtekfun.ultimatemaps.core.cameras.MIN_INCIDENT_REFRESH_MINUTES
+import com.qtekfun.ultimatemaps.chargers.PrefsChargerSettingsStore
+import com.qtekfun.ultimatemaps.core.chargers.ChargerSettings
+import com.qtekfun.ultimatemaps.core.chargers.MinPower
+import com.qtekfun.ultimatemaps.core.chargers.SocketType
 import com.qtekfun.ultimatemaps.core.fuel.FuelSettings
 import com.qtekfun.ultimatemaps.core.fuel.FuelTypes
 import com.qtekfun.ultimatemaps.core.fuel.MIN_REFRESH_MINUTES
@@ -83,6 +87,7 @@ object SettingsSchema {
     const val GROUP_NAVIGATION_UI = "navigation_ui"
     const val GROUP_FUEL = "fuel"
     const val GROUP_CAMERAS = "cameras"
+    const val GROUP_CHARGERS = "chargers"
     const val GROUP_HISTORY = "history"
     const val GROUP_RECORDING = "recording"
     const val GROUP_REGIONS = "regions"
@@ -111,10 +116,12 @@ object SettingsSchema {
     private val nav = NavSettings()
     private val fuel = FuelSettings()
     private val cameras = CameraSettings()
+    private val chargers = ChargerSettings()
 
     private val navPrefs = PrefsNavSettingsStore.PREFS
     private val fuelPrefs = PrefsFuelSettingsStore.PREFS
     private val camPrefs = PrefsCameraSettingsStore.PREFS
+    private val chargerPrefs = PrefsChargerSettingsStore.PREFS
 
     /** Every exported setting, sorted by group and key (the order of the file). */
     val specs: List<SettingSpec> = listOf(
@@ -159,6 +166,17 @@ object SettingsSchema {
         enum(GROUP_CAMERAS, camPrefs, PrefsCameraSettingsStore.KEY_CAM_MODE, cameras.cameraAlertMode, AlertSoundMode.entries.map { it.name }),
         enum(GROUP_CAMERAS, camPrefs, PrefsCameraSettingsStore.KEY_INCIDENT_MODE, cameras.incidentAlertMode, AlertSoundMode.entries.map { it.name }),
         int(GROUP_CAMERAS, camPrefs, PrefsCameraSettingsStore.KEY_REFRESH, cameras.incidentRefreshMinutes) { it >= MIN_INCIDENT_REFRESH_MINUTES },
+
+        // EV chargers: the switch starts a download, so it needs consent; the plug and power filters are plain preferences.
+        bool(GROUP_CHARGERS, chargerPrefs, PrefsChargerSettingsStore.KEY_ENABLED, chargers.enabled, RestorePolicy.NEEDS_CONSENT),
+        SettingSpec(
+            GROUP_CHARGERS, chargerPrefs, PrefsChargerSettingsStore.KEY_SOCKETS, SettingType.STRING_SET, chargers.sockets.map { it.name }.toSet(),
+            sanitize = { v ->
+                val offered = SocketType.FILTERABLE.map { it.name }.toSet()
+                (v as Set<*>).filterIsInstance<String>().filter { it in offered }.toSet().takeIf { it.isNotEmpty() }
+            },
+        ),
+        enum(GROUP_CHARGERS, chargerPrefs, PrefsChargerSettingsStore.KEY_MIN_POWER, chargers.minPower, MinPower.entries.map { it.name }),
 
         // Search history switch (not the history itself).
         bool(GROUP_HISTORY, PrefsHistorySettings.PREFS, PrefsHistorySettings.KEY_ENABLED, true),

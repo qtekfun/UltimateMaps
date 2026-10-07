@@ -55,6 +55,12 @@ fun AboutSettingsSection(env: AboutSettingsEnv) {
             style = Mapas.typography.callout.copy(color = Mapas.colors.secondaryLabel),
             modifier = Modifier.testTag("about_fuel"),
         )
+        Spacer(Modifier.height(6.dp))
+        BasicText(
+            stringResource(R.string.ev_attribution),
+            style = Mapas.typography.callout.copy(color = Mapas.colors.secondaryLabel),
+            modifier = Modifier.testTag("about_ev"),
+        )
         TransitAboutBlock(env.transitAttributions())
     }
 }
