@@ -1,0 +1,317 @@
+--- a/libs/routing/index_router.hpp
++++ b/libs/routing/index_router.hpp
+@@ -10,6 +10,7 @@
+ #include "routing/road_graph.hpp"
+ #include "routing/router.hpp"
+ #include "routing/routing_callbacks.hpp"
++#include "routing/routing_options.hpp"
+ #include "routing/segment.hpp"
+ #include "routing/segmented_route.hpp"
+ 
+@@ -18,6 +19,7 @@
+ #include "geometry/point2d.hpp"
+ #include "geometry/tree4d.hpp"
+ 
++#include <cstdint>
+ #include <memory>
+ #include <set>
+ #include <string>
+@@ -30,10 +32,45 @@
+ 
+ namespace routing
+ {
++/// UltimateMaps patch: run-time switches of the long-route (LeapsOnly) pipeline, see docs/phase2/long-routes-perf.md.
++/// The defaults reproduce the stock CoMaps behaviour exactly. Process-wide; set between routes, not during one.
++struct RoutePerfConfig
++{
++  /// Stop collecting leaps candidates when this many distinct first and last transitions were found (stock: 15).
++  uint32_t m_leapsMaxVertices = 15;
++  /// Wall-clock cap on collecting leaps candidates once at least one route exists (stock: 30000 ms).
++  uint32_t m_leapsTimeoutMs = 30000;
++  /// Skip the start/finish sub-route of a candidate when a lower bound already proves it cannot beat the best one.
++  /// Exact for the car profile: the same candidate is chosen as without it.
++  bool m_pruneCandidates = false;
++  /// Keep the car IndexGraph/geometry loader between routes instead of re-reading the routing section every time.
++  bool m_persistGraphs = false;
++};
++void SetRoutePerfConfig(RoutePerfConfig const & config);
++RoutePerfConfig GetRoutePerfConfig();
++
++/// What the last route spent where (only the long-route pipeline fills the stage fields). Written by the routing thread.
++struct RoutePerfStats
++{
++  int m_mode = 0;                    // 1 = Joints, 2 = NoLeaps, 3 = LeapsOnly, 0 = no route yet
++  uint32_t m_leapsMs = 0;            // stage 1: bidirectional search of cross-mwm candidates
++  uint32_t m_leapsRoutes = 0;        // routes the search produced before filtering
++  uint32_t m_candidates = 0;         // candidates left after filtering
++  uint32_t m_candidatesMs = 0;       // stage 2: start/finish sub-routes of every candidate
++  uint32_t m_legsPruned = 0;         // sub-routes skipped by m_pruneCandidates
++  uint32_t m_finalMs = 0;            // stage 3: sub-routes through the middle mwms of the best candidate
++  uint32_t m_subRoutesComputed = 0;  // sub-route A* runs (cache misses of RoutesCalculator)
++  uint32_t m_subRoutesCached = 0;    // sub-route requests answered from the cache
++  bool m_graphsReused = false;       // the persistent graph loader was reused from a previous route
++};
++void ResetRoutePerfStats();
++RoutePerfStats GetRoutePerfStats();
++
+ class AStarProgress;
+ class DirectionsEngine;
+ class FakeEdgesContainer;
+ class IndexGraph;
++class IndexGraphLoader;
+ class IndexGraphStarter;
+ class RouteWeight;
+ class TrafficStash;
+@@ -289,5 +326,10 @@
+   CountryParentNameGetterFn m_countryParentNameGetterFn;
+ 
+   TimeGetterT m_currentTimeGetter;
++
++  // UltimateMaps: persistent car graph loader (see RoutePerfConfig::m_persistGraphs). Created lazily by MakeWorldGraph.
++  std::shared_ptr<IndexGraphLoader> m_persistentLoader;
++  RoutingOptions::OptionType m_persistentLoaderOptions = 0;
++  int64_t m_persistentLoaderBirthS = 0;
+ };
+ }  // namespace routing
+--- a/libs/routing/index_router.cpp
++++ b/libs/routing/index_router.cpp
+@@ -64,6 +64,8 @@
+ #include "defines.hpp"
+ 
+ #include <algorithm>
++#include <atomic>
++#include <chrono>
+ #include <deque>
+ #include <iterator>
+ #include <map>
+@@ -89,6 +91,39 @@
+ // Near MWMs criteria when choosing routing mode.
+ double constexpr kCloseMwmPointsDistanceM = 300000;
+ 
++// UltimateMaps: run-time switches and counters of the long-route pipeline (declared in index_router.hpp).
++std::atomic<uint32_t> g_perfLeapsMaxVertices{15};
++std::atomic<uint32_t> g_perfLeapsTimeoutMs{30000};
++std::atomic<bool> g_perfPruneCandidates{false};
++std::atomic<bool> g_perfPersistGraphs{false};
++RoutePerfStats g_perfStats;  // written by the routing thread only; the wrapper serializes routes
++
++// A persistent loader is dropped after this long: its time getter is frozen at creation (conditional access).
++int64_t constexpr kPersistentLoaderMaxAgeS = 600;
++
++int64_t SteadyNowS()
++{
++  return std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
++}
++
++/// Forwards to a loader that outlives the world graph (WorldGraph owns its loader through a unique_ptr).
++class SharedIndexGraphLoader final : public IndexGraphLoader
++{
++public:
++  explicit SharedIndexGraphLoader(std::shared_ptr<IndexGraphLoader> impl) : m_impl(std::move(impl)) {}
++
++  IndexGraph & GetIndexGraph(NumMwmId mwmId) override { return m_impl->GetIndexGraph(mwmId); }
++  Geometry & GetGeometry(NumMwmId numMwmId) override { return m_impl->GetGeometry(numMwmId); }
++  std::vector<RouteSegment::SpeedCamera> GetSpeedCameraInfo(Segment const & segment) override
++  {
++    return m_impl->GetSpeedCameraInfo(segment);
++  }
++  void Clear() override {}  // the owner decides when the cache goes away
++
++private:
++  std::shared_ptr<IndexGraphLoader> m_impl;
++};
++
+ double CalcMaxSpeed(NumMwmIds const & numMwmIds, VehicleModelFactoryInterface const & vehicleModelFactory,
+                     VehicleType vehicleType)
+ {
+@@ -288,6 +323,34 @@
+ 
+ IndexRouter::~IndexRouter() = default;
+ 
++void SetRoutePerfConfig(RoutePerfConfig const & config)
++{
++  g_perfLeapsMaxVertices = std::max<uint32_t>(1, config.m_leapsMaxVertices);
++  g_perfLeapsTimeoutMs = config.m_leapsTimeoutMs;
++  g_perfPruneCandidates = config.m_pruneCandidates;
++  g_perfPersistGraphs = config.m_persistGraphs;
++}
++
++RoutePerfConfig GetRoutePerfConfig()
++{
++  RoutePerfConfig c;
++  c.m_leapsMaxVertices = g_perfLeapsMaxVertices;
++  c.m_leapsTimeoutMs = g_perfLeapsTimeoutMs;
++  c.m_pruneCandidates = g_perfPruneCandidates;
++  c.m_persistGraphs = g_perfPersistGraphs;
++  return c;
++}
++
++void ResetRoutePerfStats()
++{
++  g_perfStats = RoutePerfStats();
++}
++
++RoutePerfStats GetRoutePerfStats()
++{
++  return g_perfStats;
++}
++
+ unique_ptr<WorldGraph> IndexRouter::MakeSingleMwmWorldGraph()
+ {
+   auto worldGraph = MakeWorldGraph();
+@@ -701,6 +764,7 @@
+ 
+   WorldGraphMode const mode = starter.GetGraph().GetMode();
+   LOG(LINFO, ("Routing in mode:", mode));
++  g_perfStats.m_mode = mode == WorldGraphMode::Joints ? 1 : mode == WorldGraphMode::NoLeaps ? 2 : 3;
+ 
+   base::ScopedTimerWithLog timer("Route build");
+   switch (mode)
+@@ -797,6 +861,8 @@
+   using Edge = LeapsGraph::Edge;
+   using Weight = LeapsGraph::Weight;
+ 
++  base::Timer stageTimer;  // UltimateMaps: per-stage timing for RoutePerfStats
++
+   // Get cross-mwm routes-candidates.
+   std::vector<RoutingResultT> candidates;
+   std::vector<RouteWeight> candidateMidWeights;
+@@ -842,8 +908,9 @@
+ 
+     /// @todo Looks like there is no big deal in this constant due to the bidirectional search.
+     /// But still Zalau -> Tiburg lasts 2 minutes, so set some reasonable timeout.
+-    size_t constexpr kMaxVertices = 15;
+-    uint64_t constexpr kTimeoutMilliS = 30 * 1000;
++    // UltimateMaps: both limits are run-time switches (stock values: 15 and 30 s), see RoutePerfConfig.
++    size_t const kMaxVertices = g_perfLeapsMaxVertices.load();
++    uint64_t const kTimeoutMilliS = g_perfLeapsTimeoutMs.load();
+     base::Timer timer;
+ 
+     using AlgoT = AStarAlgorithm<Vertex, Edge, Weight>;
+@@ -923,6 +990,9 @@
+       }
+     }
+ 
++    g_perfStats.m_leapsMs = static_cast<uint32_t>(stageTimer.ElapsedMilliseconds());
++    g_perfStats.m_leapsRoutes = static_cast<uint32_t>(routes.size());
++    g_perfStats.m_candidates = static_cast<uint32_t>(candidates.size());
+     LOG(LINFO, ("Filtered candidates count =", candidates.size()));
+     candidateMidWeights.reserve(candidates.size());
+     for (auto & c : candidates)
+@@ -945,14 +1015,47 @@
+     double const candidateContribution = kCandidatesStageContribution / (2 * candidates.size());
+ 
+     // Select best candidate by calculating start/end sub-routes and using candidateMidWeights.
++    stageTimer.Reset();
++    bool const prune = g_perfPruneCandidates.load();
++    // Lower bound of a sub-route: the straight line at the maximum speed of any road, which is what A* itself uses as
++    // its admissible heuristic. Taken between points the sub-route has to pass through whatever the convention about
++    // which end of a segment is charged.
++    auto const lowerBound = [&](Segment const & from, Segment const & to)
++    {
++      return starter.GetGraph()
++          .HeuristicCostEstimate(starter.GetPoint(from, true /* front */), starter.GetPoint(to, false /* front */))
++          .GetIntegratedWeight();
++    };
++
+     RouteWeight bestW = GetAStarWeightMax<RouteWeight>();
++    bool haveBest = false;
+     for (size_t i = 0; i < candidates.size(); ++i)
+     {
+       auto const & c = candidates[i];
+       LOG(LDEBUG, ("Process leaps:", c.m_distance, c.m_path));
+ 
+       size_t const sz = c.m_path.size();
++
++      // A candidate only replaces the best one if it is strictly better (RouteWeight::operator< compares the integrated
++      // weight and then the transit time, which is zero for cars). Every part is >= its lower bound, so a candidate
++      // whose bound is already above the best weight can never be chosen: skipping it keeps the result identical.
++      bool const canPrune = prune && haveBest;
++      double const mid = candidateMidWeights[i].GetIntegratedWeight();
++      double const bestIntegrated = bestW.GetIntegratedWeight();
++      double const lb2 = canPrune ? lowerBound(c.m_path[sz - 2], c.m_path[sz - 1]) : 0.0;
++
++      if (canPrune && lowerBound(c.m_path[0], c.m_path[1]) + mid + lb2 > bestIntegrated)
++      {
++        g_perfStats.m_legsPruned += 2;
++        continue;
++      }
++
+       auto const * r1 = calculator.Calc2Times(c.m_path[0], c.m_path[1], progress, candidateContribution);
++      if (r1 && canPrune && r1->m_distance.GetIntegratedWeight() + mid + lb2 > bestIntegrated)
++      {
++        g_perfStats.m_legsPruned += 1;
++        continue;
++      }
+       auto const * r2 = calculator.Calc2Times(c.m_path[sz - 2], c.m_path[sz - 1], progress, candidateContribution);
+ 
+       if (r1 && r2)
+@@ -962,10 +1065,12 @@
+         {
+           bestW = w;
+           bestC = &c;
++          haveBest = true;
+         }
+       }
+     }
+   }
++  g_perfStats.m_candidatesMs = static_cast<uint32_t>(stageTimer.ElapsedMilliseconds());
+ 
+   SCOPE_GUARD(progressGuard, [&progress]() { progress->PushAndDropLastSubProgress(); });
+   progress->AppendSubProgress(AStarSubProgress(1 - kLeapsStageContribution - kCandidatesStageContribution));
+@@ -975,7 +1080,9 @@
+ 
+   // Calculate route for the best candidate.
+   RoutingResultT result;
++  stageTimer.Reset();
+   ProcessLeapsJoints(bestC->m_path, starter, progress, calculator, result);
++  g_perfStats.m_finalMs = static_cast<uint32_t>(stageTimer.ElapsedMilliseconds());
+ 
+   if (result.Empty())
+     return RouterResultCode::RouteNotFound;
+@@ -1099,9 +1206,31 @@
+       m_numMwmIds, m_numMwmTree, m_vehicleType == VehicleType::Transit ? VehicleType::Pedestrian : m_vehicleType,
+       m_countryRectFn, m_dataSource);
+ 
+-  auto indexGraphLoader = IndexGraphLoader::Create(
+-      m_vehicleType == VehicleType::Transit ? VehicleType::Pedestrian : m_vehicleType, m_loadAltitudes,
+-      m_vehicleModelFactory, m_estimator, m_dataSource, routingOptions, m_currentTimeGetter);
++  unique_ptr<IndexGraphLoader> indexGraphLoader;
++  if (g_perfPersistGraphs.load() && m_vehicleType == VehicleType::Car)
++  {
++    // UltimateMaps: the loader (geometry and index graph of every region already read) survives between routes. Same
++    // avoid options only, and not older than kPersistentLoaderMaxAgeS because its clock is fixed at creation.
++    int64_t const now = SteadyNowS();
++    bool const reusable = m_persistentLoader && m_persistentLoaderOptions == routingOptions.GetOptions() &&
++                          now - m_persistentLoaderBirthS <= kPersistentLoaderMaxAgeS;
++    if (!reusable)
++    {
++      m_persistentLoader = IndexGraphLoader::Create(m_vehicleType, m_loadAltitudes, m_vehicleModelFactory, m_estimator,
++                                                    m_dataSource, routingOptions, m_currentTimeGetter);
++      m_persistentLoaderOptions = routingOptions.GetOptions();
++      m_persistentLoaderBirthS = now;
++    }
++    g_perfStats.m_graphsReused = reusable;
++    indexGraphLoader = make_unique<SharedIndexGraphLoader>(m_persistentLoader);
++  }
++  else
++  {
++    m_persistentLoader.reset();  // switching the option off frees what it pinned
++    indexGraphLoader = IndexGraphLoader::Create(
++        m_vehicleType == VehicleType::Transit ? VehicleType::Pedestrian : m_vehicleType, m_loadAltitudes,
++        m_vehicleModelFactory, m_estimator, m_dataSource, routingOptions, m_currentTimeGetter);
++  }
+ 
+   if (m_vehicleType != VehicleType::Transit)
+   {
+@@ -1388,6 +1517,10 @@
+ {
+   auto itCache = m_cache.insert({{beg, end}, {}});
+   auto * res = &itCache.first->second;
++  if (itCache.second)
++    ++g_perfStats.m_subRoutesComputed;
++  else
++    ++g_perfStats.m_subRoutesCached;
+ 
+   // Actually, we can (should?) append/push-drop progress even if the route is already in cache,
+   // but I'd like to avoid this unnecessary actions here.
