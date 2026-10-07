@@ -35,6 +35,7 @@ object RegionsModel {
         val out = ArrayList<RegionRow>()
         fun walk(parentId: String?, depth: Int) {
             for (r in catalog.children(parentId)) {
+                if (r.isBaseFile) continue // World / WorldCoasts of older catalogs are base files, not regions
                 val leaves = catalog.downloadableUnder(r.id)
                 val isGroup = catalog.children(r.id).isNotEmpty()
                 val open = isGroup && r.id in expanded

@@ -41,10 +41,27 @@ data class Region(
      * `<comapsId>.mwm`. Optional (older catalogs lack it); without it the region cannot be linked to the core.
      */
     val comapsId: String? = null,
+    /**
+     * Optional display names by language (`es` -> `Comunidad de Madrid`), from CoMaps' country strings. [name] stays the
+     * English one; older catalogs have no names and every language shows [name].
+     */
+    val names: Map<String, String> = emptyMap(),
 ) {
+    /** The name in [language] (`es`), or [name] when the catalog has none for it. */
+    fun displayName(language: String): String = names[language.lowercase()]?.takeIf { it.isNotBlank() } ?: name
+
+    /**
+     * `World` and `WorldCoasts`: base files of the core that older catalogs listed as if they were regions. They are
+     * delivered by [BaseMaps], so no list shows them.
+     */
+    val isBaseFile: Boolean
+        get() = parentId == null && assets.isEmpty() && (comapsId ?: id).lowercase().replace("-", "") in BASE_FILE_IDS
+
     val isDownloadable: Boolean get() = assets.size == AssetKind.entries.size
     val totalBytes: Long get() = assets.values.sumOf { it.sizeBytes }
 }
+
+private val BASE_FILE_IDS = setOf("world", "worldcoasts")
 
 /**
  * `World.mwm` and `WorldCoasts.mwm`: not a region, but the core needs both next to every region map.
@@ -184,6 +201,7 @@ class RegionCatalog(
                     if (r.parentId != null) put("parent", r.parentId) else put("parent", JsonNull)
                     put("version", r.version)
                     if (r.comapsId != null) put("comapsId", r.comapsId)
+                    if (r.names.isNotEmpty()) put("names", buildJsonObject { r.names.toSortedMap().forEach { (l, n) -> put(l, n) } })
                     if (r.assets.isNotEmpty()) put("assets", buildJsonObject {
                         r.assets.forEach { (k, a) ->
                             put(k.key, assetJson(a))
@@ -257,6 +275,9 @@ class RegionCatalog(
                     version = o.getValue("version").jsonPrimitive.content,
                     assets = assets,
                     comapsId = (o["comapsId"] as? JsonPrimitive)?.takeIf { it !is JsonNull }?.content,
+                    names = (o["names"] as? JsonObject)?.mapNotNull { (l, v) ->
+                        (v as? JsonPrimitive)?.takeIf { it.isString && it.content.isNotBlank() }?.let { l.lowercase() to it.content }
+                    }?.toMap().orEmpty(),
                 )
             }
             RegionCatalog(root.getValue("catalogVersion").jsonPrimitive.content, regions, baseMaps, cameras, transit)
