@@ -3,13 +3,13 @@ package com.qtekfun.mapas.search
 import android.content.Context
 import android.os.SystemClock
 import android.util.Log
+import com.qtekfun.mapas.core.search.PlaceLanguageStore
 import com.qtekfun.mapas.core.search.SearchEngine
 import com.qtekfun.mapas.nativecomaps.CoMapsCore
 import com.qtekfun.mapas.nativecomaps.CoreHandle
 import com.qtekfun.mapas.nativecomaps.isolation.BinderCoreTransport
 import com.qtekfun.mapas.nativecomaps.isolation.IsolatedCore
 import com.qtekfun.mapas.regions.CoreLinks
-import java.util.Locale
 
 /**
  * The production [SearchBackend]. The native core runs in its own process (`:core`) behind [IsolatedCore], so a
@@ -17,13 +17,16 @@ import java.util.Locale
  * Setting the preference [PREF_ISOLATED] to false (a safety valve while the isolation is still untested on a
  * device) falls back to the old in-process core.
  */
-class CoMapsSearchBackend(private val context: Context) : SearchBackend {
+class CoMapsSearchBackend(
+    private val context: Context,
+    private val placeLanguage: PlaceLanguageStore = PrefsPlaceLanguageStore(context),
+) : SearchBackend {
     private var engine: SearchEngine? = null
 
     @Synchronized
     override fun open(maps: CoreMaps): SearchEngine {
         val core = prepareCore(context, maps)
-        return engine ?: core.searchEngine(locale()).also { engine = it }
+        return engine ?: PlaceLocaleSearchEngine(core) { currentCoreLocale(placeLanguage) }.also { engine = it }
     }
 
     companion object {
@@ -39,14 +42,15 @@ class CoMapsSearchBackend(private val context: Context) : SearchBackend {
             (if (isolated) IsolatedCore(BinderCoreTransport(app)) else CoMapsCore()).also { core = it }
         }
 
-        private fun locale() = if (Locale.getDefault().language == "es") "es" else "en"
-
         /** Starts the process-wide core if needed and re-scans [maps]; shared by search and routing. */
         fun prepareCore(context: Context, maps: CoreMaps): CoreHandle {
             val app = context.applicationContext
             val core = handle(app)
             // With the isolated core these do not start the process by themselves: it starts on the first real call.
-            core.init(app.applicationInfo.sourceDir, maps.mapsDir.absolutePath, app.cacheDir.absolutePath, locale())
+            core.init(
+                app.applicationInfo.sourceDir, maps.mapsDir.absolutePath, app.cacheDir.absolutePath,
+                currentCoreLocale(PrefsPlaceLanguageStore(app)),
+            )
             CoreLinks.coreLoaded = true // from now on a deleted region needs an app restart (see CoreLinks)
             core.refreshMaps() // also picks up regions installed after the first start
             return core
