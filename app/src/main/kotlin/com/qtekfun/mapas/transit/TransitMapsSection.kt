@@ -19,8 +19,6 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.qtekfun.mapas.R
 import com.qtekfun.mapas.core.transit.TransitFailure
@@ -54,14 +52,12 @@ fun TransitMapsSection(rows: List<TransitCityRow>, offline: Boolean, onDownload:
 private fun CityRow(row: TransitCityRow, offline: Boolean, locale: java.util.Locale, onDownload: (String) -> Unit, onDelete: (String) -> Unit) {
     val colors = Mapas.colors
     val range = validityText(row, locale)
-    val description = stringResource(R.string.transit_maps_row_description, row.city, range)
     Column(
         Modifier
             .fillMaxWidth()
             .clip(Mapas.shapes.control)
             .background(colors.field)
             .padding(12.dp)
-            .semantics(mergeDescendants = true) { contentDescription = description }
             .testTag("transit_city_${row.id}"),
     ) {
         BasicText(row.city, style = Mapas.typography.body.copy(color = colors.label))

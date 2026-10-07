@@ -69,11 +69,18 @@ class TransitDataManagerTest {
         assertNull(m.installedSha("test"))
         assertNull(m.download(asset()))
         assertEquals(sha(indexBytes), m.installedSha("test"))
+        val info = m.installed().single()
+        assertEquals("Testville", info.city)
+        assertEquals("Europe/Madrid", info.timezone)
+        assertEquals("2026-10-31", info.validTo)
+        assertEquals(listOf("Powered by tests"), info.attribution)
+        assertEquals(sha(indexBytes), info.sha256)
         val index = assertNotNull(m.open("test"))
         assertEquals(Fixtures.index().describe(), index.describe())
         m.delete("test")
         assertFalse(m.isInstalled("test"))
         assertNull(m.open("test"))
+        assertTrue(m.installed().isEmpty())
     }
 
     @Test
