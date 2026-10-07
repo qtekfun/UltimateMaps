@@ -2,7 +2,9 @@ package com.qtekfun.mapas.nativecomaps.isolation
 
 import com.qtekfun.mapas.core.geo.LatLon
 import com.qtekfun.mapas.core.routing.RoutePlanCodec
+import com.qtekfun.mapas.core.search.PlaceExtras
 import com.qtekfun.mapas.core.search.SearchResult
+import com.qtekfun.mapas.core.search.Wheelchair
 import com.qtekfun.mapas.nativecomaps.RouteOutcome
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
@@ -135,7 +137,16 @@ object CoreProtocol {
 
     // ---- replies ----
 
-    fun encodeSearchResults(results: List<SearchResult>): ByteArray = write { out ->
+    /**
+     * Search reply layout. v1 (no marker) starts with the result count (>= 0) and carries name, position, address and
+     * category per result. From v2 the reply starts with `-version` (a negative int no v1 count can be) followed by the
+     * count, and every result adds phone, website, wheelchair and opening hours. [decodeSearchResults] reads both.
+     */
+    const val SEARCH_REPLY_VERSION = 2
+
+    fun encodeSearchResults(results: List<SearchResult>, version: Int = SEARCH_REPLY_VERSION): ByteArray = write { out ->
+        require(version == 1 || version == 2) { "unknown search reply version: $version" }
+        if (version >= 2) out.writeInt(-version)
         out.writeInt(results.size)
         for (r in results) {
             writeText(out, r.name)
@@ -143,16 +154,37 @@ object CoreProtocol {
             out.writeDouble(r.point.lon)
             writeText(out, r.address)
             writeText(out, r.category)
+            if (version >= 2) {
+                writeText(out, r.extras?.phone)
+                writeText(out, r.extras?.website)
+                writeText(out, r.extras?.wheelchair?.name)
+                writeText(out, r.extras?.openingHours)
+            }
         }
     }
 
     fun decodeSearchResults(bytes: ByteArray): List<SearchResult> = read(bytes) { i ->
-        val n = i.readInt()
+        val first = i.readInt()
+        val version = if (first < 0) -first else 1
+        if (version != 1 && version != 2) throw IOException("unknown search reply version $version")
+        val n = if (first < 0) i.readInt() else first
         if (n < 0 || n > 10_000) throw IOException("bad result count $n")
         List(n) {
             val name = readText(i) ?: ""
             val p = LatLon.ofOrNull(i.readDouble(), i.readDouble()) ?: throw IOException("bad position")
-            SearchResult(name, p, readText(i), readText(i))
+            val address = readText(i)
+            val category = readText(i)
+            val extras = if (version >= 2) {
+                PlaceExtras(
+                    phone = readText(i),
+                    website = readText(i),
+                    wheelchair = readText(i)?.let { w -> Wheelchair.entries.firstOrNull { it.name == w } },
+                    openingHours = readText(i),
+                ).takeUnless { it.isEmpty }
+            } else {
+                null
+            }
+            SearchResult(name, p, address, category, extras = extras)
         }
     }
 

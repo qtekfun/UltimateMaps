@@ -16,8 +16,8 @@ enum class Wheelchair {
 
 /**
  * Optional details of a place, from its OSM tags. Every field is raw text as stored in the map data: the app only
- * reshapes it for display and for the dialer and browser. The CoMaps core wrapper does not fill this in yet (see
- * `docs/decisions.md`, "Place card extras"); it stays null until it does.
+ * reshapes it for display and for the dialer and browser. The CoMaps core wrapper fills it in for the results it returns
+ * (see `docs/decisions.md`, "Native place tags"); a place without any of these tags has no extras.
  */
 data class PlaceExtras(
     val phone: String? = null,
