@@ -169,7 +169,8 @@ class FuelMapLayerTest {
     @Test
     fun aBurstOfGesturesQueriesOnce() {
         val spy = Spy(three)
-        val l = layer(spy, on(), debounce = 80)
+        // Antirrebote real: con 80 ms el bucle podía tardar más (máquina cargada) y salían 2 consultas, no 1 (test intermitente).
+        val l = layer(spy, on(), debounce = 400)
         repeat(5) { l.onViewport(view, 12.0 + it * 0.01) }
         await("draw") { drawn.isNotEmpty() }
         settle()

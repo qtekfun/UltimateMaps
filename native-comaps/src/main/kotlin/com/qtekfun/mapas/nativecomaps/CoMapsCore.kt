@@ -20,10 +20,45 @@ object RouteCode {
     const val INTERNAL_ERROR = 10
     const val INTERMEDIATE_NOT_FOUND = 12
     const val HAS_WARNINGS = 16
+
+    /**
+     * Codigos propios (no vienen de CoMaps) del nucleo aislado: el proceso `:core` murio y el reintento tambien,
+     * no se pudo arrancar/conectar, o la llamada fallo por otra razon. Un tiempo agotado se devuelve como
+     * [CANCELLED] (la UI ya lo muestra como "tardo demasiado").
+     */
+    const val CORE_CRASHED = 1001
+    const val CORE_UNAVAILABLE = 1002
+    const val CORE_INTERNAL = 1003
 }
 
-/** Resultado detallado de una ruta: [plan] es null si no hay ruta y [code] dice por que. */
-data class RouteOutcome(val code: Int, val plan: RoutePlan?, val guidanceError: String? = null)
+/**
+ * Lo que el resto de la app usa del nucleo, sea el de este proceso ([CoMapsCore]) o el aislado en `:core`
+ * ([com.qtekfun.mapas.nativecomaps.isolation.IsolatedCore]). Los valores por defecto viven aqui.
+ */
+interface CoreHandle {
+    /** @throws IllegalStateException si el nucleo no arranca. En el aislado el arranque real es perezoso. */
+    fun init(apkPath: String, mapsDir: String, tmpDir: String, locale: String = "en")
+
+    /** Re-escanea el directorio de mapas. Devuelve cuantos mapas hay registrados. */
+    fun refreshMaps(): Int
+
+    fun searchEngine(locale: String = "en", timeoutMs: Int = 8000): SearchEngine
+
+    fun routingEngine(timeoutSec: Int = 120, withGuidance: Boolean = false): DetailedRoutingEngine
+}
+
+/**
+ * Resultado detallado de una ruta: [plan] es null si no hay ruta y [code] dice por que.
+ * [absentCountries] son los ids de pais de CoMaps (`Spain_Catalonia_Barcelona`) que el router echo en falta con
+ * [RouteCode.NEED_MORE_MAPS]. Hoy llega vacia: `Route::GetAbsentCountries()` existe en el nucleo pero aun no esta
+ * expuesta por JNI (pendiente, ver `docs/phase2/robustness.md`); el resto de la app ya la usa si viene.
+ */
+data class RouteOutcome(
+    val code: Int,
+    val plan: RoutePlan?,
+    val guidanceError: String? = null,
+    val absentCountries: List<String> = emptyList(),
+)
 
 /** Un [RoutingEngine] que ademas explica por que no hay ruta. */
 interface DetailedRoutingEngine : RoutingEngine {
@@ -37,14 +72,14 @@ interface DetailedRoutingEngine : RoutingEngine {
  * `init(apkPath, mapsDir, ...)`: `apkPath` es el APK con `assets/` del nucleo (ver `:native-comaps`);
  * `mapsDir` contiene `<version>/<Region>.mwm`, incluido `World.mwm`.
  */
-class CoMapsCore internal constructor(private val bridge: NativeBridge) : AutoCloseable {
+class CoMapsCore internal constructor(private val bridge: NativeBridge) : CoreHandle, AutoCloseable {
     constructor() : this(NativeCore())
 
     private var initialized = false
 
     /** @throws IllegalStateException si el nucleo no arranca (faltan datos, etc.). */
     @Synchronized
-    fun init(apkPath: String, mapsDir: String, tmpDir: String, locale: String = "en") {
+    override fun init(apkPath: String, mapsDir: String, tmpDir: String, locale: String) {
         if (initialized) return
         val err = bridge.init(apkPath, mapsDir, tmpDir, locale)
         check(err.isEmpty()) { err }
@@ -53,12 +88,12 @@ class CoMapsCore internal constructor(private val bridge: NativeBridge) : AutoCl
 
     /** Re-escanea el directorio de mapas tras descargar o borrar. Devuelve cuantos mapas hay registrados. */
     @Synchronized
-    fun refreshMaps(): Int {
+    override fun refreshMaps(): Int {
         check(initialized) { "CoMapsCore.init() no llamado" }
         return bridge.refreshMaps()
     }
 
-    fun searchEngine(locale: String = "en", timeoutMs: Int = 8000): SearchEngine =
+    override fun searchEngine(locale: String, timeoutMs: Int): SearchEngine =
         CoMapsSearchEngine(this, locale, timeoutMs)
 
     /**
@@ -66,7 +101,7 @@ class CoMapsCore internal constructor(private val bridge: NativeBridge) : AutoCl
      * trae maniobras, carriles y limites; si el guiado llega mal formado la ruta sigue valiendo (guiado vacio) y
      * [RouteOutcome.guidanceError] dice por que.
      */
-    fun routingEngine(timeoutSec: Int = 120, withGuidance: Boolean = false): DetailedRoutingEngine =
+    override fun routingEngine(timeoutSec: Int, withGuidance: Boolean): DetailedRoutingEngine =
         CoMapsRoutingEngine(this, timeoutSec, withGuidance)
 
     internal fun search(query: String, near: LatLon?, limit: Int, locale: String, timeoutMs: Int): List<SearchResult> {

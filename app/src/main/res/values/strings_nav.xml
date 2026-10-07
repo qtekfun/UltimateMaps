@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Navigation service notification -->
+    <string name="nav_channel_name">Navigation</string>
+    <string name="nav_notification_stop">Stop</string>
+    <string name="nav_notification_open">Open</string>
+    <string name="nav_remaining">%1$s · %2$s</string>
+    <string name="nav_in_distance">%1$s: %2$s</string>
+    <string name="nav_onto_street">%1$s onto %2$s</string>
+    <string name="nav_waiting_gps">Waiting for GPS signal…</string>
+    <string name="nav_recalculating">Recalculating the route…</string>
+    <string name="nav_arrived">You have arrived</string>
+    <string name="nav_stop_reached">Stop reached</string>
+    <string name="nav_problem_permission">Location permission was removed. Allow it to keep navigating.</string>
+    <string name="nav_problem_gps_off">Location is off. Turn it on to keep navigating.</string>
+    <string name="nav_resumed">Navigation resumed</string>
+    <string name="nav_turn_depart">Start</string>
+    <string name="nav_turn_straight">Continue straight</string>
+    <string name="nav_turn_slight_right">Bear right</string>
+    <string name="nav_turn_right">Turn right</string>
+    <string name="nav_turn_sharp_right">Sharp right</string>
+    <string name="nav_turn_slight_left">Bear left</string>
+    <string name="nav_turn_left">Turn left</string>
+    <string name="nav_turn_sharp_left">Sharp left</string>
+    <string name="nav_turn_u_turn">Make a U-turn</string>
+    <string name="nav_turn_roundabout_enter">Enter the roundabout</string>
+    <string name="nav_turn_roundabout_leave">Leave the roundabout</string>
+    <string name="nav_turn_exit_left">Take the exit on the left</string>
+    <string name="nav_turn_exit_right">Take the exit on the right</string>
+    <string name="nav_turn_merge">Merge</string>
+    <string name="nav_turn_arrive">Arrive at your destination</string>
+    <string name="nav_turn_arrive_left">Your destination is on the left</string>
+    <string name="nav_turn_arrive_right">Your destination is on the right</string>
+    <!-- Failed routes (policy in RouteFailurePolicy) -->
+    <string name="nav_route_err_no_regions">No regions installed. Download a region to calculate routes offline.</string>
+    <string name="nav_route_err_need_maps">Maps are missing for this route. Download them in Maps, then try again.</string>
+    <string name="nav_route_err_need_maps_named">Maps are missing for this route: %1$s. Download them in Maps, then try again.</string>
+    <string name="nav_route_err_start">The start is not on a road in the downloaded maps. Choose another starting point.</string>
+    <string name="nav_route_err_end">The destination is not on a road in the downloaded maps.</string>
+    <string name="nav_route_err_stop">One of the stops is not on a road in the downloaded maps. Move or remove it.</string>
+    <string name="nav_route_err_not_found">No route found with these options. Try another profile, other avoid options or other points.</string>
+    <string name="nav_route_err_timeout">The route took too long to calculate. Try again or choose a closer point.</string>
+    <string name="nav_route_err_core">The route engine had a problem and was restarted. Try again.</string>
+    <string name="nav_route_err_core_unavailable">The route engine keeps failing. Try again in a moment.</string>
+    <string name="nav_route_err_internal">The route could not be calculated.</string>
+</resources>
