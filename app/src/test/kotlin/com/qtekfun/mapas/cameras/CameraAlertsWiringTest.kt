@@ -7,7 +7,10 @@ import com.qtekfun.mapas.core.cameras.CameraDataset
 import com.qtekfun.mapas.core.cameras.CameraKind
 import com.qtekfun.mapas.core.cameras.CameraSettings
 import com.qtekfun.mapas.core.cameras.CameraSources
+import com.qtekfun.mapas.core.cameras.IncidentData
 import com.qtekfun.mapas.core.cameras.IncidentDataRepository
+import com.qtekfun.mapas.core.cameras.IncidentKind
+import com.qtekfun.mapas.core.cameras.TrafficIncident
 import com.qtekfun.mapas.core.cameras.InMemoryCameraSettingsStore
 import com.qtekfun.mapas.core.cameras.SpeedCamera
 import com.qtekfun.mapas.core.map.LocationFix
@@ -36,16 +39,16 @@ class CameraAlertsWiringTest {
 
     private fun plan(): RoutePlan = RoutePlan((0..150).map { pt(0.0, it * 20.0) }, 3000.0, 300.0, RouteGuidance.EMPTY)
 
-    private class Setup(rig: NavTestRig, settings: CameraSettings, camera: SpeedCamera?, val permission: AtomicBoolean = AtomicBoolean(true)) {
+    private class Setup(rig: NavTestRig, settings: CameraSettings, camera: SpeedCamera?, val permission: AtomicBoolean = AtomicBoolean(true), val incidents: IncidentDataRepository = IncidentDataRepository()) {
         val store = InMemoryCameraSettingsStore(settings)
         val cameras = CameraDataRepository().also { r -> camera?.let { r.install(CameraDataset(1L, CameraSources.DGT, listOf(it), emptyList(), emptyList())) } }
         val freeSource = SimulatedLocationSource()
         val freeSources = AtomicInteger()
         val alerts = CopyOnWriteArrayList<AlertEvent>()
         val alertsObj = CameraAlerts(
-            rig.scope, store, cameras, IncidentDataRepository(), rig.controller,
+            rig.scope, store, cameras, incidents, rig.controller,
             location = { freeSources.incrementAndGet(); freeSource }, hasLocationPermission = { permission.get() },
-            onAlert = { alerts += it }, clock = { rig.clock.get() },
+            onAlert = { alerts += it }, clock = { rig.clock.get() }, ticker = kotlinx.coroutines.flow.emptyFlow(),
         ).also { it.start() }
     }
 
@@ -70,6 +73,26 @@ class CameraAlertsWiringTest {
             assertEquals(1, s.alerts.size, "one alert for the camera on the route")
             assertEquals(0, s.freeSources.get(), "free driving never started: the route-based mode did it")
             assertNotNull(s.alertsObj.banner.state.value, "and the visual alert is up")
+        }
+    }
+
+    @Test fun anIncidentOnTheRouteGoesToItsOwnBannerNotTheCameraChipAndIsStillSpoken() {
+        NavTestRig().use { rig ->
+            val repo = IncidentDataRepository()
+            repo.install(
+                IncidentData(
+                    1L, null,
+                    listOf(TrafficIncident("slow", IncidentKind.CONGESTION, "A-1", pt(0.0, 1500.0), null, null, null, null, null, null, null)),
+                ),
+            )
+            val s = Setup(rig, CameraSettings(incidentsEnabled = true), null, incidents = repo)
+            assertTrue(rig.controller.start(plan()))
+            rig.settle()
+            rig.driveNorth(0, 1450)
+            rig.settle()
+            assertEquals(1, s.alerts.size, "the voice path is unchanged: one spoken alert")
+            assertNull(s.alertsObj.banner.state.value, "the camera chip does not repeat an incident while navigating")
+            assertEquals(IncidentKind.CONGESTION, s.alertsObj.incidentBanner.state.value?.kind)
         }
     }
 

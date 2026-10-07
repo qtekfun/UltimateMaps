@@ -90,8 +90,8 @@ fun MapScreen(
     /** While true (navigating) the search sheet and the map buttons are hidden; the attribution moves into the navigation panel. */
     navigating: Boolean = false,
     /**
-     * While navigating, show the sheet anyway (above the navigation screen) with [sheetPanel]: used for the petrol-station card
-     * opened by tapping a station on the map, which would otherwise stay hidden behind the navigation screen.
+     * While navigating, show the sheet anyway (above the navigation screen) with [sheetPanel]: used for the petrol-station card and the camera or incident card
+     * opened by tapping a marker on the map, which would otherwise stay hidden behind the navigation screen.
      */
     navSheet: Boolean = false,
     /** Drawn over the map and under nothing else: the navigation screen. */

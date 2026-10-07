@@ -20,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.unit.dp
 import com.qtekfun.mapas.cameras.CameraAlertBanner
 import com.qtekfun.mapas.cameras.LocalAlertBanner
+import com.qtekfun.mapas.cameras.LocalIncidentBanner
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -98,11 +99,11 @@ class MainActivity : ComponentActivity() {
             val dark = isSystemInDarkTheme()
             LaunchedEffect(dark) { engine.setTheme(if (dark) MapTheme.DARK else MapTheme.LIGHT) }
             val navUi by navHost.uiState()
-            CompositionLocalProvider(LocalAlertBanner provides app.alertBanner.state) {
+            CompositionLocalProvider(LocalAlertBanner provides app.alertBanner.state, LocalIncidentBanner provides app.incidentBanner) {
             MapasTheme(darkTheme = dark) {
                 MapScreen(
                     state = state, onLocate = ::onLocate, onResetNorth = engine::resetNorth, sheetPanel = { panel.Content() },
-                    navigating = navUi.active, navSheet = panel.fuelCardOpen, overlay = {
+                    navigating = navUi.active, navSheet = panel.cardOverNavigation, overlay = {
                         navHost.Overlay(dark)
                         // Driving without a navigation: the same alert, under the map controls (the navigation screen draws its own).
                         if (!navUi.active) CameraAlertBanner(Modifier.align(Alignment.TopCenter).windowInsetsPadding(WindowInsets.statusBars).padding(top = 96.dp))

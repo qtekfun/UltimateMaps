@@ -117,6 +117,26 @@ class TransferAndBackupTest {
         assertEquals(expected, state(repo))
     }
 
+    @Test fun backupWithExtraEntriesStillRestoresAndKeepsTheExtras() {
+        populate()
+        val plain = ByteArrayOutputStream(); BackupService(repo).write(plain)
+        val combined = ByteArrayOutputStream()
+        BackupService(repo).write(combined, mapOf("mapas-settings.json" to "{}".toByteArray()))
+        val expected = state(repo)
+        // The places entry is byte-identical to a plain backup, and the extra entry travels in the same ZIP.
+        fun entries(bytes: ByteArray) = java.util.zip.ZipInputStream(bytes.inputStream()).use { z ->
+            generateSequence { z.nextEntry }.associate { it.name to z.readBytes() }
+        }
+        assertEquals(entries(plain.toByteArray())["mapas-backup.json"]!!.toList(), entries(combined.toByteArray())["mapas-backup.json"]!!.toList())
+        assertEquals("{}", String(entries(combined.toByteArray()).getValue("mapas-settings.json")))
+        SqlitePlacesRepository(BundledSQLiteDriver(), ":memory:").use { other ->
+            val r = BackupService(other).restore(combined.toByteArray().inputStream(), RestoreMode.MERGE)
+            assertEquals(ImportResult(2, 0, 2, 0, 0), r)
+            assertEquals(expected, state(other))
+        }
+        assertFailsWith<IllegalArgumentException> { BackupService(repo).write(ByteArrayOutputStream(), mapOf("mapas-backup.json" to ByteArray(0))) }
+    }
+
     @Test fun invalidBackupsAreRejectedAndLeaveDataIntact() {
         populate()
         val expected = state(repo)

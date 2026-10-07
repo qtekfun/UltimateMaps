@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Temporary banner for a traffic incident on the route ahead (navigation screen) -->
+    <string name="incident_banner_v16">Vehículo detenido delante (V16)</string>
+    <string name="incident_banner_accident">Accidente delante</string>
+    <string name="incident_banner_closure">Corte de carretera delante</string>
+    <string name="incident_banner_congestion">Tráfico lento delante</string>
+    <string name="incident_banner_obstacle">Obstáculo delante</string>
+    <string name="incident_banner_weather">Mal tiempo delante</string>
+    <string name="incident_banner_roadworks">Obras delante</string>
+    <string name="incident_banner_description">%1$s, a %2$s</string>
+    <string name="incident_banner_dismiss">Descartar</string>
+</resources>

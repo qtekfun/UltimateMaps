@@ -63,6 +63,8 @@ data class RegionsUiState(
     val restartForSearch: Boolean = false,
     /** Some installed map could not be linked for the search. */
     val linkProblem: Boolean = false,
+    /** Region ids a settings restore listed as installed on the old phone (offered for download, never downloaded alone). */
+    val restoredRegionIds: Set<String> = emptySet(),
 )
 
 fun RegionsController.uiState() = RegionsUiState(
@@ -83,6 +85,8 @@ class RegionsActions(
     val onCancel: (String) -> Unit = {},
     val onDelete: (String) -> Unit = {},
     val onDismissFailure: (String) -> Unit = {},
+    /** The owner dismissed the offer to download the maps listed by a settings restore. */
+    val onDismissRestored: () -> Unit = {},
 )
 
 @Composable
@@ -131,6 +135,7 @@ fun RegionsScreen(state: RegionsUiState, actions: RegionsActions, modifier: Modi
         if (catalog != null) SearchField(query, { query = it })
         LazyColumn(Modifier.fillMaxSize().testTag("regions_list"), state = listState, verticalArrangement = Arrangement.spacedBy(0.dp)) {
             if (!searching) item(key = "settings") { SettingsSection(state, actions) }
+            if (!searching) item(key = "restored") { RestoredRegionsOffer(state, catalog, actions) }
             item(key = "status") { CatalogStatus(state, catalog, actions) }
             if (searching && rows.isEmpty() && orphans.isEmpty()) item(key = "search-empty") {
                 BasicText(
@@ -173,6 +178,51 @@ fun RegionsScreen(state: RegionsUiState, actions: RegionsActions, modifier: Modi
     confirmDelete?.let { (id, name) ->
         val bytes = state.installed.firstOrNull { it.region.id == id }?.bytes ?: 0L
         DeleteDialog(name, RegionsModel.formatBytes(bytes), onConfirm = { actions.onDelete(id); confirmDelete = null }, onDismiss = { confirmDelete = null })
+    }
+}
+
+/**
+ * After a settings restore: the maps that were installed on the old phone and are not here. The owner chooses; nothing
+ * downloads by itself, and with offline mode on the button is not offered (the downloads would be refused anyway).
+ */
+@Composable
+private fun RestoredRegionsOffer(state: RegionsUiState, catalog: RegionCatalog?, actions: RegionsActions) {
+    val missing = state.restoredRegionIds - state.installed.map { it.region.id }.toSet() - state.downloads.keys
+    if (missing.isEmpty()) return
+    val available = catalog?.let { c -> missing.sorted().mapNotNull { id -> c[id]?.takeIf { it.isDownloadable } } }.orEmpty()
+    val unavailable = if (catalog == null) 0 else missing.size - available.size
+    Column(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp)) {
+        Card("restored_regions_card") {
+            BasicText(stringResource(R.string.regions_restored_title), style = Mapas.typography.body.copy(color = Mapas.colors.label))
+            BasicText(
+                stringResource(R.string.regions_restored_body, missing.size),
+                style = Mapas.typography.callout.copy(color = Mapas.colors.secondaryLabel),
+                modifier = Modifier.testTag("restored_regions_body"),
+            )
+            if (unavailable > 0) {
+                BasicText(
+                    stringResource(R.string.regions_restored_unavailable, unavailable),
+                    style = Mapas.typography.callout.copy(color = Mapas.colors.secondaryLabel),
+                    modifier = Modifier.testTag("restored_regions_unavailable"),
+                )
+            }
+            if (state.offline) {
+                BasicText(
+                    stringResource(R.string.regions_restored_offline),
+                    style = Mapas.typography.callout.copy(color = Mapas.colors.warning),
+                    modifier = Modifier.testTag("restored_regions_offline"),
+                )
+            }
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+                if (!state.offline && available.isNotEmpty()) {
+                    TextButton(
+                        stringResource(R.string.regions_restored_download, RegionsModel.formatBytes(available.sumOf { it.totalBytes })),
+                        "restored_regions_download",
+                    ) { available.forEach(actions.onDownload) }
+                }
+                TextButton(stringResource(R.string.regions_restored_dismiss), "restored_regions_dismiss", onClick = actions.onDismissRestored)
+            }
+        }
     }
 }
 

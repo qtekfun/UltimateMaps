@@ -144,6 +144,7 @@ class NavHost(
                 onGlove = screen::setGlove,
                 onView3d = screen::setView3d,
                 onVoice = screen::setVoice,
+                onCameraVoice = screen::setCameraVoice,
                 onOverview = screen::showOverview,
                 onFaster = screen::simulationFaster,
                 onSlower = screen::simulationSlower,

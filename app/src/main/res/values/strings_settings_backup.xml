@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="backup_title">Backup and restore</string>
+    <string name="backup_body">Save your settings to a file, or restore them from one, for example when you move to a new phone. The file has no locations, no passwords and nothing from your searches. It stays where you save it.</string>
+    <string name="backup_export">Export settings</string>
+    <string name="backup_import">Import settings</string>
+    <string name="backup_all_body">\"Everything\" also includes your saved places, lists and tracks, in one ZIP file.</string>
+    <string name="backup_export_all">Export everything</string>
+
+    <string name="backup_exported">Settings saved to the file you chose.</string>
+    <string name="backup_exported_all">Places and settings saved to the file you chose.</string>
+    <string name="backup_failed">That did not work. Nothing was changed.</string>
+    <string name="backup_err_not_settings">This is not a settings file from this app. Nothing was changed.</string>
+    <string name="backup_err_corrupt">The file is damaged and cannot be read. Nothing was changed.</string>
+    <string name="backup_err_too_large">The file is too large to be a settings file. Nothing was changed.</string>
+    <string name="backup_err_newer">This file was made by a newer version of the app (file format %1$d). Update the app to restore it. Nothing was changed.</string>
+
+    <string name="backup_restored">Restored %1$d, skipped %2$d.</string>
+    <string name="backup_restored_consent">Switches that stay off until you accept them again: %1$d.</string>
+    <string name="backup_restored_regions">Installed maps listed in the file: %1$d. The Maps screen offers to download them.</string>
+    <string name="backup_restored_places">Places added: %1$d, already present: %2$d, tracks added: %3$d.</string>
+
+    <string name="backup_confirm_title">Import settings?</string>
+    <string name="backup_confirm_body">Settings that will be replaced with the values in the file: %1$d.</string>
+    <string name="backup_confirm_nothing">The file matches your current settings. Nothing will change.</string>
+    <string name="backup_confirm_group">%1$s: %2$d</string>
+    <string name="backup_confirm_consent">These were on in the file. They are NOT turned on: you will have to accept their notice again.</string>
+    <string name="backup_confirm_regions">Installed maps listed in the file: %1$d. Nothing is downloaded now; the Maps screen will offer it.</string>
+    <string name="backup_confirm_skipped">Entries in the file that cannot be used and will be skipped: %1$d.</string>
+    <string name="backup_confirm_places">The file also has places, lists and tracks. They are added to yours; nothing is deleted.</string>
+    <string name="backup_confirm_yes">Restore</string>
+    <string name="backup_confirm_no">Cancel</string>
+
+    <string name="backup_pending_title">To turn on again</string>
+    <string name="backup_pending_body">These were on on your old phone. For your privacy they stay off until you turn them on and accept their notice here.</string>
+    <string name="backup_pending_dismiss">Dismiss</string>
+
+    <string name="backup_item_cameras_fixed">Speed cameras</string>
+    <string name="backup_item_cameras_mobile">Mobile radar zones</string>
+    <string name="backup_item_incidents">Traffic incidents</string>
+    <string name="backup_item_v16">V16 beacons</string>
+    <string name="backup_item_roadworks">Roadworks</string>
+    <string name="backup_item_fuel">Petrol stations</string>
+    <string name="backup_item_other">Other</string>
+
+    <string name="backup_group_navigation">Navigation</string>
+    <string name="backup_group_navigation_ui">Navigation screen</string>
+    <string name="backup_group_fuel">Petrol stations</string>
+    <string name="backup_group_cameras">Cameras and incidents</string>
+    <string name="backup_group_history">Search history</string>
+    <string name="backup_group_recording">Track recording</string>
+    <string name="backup_group_regions">Privacy and maps</string>
+
+    <string name="regions_restored_title">Maps from your backup</string>
+    <string name="regions_restored_body">Maps from your backup that are not installed on this phone: %1$d. Nothing is downloaded until you ask.</string>
+    <string name="regions_restored_offline">Offline mode is on: turn it off to download them.</string>
+    <string name="regions_restored_unavailable">Not in the current catalog: %1$d.</string>
+    <string name="regions_restored_download">Download them (%1$s)</string>
+    <string name="regions_restored_dismiss">Dismiss</string>
+</resources>
