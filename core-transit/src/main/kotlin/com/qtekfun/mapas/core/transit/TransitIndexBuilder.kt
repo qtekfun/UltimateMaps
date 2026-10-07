@@ -189,26 +189,9 @@ class TransitIndexBuilder {
             trMin.add(feed.transferMinSec[i])
         }
 
-        // Validity: the days the kept trips can actually run (their services), narrowed by feed_info when it declares
-        // a range. Feeds without feed_info (EMT) would otherwise look unbounded.
-        var from = Int.MAX_VALUE
-        var to = Int.MIN_VALUE
-        if (!ignoredCalendarRange) {
-            for (i in usedServices) {
-                val sv = feed.services[i]
-                if (sv.mask != 0 && sv.startDay != Int.MIN_VALUE && sv.endDay != Int.MAX_VALUE) {
-                    from = minOf(from, sv.startDay)
-                    to = maxOf(to, sv.endDay)
-                }
-                if (sv.added.isNotEmpty()) {
-                    from = minOf(from, sv.added.first())
-                    to = maxOf(to, sv.added.last())
-                }
-            }
-        }
-        val derived = from <= to
-        val start = if (derived) maxOf(from, feed.feedStartDay) else feed.feedStartDay
-        val end = if (derived) minOf(to, feed.feedEndDay) else feed.feedEndDay
+        val window = if (ignoredCalendarRange) null else calendarWindow(feed, usedServices)
+        val start = window?.first ?: feed.feedStartDay
+        val end = window?.last ?: feed.feedEndDay
         sources.add(FeedSource(options.label, feed.feedVersion, start, end, options.attribution, ignoredCalendarRange))
     }
 
@@ -309,4 +292,26 @@ class TransitIndexBuilder {
             transferMinSec = trMin.toArray(),
         )
     }
+}
+
+/**
+ * The days the services [used] of [feed] can run (epoch days, inclusive), narrowed by `feed_info` when it declares a
+ * range; null when no service has a bounded calendar. Feeds without `feed_info` (EMT) would otherwise look unbounded.
+ */
+fun calendarWindow(feed: GtfsFeed, used: Collection<Int> = feed.services.indices.toList()): IntRange? {
+    var from = Int.MAX_VALUE
+    var to = Int.MIN_VALUE
+    for (i in used) {
+        val sv = feed.services[i]
+        if (sv.mask != 0 && sv.startDay != Int.MIN_VALUE && sv.endDay != Int.MAX_VALUE) {
+            from = minOf(from, sv.startDay)
+            to = maxOf(to, sv.endDay)
+        }
+        if (sv.added.isNotEmpty()) {
+            from = minOf(from, sv.added.first())
+            to = maxOf(to, sv.added.last())
+        }
+    }
+    if (from > to) return null
+    return maxOf(from, feed.feedStartDay)..minOf(to, feed.feedEndDay)
 }
