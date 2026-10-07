@@ -110,6 +110,8 @@ class MapLibreEngine(
     private var userSource: GeoJsonSource? = null
     private var pinSource: GeoJsonSource? = null
     private var markersSource: GeoJsonSource? = null
+    private var parkingSource: GeoJsonSource? = null
+    private var pendingParking: LatLon? = null
 
     /** The view to host. Created with the saved camera so the first frame already shows the last state. */
     val view: MapView
@@ -239,6 +241,11 @@ class MapLibreEngine(
     override fun showPin(point: LatLon?) {
         pendingPin = point
         pushOverlay(pinSource, point)
+    }
+
+    override fun showParking(point: LatLon?) {
+        pendingParking = point
+        pushOverlay(parkingSource, point)
     }
 
     override fun showMarkers(points: List<LatLon>) {
@@ -471,9 +478,15 @@ class MapLibreEngine(
             style.addSource(user)
             style.addSource(pin)
             style.addSource(GeoJsonSource(MARKERS_SOURCE).also { markersSource = it })
+            style.addSource(GeoJsonSource(PARKING_SOURCE).also { parkingSource = it })
             style.addLayer(
                 CircleLayer(MARKERS_LAYER, MARKERS_SOURCE).withProperties(
                     circleRadius(6f), circleColor(MARKER_COLOR), circleStrokeColor(WHITE), circleStrokeWidth(2f),
+                ),
+            )
+            style.addLayer(
+                CircleLayer(PARKING_LAYER, PARKING_SOURCE).withProperties(
+                    circleRadius(8f), circleColor(PARKING_COLOR), circleStrokeColor(WHITE), circleStrokeWidth(3f),
                 ),
             )
             style.addLayer(
@@ -501,6 +514,7 @@ class MapLibreEngine(
             applyBuildings() // a style reload (day/night, new region) drops the extrusion layers: put them back if still wanted
             pushUser()
             pushOverlay(pinSource, pendingPin)
+            pushOverlay(parkingSource, pendingParking)
             pushMarkers()
             dispatchViewport() // the first station draw (a new style has no camera-idle of its own)
         }
@@ -563,6 +577,8 @@ class MapLibreEngine(
         const val USER_LAYER = "mapas-user"
         const val PIN_SOURCE = "mapas-pin-src"
         const val PIN_LAYER = "mapas-pin"
+        const val PARKING_SOURCE = "mapas-parking-src"
+        const val PARKING_LAYER = "mapas-parking"
         const val MARKERS_SOURCE = "mapas-saved-src"
         const val MARKERS_LAYER = "mapas-saved"
         const val ROUTE_SOURCE = "mapas-route-src"
@@ -584,6 +600,7 @@ class MapLibreEngine(
         const val MARKER_COLOR = 0xFFFF9500.toInt()
         const val USER_COLOR = 0xFF007AFF.toInt()
         const val PIN_COLOR = 0xFFFF3B30.toInt()
+        const val PARKING_COLOR = 0xFF5856D6.toInt()
         const val WHITE = 0xFFFFFFFF.toInt()
 
         /** Route line width in dp by zoom (3 at z10, 6 at z14, 10 at z17, 16 at z20) plus [extra] (the casing). */

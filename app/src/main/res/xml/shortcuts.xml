@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Launcher app shortcuts (long-press on the icon). Each one starts MainActivity with a custom action that
+    com.qtekfun.mapas.shortcuts.AppShortcuts maps to a screen. The package name is repeated here because XML
+    resources cannot use the application id; a unit test checks that it still matches.
+-->
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:shortcutId="search"
+        android:enabled="true"
+        android:shortcutShortLabel="@string/shortcut_search_short"
+        android:shortcutLongLabel="@string/shortcut_search_long">
+        <intent
+            android:action="com.qtekfun.mapas.action.SEARCH"
+            android:targetPackage="com.qtekfun.mapas"
+            android:targetClass="com.qtekfun.mapas.MainActivity" />
+    </shortcut>
+    <shortcut
+        android:shortcutId="saved"
+        android:enabled="true"
+        android:shortcutShortLabel="@string/shortcut_saved_short"
+        android:shortcutLongLabel="@string/shortcut_saved_long">
+        <intent
+            android:action="com.qtekfun.mapas.action.SAVED"
+            android:targetPackage="com.qtekfun.mapas"
+            android:targetClass="com.qtekfun.mapas.MainActivity" />
+    </shortcut>
+    <shortcut
+        android:shortcutId="maps"
+        android:enabled="true"
+        android:shortcutShortLabel="@string/shortcut_maps_short"
+        android:shortcutLongLabel="@string/shortcut_maps_long">
+        <intent
+            android:action="com.qtekfun.mapas.action.MAPS"
+            android:targetPackage="com.qtekfun.mapas"
+            android:targetClass="com.qtekfun.mapas.MainActivity" />
+    </shortcut>
+    <shortcut
+        android:shortcutId="emergency"
+        android:enabled="true"
+        android:shortcutShortLabel="@string/shortcut_emergency_short"
+        android:shortcutLongLabel="@string/shortcut_emergency_long">
+        <intent
+            android:action="com.qtekfun.mapas.action.EMERGENCY"
+            android:targetPackage="com.qtekfun.mapas"
+            android:targetClass="com.qtekfun.mapas.MainActivity" />
+    </shortcut>
+</shortcuts>

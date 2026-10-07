@@ -89,6 +89,9 @@ interface MapEngine : AutoCloseable {
     /** Shows (or with null hides) a pin, for example the destination of an opened map link. */
     fun showPin(point: LatLon?) {}
 
+    /** Shows (or with null hides) the marker of the parked car, distinct from the saved places and the pin. */
+    fun showParking(point: LatLon?) {}
+
     /** Shows exactly these markers (saved places); an empty list hides them. */
     fun showMarkers(points: List<LatLon>) {}
 

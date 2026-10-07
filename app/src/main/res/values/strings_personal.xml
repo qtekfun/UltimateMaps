@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Home, Work and parked car -->
+    <string name="quick_home">Home</string>
+    <string name="quick_work">Work</string>
+    <string name="quick_park">Park here</string>
+    <string name="quick_parked">Parked car</string>
+    <string name="quick_sos">SOS</string>
+    <string name="quick_park_again">Mark here again</string>
+    <string name="quick_park_clear">Clear parked car</string>
+    <string name="parking_name">Parked car</string>
+    <string name="quick_msg_home_set">Home set.</string>
+    <string name="quick_msg_work_set">Work set.</string>
+    <string name="quick_msg_parking_set">Parked car marked on the map.</string>
+    <string name="quick_msg_parking_cleared">Parked car cleared.</string>
+    <string name="quick_msg_waiting">Waiting for your position…</string>
+    <string name="quick_msg_home_unset">Open a place and tap “Set as Home”.</string>
+    <string name="quick_msg_work_unset">Open a place and tap “Set as Work”.</string>
+    <string name="place_set_home">Set as Home</string>
+    <string name="place_set_work">Set as Work</string>
+
+    <!-- Recent searches -->
+    <string name="recent_title">Recent searches</string>
+    <string name="recent_clear">Clear</string>
+    <string name="history_title">Search history</string>
+    <string name="history_switch_title">Keep recent searches</string>
+    <string name="history_switch_body">Remembers what you searched for on this device only, to suggest it again. Turning it off also deletes it.</string>
+    <string name="history_clear">Clear recent searches</string>
+    <string name="history_cleared">Recent searches cleared.</string>
+
+    <!-- List customisation -->
+    <string name="list_customize">Customize</string>
+    <string name="list_edit_name_hint">Name</string>
+    <string name="list_edit_emoji_hint">Emoji</string>
+    <string name="list_edit_notes_hint">Notes</string>
+    <string name="list_edit_color">Color</string>
+    <string name="list_edit_color_none">No color</string>
+    <string name="list_edit_color_swatch">Color</string>
+    <string name="list_edit_save">Save</string>
+    <string name="list_edit_cancel">Cancel</string>
+
+    <!-- Launcher shortcuts -->
+    <string name="shortcut_search_short">Search</string>
+    <string name="shortcut_search_long">Search places</string>
+    <string name="shortcut_saved_short">Saved</string>
+    <string name="shortcut_saved_long">Saved places</string>
+    <string name="shortcut_maps_short">Maps</string>
+    <string name="shortcut_maps_long">Downloaded maps</string>
+    <string name="shortcut_emergency_short">Emergency</string>
+    <string name="shortcut_emergency_long">Emergency</string>
+
+    <!-- Emergency screen -->
+    <string name="emergency_title">Emergency</string>
+    <string name="emergency_call">Call %1$s</string>
+    <string name="emergency_position_title">Your position</string>
+    <string name="emergency_accuracy">Accurate to about %1$d m</string>
+    <string name="emergency_waiting">Waiting for a position…</string>
+    <string name="emergency_no_permission">Location permission is needed to show your position.</string>
+    <string name="emergency_grant">Allow location</string>
+    <string name="emergency_no_provider">This device has no location provider.</string>
+    <string name="emergency_share">Share my position</string>
+    <string name="emergency_share_header">My position (emergency):</string>
+    <string name="emergency_dial_failed">No phone app was found to place the call.</string>
+    <string name="emergency_privacy_note">The call button opens your dialer; you press call there. Your position is only shown on this screen and is not stored, logged or sent unless you tap Share and pick an app.</string>
+</resources>

@@ -7,7 +7,9 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.isSystemInDarkTheme
 import com.qtekfun.mapas.MapasApp
+import com.qtekfun.mapas.places.openPlacesService
 import com.qtekfun.mapas.regions.RegionsActivity
+import com.qtekfun.mapas.search.PrefsHistorySettings
 import com.qtekfun.mapas.ui.theme.MapasTheme
 import com.qtekfun.mapas.voice.VoiceModule
 
@@ -27,9 +29,18 @@ class SettingsActivity : ComponentActivity() {
             catalogUrl = { regions.serverUrl },
             openMaps = { startActivity(Intent(this, RegionsActivity::class.java)) },
             navigation = NavigationSettingsEnv(VoiceModule.settings(this), VoiceModule.guide(this)),
+            history = HistorySettingsEnv(PrefsHistorySettings(this), clear = ::clearSearchHistory),
         )
         setContent {
             MapasTheme(darkTheme = isSystemInDarkTheme()) { SettingsScreen(env, onBack = ::finish) }
         }
+    }
+
+    /** Deletes the stored recent searches (database work, off the main thread). */
+    private fun clearSearchHistory() {
+        val app = applicationContext
+        Thread({
+            runCatching { openPlacesService(app).also { it.clearSearches(); it.close() } }
+        }, "mapas-clear-history").start()
     }
 }
