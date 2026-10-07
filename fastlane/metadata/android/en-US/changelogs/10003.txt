@@ -1,0 +1,1 @@
+Release candidate (MVP): offline map, region downloads, offline search, route preview with stops, turn-by-turn screen with voice and route simulation (untested on a device), optional petrol-station prices, Settings, GPX/KML and map links. Spain only.
