@@ -29,8 +29,11 @@ object AlertDeliveryPolicy {
     }
 }
 
-/** Which chime: cameras and incidents have different pitch patterns so they can be told apart without looking. */
-enum class ChimeKind { CAMERA, INCIDENT }
+/**
+ * Which chime: cameras and incidents have different pitch patterns so they can be told apart without looking; the public-transport
+ * trip prompts have a third one (lower than the camera chime, rising, so it is not mistaken for either).
+ */
+enum class ChimeKind { CAMERA, INCIDENT, TRANSIT }
 
 val AlertCategory.chimeKind: ChimeKind get() = if (isCamera) ChimeKind.CAMERA else ChimeKind.INCIDENT
 
@@ -61,6 +64,7 @@ object ChimeSynth {
     fun tonesHz(kind: ChimeKind): Pair<Int, Int> = when (kind) {
         ChimeKind.CAMERA -> 988 to 1319
         ChimeKind.INCIDENT -> 659 to 494
+        ChimeKind.TRANSIT -> 784 to 1047
     }
 
     fun samplesPerTone(): Int = SAMPLE_RATE * TONE_MILLIS / 1000
