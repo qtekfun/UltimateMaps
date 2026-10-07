@@ -51,6 +51,7 @@ dependencies {
     implementation(project(":core-map"))
     implementation(project(":core-search"))
     implementation(project(":core-routing"))
+    debugImplementation(project(":native-comaps")) // banco de pruebas del núcleo (solo debug)
 
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.compose.ui)

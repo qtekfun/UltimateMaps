@@ -96,3 +96,8 @@ Formato: fecha · decisión · motivo · alternativas descartadas · cómo rever
 - **Decisión:** se integra en `master` local. `./gradlew test --offline --rerun-tasks` da 153 tests en verde (repetido por mí). `assembleDebug` completo **no lo repetí** en `master`: falla porque `third_party/comaps` no está inicializado en este checkout; el agente lo compiló en su worktree (`libumcomaps.so` arm64 7,7 MB). El código nativo no se ha ejecutado nunca (sin dispositivo permitido).
 - **Motivo:** no inicializar 2 GB de submódulos ni forzar un build largo con poca RAM sin necesidad; el siguiente paso útil es ejecutarlo.
 - **Revertir:** `git revert` del commit de integración.
+
+## 2026-10-07 · Pixel 8 cedido a otra sesión; pausa de las pruebas del núcleo
+- **Decisión:** el usuario ordenó dejar de usar el teléfono («eres muy lento») y otra sesión (ultimateVE) lo usa para sus pruebas, con el lock `/tmp/pixel-device.lock`. Esta sesión no ejecuta ningún `adb` hasta nuevo permiso explícito.
+- **Estado de la prueba del núcleo:** el banco de pruebas (`app/src/debug/.../CoreBenchActivity.kt`, solo debug) llegó a arrancar en el Pixel 8. Primer fallo real: `CoMaps init: File not found drules_proto_walking_light.bin`; corregido en `scripts/comaps-prepare.sh` y en la lista de assets. El segundo intento no llegó a dar resultados (el dispositivo quedó offline). **No hay cifras de búsqueda ni ruta del núcleo propio.**
+- **En el móvil quedan** (no tocar sin avisar): `com.qtekfun.mapas` con `files/maps/madrid.pmtiles` y `files/maps-core/261004/` (World, WorldCoasts y 7 regiones, ≈ 0,8 GB).
