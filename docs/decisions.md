@@ -516,3 +516,12 @@ Format: date · decision · reason · discarded alternatives · how to revert it
 - **Discarded alternatives:** progress points for upcoming maneuvers (optional; kept simple); a chronometer/ETA chip (the distance is the request); `NotificationCompat` wrappers (version not pinned); re-posting after the user dismisses it is not handled specially because the notification is an ongoing foreground one.
 - **Test infrastructure:** Robolectric's SDK 36 environment needs `--add-exports=java.base/jdk.internal.access=ALL-UNNAMED` on the unit test JVM (added to `app/build.gradle.kts`). Its SDK 36 `android-all` has no `Notification.isRequestPromotedOngoing()` and `hasPromotableCharacteristics()` returns false, so tests assert the documented eligibility rules and extras directly.
 - **Owner to decide:** keep the switch on by default; whether the notification body should follow the units setting too.
+
+
+## 2026-10-07 · Settings hub and Settings button in the right column
+- **Decision:** Settings is a hub of six categories (summary row per category, search field) with one screen per category inside `SettingsActivity`; the open category is a `rememberSaveable` id handled with `BackHandler`. Rarely changed items go under a closed "Advanced" group; delete and clear actions use a separate destructive button. The Settings button joins the right map button column (my location, compass, Settings); the scale bar moves up under the OSM mark.
+- **Reason:** owner feedback after rc.8: the single long column felt chaotic; the top-left stack (attribution, gear, scale) was crowded.
+- **Discarded alternatives:** a navigation library (one level of depth does not need it); moving the OSM mark (ODbL attribution should stay where it is); a hub search that opens individual settings (only categories are matched).
+- **Kept:** every preference key and test tag; long privacy and honesty texts unchanged. "Storage location" and "mute defaults" do not exist in the code yet, so there is no row for them.
+- **Verified:** JVM tests (hub rows and summaries, navigation in and out, system Back, rotation, search, map button order, glove sizes) and renders in `docs/phase2/settings-hub/`. Not verified on a device.
+- **Owner to decide:** whether the search field earns its place; the category names and order.
