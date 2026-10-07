@@ -6,12 +6,17 @@ import com.qtekfun.mapas.core.cameras.AlertWarner
 import com.qtekfun.mapas.core.cameras.CameraDataRepository
 import com.qtekfun.mapas.core.cameras.CameraSettingsStore
 import com.qtekfun.mapas.core.cameras.FreeDrivingFeed
+import com.qtekfun.mapas.core.cameras.IncidentBannerFeed
+import com.qtekfun.mapas.core.cameras.IncidentBannerMachine
 import com.qtekfun.mapas.core.cameras.IncidentDataRepository
 import com.qtekfun.mapas.core.cameras.NavAlertFeed
 import com.qtekfun.mapas.core.map.LocationSource
 import com.qtekfun.mapas.core.nav.NavigationController
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
@@ -38,18 +43,27 @@ class CameraAlerts(
     /** The visual alert; one is shared with the screens. */
     val banner: AlertBannerTracker = AlertBannerTracker(),
     private val clock: () -> Long = System::currentTimeMillis,
+    /** The temporary banner for incidents on the route ahead (navigation only); one is shared with the screens. */
+    val incidentBanner: IncidentBannerMachine = IncidentBannerMachine({ incidents }, { settings.settings.value }, clock),
+    /** Ticks of the banner's countdown, collected only while it shows; tests pass a hand-driven flow. */
+    ticker: Flow<Unit> = flow { while (true) { delay(INCIDENT_TICK_MILLIS); emit(Unit) } },
 ) {
     private val navigationState = navigation.state
     private val warner = AlertWarner(
         listOf(cameras.alertSource { settings.settings.value }, incidents.alertSource { settings.settings.value.incidentKinds() }),
         { settings.settings.value },
-    ) { e -> banner.onAlert(e); onAlert(e) }
+    ) { e ->
+        // On a trip the incidents have their own banner (route-based, five seconds); the chip stays for cameras.
+        if (e.target.category.isCamera || !navigating) banner.onAlert(e)
+        onAlert(e)
+    }
     private val navFeed = NavAlertFeed(scope, navigation.state, navigation.route, warner, banner, clock)
     private val newLocation = location
+    private val incidentFeed = IncidentBannerFeed(scope, navigation.state, navigation.route, incidentBanner, ticker)
     private var freeFeed: FreeDrivingFeed? = null
 
     private var foreground = false
-    private var navigating = false
+    @Volatile private var navigating = false
 
     /** Follows the switches: turning a category on or off starts or stops the free-driving feed. Call once. */
     fun start() {
@@ -74,12 +88,14 @@ class CameraAlerts(
         navigating = true
         refreshFree()
         navFeed.start()
+        incidentFeed.start()
     }
 
     @Synchronized
     fun onNavigationEnded() {
         navigating = false
         navFeed.close()
+        incidentFeed.close()
         refreshFree()
     }
 
@@ -92,5 +108,10 @@ class CameraAlerts(
         } else {
             freeFeed?.stop()
         }
+    }
+
+    private companion object {
+        /** Redraw step of the banner's clock: four sweeps a second is smooth enough for a five-second ring. */
+        const val INCIDENT_TICK_MILLIS = 250L
     }
 }

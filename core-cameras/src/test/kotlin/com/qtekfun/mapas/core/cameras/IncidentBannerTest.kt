@@ -42,7 +42,7 @@ class IncidentBannerTest {
 
     private fun machine(vararg items: TrafficIncident): Pair<IncidentBannerMachine, Repo> {
         val repo = Repo(items.toList())
-        val m = IncidentBannerMachine(repo, { settings }, { now })
+        val m = IncidentBannerMachine({ repo }, { settings }, { now })
         m.onRoute(route)
         return m to repo
     }
@@ -223,7 +223,7 @@ class IncidentBannerTest {
         val navState = MutableStateFlow<NavState?>(null)
         val plan = MutableStateFlow<RoutePlan?>(RoutePlan(listOf(LatLon(lat0, lon0), LatLon(lat0 + 10_000 * perMeter, lon0)), 10_000.0, 600.0))
         val repo = Repo(listOf(incident("a", 600.0)))
-        val machine = IncidentBannerMachine(repo, { settings }, { now })
+        val machine = IncidentBannerMachine({ repo }, { settings }, { now })
         val ticks = MutableSharedFlow<Unit>()
         val feed = IncidentBannerFeed(scope, navState, plan, machine, ticks)
         feed.start()
