@@ -28,6 +28,8 @@ import com.qtekfun.mapas.places.PlaceInfo
 import com.qtekfun.mapas.places.PlacesController
 import com.qtekfun.mapas.places.PlacesMessage
 import com.qtekfun.mapas.places.subtitleOf
+import com.qtekfun.mapas.route.RoutePanel
+import com.qtekfun.mapas.route.RoutePreviewController
 import com.qtekfun.mapas.ui.theme.Mapas
 
 /** Callbacks of the panel that need the activity or the map. */
@@ -40,6 +42,7 @@ class PanelActions(
     val onExport: (GeoFormat) -> Unit,
     val onFocusField: () -> Unit,
     val onOpenMaps: () -> Unit = {},
+    val onUseLocation: () -> Unit = {},
 )
 
 /**
@@ -52,10 +55,13 @@ fun SheetPanel(
     places: PlacesController,
     actions: PanelActions,
     modifier: Modifier = Modifier,
+    route: RoutePreviewController? = null,
 ) {
     val card = places.state.card
     Column(modifier.fillMaxWidth().testTag("sheet_panel")) {
-        if (card != null) {
+        if (route != null && route.state.active) {
+            RoutePanel(route, actions.onUseLocation, originSearch = { SearchPane(search, actions, Modifier) })
+        } else if (card != null) {
             PlaceCard(
                 info = card,
                 saved = places.state.cardSavedId != null,
@@ -107,7 +113,6 @@ private fun messageText(m: PlacesMessage): String = when (m) {
     PlacesMessage.ImportFailed -> stringResource(R.string.msg_import_failed)
     is PlacesMessage.Exported -> stringResource(R.string.msg_exported, m.places)
     PlacesMessage.ExportFailed -> stringResource(R.string.msg_export_failed)
-    PlacesMessage.RouteSoon -> stringResource(R.string.msg_route_soon)
 }
 
 @Composable

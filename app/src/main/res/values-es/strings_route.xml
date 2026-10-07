@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Vista previa de ruta (M4) -->
+    <string name="route_to">A %1$s</string>
+    <string name="route_close">Cerrar</string>
+    <string name="route_from_current">Desde: tu ubicación</string>
+    <string name="route_from_point">Desde: punto elegido</string>
+    <string name="route_from_named">Desde: %1$s</string>
+    <string name="route_change_origin">Cambiar salida</string>
+    <string name="route_use_location">Usar mi ubicación</string>
+    <string name="route_pick_hint">Busca el lugar de salida o toca el mapa.</string>
+    <string name="route_pick_cancel">Cancelar</string>
+    <string name="route_profile_car">Coche</string>
+    <string name="route_profile_foot">A pie</string>
+    <string name="route_profile_bike">Bici</string>
+    <string name="route_avoid_motorways">Sin autopistas</string>
+    <string name="route_avoid_tolls">Sin peajes</string>
+    <string name="route_avoid_ferries">Sin ferris</string>
+    <string name="route_avoid_unpaved">Sin caminos sin asfaltar</string>
+    <string name="route_computing">Calculando la ruta…</string>
+    <string name="route_summary">%1$s · %2$s</string>
+    <string name="route_needs_origin">No hay ubicación disponible. Permite la ubicación o elige otro punto de salida con la búsqueda o tocando el mapa.</string>
+    <string name="route_err_no_regions">No hay regiones instaladas. Descarga una región para calcular rutas sin conexión.</string>
+    <string name="route_err_need_more_maps">Faltan mapas para esta ruta. Descarga las regiones que atraviesa.</string>
+    <string name="route_err_start">La salida no está en una vía de los mapas descargados. Elige otro punto de salida.</string>
+    <string name="route_err_end">El destino no está en una vía de los mapas descargados.</string>
+    <string name="route_err_not_found">No hay ruta con estas opciones. Prueba otro perfil o quita opciones de evitar.</string>
+    <string name="route_err_timeout">La ruta tardó demasiado en calcularse. Inténtalo de nuevo o elige un punto más cercano.</string>
+    <string name="route_err_internal">No se pudo calcular la ruta.</string>
+</resources>

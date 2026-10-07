@@ -58,6 +58,7 @@ class MainActivity : ComponentActivity() {
         )
         lifecycle.addObserver(engine)
         panel = PanelHost(this, engine, state)
+        panel.onRequestLocation = ::onLocate
         state.onOpenMaps = { startActivity(Intent(this, RegionsActivity::class.java)) }
         state.bearing = engine.cameraState().bearing.toFloat()
 

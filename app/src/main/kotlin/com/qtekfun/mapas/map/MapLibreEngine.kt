@@ -16,11 +16,18 @@ import org.maplibre.android.MapLibre
 import org.maplibre.android.camera.CameraPosition
 import org.maplibre.android.camera.CameraUpdateFactory
 import org.maplibre.android.geometry.LatLng
+import org.maplibre.android.geometry.LatLngBounds
 import org.maplibre.android.maps.MapLibreMap
 import org.maplibre.android.maps.MapLibreMapOptions
 import org.maplibre.android.maps.MapView
 import org.maplibre.android.maps.Style
 import org.maplibre.android.style.layers.CircleLayer
+import org.maplibre.android.style.layers.LineLayer
+import org.maplibre.android.style.layers.PropertyFactory.lineCap
+import org.maplibre.android.style.layers.PropertyFactory.lineColor
+import org.maplibre.android.style.layers.PropertyFactory.lineJoin
+import org.maplibre.android.style.layers.PropertyFactory.lineWidth
+import org.maplibre.android.style.layers.Property
 import org.maplibre.android.style.layers.PropertyFactory.circleColor
 import org.maplibre.android.style.layers.PropertyFactory.circleRadius
 import org.maplibre.android.style.layers.PropertyFactory.circleStrokeColor
@@ -56,6 +63,10 @@ class MapLibreEngine(
     private var pendingCamera: CameraState? = null
     private var lastIdle: CameraState
     private var closed = false
+    private var pendingRoute: List<LatLon> = emptyList()
+    private var routeFit = false
+    private var tapListener: ((LatLon) -> Unit)? = null
+    private var routeSource: GeoJsonSource? = null
 
     // Sources belong to one style: they are recreated on every style load (day/night switch).
     private var userSource: GeoJsonSource? = null
@@ -79,6 +90,7 @@ class MapLibreEngine(
         view.getMapAsync { m ->
             map = m
             m.addOnCameraIdleListener { handleIdle(m) }
+            m.addOnMapClickListener { p -> handleTap(p) }
             pendingCamera?.let { m.moveCamera(CameraUpdateFactory.newCameraPosition(it.toPosition())); pendingCamera = null }
             loadStyle()
         }
@@ -145,6 +157,58 @@ class MapLibreEngine(
         )
     }
 
+    // --- Route preview ---
+
+    override fun showRoute(points: List<LatLon>, fit: Boolean) {
+        pendingRoute = points
+        routeFit = fit
+        pushRoute()
+    }
+
+    override fun clearRoute() = showRoute(emptyList(), fit = false)
+
+    override fun setMapTapListener(listener: ((LatLon) -> Unit)?) {
+        tapListener = listener
+    }
+
+    private fun handleTap(p: LatLng): Boolean {
+        val listener = tapListener ?: return false
+        listener(LatLon.ofOrNull(p.latitude, p.longitude) ?: return false)
+        return true
+    }
+
+    private fun pushRoute() {
+        val source = routeSource ?: return
+        val m = map ?: return
+        val points = pendingRoute
+        if (points.size < 2) {
+            source.setGeoJson(EMPTY_COLLECTION)
+            return
+        }
+        source.setGeoJson(
+            Feature.fromGeometry(org.maplibre.geojson.LineString.fromLngLats(points.map { Point.fromLngLat(it.lon, it.lat) })),
+        )
+        if (routeFit) {
+            routeFit = false
+            val bounds = LatLngBounds.Builder().apply { points.forEach { include(LatLng(it.lat, it.lon)) } }.build()
+            val d = view.resources.displayMetrics.density
+            // The bottom sheet covers roughly the lower half of the screen while the route is shown.
+            val padding = intArrayOf((40 * d).toInt(), (80 * d).toInt(), (40 * d).toInt(), (300 * d).toInt())
+            m.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, padding[0], padding[1], padding[2], padding[3]), 600)
+        }
+    }
+
+    private fun addRouteLayer(style: Style) {
+        val source = GeoJsonSource(ROUTE_SOURCE).also { routeSource = it }
+        style.addSource(source)
+        style.addLayer(
+            LineLayer(ROUTE_LAYER, ROUTE_SOURCE).withProperties(
+                lineColor(ROUTE_COLOR), lineWidth(6f), lineCap(Property.LINE_CAP_ROUND), lineJoin(Property.LINE_JOIN_ROUND),
+            ),
+        )
+        pushRoute()
+    }
+
     // --- Style ---
 
     private fun loadStyle() {
@@ -185,6 +249,7 @@ class MapLibreEngine(
             )
             val user = GeoJsonSource(USER_SOURCE).also { userSource = it }
             val pin = GeoJsonSource(PIN_SOURCE).also { pinSource = it }
+            addRouteLayer(style) // below the markers, pin and user dots
             style.addSource(user)
             style.addSource(pin)
             style.addSource(GeoJsonSource(MARKERS_SOURCE).also { markersSource = it })
@@ -264,6 +329,9 @@ class MapLibreEngine(
         const val PIN_LAYER = "mapas-pin"
         const val MARKERS_SOURCE = "mapas-saved-src"
         const val MARKERS_LAYER = "mapas-saved"
+        const val ROUTE_SOURCE = "mapas-route-src"
+        const val ROUTE_LAYER = "mapas-route"
+        const val ROUTE_COLOR = 0xFF0A84FF.toInt()
         const val MARKER_COLOR = 0xFFFF9500.toInt()
         const val USER_COLOR = 0xFF007AFF.toInt()
         const val PIN_COLOR = 0xFFFF3B30.toInt()

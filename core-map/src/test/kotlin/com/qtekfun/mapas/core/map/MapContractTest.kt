@@ -43,3 +43,18 @@ class MapContractTest {
         assertEquals(LatLon(42.0, -4.0), src.lastKnown()?.point)
     }
 }
+
+class RouteOverlayContractTest {
+    @Test
+    fun routeOverlayHooksAreOptionalForEngines() {
+        val engine = object : MapEngine {
+            override fun setCamera(center: LatLon, zoom: Double) {}
+            override fun camera() = LatLon(0.0, 0.0) to 1.0
+            override fun close() {}
+        }
+        engine.showRoute(listOf(LatLon(0.0, 0.0), LatLon(1.0, 1.0)))
+        engine.clearRoute()
+        engine.setMapTapListener { }
+        engine.setMapTapListener(null)
+    }
+}

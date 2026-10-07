@@ -17,7 +17,6 @@
     <string name="place_route">Ruta</string>
     <string name="place_share">Compartir</string>
     <string name="place_close">Cerrar</string>
-    <string name="msg_route_soon">La vista previa de rutas llegará pronto.</string>
 
     <!-- Sitios guardados (M3) -->
     <string name="list_favorites">Favoritos</string>

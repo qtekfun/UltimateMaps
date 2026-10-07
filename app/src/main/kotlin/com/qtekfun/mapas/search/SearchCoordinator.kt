@@ -60,10 +60,11 @@ class SearchCoordinator(
     private val log: SearchLog,
     private val debounceMs: Long = DEBOUNCE_MS,
     private val limit: Int = 20,
+    /** Serialises native calls; share it with the routing so the one core is never entered twice. */
+    private val mutex: Mutex = Mutex(),
 ) {
     val state = SearchState()
 
-    private val mutex = Mutex()
     private var job: Job? = null
     private var engine: SearchEngine? = null
     private var dirty = true
