@@ -29,12 +29,15 @@ class MapFiles(private val context: Context) {
     private val tilesDir get() = File(context.filesDir, "maps")
 
     /**
-     * The PMTiles file to draw: the first installed region's (see `regions.RegionStorage`), else any .pmtiles
-     * left by hand in `filesDir/maps`; null when nothing is installed. The style has one tile source, so only
-     * one region is drawn for now.
+     * Every PMTiles file to draw: each installed region's render asset (sorted by region id, see
+     * `regions.RegionStorage`), else any .pmtiles left by hand in `filesDir/maps`. Empty when nothing is installed.
      */
-    fun pmtiles(): File? = RegionStorage.firstInstalledRender(context)
-        ?: tilesDir.listFiles { f -> f.isFile && f.name.endsWith(".pmtiles") }?.minByOrNull { it.name }
+    fun pmtilesList(): List<File> = RegionStorage.installedRenders(context).ifEmpty {
+        tilesDir.listFiles { f -> f.isFile && f.name.endsWith(".pmtiles") }?.sortedBy { it.name }.orEmpty()
+    }
+
+    /** Changes when a region is installed, deleted or replaced in place (path, size and mtime of each file). */
+    fun tilesSignature(): String = pmtilesList().joinToString("|") { "${it.path}:${it.length()}:${it.lastModified()}" }
 
     fun isInstalled(): Boolean = File(assetsDir, MARKER).readTextOrNull() == ASSET_VERSION
 
@@ -45,11 +48,10 @@ class MapFiles(private val context: Context) {
         File(assetsDir, MARKER).writeText(ASSET_VERSION)
     }
 
-    /** Style JSON for [theme]; the tiles path points to a missing file when no region is installed (background only). */
-    fun styleJson(theme: MapTheme): String {
+    /** Style for [theme] with one source per installed region; the result carries size metrics. No region: background only. */
+    fun style(theme: MapTheme): MultiRegionStyle.Result {
         val template = context.assets.open(StyleTemplate.assetName(theme)).use { it.readBytes().toString(Charsets.UTF_8) }
-        val tiles = pmtiles()?.absolutePath ?: File(tilesDir, "none.pmtiles").absolutePath
-        return StyleTemplate.render(template, assetsDir.absolutePath, tiles)
+        return MultiRegionStyle.build(template, assetsDir.absolutePath, pmtilesList().map { it.absolutePath })
     }
 
     private fun copyTree(am: AssetManager, path: String, dest: File) {

@@ -3,6 +3,8 @@ package com.qtekfun.mapas.map
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
+import android.os.SystemClock
+import android.util.Log
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import com.qtekfun.mapas.core.geo.LatLon
@@ -159,16 +161,28 @@ class MapLibreEngine(
         }
     }
 
-    /** Reloads the style if the installed tiles changed (a region was downloaded or deleted) since it was loaded. */
+    /**
+     * Reloads the style if the set of installed tiles changed (a region was downloaded, deleted or replaced) since
+     * it was loaded. Cheap when nothing changed: a directory scan and a stat per region, no style work.
+     */
     fun refreshTilesIfChanged() {
-        if (map != null && loadedTheme != null && files.pmtiles()?.path != loadedTiles) loadStyle()
+        if (map != null && loadedTheme != null && files.tilesSignature() != loadedTiles) loadStyle()
     }
 
     private fun applyStyle(m: MapLibreMap, wanted: MapTheme) {
-        loadedTiles = files.pmtiles()?.path
-        val json = files.styleJson(wanted)
-        m.setStyle(Style.Builder().fromJson(json)) { style ->
+        loadedTiles = files.tilesSignature()
+        val t0 = SystemClock.elapsedRealtime()
+        val built = files.style(wanted)
+        val buildMs = SystemClock.elapsedRealtime() - t0
+        m.setStyle(Style.Builder().fromJson(built.json)) { style ->
             loadedTheme = wanted
+            // Metrics only (no locations, no paths): to size the cost of many regions on a device later.
+            Log.i(
+                METRICS_TAG,
+                "sources=${built.sources} layers=${built.layers} template_layers=${built.templateLayers} " +
+                    "skipped=${built.skipped} json_kb=${built.json.length / 1024} build_ms=$buildMs " +
+                    "style_load_ms=${SystemClock.elapsedRealtime() - t0 - buildMs}",
+            )
             val user = GeoJsonSource(USER_SOURCE).also { userSource = it }
             val pin = GeoJsonSource(PIN_SOURCE).also { pinSource = it }
             style.addSource(user)
@@ -243,7 +257,8 @@ class MapLibreEngine(
     }
 
     private companion object {
-        const val USER_SOURCE = "mapas-user-src"
+        const val METRICS_TAG = "UMSTYLE"
+        const val USER_SOURCE ="mapas-user-src"
         const val USER_LAYER = "mapas-user"
         const val PIN_SOURCE = "mapas-pin-src"
         const val PIN_LAYER = "mapas-pin"

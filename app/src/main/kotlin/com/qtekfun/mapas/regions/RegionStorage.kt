@@ -35,8 +35,8 @@ object RegionStorage {
     fun installedEverywhere(locations: List<StorageLocation>): List<Pair<StorageLocation, InstalledRegion>> =
         locations.flatMap { loc -> readOnlyManager(loc.dir).installed().map { loc to it } }
 
-    /** The PMTiles file the map should draw: the first (by region id) installed region's render asset. */
-    fun firstInstalledRender(context: Context): File? =
+    /** The PMTiles render assets of every installed region (all storages), sorted by region id. */
+    fun installedRenders(context: Context): List<File> =
         installedEverywhere(locations(context)).map { it.second }.sortedBy { it.id }
-            .firstNotNullOfOrNull { it.files[AssetKind.RENDER]?.takeIf(File::isFile) }
+            .mapNotNull { it.files[AssetKind.RENDER]?.takeIf(File::isFile) }
 }

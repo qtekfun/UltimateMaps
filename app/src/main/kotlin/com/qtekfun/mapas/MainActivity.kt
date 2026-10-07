@@ -81,7 +81,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onStart() {
         super.onStart()
-        state.hasTiles = files.pmtiles() != null
+        state.hasTiles = files.pmtilesList().isNotEmpty()
         panel.onStart()
         engine.refreshTilesIfChanged() // back from "Maps" with a region downloaded or deleted
         if (state.locating && hasLocationPermission()) startLocation()
