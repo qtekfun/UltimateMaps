@@ -133,7 +133,7 @@ class PersonalPanelTest {
         assertNull(quick.state.parking)
         assertNull(markers.last())
         rule.onAllNodesWithTag("quick_park_clear").assertCountEquals(0)
-        rule.onNodeWithText("Park here").assertIsDisplayed()
+        rule.onNodeWithText("Park").assertIsDisplayed()
     }
 
     @Test fun theSosChipOpensTheEmergencyScreen() {
