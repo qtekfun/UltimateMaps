@@ -49,4 +49,8 @@
     <string name="nav_ui_discard">Discard</string>
     <!-- Icons (accessibility) -->
     <string name="nav_ui_icon_turn">Next maneuver: %1$s</string>
+    <string name="nav_ui_mute">Mute</string>
+    <string name="nav_ui_unmute">Unmute</string>
+    <string name="nav_ui_mute_description">Voice on. Tap to mute the spoken guidance</string>
+    <string name="nav_ui_unmute_description">Voice muted. Tap to turn the spoken guidance back on</string>
 </resources>

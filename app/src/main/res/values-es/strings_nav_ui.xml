@@ -49,4 +49,8 @@
     <string name="nav_ui_discard">Descartar</string>
     <!-- Iconos (accesibilidad) -->
     <string name="nav_ui_icon_turn">Próxima maniobra: %1$s</string>
+    <string name="nav_ui_mute">Silenciar</string>
+    <string name="nav_ui_unmute">Activar voz</string>
+    <string name="nav_ui_mute_description">Voz activada. Toca para silenciar la guía por voz</string>
+    <string name="nav_ui_unmute_description">Voz silenciada. Toca para volver a activar la guía por voz</string>
 </resources>

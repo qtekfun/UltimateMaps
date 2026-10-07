@@ -68,6 +68,7 @@ class NavActions(
     val onRecenter: () -> Unit = {},
     val onGlove: (Boolean) -> Unit = {},
     val onView3d: (Boolean) -> Unit = {},
+    val onVoice: (Boolean) -> Unit = {},
     val onOverview: () -> Unit = {},
     val onFaster: () -> Unit = {},
     val onSlower: () -> Unit = {},
@@ -139,6 +140,7 @@ private fun BoxScope.Driving(ui: NavUi, nav: NavState, actions: NavActions) {
                         container = c.statusInfo, content = c.onStatus,
                     )
                 }
+                MuteToggle(ui, actions)
                 ViewToggle(ui, actions)
                 if (!ui.overview) {
                     NavButton(
@@ -392,6 +394,17 @@ private fun SimulationBar(ui: NavUi, actions: NavActions) {
         )
         NavButton("+", actions.onFaster, Modifier.testTag("nav_sim_faster"), description = stringResource(R.string.nav_ui_sim_faster))
     }
+}
+
+/** Mute / unmute the spoken guidance; highlighted while muted so it is obvious why the phone is silent. */
+@Composable
+private fun MuteToggle(ui: NavUi, actions: NavActions) {
+    val c = NavTheme.colors
+    NavButton(
+        stringResource(if (ui.voiceOn) R.string.nav_ui_mute else R.string.nav_ui_unmute), { actions.onVoice(!ui.voiceOn) }, Modifier.testTag("nav_mute"),
+        container = if (ui.voiceOn) c.panel else c.laneRecommended, content = if (ui.voiceOn) c.onPanel else c.onLaneRecommended,
+        description = stringResource(if (ui.voiceOn) R.string.nav_ui_mute_description else R.string.nav_ui_unmute_description),
+    )
 }
 
 /** The 2D/3D switch: shows the current mode ("3D" highlighted when the tilted camera is on); at least the touch target (56 dp in glove mode). */
