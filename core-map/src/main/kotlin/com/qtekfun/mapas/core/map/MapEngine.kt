@@ -2,12 +2,30 @@ package com.qtekfun.mapas.core.map
 
 import com.qtekfun.mapas.core.geo.LatLon
 
-/** Full camera state. Value type: persisted between launches so the first frame paints the last view. */
+/**
+ * Camera padding in pixels: the camera [center] appears in the middle of the screen minus these margins. The
+ * navigation uses a big [top] so that the position marker sits in the lower part of the screen.
+ */
+data class CameraPadding(val left: Int = 0, val top: Int = 0, val right: Int = 0, val bottom: Int = 0) {
+    init {
+        require(left >= 0 && top >= 0 && right >= 0 && bottom >= 0) { "negative padding" }
+    }
+
+    companion object {
+        val NONE = CameraPadding()
+    }
+}
+
+/**
+ * Full camera state. Value type: the centre, zoom, bearing and tilt are persisted between launches so the first
+ * frame paints the last view; [padding] is transient (only the navigation camera uses it).
+ */
 data class CameraState(
     val center: LatLon,
     val zoom: Double,
     val bearing: Double = 0.0,
     val tilt: Double = 0.0,
+    val padding: CameraPadding = CameraPadding.NONE,
 ) {
     init {
         require(zoom.isFinite() && zoom in 0.0..24.0) { "zoom out of range: $zoom" }
@@ -62,6 +80,12 @@ interface MapEngine : AutoCloseable {
     /** Shows (or with null hides) the user position marker. Called at GNSS rate, not per frame. */
     fun showUserLocation(point: LatLon?, accuracyMeters: Float? = null) {}
 
+    /**
+     * Turns the user marker into a heading arrow pointing at [degrees] clockwise from north (flat on the map plane),
+     * or, with null, back into a plain dot. Called at GNSS rate, not per frame.
+     */
+    fun setUserHeading(degrees: Float?) {}
+
     /** Shows (or with null hides) a pin, for example the destination of an opened map link. */
     fun showPin(point: LatLon?) {}
 
@@ -72,6 +96,12 @@ interface MapEngine : AutoCloseable {
 
     /** Draws [points] as the route line and, with [fit], frames the whole route in the visible map area. */
     fun showRoute(points: List<LatLon>, fit: Boolean = true) {}
+
+    /**
+     * Animates the camera (flat, north up) so that all [points] fit inside the screen minus [padding]; the route line
+     * is not touched. For the "route overview" of the navigation.
+     */
+    fun frameRoute(points: List<LatLon>, padding: CameraPadding) {}
 
     /** Removes the route line. */
     fun clearRoute() {}
@@ -97,4 +127,10 @@ interface MapEngine : AutoCloseable {
      * the navigation screen can stop following and offer "recenter". Called once per gesture start; null removes it.
      */
     fun setCameraGestureListener(listener: (() -> Unit)?) {}
+
+    /**
+     * Draws (true) or removes (false) the 3D buildings (extruded footprints) of the navigation's 3D view. They are
+     * never part of the normal style; the engine adds them at runtime and removes them again.
+     */
+    fun setBuildings3d(enabled: Boolean) {}
 }
