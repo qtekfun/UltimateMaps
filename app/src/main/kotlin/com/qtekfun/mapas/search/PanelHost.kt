@@ -96,6 +96,8 @@ class PanelHost(
         clock = ::elapsedMillis,
         log = LogcatSearchLog,
         mutex = coreLock,
+        categoryOrigin = { userLocation ?: engine.cameraState().center },
+        onCategoryResults = { engine.showCategoryPins(it, fit = it.size >= 2) },
     )
 
     val route = RoutePreviewController(
@@ -109,6 +111,7 @@ class PanelHost(
         clock = ::elapsedMillis,
         log = LogcatRouteLog,
         mutex = coreLock,
+        showAlternatives = engine::showAlternativeRoutes,
     )
 
     /** "Start" / "Simulate" on the route card: the guided route goes through the same shared core and lock. */
@@ -311,6 +314,7 @@ class PanelHost(
             onFocusField = { screen.detent = SheetDetent.FULL },
             onOpenMaps = { screen.onOpenMaps() },
             onUseLocation = { route.useCurrentLocation(); onRequestLocation() },
+            onCategoryOpened = { screen.detent = SheetDetent.MEDIUM },
         )
         val fuel = remember {
             FuelCardHost(

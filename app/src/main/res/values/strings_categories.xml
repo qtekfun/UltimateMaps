@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Category chips under the search field -->
+    <string name="category_pharmacy">Pharmacy</string>
+    <string name="category_supermarket">Supermarket</string>
+    <string name="category_restaurant">Restaurant</string>
+    <string name="category_cafe">Cafe</string>
+    <string name="category_fuel">Fuel</string>
+    <string name="category_atm">ATM</string>
+    <string name="category_hospital">Hospital</string>
+    <string name="category_parking">Parking</string>
+    <string name="category_lodging">Lodging</string>
+    <string name="category_toilets">Toilets</string>
+
+    <!-- The category name the search core looks for (not shown to the user; must be a name from its category list) -->
+    <string name="category_query_pharmacy">pharmacy</string>
+    <string name="category_query_supermarket">supermarket</string>
+    <string name="category_query_restaurant">restaurant</string>
+    <string name="category_query_cafe">cafe</string>
+    <string name="category_query_fuel">fuel</string>
+    <string name="category_query_atm">ATM</string>
+    <string name="category_query_hospital">hospital</string>
+    <string name="category_query_parking">parking</string>
+    <string name="category_query_lodging">hotel</string>
+    <string name="category_query_toilets">toilet</string>
+
+    <string name="category_distance_note">Distances are in a straight line from your location or the map center.</string>
+    <string name="category_none">Nothing found nearby in the downloaded maps.</string>
+    <string name="category_chip_description">Browse %1$s nearby</string>
+</resources>
