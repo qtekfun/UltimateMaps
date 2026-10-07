@@ -22,6 +22,18 @@ import org.maplibre.android.maps.MapLibreMapOptions
 import org.maplibre.android.maps.MapView
 import org.maplibre.android.maps.Style
 import org.maplibre.android.style.layers.CircleLayer
+import org.maplibre.android.style.layers.FillExtrusionLayer
+import org.maplibre.android.style.layers.PropertyFactory.fillExtrusionBase
+import org.maplibre.android.style.layers.PropertyFactory.fillExtrusionColor
+import org.maplibre.android.style.layers.PropertyFactory.fillExtrusionHeight
+import org.maplibre.android.style.layers.PropertyFactory.fillExtrusionOpacity
+import org.maplibre.android.style.layers.PropertyFactory.fillExtrusionVerticalGradient
+import org.maplibre.android.style.layers.PropertyFactory.iconIgnorePlacement
+import org.maplibre.android.style.layers.PropertyFactory.iconPitchAlignment
+import org.maplibre.android.style.layers.PropertyFactory.iconRotate
+import org.maplibre.android.style.layers.PropertyFactory.iconRotationAlignment
+import org.maplibre.android.style.layers.PropertyFactory.visibility
+import com.qtekfun.mapas.core.map.CameraPadding
 import org.maplibre.android.style.layers.LineLayer
 import org.maplibre.android.style.layers.PropertyFactory.lineCap
 import org.maplibre.android.style.layers.PropertyFactory.lineColor
@@ -91,6 +103,8 @@ class MapLibreEngine(
     private var fuelTapListener: ((String) -> Unit)? = null
     private var viewportListener: ((GeoBounds, Double) -> Unit)? = null
     private var gestureListener: (() -> Unit)? = null
+    private var heading: Float? = null
+    private var buildings3d = false
 
     // Sources belong to one style: they are recreated on every style load (day/night switch).
     private var userSource: GeoJsonSource? = null
@@ -113,6 +127,7 @@ class MapLibreEngine(
         view.onCreate(null)
         view.getMapAsync { m ->
             map = m
+            m.setMaxPitchPreference(MAX_PITCH) // the navigation's 3D view tilts up to 60 degrees
             m.addOnCameraIdleListener { handleIdle(m) }
             m.addOnCameraMoveStartedListener { reason ->
                 if (reason == MapLibreMap.OnCameraMoveStartedListener.REASON_API_GESTURE) gestureListener?.invoke()
@@ -149,7 +164,7 @@ class MapLibreEngine(
     override fun resetNorth() {
         val m = map ?: return
         val p = m.cameraPosition
-        val north = CameraPosition.Builder(p).bearing(0.0).tilt(0.0).build()
+        val north = CameraPosition.Builder(p).bearing(0.0).tilt(0.0).padding(0.0, 0.0, 0.0, 0.0).build()
         m.animateCamera(CameraUpdateFactory.newCameraPosition(north), 300)
     }
 
@@ -161,7 +176,64 @@ class MapLibreEngine(
 
     override fun showUserLocation(point: LatLon?, accuracyMeters: Float?) {
         pendingUser = point
-        pushOverlay(userSource, point)
+        pushUser()
+    }
+
+    override fun setUserHeading(degrees: Float?) {
+        val wasArrow = heading != null
+        heading = degrees?.takeIf { it.isFinite() }
+        if (wasArrow != (heading != null)) applyUserMode()
+    }
+
+    /** The plain dot when there is no heading, the arrow when there is: only one of the two layers is visible. */
+    private fun applyUserMode() {
+        val style = map?.style ?: return
+        val arrow = heading != null
+        style.getLayer(USER_LAYER)?.setProperties(visibility(if (arrow) Property.NONE else Property.VISIBLE))
+        style.getLayer(USER_ARROW_LAYER)?.setProperties(visibility(if (arrow) Property.VISIBLE else Property.NONE))
+    }
+
+    private fun pushUser() {
+        val source = userSource ?: return
+        if (map == null) return
+        val point = pendingUser
+        if (point == null) {
+            source.setGeoJson(EMPTY_COLLECTION)
+        } else {
+            source.setGeoJson(
+                Feature.fromGeometry(Point.fromLngLat(point.lon, point.lat)).apply { addNumberProperty(USER_BEARING, heading ?: 0f) },
+            )
+        }
+    }
+
+    override fun setBuildings3d(enabled: Boolean) {
+        buildings3d = enabled
+        applyBuildings()
+    }
+
+    /** Removes the extrusion layers and, when wanted, adds one per region source below the first symbol layer of the style. */
+    private fun applyBuildings() {
+        val style = map?.style ?: return
+        style.layers.filter { Buildings3d.isOurs(it.id) }.forEach { style.removeLayer(it) }
+        if (!buildings3d) return
+        val specs = Buildings3d.specs(style.sources.map { it.id }, theme == MapTheme.DARK)
+        if (specs.isEmpty()) return
+        val anchor = Buildings3d.anchorLayerId(style.layers.map { Buildings3d.LayerInfo(it.id, it is SymbolLayer) })
+        for (spec in specs) {
+            val layer = FillExtrusionLayer(spec.id, spec.sourceId).apply {
+                sourceLayer = Buildings3d.SOURCE_LAYER
+                minZoom = spec.minZoom
+                setFilter(Expression.any(*Buildings3d.KINDS.map { Expression.eq(Expression.get("kind"), Expression.literal(it)) }.toTypedArray()))
+                setProperties(
+                    fillExtrusionColor(spec.color),
+                    fillExtrusionOpacity(spec.opacity),
+                    fillExtrusionVerticalGradient(false),
+                    fillExtrusionHeight(Expression.coalesce(Expression.get("height"), Expression.literal(spec.fallbackHeightMeters))),
+                    fillExtrusionBase(Expression.coalesce(Expression.get("min_height"), Expression.literal(0f))),
+                )
+            }
+            if (anchor != null) style.addLayerBelow(layer, anchor) else style.addLayer(layer)
+        }
     }
 
     override fun showPin(point: LatLon?) {
@@ -193,6 +265,21 @@ class MapLibreEngine(
     }
 
     override fun clearRoute() = showRoute(emptyList(), fit = false)
+
+    override fun frameRoute(points: List<LatLon>, padding: CameraPadding) {
+        if (points.size < 2) return
+        fitPoints(points, padding.left, padding.top, padding.right, padding.bottom, 700)
+    }
+
+    /** Animates to a flat north-up camera showing [points] inside the pixel margins, with NO camera padding left over. */
+    private fun fitPoints(points: List<LatLon>, left: Int, top: Int, right: Int, bottom: Int, durationMillis: Int) {
+        val m = map ?: return
+        val bounds = LatLngBounds.Builder().apply { points.forEach { include(LatLng(it.lat, it.lon)) } }.build()
+        // The margins are folded into the position itself, so the camera padding of the navigation does not apply twice.
+        val fitted = runCatching { m.getCameraForLatLngBounds(bounds, intArrayOf(left, top, right, bottom), 0.0, 0.0) }.getOrNull() ?: return
+        val position = CameraPosition.Builder(fitted).padding(0.0, 0.0, 0.0, 0.0).build()
+        m.animateCamera(CameraUpdateFactory.newCameraPosition(position), durationMillis)
+    }
 
     override fun setMapTapListener(listener: ((LatLon) -> Unit)?) {
         tapListener = listener
@@ -304,7 +391,7 @@ class MapLibreEngine(
 
     private fun pushRoute() {
         val source = routeSource ?: return
-        val m = map ?: return
+        if (map == null) return
         val points = pendingRoute
         if (points.size < 2) {
             source.setGeoJson(EMPTY_COLLECTION)
@@ -315,20 +402,25 @@ class MapLibreEngine(
         )
         if (routeFit) {
             routeFit = false
-            val bounds = LatLngBounds.Builder().apply { points.forEach { include(LatLng(it.lat, it.lon)) } }.build()
             val d = view.resources.displayMetrics.density
             // The bottom sheet covers roughly the lower half of the screen while the route is shown.
-            val padding = intArrayOf((40 * d).toInt(), (80 * d).toInt(), (40 * d).toInt(), (300 * d).toInt())
-            m.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, padding[0], padding[1], padding[2], padding[3]), 600)
+            fitPoints(points, (40 * d).toInt(), (80 * d).toInt(), (40 * d).toInt(), (300 * d).toInt(), 600)
         }
     }
 
-    private fun addRouteLayer(style: Style) {
+    private fun addRouteLayer(style: Style, dark: Boolean) {
         val source = GeoJsonSource(ROUTE_SOURCE).also { routeSource = it }
         style.addSource(source)
+        // Readable when tilted: the width grows with the zoom and a casing separates it from roads and buildings.
+        style.addLayer(
+            LineLayer(ROUTE_CASING_LAYER, ROUTE_SOURCE).withProperties(
+                lineColor(if (dark) 0xFF1C1C1E.toInt() else WHITE), lineWidth(routeWidth(ROUTE_CASING_EXTRA)),
+                lineCap(Property.LINE_CAP_ROUND), lineJoin(Property.LINE_JOIN_ROUND),
+            ),
+        )
         style.addLayer(
             LineLayer(ROUTE_LAYER, ROUTE_SOURCE).withProperties(
-                lineColor(ROUTE_COLOR), lineWidth(6f), lineCap(Property.LINE_CAP_ROUND), lineJoin(Property.LINE_JOIN_ROUND),
+                lineColor(ROUTE_COLOR), lineWidth(routeWidth(0f)), lineCap(Property.LINE_CAP_ROUND), lineJoin(Property.LINE_JOIN_ROUND),
             ),
         )
         pushRoute()
@@ -374,7 +466,7 @@ class MapLibreEngine(
             )
             val user = GeoJsonSource(USER_SOURCE).also { userSource = it }
             val pin = GeoJsonSource(PIN_SOURCE).also { pinSource = it }
-            addRouteLayer(style) // below the markers, pin and user dots
+            addRouteLayer(style, wanted == MapTheme.DARK) // below the markers, pin and user dots
             addFuelLayer(style, wanted == MapTheme.DARK)
             style.addSource(user)
             style.addSource(pin)
@@ -394,7 +486,20 @@ class MapLibreEngine(
                     circleRadius(8f), circleColor(USER_COLOR), circleStrokeColor(WHITE), circleStrokeWidth(3f),
                 ),
             )
-            pushOverlay(userSource, pendingUser)
+            // The heading arrow (navigation): flat on the map plane, rotated by the course; hidden until a heading is set.
+            val screen = view.resources.displayMetrics
+            style.addImage(UserArrowIcon.NAME, UserArrowIcon.render(screen.density, screen.densityDpi))
+            style.addLayer(
+                SymbolLayer(USER_ARROW_LAYER, USER_SOURCE).withProperties(
+                    iconImage(UserArrowIcon.NAME), iconRotate(Expression.get(USER_BEARING)),
+                    iconRotationAlignment(Property.ICON_ROTATION_ALIGNMENT_MAP), iconPitchAlignment(Property.ICON_PITCH_ALIGNMENT_MAP),
+                    iconAllowOverlap(true), iconIgnorePlacement(true), iconAnchor(Property.ICON_ANCHOR_CENTER),
+                    visibility(Property.NONE),
+                ),
+            )
+            applyUserMode()
+            applyBuildings() // a style reload (day/night, new region) drops the extrusion layers: put them back if still wanted
+            pushUser()
             pushOverlay(pinSource, pendingPin)
             pushMarkers()
             dispatchViewport() // the first station draw (a new style has no camera-idle of its own)
@@ -437,7 +542,8 @@ class MapLibreEngine(
     }
 
     private fun CameraState.toPosition(): CameraPosition = CameraPosition.Builder()
-        .target(LatLng(center.lat, center.lon)).zoom(zoom).bearing(bearing).tilt(tilt).build()
+        .target(LatLng(center.lat, center.lon)).zoom(zoom).bearing(bearing).tilt(tilt)
+        .padding(padding.left.toDouble(), padding.top.toDouble(), padding.right.toDouble(), padding.bottom.toDouble()).build()
 
     private fun CameraPosition.toState(): CameraState {
         val t = target ?: return lastIdle
@@ -446,6 +552,8 @@ class MapLibreEngine(
             zoom.coerceIn(0.0, 24.0),
             if (bearing.isFinite()) bearing else 0.0,
             tilt.coerceIn(0.0, 85.0),
+            padding?.takeIf { it.size >= 4 }?.let { CameraPadding(it[0].toInt().coerceAtLeast(0), it[1].toInt().coerceAtLeast(0), it[2].toInt().coerceAtLeast(0), it[3].toInt().coerceAtLeast(0)) }
+                ?: CameraPadding.NONE,
         )
     }
 
@@ -459,6 +567,11 @@ class MapLibreEngine(
         const val MARKERS_LAYER = "mapas-saved"
         const val ROUTE_SOURCE = "mapas-route-src"
         const val ROUTE_LAYER = "mapas-route"
+        const val ROUTE_CASING_LAYER = "mapas-route-casing"
+        const val ROUTE_CASING_EXTRA = 4f
+        const val USER_ARROW_LAYER = "mapas-user-arrow"
+        const val USER_BEARING = "bearing"
+        const val MAX_PITCH = 60.0
         const val FUEL_SOURCE = "mapas-fuel-src"
         const val FUEL_LAYER = "mapas-fuel"
         const val FUEL_ID = "id"
@@ -472,6 +585,13 @@ class MapLibreEngine(
         const val USER_COLOR = 0xFF007AFF.toInt()
         const val PIN_COLOR = 0xFFFF3B30.toInt()
         const val WHITE = 0xFFFFFFFF.toInt()
+
+        /** Route line width in dp by zoom (3 at z10, 6 at z14, 10 at z17, 16 at z20) plus [extra] (the casing). */
+        fun routeWidth(extra: Float): Expression = Expression.interpolate(
+            Expression.linear(), Expression.zoom(),
+            Expression.stop(10, 3f + extra), Expression.stop(14, 6f + extra), Expression.stop(17, 10f + extra), Expression.stop(20, 16f + extra),
+        )
+
         val EMPTY_COLLECTION = org.maplibre.geojson.FeatureCollection.fromFeatures(emptyList<Feature>())
     }
 }

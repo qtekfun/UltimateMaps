@@ -62,7 +62,9 @@ class NavTestRig(
     val file: File = File.createTempFile("navui", ".bin").also { it.delete(); it.deleteOnExit() },
     routes: RouteProvider? = null,
     config: NavConfig = NavConfig(),
+    overviewMillis: Long = 60_000L,
 ) : AutoCloseable {
+    val settings = com.qtekfun.mapas.core.voice.InMemoryNavSettingsStore()
     private val executor = Executors.newSingleThreadExecutor { Thread(it, "nav-test").apply { isDaemon = true } }
     val dispatcher = executor.asCoroutineDispatcher()
     val scope = CoroutineScope(SupervisorJob() + dispatcher)
@@ -86,7 +88,7 @@ class NavTestRig(
         val g = gate
         if (g != null && gateWhen(screen.ui.value)) g.await()
     }
-    val screen: NavScreenController = NavScreenController(scope, controller, simulation, switch, service, clock = { clock.get() }, stopFlashMillis = 60_000L)
+    val screen: NavScreenController = NavScreenController(scope, controller, simulation, switch, service, settings = settings, clock = { clock.get() }, stopFlashMillis = 60_000L, overviewMillis = overviewMillis)
 
     init { screen.addSink(sink) }
 
