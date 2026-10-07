@@ -20,6 +20,7 @@ Date: 2026-10-07. Sources: `docs/phase2/feature-gap-analysis.md` (Google/Apple M
 
 - Category browse in search (needs a one-day core spike), place-card extras from OSM tags (phone, website, opening hours text), Plus Codes and coordinate search.
 - Share as `geo:`/OSM link and ETA as text, trip summary after navigation, compass/scale audit.
+- **Bike: prefer or require cycle infrastructure** (user request 2026-10-07). Findings from `third_party/comaps/libs/routing_common/bicycle_model.cpp`: the model already gives `highway=cycleway` a weight of 21 to 23 against 10 to 14 for primary and tertiary roads, so cycleways are favoured today; it cannot tell a painted cycle lane on a normal road apart (only the separate cycleway type and a tiny `nocycleway` factor of 0.95), and the routing options are only Ferry, Dirty, Steps and Paved (no cycleway option). Proposal: a setting with Off / Prefer / Strongly prefer / Only cycle infrastructure, implemented as a patch to the bicycle model (weight factors, and for Only a hard exclusion of non-cycle roads) carried in `scripts/comaps-prepare.sh`; "Only" will often fail to find a route because cycle networks are discontinuous, so the UI must say so and offer to relax it. Open: whether the `.mwm` files keep lane tags at all (not verified), effort not estimated before a one-day core spike, and it needs a native build plus a device to judge route quality.
 - Alternative routes and opening-hours display, once the core spike confirms what is exposed.
 
 ## Wave 3 (next)
