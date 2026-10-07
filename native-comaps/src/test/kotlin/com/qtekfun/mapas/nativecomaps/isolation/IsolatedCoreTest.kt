@@ -29,6 +29,8 @@ class IsolatedCoreTest {
         val routes = AtomicInteger()
         @Volatile var routePoints = 2
         @Volatile var onRoute: () -> Unit = {}
+        @Volatile var guidance: DoubleArray = DoubleArray(0)
+        @Volatile var names: Array<String> = emptyArray()
         override fun init(apk: String, writableDir: String, tmpDir: String, locale: String): String { inits.incrementAndGet(); return "" }
         override fun refreshMaps() = 7
         override fun search(query: String, hasPos: Boolean, lat: Double, lon: Double, limit: Int, timeoutMs: Int, locale: String): Array<String> {
@@ -46,7 +48,7 @@ class IsolatedCoreTest {
             return raw
         }
         override fun routeGuidance(profile: Int, points: DoubleArray, avoidFlags: Int, timeoutSec: Int) =
-            RawGuidedRoute(route(profile, points, avoidFlags, timeoutSec), DoubleArray(0), emptyArray())
+            RawGuidedRoute(route(profile, points, avoidFlags, timeoutSec), guidance, names)
     }
 
     /** A fake "process": a [CoreHost] with its own state. A new connect starts a new one (state lost, like a restart). */
@@ -343,5 +345,53 @@ class IsolatedCoreTest {
         c.searchEngine().search("cafe")
         assertEquals(2, t.connects.get())
         assertEquals(2, t.bridge.inits.get())
+    }
+
+    /** Wire guidance (see `GuidanceWire`): DEPART, then RIGHT onto "Calle Mayor" with two lanes, and a 50 km/h stretch. */
+    private fun guidedBridge() = Bridge().apply {
+        routePoints = 3
+        names = arrayOf("Calle Mayor")
+        guidance = doubleArrayOf(
+            1.0, 2.0, 1.0,
+            0.0, 0.0, -1.0, -1.0, 0.0,
+            2.0, 3.0, -1.0, 0.0, 2.0, ((1 shl 3) or (1 shl 6)).toDouble(), 0.0, (1 shl 9).toDouble(), 1.0,
+            0.0, 2.0, 50.0,
+        )
+    }
+
+    @Test fun `guidance crosses the isolation boundary intact, and only when asked for`() {
+        val c = client(FakeTransport(guidedBridge()))
+        val g = c.routingEngine(withGuidance = true).routeDetailed(RouteRequest(a, b)).plan!!.guidance
+        assertEquals(2, g.maneuvers.size)
+        assertEquals(com.qtekfun.mapas.core.routing.TurnType.RIGHT, g.maneuvers[1].type)
+        assertEquals("Calle Mayor", g.maneuvers[1].streetName)
+        assertEquals(2, g.maneuvers[1].lanes.size)
+        assertEquals(setOf(com.qtekfun.mapas.core.routing.LaneDirection.RIGHT), g.maneuvers[1].lanes[1].directions)
+        assertTrue(g.maneuvers[1].lanes[1].recommended && !g.maneuvers[1].lanes[0].recommended)
+        assertEquals(listOf(com.qtekfun.mapas.core.routing.SpeedLimit(0, 2, 50)), g.speedLimits)
+        // Without the flag the plain route is asked for: no guidance, same as before.
+        assertEquals(com.qtekfun.mapas.core.routing.RouteGuidance.EMPTY, c.routingEngine().routeDetailed(RouteRequest(a, b)).plan!!.guidance)
+    }
+
+    @Test fun `a guided route with a large guidance is chunked under the Binder limit`() {
+        val n = 6_000
+        val bridge = Bridge().apply {
+            routePoints = n
+            names = arrayOf("Calle de la Gran Via de Colon")
+            val per = 5 + 2 * 2
+            val g = DoubleArray(3 + n / 2 * per)
+            g[0] = 1.0; g[1] = (n / 2).toDouble(); g[2] = 0.0
+            for (i in 0 until n / 2) {
+                val o = 3 + i * per
+                g[o] = (2 * i).toDouble(); g[o + 1] = 3.0; g[o + 2] = -1.0; g[o + 3] = 0.0; g[o + 4] = 2.0
+                g[o + 5] = (1 shl 6).toDouble(); g[o + 6] = 0.0; g[o + 7] = (1 shl 9).toDouble(); g[o + 8] = 1.0
+            }
+            guidance = g
+        }
+        val t = FakeTransport(bridge, maxTransaction = 250_000)
+        val plan = client(t).routingEngine(withGuidance = true).routeDetailed(RouteRequest(a, b)).plan!!
+        assertEquals(n, plan.geometry.size)
+        assertEquals(n / 2, plan.guidance.maneuvers.size)
+        assertEquals(0, t.tooLarge.get())
     }
 }

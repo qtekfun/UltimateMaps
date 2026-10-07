@@ -26,6 +26,11 @@ import com.qtekfun.mapas.places.PlacesController
 import com.qtekfun.mapas.places.openPlacesService
 import com.qtekfun.mapas.places.toPlaceInfo
 import com.qtekfun.mapas.core.search.SearchResult
+import com.qtekfun.mapas.nav.CoMapsGuidedRouteBackend
+import com.qtekfun.mapas.nav.NavLauncher
+import com.qtekfun.mapas.nav.NavScreenController
+import com.qtekfun.mapas.nav.NavStartHost
+import com.qtekfun.mapas.nav.RouteRunner
 import com.qtekfun.mapas.route.CoMapsRouteBackend
 import com.qtekfun.mapas.route.LogcatRouteLog
 import com.qtekfun.mapas.route.RoutePreviewController
@@ -52,6 +57,8 @@ class PanelHost(
     private val fuelSettings: FuelSettingsStore = StaticFuelSettings(),
     /** Display name of a fuel id, for the station card. */
     private val fuelName: (String) -> String = { it },
+    /** The navigation model; with it the route card offers "Start" and "Simulate". Null: preview only. */
+    private val navScreen: NavScreenController? = null,
 ) {
     /** Last known user position, in memory only; used to sort saved places by distance. */
     var userLocation: LatLon? = null
@@ -89,6 +96,24 @@ class PanelHost(
         log = LogcatRouteLog,
         mutex = coreLock,
     )
+
+    /** "Start" / "Simulate" on the route card: the guided route goes through the same shared core and lock. */
+    val navLauncher: NavLauncher? = navScreen?.let { screenModel ->
+        NavLauncher(
+            scope = activity.lifecycleScope,
+            io = Dispatchers.IO,
+            regions = regions,
+            backend = CoMapsGuidedRouteBackend(activity),
+            runner = RouteRunner(Dispatchers.IO),
+            screen = screenModel,
+            mutex = coreLock,
+            request = route::currentRequest,
+            onStarted = {
+                route.close() // the preview is replaced by the navigation screen
+                screen.detent = SheetDetent.COLLAPSED
+            },
+        )
+    }
 
     val places = PlacesController(
         scope = activity.lifecycleScope,
@@ -131,8 +156,13 @@ class PanelHost(
     fun onDestroy() {
         fuelLayer.stop()
         search.close()
+        navLauncher?.reset()
         route.close()
     }
+
+    private fun hasLocationPermission() =
+        activity.checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION) == android.content.pm.PackageManager.PERMISSION_GRANTED ||
+            activity.checkSelfPermission(android.Manifest.permission.ACCESS_COARSE_LOCATION) == android.content.pm.PackageManager.PERMISSION_GRANTED
 
     private fun input(uri: Uri) = activity.contentResolver.openInputStream(uri) ?: error("cannot open document")
     private fun output(uri: Uri) = activity.contentResolver.openOutputStream(uri, "wt") ?: error("cannot open document")
@@ -188,7 +218,16 @@ class PanelHost(
                 onGo = fuelCard::go, onAddStop = fuelCard::addStop, onSave = fuelCard::save,
             )
         }
-        SheetPanel(search, places, actions, route = route, fuel = fuel)
+        val navStart = remember(navLauncher) {
+            navLauncher?.let { l ->
+                NavStartHost(
+                    state = l.state,
+                    onStart = { if (!hasLocationPermission()) onRequestLocation(); l.start(simulate = false) },
+                    onSimulate = { l.start(simulate = true) },
+                )
+            }
+        }
+        SheetPanel(search, places, actions, route = route, fuel = fuel, navStart = navStart)
     }
 
     private companion object {
