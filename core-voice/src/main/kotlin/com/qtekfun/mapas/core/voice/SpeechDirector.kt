@@ -84,6 +84,8 @@ data class DirectorConfig(
  * - NORMAL waits for the current one, replaces a pending one with the same key, and discards pending LOW ones;
  *   it interrupts a LOW one that is being said (the far warning is obsolete once the near one is due).
  * - LOW keeps at most one place in the queue: a newer one replaces the older.
+ * - ADVISORY (camera and incident alerts) is spoken only when no instruction waits, never interrupts or discards
+ *   anything, is interrupted by a NORMAL or URGENT one, and is the first to be dropped when the queue is full.
  * - Anything waiting longer than its max age is dropped; at most [DirectorConfig.maxPending] wait.
  *
  * Recovery: an engine that does not start in time, reports a fatal error, refuses to speak or never finishes an
@@ -254,7 +256,11 @@ class SpeechDirector(
             }
             VoicePriority.NORMAL -> {
                 pending.removeAll { it.utterance.priority == VoicePriority.LOW || (u.key != null && it.utterance.key == u.key) }
-                if (current?.queued?.utterance?.priority == VoicePriority.LOW) interruptCurrent()
+                if (current?.queued?.utterance?.priority.let { it == VoicePriority.LOW || it == VoicePriority.ADVISORY }) interruptCurrent()
+                pending.addLast(q)
+            }
+            VoicePriority.ADVISORY -> {
+                pending.removeAll { u.key != null && it.utterance.key == u.key }
                 pending.addLast(q)
             }
             VoicePriority.LOW -> {
@@ -263,7 +269,8 @@ class SpeechDirector(
             }
         }
         while (pending.size > config.maxPending) {
-            val drop = pending.firstOrNull { it.utterance.priority == VoicePriority.LOW } ?: pending.first()
+            val drop = pending.firstOrNull { it.utterance.priority == VoicePriority.ADVISORY }
+                ?: pending.firstOrNull { it.utterance.priority == VoicePriority.LOW } ?: pending.first()
             pending.remove(drop)
         }
         pump()
@@ -271,7 +278,8 @@ class SpeechDirector(
 
     private fun pump() {
         while (engineUp && current == null) {
-            val q = pending.removeFirstOrNull() ?: run { scheduleFocusRelease(); return }
+            val q = (pending.firstOrNull { it.utterance.priority != VoicePriority.ADVISORY } ?: pending.firstOrNull())
+                ?.also { pending.remove(it) } ?: run { scheduleFocusRelease(); return }
             if (clock() - q.at > q.utterance.maxAgeMillis) continue
             if (!prepareToSpeak(q.utterance)) continue
             releaseTimer?.cancel(); releaseTimer = null
