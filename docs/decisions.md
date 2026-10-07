@@ -114,3 +114,8 @@ Formato: fecha · decisión · motivo · alternativas descartadas · cómo rever
 - **Latencia (para la prueba futura en el móvil, no ejecutada):** logcat `UMSEARCH` con `engine_ready_ms`, y por consulta `qlen`, `results`, `ms` y `first` (primera tras arrancar). Sin texto de consultas ni posiciones. Medida con `SystemClock.elapsedRealtime` alrededor de la llamada nativa (no incluye el debounce).
 - **Sitios:** driver `sqlite-framework` (`AndroidSQLiteDriver`) en `databases/places.db`; la lista por defecto («Favoritos») guarda su id en SharedPreferences y se recrea si se borra. Importar/exportar GPX/KML con el selector de documentos (SAF: `OpenDocument`/`CreateDocument`, sin permisos de almacenamiento; formato por extensión y, si no, por contenido; tope de 32 MB). Marcadores de sitios guardados: capa de círculos propia en `MapLibreEngine` (`MapEngine.showMarkers`), sin sprites. Ordenar por distancia usa la última ubicación conocida en memoria o, si no hay, el centro de la cámara.
 - **Pendiente:** el botón «Ruta» de la ficha solo avisa (M4); zoom fijo 15 al elegir un resultado (el núcleo no devuelve extensión); medir R12 y fluidez en el móvil.
+
+## 2026-10-07 · El workflow de release prepara el núcleo de CoMaps
+- **Decisión:** tras integrar M2, `release.yml` ejecuta `git submodule update --init third_party/comaps` y `scripts/comaps-prepare.sh` antes de compilar (el núcleo ya va en el APK de release).
+- **Verificado:** `assembleFossRelease` local con el núcleo: OK, 2 min 51 s, APK sin firmar 42,3 MB. **No verificado:** el workflow en GitHub (sin remoto ni secretos), ni NDK/CMake/tiempo/RAM del runner.
+- **Revertir:** quitar el paso «Preparar el núcleo de CoMaps» (el release dejaría de compilar).
