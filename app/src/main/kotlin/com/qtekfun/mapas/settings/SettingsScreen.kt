@@ -26,6 +26,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -73,6 +74,8 @@ class SettingsEnv(
     val cameras: CamerasSettingsEnv? = null,
     /** Track recording section (switch and delete); null hides it. */
     val recording: RecordingSettingsEnv? = null,
+    /** Backup and restore section (export, import, export everything); null hides it. */
+    val backup: BackupSettingsEnv? = null,
 )
 
 /** The first Settings screen: Privacy (offline mode, region catalog, possible connections) and Petrol stations. */
@@ -103,12 +106,16 @@ fun SettingsScreen(env: SettingsEnv, onBack: () -> Unit, modifier: Modifier = Mo
                 .padding(horizontal = Mapas.dimens.screenMargin),
         ) {
             BasicText(stringResource(R.string.settings_title), style = Mapas.typography.largeTitle.copy(color = Mapas.colors.label))
-            PrivacySection(env, settings, offline)
-            FuelSection(env, settings, offline)
-            env.cameras?.let { CamerasSection(it) }
-            env.navigation?.let { NavigationSection(it) }
-            env.history?.let { HistorySection(it) }
-            env.recording?.let { RecordingSection(it) }
+            // A restore bumps the revision: the sections are rebuilt so they show the restored values.
+            key(env.backup?.state?.revision ?: 0) {
+                PrivacySection(env, settings, offline)
+                FuelSection(env, settings, offline)
+                env.cameras?.let { CamerasSection(it) }
+                env.navigation?.let { NavigationSection(it) }
+                env.history?.let { HistorySection(it) }
+                env.recording?.let { RecordingSection(it) }
+            }
+            env.backup?.let { BackupSection(it) }
             Spacer(Modifier.height(32.dp))
         }
     }
