@@ -75,6 +75,12 @@ class RegionsController(
     var offline: Boolean by mutableStateOf(false); private set
     var serverUrl: String by mutableStateOf(""); private set
 
+    /** The loaded native core may still answer with a deleted region until the app restarts (see [CoreLinks]). */
+    var restartForSearch: Boolean by mutableStateOf(false); private set
+
+    /** Some installed map could not be linked for the search (file system without links, or a foreign file in the way). */
+    var linkProblem: Boolean by mutableStateOf(false); private set
+
     private val downloads: RegionDownloads = RegionDownloads(
         installer = ::installRegion,
         executor = downloadExecutor,
@@ -91,11 +97,12 @@ class RegionsController(
 
     /** Loads preferences and applies them to the policy. Call once from `Application.onCreate`. */
     fun restore() {
-        serverUrl = prefs.getString(KEY_URL, "").orEmpty()
+        // Never saved: the project's data repository. A saved empty string means the user cleared it on purpose.
+        serverUrl = prefs.getString(KEY_URL, DEFAULT_CATALOG_URL).orEmpty()
         offline = prefs.getBoolean(KEY_OFFLINE, false)
         policy.offlineMode = offline
         selectedLocationId = prefs.getString(KEY_LOCATION, RegionStorage.INTERNAL_ID) ?: RegionStorage.INTERNAL_ID
-        parsedHost(serverUrl)?.let { addEndpoint(AllowedEndpoint(it, ConnectionPurpose.MAP_DOWNLOAD, enabled = true)) }
+        whitelist(parsedHost(serverUrl)) // only lists it as a possible connection: nothing connects until the user opens "Maps"
         refreshStorage()
         refreshInstalled()
         loadCatalogFromCache()
@@ -118,12 +125,12 @@ class RegionsController(
         val trimmed = url.trim()
         if (trimmed.isEmpty()) {
             serverUrl = ""
-            prefs.edit().remove(KEY_URL).apply()
+            prefs.edit().putString(KEY_URL, "").apply()
             catalogState = if (cachedCatalog() != null) catalogState else CatalogState.NoServer
             return true
         }
         val host = parsedHost(trimmed) ?: return false
-        addEndpoint(AllowedEndpoint(host, ConnectionPurpose.MAP_DOWNLOAD, enabled = true))
+        whitelist(host)
         serverUrl = trimmed
         prefs.edit().putString(KEY_URL, trimmed).apply()
         return true
@@ -152,6 +159,7 @@ class RegionsController(
                 cacheFile.writeText(text)
                 whitelistAssetHosts(catalog)
                 catalogState = CatalogState.Loaded(catalog)
+                backfillComapsIds(catalog)
             } catch (e: NetworkDeniedException) {
                 failRefresh(if (e.reason == DenyReason.OFFLINE_MODE) CatalogError.OFFLINE_MODE else CatalogError.NOT_ALLOWED)
             } catch (e: CatalogException) {
@@ -177,14 +185,38 @@ class RegionsController(
         cachedCatalog()?.let {
             whitelistAssetHosts(it)
             catalogState = CatalogState.Loaded(it, stale = true)
+            ioExecutor.execute { backfillComapsIds(it) }
         }
     }
 
     /** The catalog of a server the user configured decides where its files are hosted; each host is listed as a possible connection. */
     private fun whitelistAssetHosts(catalog: RegionCatalog) {
-        catalog.regions.flatMap { it.assets.values }.mapNotNull { parsedHost(it.url, requireHttps = !allowInsecure) }.toSet().forEach {
-            addEndpoint(AllowedEndpoint(it, ConnectionPurpose.MAP_DOWNLOAD, enabled = true))
-        }
+        val assets = catalog.regions.flatMap { it.assets.values } + listOfNotNull(catalog.base?.world, catalog.base?.worldCoasts)
+        assets.mapNotNull { parsedHost(it.url, requireHttps = !allowInsecure) }.toSet().forEach(::whitelist)
+    }
+
+    /**
+     * Lists [host] as a possible map-download connection. GitHub answers every release download with a 302 to
+     * its asset storage, and each hop is authorized on its own, so for `github.com` exactly those hosts (and no
+     * wildcard) are added with it. Nothing else is ever added implicitly.
+     */
+    private fun whitelist(host: String?) {
+        if (host == null) return
+        val hosts = if (host in GITHUB_HOSTS) GITHUB_HOSTS else listOf(host)
+        hosts.forEach { addEndpoint(AllowedEndpoint(it, ConnectionPurpose.MAP_DOWNLOAD, enabled = true)) }
+    }
+
+    /** Regions installed before the catalog carried `comapsId` get it now, so the core link can be built. */
+    private fun backfillComapsIds(catalog: RegionCatalog) {
+        val changed = locations.map { managerFor(it).backfillComapsIds(catalog) }.any { it }
+        if (changed) syncCoreLinks()
+    }
+
+    /** Rebuilds `maps-core/<version>/`; call off the main thread. */
+    private fun syncCoreLinks() {
+        val report = CoreLinks.sync(context)
+        restartForSearch = CoreLinks.restartNeeded
+        linkProblem = report.failed.isNotEmpty()
     }
 
     // --- Downloads ---
@@ -216,7 +248,10 @@ class RegionsController(
             val entry = installed.firstOrNull { it.region.id == id }
             (entry?.let { e -> locations.filter { it.id == e.locationId } } ?: locations).forEach { loc ->
                 managerFor(loc).delete(id)
+                managerFor(loc).cleanup(keepPartialsFor = downloads.states().keys)
             }
+            if (RegionStorage.installedEverywhere(locations).isEmpty()) locations.forEach { managerFor(it).removeBases() }
+            syncCoreLinks()
             refreshInstalled()
             refreshStorage()
         }
@@ -258,14 +293,20 @@ class RegionsController(
         val existing = installed.firstOrNull { it.region.id == region.id }?.locationId // updates stay where they are
         val preferred = existing ?: selectedLocationId
         val already = partialBytes(locs.firstOrNull { it.id == preferred }?.dir, region.id)
-        val needed = (region.totalBytes - already).coerceAtLeast(0)
+        val baseBytes = (catalogState as? CatalogState.Loaded)?.catalog?.base
+            ?.takeIf { b -> locs.none { managerFor(it).installedBase(b.version) != null } }?.totalBytes ?: 0L
+        val needed = (region.totalBytes + baseBytes - already).coerceAtLeast(0)
         val target = StorageSelector.choose(locs, preferred, needed)
         if (target == null) {
             val free = locs.firstOrNull { it.id == preferred }?.dir?.usableSpace ?: 0L
             throw InsufficientSpaceException(needed, free)
         }
-        managerFor(target).install(region, cancel, onProgress)
+        // World.mwm/WorldCoasts.mwm: once per data version, with the first region, wherever they already are.
+        val base = (catalogState as? CatalogState.Loaded)?.catalog?.base
+            ?.takeIf { b -> locs.none { managerFor(it).installedBase(b.version) != null } }
+        managerFor(target).install(region, cancel, base, onProgress)
         managerFor(target).cleanup(keepPartialsFor = downloads.states().keys)
+        syncCoreLinks()
     }
 
     private fun partialBytes(root: File?, id: String): Long =
@@ -284,6 +325,16 @@ class RegionsController(
     }
 
     companion object {
+        /** Latest data release of the project's data repository (GitHub Releases; each asset redirects to GitHub's storage). */
+        const val DEFAULT_CATALOG_URL = "https://github.com/qtekfun/UltimateMaps-data/releases/latest/download/catalog.json"
+
+        /**
+         * Hosts of a GitHub release download: `github.com` (the catalog, `/releases/latest/download/` and
+         * `/releases/download/<tag>/` answer 302), then `release-assets.githubusercontent.com` (current) or
+         * `objects.githubusercontent.com` (older redirects), observed in real GitHub responses.
+         */
+        internal val GITHUB_HOSTS = listOf("github.com", "release-assets.githubusercontent.com", "objects.githubusercontent.com")
+
         internal const val PREFS = "regions"
         private const val KEY_URL = "catalog_url"
         internal const val KEY_OFFLINE = "offline_mode"

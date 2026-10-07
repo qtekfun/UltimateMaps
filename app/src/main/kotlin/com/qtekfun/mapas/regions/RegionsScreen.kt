@@ -53,11 +53,16 @@ data class RegionsUiState(
     val selectedLocationId: String = RegionStorage.INTERNAL_ID,
     val offline: Boolean = false,
     val serverUrl: String = "",
+    /** A deleted region may keep answering searches until the app restarts (the native core cannot unload it). */
+    val restartForSearch: Boolean = false,
+    /** Some installed map could not be linked for the search. */
+    val linkProblem: Boolean = false,
 )
 
 fun RegionsController.uiState() = RegionsUiState(
     catalog = catalogState, installed = installed, downloads = downloadStates, storage = storage,
     selectedLocationId = selectedLocationId, offline = offline, serverUrl = serverUrl,
+    restartForSearch = restartForSearch, linkProblem = linkProblem,
 )
 
 class RegionsActions(
@@ -161,6 +166,13 @@ private fun SettingsSection(state: RegionsUiState, actions: RegionsActions) {
             }
             if (invalid) BasicText(stringResource(R.string.server_invalid), Modifier.testTag("server_invalid"), style = Mapas.typography.callout.copy(color = Mapas.colors.warning))
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+                if (state.serverUrl != RegionsController.DEFAULT_CATALOG_URL) {
+                    TextButton(stringResource(R.string.server_use_default), "server_default") {
+                        text = RegionsController.DEFAULT_CATALOG_URL
+                        invalid = !actions.onSaveServer(text)
+                        if (!invalid) actions.onRefresh()
+                    }
+                }
                 TextButton(stringResource(R.string.server_save), "server_save") {
                     invalid = !actions.onSaveServer(text)
                     if (!invalid) actions.onRefresh()
@@ -203,6 +215,12 @@ private fun SettingsSection(state: RegionsUiState, actions: RegionsActions) {
 @Composable
 private fun CatalogStatus(state: RegionsUiState, catalog: RegionCatalog?, actions: RegionsActions) {
     Column(Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
+        if (state.restartForSearch) Card("status_restart") {
+            BasicText(stringResource(R.string.search_restart_needed), style = Mapas.typography.callout.copy(color = Mapas.colors.warning))
+        }
+        if (state.linkProblem) Card("status_link_problem") {
+            BasicText(stringResource(R.string.search_link_problem), style = Mapas.typography.callout.copy(color = Mapas.colors.warning))
+        }
         when (val c = state.catalog) {
             CatalogState.NoServer -> Card("status_no_server") {
                 BasicText(stringResource(R.string.server_none_title), style = Mapas.typography.body.copy(color = Mapas.colors.label))

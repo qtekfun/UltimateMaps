@@ -24,6 +24,9 @@ Ejemplos (sin red):
       --mwm-base https://maps.example.org/mwm/ --pmtiles-base https://maps.example.org/pmtiles/ -o catalog.json
   scripts/gen-region-catalog.py -o hierarchy.json          # solo jerarquía, nada descargable
 
+`--base-dir` añade el bloque `base` con `World.mwm` y `WorldCoasts.mwm` (no son una región, pero el núcleo los exige
+junto a cada región; la app los descarga una vez por versión). Sin él, el catálogo no lleva `base`.
+
 Con red, solo bajo petición explícita y con tope de tamaño: --fetch-mwm <comapsId> descarga ESE .mwm
 (por defecto ≤ 20 MB) a --mwm-dir para calcular su SHA-256.
 """
@@ -93,8 +96,29 @@ def fetch_mwm(base_url, comaps_id, expected_size, dest_dir, max_bytes):
     return dest
 
 
+BASE_FILES = (("world", "World.mwm"), ("worldCoasts", "WorldCoasts.mwm"))
+
+
+def build_base(version, base_dir, base_url, log=lambda m: None):
+    """Bloque `base` (World.mwm y WorldCoasts.mwm, que el núcleo exige junto a cada región) o None si falta alguno."""
+    if not base_dir:
+        return None
+    if not base_url:
+        raise SystemExit("--base-dir necesita --base-url (o --mwm-base)")
+    base_url = base_url if base_url.endswith("/") else base_url + "/"
+    out = {"version": version}
+    for key, name in BASE_FILES:
+        path = os.path.join(base_dir, name)
+        if not os.path.isfile(path):
+            log(f"AVISO falta {path}; el catálogo no llevará `base`")
+            return None
+        out[key] = {"url": base_url + name, "size": os.path.getsize(path), "sha256": sha256_of(path), "file": name}
+    return out
+
+
 def build(countries, mwm_dir=None, pmtiles_dir=None, mwm_base=None, pmtiles_base=None, catalog_version=None,
-          fetch=(), max_download_bytes=20 << 20, log=lambda m: None, mwm_url_by_slug=False):
+          fetch=(), max_download_bytes=20 << 20, log=lambda m: None, mwm_url_by_slug=False,
+          base_dir=None, base_url=None):
     version = str(countries["v"])
     series = countries.get("map_series", "")
     mwm_base = (mwm_base or DEFAULT_MWM_BASE.format(series=series, v=version))
@@ -146,11 +170,15 @@ def build(countries, mwm_dir=None, pmtiles_dir=None, mwm_base=None, pmtiles_base
                                    "sha256": sha256_of(mwm), "file": rid + ".mwm"},
                     }
         regions.append(region)
-    return {
+    cat = {
         "schema": 1,
         "catalogVersion": catalog_version or datetime.date.today().isoformat(),
-        "regions": regions,
     }
+    base = build_base(version, base_dir, base_url or mwm_base, log)
+    if base:
+        cat["base"] = base
+    cat["regions"] = regions
+    return cat
 
 
 def main(argv=None):
@@ -165,6 +193,8 @@ def main(argv=None):
     ap.add_argument("--fetch-mwm", action="append", default=[], metavar="COMAPS_ID",
                     help="descarga ese .mwm a --mwm-dir (red; solo si se pide)")
     ap.add_argument("--max-download-mb", type=int, default=20)
+    ap.add_argument("--base-dir", help="directorio con World.mwm y WorldCoasts.mwm (bloque `base` del catálogo)")
+    ap.add_argument("--base-url", help="URL base de World*.mwm (por defecto, --mwm-base)")
     ap.add_argument("--mwm-url-by-slug", action="store_true",
                     help="la URL del .mwm usa el id propio (`<slug>.mwm`), p. ej. en GitHub Releases, que renombra los espacios")
     ap.add_argument("-o", "--output", default="-")
@@ -173,7 +203,7 @@ def main(argv=None):
         countries = json.load(f)
     cat = build(countries, a.mwm_dir, a.pmtiles_dir, a.mwm_base, a.pmtiles_base, a.catalog_version,
                 set(a.fetch_mwm), a.max_download_mb << 20, log=lambda m: print(m, file=sys.stderr),
-                mwm_url_by_slug=a.mwm_url_by_slug)
+                mwm_url_by_slug=a.mwm_url_by_slug, base_dir=a.base_dir, base_url=a.base_url)
     text = json.dumps(cat, indent=1, ensure_ascii=False) + "\n"
     if a.output == "-":
         sys.stdout.write(text)

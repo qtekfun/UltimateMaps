@@ -41,6 +41,9 @@
     <string name="offline_body">No connections at all, not even for downloads.</string>
     <string name="server_title">Map server</string>
     <string name="server_hint">https://example.org/maps/catalog.json</string>
+    <string name="server_use_default">Use the default server</string>
+    <string name="search_restart_needed">A map you deleted may still appear in search until you restart the app.</string>
+    <string name="search_link_problem">Some downloaded maps could not be made available to search on this storage.</string>
     <string name="server_save">Save and refresh</string>
     <string name="server_invalid">Enter a valid https:// address.</string>
     <string name="server_none_title">No map server configured</string>

@@ -36,15 +36,28 @@ data class Region(
     val parentId: String?,
     val version: String,
     val assets: Map<AssetKind, RegionAsset> = emptyMap(),
+    /**
+     * The CoMaps country id (`Spain_La Rioja`, spaces included): the core only finds a map as
+     * `<comapsId>.mwm`. Optional (older catalogs lack it); without it the region cannot be linked to the core.
+     */
+    val comapsId: String? = null,
 ) {
     val isDownloadable: Boolean get() = assets.size == AssetKind.entries.size
     val totalBytes: Long get() = assets.values.sumOf { it.sizeBytes }
 }
 
+/**
+ * `World.mwm` and `WorldCoasts.mwm`: not a region, but the core needs both next to every region map.
+ * Downloaded once per [version] (a data date such as `261004`), before or with the first region.
+ */
+data class BaseMaps(val version: String, val world: RegionAsset, val worldCoasts: RegionAsset) {
+    val totalBytes: Long get() = world.sizeBytes + worldCoasts.sizeBytes
+}
+
 class CatalogException(message: String, cause: Throwable? = null) : Exception(message, cause)
 
 /** Versioned catalog of regions. Immutable. */
-class RegionCatalog(val catalogVersion: String, regions: List<Region>) {
+class RegionCatalog(val catalogVersion: String, regions: List<Region>, val base: BaseMaps? = null) {
     val regions: List<Region> = regions.toList()
     private val byId = this.regions.associateBy { it.id }
 
@@ -54,11 +67,13 @@ class RegionCatalog(val catalogVersion: String, regions: List<Region>) {
             require(r.parentId == null || r.parentId in byId) { "unknown parent ${r.parentId} of ${r.id}" }
             require(r.id.matches(ID_RE)) { "invalid region id ${r.id}" }
             require(r.version.matches(FILE_RE)) { "invalid version ${r.version}" }
-            r.assets.values.forEach {
-                require(it.sha256.matches(SHA256_RE)) { "invalid sha256 for ${r.id}" }
-                require(it.sizeBytes > 0) { "invalid size for ${r.id}" }
-                require(it.fileName.matches(FILE_RE)) { "invalid file name ${it.fileName}" }
-            }
+            r.assets.values.forEach { checkAsset(it, r.id) }
+            r.comapsId?.let { require(it.matches(COMAPS_ID_RE) && !it.startsWith(".")) { "invalid comapsId for ${r.id}" } }
+        }
+        base?.let {
+            require(it.version.matches(FILE_RE)) { "invalid base version ${it.version}" }
+            checkAsset(it.world, "base.world")
+            checkAsset(it.worldCoasts, "base.worldCoasts")
         }
         this.regions.forEach { r ->
             var cur: String? = r.parentId
@@ -68,6 +83,12 @@ class RegionCatalog(val catalogVersion: String, regions: List<Region>) {
                 cur = byId[cur]?.parentId
             }
         }
+    }
+
+    private fun checkAsset(a: RegionAsset, what: String) {
+        require(a.sha256.matches(SHA256_RE)) { "invalid sha256 for $what" }
+        require(a.sizeBytes > 0) { "invalid size for $what" }
+        require(a.fileName.matches(FILE_RE)) { "invalid file name ${a.fileName}" }
     }
 
     operator fun get(id: String): Region? = byId[id]
@@ -83,6 +104,11 @@ class RegionCatalog(val catalogVersion: String, regions: List<Region>) {
     fun toJson(): String = Json { prettyPrint = true }.encodeToString(JsonElement.serializer(), buildJsonObject {
         put("schema", SCHEMA)
         put("catalogVersion", catalogVersion)
+        if (base != null) put("base", buildJsonObject {
+            put("version", base.version)
+            put("world", assetJson(base.world))
+            put("worldCoasts", assetJson(base.worldCoasts))
+        })
         put("regions", buildJsonArray {
             regions.forEach { r ->
                 add(buildJsonObject {
@@ -90,14 +116,10 @@ class RegionCatalog(val catalogVersion: String, regions: List<Region>) {
                     put("name", r.name)
                     if (r.parentId != null) put("parent", r.parentId) else put("parent", JsonNull)
                     put("version", r.version)
+                    if (r.comapsId != null) put("comapsId", r.comapsId)
                     if (r.assets.isNotEmpty()) put("assets", buildJsonObject {
                         r.assets.forEach { (k, a) ->
-                            put(k.key, buildJsonObject {
-                                put("url", a.url)
-                                put("size", a.sizeBytes)
-                                put("sha256", a.sha256)
-                                put("file", a.fileName)
-                            })
+                            put(k.key, assetJson(a))
                         }
                     })
                 })
@@ -105,8 +127,16 @@ class RegionCatalog(val catalogVersion: String, regions: List<Region>) {
         })
     })
 
+    private fun assetJson(a: RegionAsset) = buildJsonObject {
+        put("url", a.url)
+        put("size", a.sizeBytes)
+        put("sha256", a.sha256)
+        put("file", a.fileName)
+    }
+
     companion object {
         const val SCHEMA = 1
+        private val COMAPS_ID_RE = Regex("[^/\\\\\\p{Cntrl}]{1,150}")
         private val ID_RE = Regex("[A-Za-z0-9_.-]{1,100}")
         private val SHA256_RE = Regex("[0-9a-f]{64}")
         private val FILE_RE = Regex("[A-Za-z0-9_.-]{1,120}")
@@ -117,18 +147,24 @@ class RegionCatalog(val catalogVersion: String, regions: List<Region>) {
             val schema = root["schema"]?.jsonPrimitive?.long
             if (schema != SCHEMA.toLong()) throw CatalogException("unsupported catalog schema: $schema")
             val base = baseUrl?.let(URI::create)
+            fun asset(x: JsonObject): RegionAsset {
+                val raw = x.getValue("url").jsonPrimitive.content
+                return RegionAsset(
+                    if (base != null) base.resolve(raw).toString() else raw, x.getValue("size").jsonPrimitive.long,
+                    x.getValue("sha256").jsonPrimitive.content.lowercase(), x.getValue("file").jsonPrimitive.content,
+                )
+            }
+            val baseMaps = (root["base"] as? JsonObject)?.let { b ->
+                BaseMaps(
+                    b.getValue("version").jsonPrimitive.content,
+                    asset(b.getValue("world").jsonObject), asset(b.getValue("worldCoasts").jsonObject),
+                )
+            }
             val regions = root.getValue("regions").jsonArray.map { e ->
                 val o = e.jsonObject
                 val assets = (o["assets"] as? JsonObject)?.let { a ->
                     AssetKind.entries.mapNotNull { k ->
-                        (a[k.key] as? JsonObject)?.let { x ->
-                            val raw = x.getValue("url").jsonPrimitive.content
-                            val url = if (base != null) base.resolve(raw).toString() else raw
-                            k to RegionAsset(
-                                url, x.getValue("size").jsonPrimitive.long,
-                                x.getValue("sha256").jsonPrimitive.content.lowercase(), x.getValue("file").jsonPrimitive.content,
-                            )
-                        }
+                        (a[k.key] as? JsonObject)?.let { x -> k to asset(x) }
                     }.toMap()
                 } ?: emptyMap()
                 Region(
@@ -137,9 +173,10 @@ class RegionCatalog(val catalogVersion: String, regions: List<Region>) {
                     parentId = (o["parent"] as? JsonPrimitive)?.takeIf { it !is JsonNull }?.content,
                     version = o.getValue("version").jsonPrimitive.content,
                     assets = assets,
+                    comapsId = (o["comapsId"] as? JsonPrimitive)?.takeIf { it !is JsonNull }?.content,
                 )
             }
-            RegionCatalog(root.getValue("catalogVersion").jsonPrimitive.content, regions)
+            RegionCatalog(root.getValue("catalogVersion").jsonPrimitive.content, regions, baseMaps)
         } catch (e: CatalogException) {
             throw e
         } catch (e: Exception) { // malformed JSON, missing fields, failed invariants

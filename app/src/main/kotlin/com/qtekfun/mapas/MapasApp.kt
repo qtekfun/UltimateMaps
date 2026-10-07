@@ -5,6 +5,7 @@ import com.qtekfun.mapas.core.net.AllowedEndpoint
 import com.qtekfun.mapas.core.net.ConnectionPurpose
 import com.qtekfun.mapas.core.net.DefaultNetworkPolicy
 import com.qtekfun.mapas.core.net.NetworkPolicy
+import com.qtekfun.mapas.regions.CoreLinks
 import com.qtekfun.mapas.regions.RegionsController
 
 class MapasApp : Application() {
@@ -32,5 +33,7 @@ class MapasApp : Application() {
         super.onCreate()
         // Offline mode is a persisted privacy setting: it must hold before anything can connect.
         policy.offlineMode = getSharedPreferences(RegionsController.PREFS, MODE_PRIVATE).getBoolean(RegionsController.KEY_OFFLINE, false)
+        // Rebuild maps-core/<version>/ (links to the installed .mwm) for the search core; files only, off the main thread.
+        Thread({ runCatching { CoreLinks.sync(this) } }, "mapas-core-links").start()
     }
 }

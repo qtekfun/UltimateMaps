@@ -71,6 +71,19 @@ class GenCatalogTest(unittest.TestCase):
         a = {r["id"]: r for r in c["regions"]}["spain_community-of-madrid"]["assets"]
         self.assertEqual("https://m.example/d/spain_community-of-madrid.mwm", a["search"]["url"])
 
+    def test_base_block_with_world_files(self):
+        with tempfile.TemporaryDirectory() as t:
+            put(os.path.join(t, "World.mwm"), b"w" * 7)
+            self.assertNotIn("base", gen.build(COUNTRIES, catalog_version="t", base_dir=t, base_url="https://x/rel"))
+            put(os.path.join(t, "WorldCoasts.mwm"), b"c" * 9)
+            b = gen.build(COUNTRIES, catalog_version="t", base_dir=t, base_url="https://x/rel")["base"]
+            self.assertEqual("261004", b["version"])
+            self.assertEqual("https://x/rel/World.mwm", b["world"]["url"])
+            self.assertEqual(hashlib.sha256(b"w" * 7).hexdigest(), b["world"]["sha256"])
+            self.assertEqual(9, b["worldCoasts"]["size"])
+            self.assertEqual("WorldCoasts.mwm", b["worldCoasts"]["file"])
+        self.assertNotIn("base", gen.build(COUNTRIES, catalog_version="t"))
+
     def test_size_mismatch_with_countries_txt_is_skipped(self):
         with tempfile.TemporaryDirectory() as t:
             os.makedirs(os.path.join(t, "pm"))
