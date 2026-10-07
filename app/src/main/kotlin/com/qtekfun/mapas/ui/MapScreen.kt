@@ -109,6 +109,8 @@ fun MapScreen(
                 }
             },
             topInset = topPadding + 64.dp,
+            expandActionLabel = stringResource(R.string.sheet_action_expand),
+            collapseActionLabel = stringResource(R.string.sheet_action_collapse),
             modifier = Modifier.fillMaxSize(),
         ) {
             SheetContent(state, sheetPanel)
