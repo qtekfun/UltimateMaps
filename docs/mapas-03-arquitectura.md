@@ -94,6 +94,18 @@ Regla: **un solo sabor de compilación (`foss`) por defecto**. Se crea un sabor 
 - Conexiones posibles: descarga de regiones (a petición del usuario), fuente de teselas online (opcional, desactivada), resolución de enlaces cortos (opcional, desactivada) y sync WebDAV (opcional).
 - TLS siempre; sin tráfico en claro. Credenciales de WebDAV en Android Keystore.
 
+## Fuentes de datos opcionales y ajustes (F7)
+
+Las fuentes que traen datos de fuera del mapa (precios de combustible, transporte público en tiempo real) se montan como **complementos pequeños detrás de una interfaz común**, para añadir o retirar una sin tocar el núcleo ni la navegación:
+
+- `OptionalDataSource`: `id`, nombre visible, hosts que necesita, qué envía (texto para el aviso de activación), política de refresco, `fetch()` que devuelve un resultado con **fecha de los datos**, y su configuración propia.
+- **Todo pasa por `NetworkPolicy`**: al activar una fuente se añaden sus hosts a la lista blanca y a la lista visible de conexiones posibles; al apagarla se quitan. Con el modo sin red no se conecta ninguna.
+- **Desactivadas por defecto.** Activar una pide confirmación con una frase clara: qué datos se piden, a qué servidor y qué ve ese servidor (por ejemplo, su IP). **La ubicación del usuario no se envía nunca**: los datos se bajan enteros o por estación elegida y se filtran en el dispositivo.
+- **Aislamiento de fallos:** si una fuente falla, caduca o cambia de formato, solo esa deja de mostrarse (con la fecha del último dato bueno); nada más se ve afectado. Caché en disco con sello de tiempo.
+- **Claves de API:** no se embeben en la app. Si un operador exige clave, la introduce el usuario en Ajustes (en Android Keystore), o no se ofrece.
+- **Ajustes:** las preferencias viven en un almacén local único (`:core-data`), se leen como flujo observable y entran en la copia de seguridad. Cada fuente declara sus campos (interruptor, combustible, radio, frecuencia, operadores, URL) y la pantalla de Ajustes los dibuja, para que añadir una fuente no obligue a rehacer la pantalla.
+- **Módulos previstos:** `:core-settings` (preferencias), `:core-optional` (interfaz y registro de fuentes) y un módulo por fuente (`:source-fuel`, `:source-transit-*`). Se actualizan `PRIVACY.md` y la lista de conexiones con cada fuente.
+
 ## Sitios, import/export y sync
 
 - Base de datos local (Room/SQLite) como fuente de verdad.

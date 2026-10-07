@@ -210,3 +210,11 @@ Formato: fecha · decisión · motivo · alternativas descartadas · cómo rever
 
 ## 2026-10-07 · Ideas del usuario: precios de gasolineras y transporte en tiempo real (sin decidir)
 - **Estado:** solo anotadas en `docs/mapas-05-roadmap.md`, sin código. Tocan «Qué no hacemos» (transporte público) y la regla de que todo ocurre en el dispositivo, así que necesitan decisión del usuario y un spike que verifique APIs, formatos, claves y licencias.
+
+## 2026-10-07 · Precios de combustible y transporte en tiempo real entran en el roadmap (F7), configurables en Ajustes
+- **Decisión del usuario:** «Mételas en roadmap y que sean configurables en ajustes». Nueva fase **F7. Datos opcionales** (después de F5), requisitos **RF-15** (precios de combustible por tipo: GLP, gasolina, diésel, GNC…), **RF-16** (transporte público en tiempo real por operador) y **RF-17** (pantalla de Ajustes con privacidad, preferencias de navegación y las fuentes opcionales), y una sección de arquitectura con la interfaz `OptionalDataSource`.
+- **Principios que se mantienen:** desactivadas por defecto; todo por `NetworkPolicy` con los hosts en la lista visible de conexiones; aviso al activar de qué se envía y a quién; **la ubicación nunca sale** (se descarga todo o se pide por estación elegida y se filtra en el dispositivo); un fallo de una fuente no afecta a las demás; sin claves embebidas (si hace falta, la pone el usuario en Android Keystore).
+- **Alcance:** «transporte público» sale de «Qué no hacemos» y se reubica en F7 (opcional); «tráfico de carretera» sigue fuera. No cambia ninguna decisión inamovible de `CLAUDE.md` (tráfico en carretera, red por `NetworkPolicy`, cero telemetría).
+- **Prerrequisito detectado:** la app **no tiene todavía pantalla de Ajustes** (solo el modo sin red dentro de «Mapas»). Se añade a F2 (voz, unidades, privacidad) con secciones reservadas para F7.
+- **Sin verificar (spike antes de codificar):** URL, formato, frecuencia y licencia del fichero de precios del Ministerio; datos abiertos y tiempo real de Renfe/Cercanías; si Metro de Madrid u otros piden clave. Lo escrito sobre esas APIs es de memoria.
+- **Revertir:** quitar la fila F7 y las RF-15 a RF-17; no hay código.
