@@ -14,7 +14,7 @@ App Android de mapas y navegación 100 % offline y privada, con UI estilo Apple 
 
 ## Estado actual
 
-Fase 1 en curso con la opción **C** (híbrido, decidida por el usuario el 2026-10-06; ver `docs/decisions.md`). Informe del spike en `docs/spike-informe.md`. El repo vive solo en local (`master`): `origin` está vacío y no hay CI ni protección de rama. El Pixel 8 no se usa sin permiso explícito del usuario. Riesgos abiertos: latencia de ruta larga y búsqueda del núcleo de CoMaps, y licencias heredadas (bsdiff, code2000, Entypo).
+Fase 1 en curso con la opción **C** (híbrido, decidida por el usuario el 2026-10-06; ver `docs/decisions.md`). Informe del spike en `docs/spike-informe.md`. El código está en GitHub (`qtekfun/UltimateMaps`, rama `master`, público desde 2026-10-07), pero **sin CI ni protección de rama todavía**: no hay checks que esperar, así que las PR quedan abiertas hasta que el usuario las revise o configure CI. El Pixel 8 no se usa sin permiso explícito del usuario. Riesgos abiertos: latencia de ruta larga y búsqueda del núcleo de CoMaps, y licencias heredadas (bsdiff, code2000, Entypo).
 
 ## Comandos
 

@@ -188,3 +188,10 @@ Formato: fecha · decisión · motivo · alternativas descartadas · cómo rever
 - **Prueba de reproducibilidad NO completada:** lancé dos compilaciones limpias del APK sin firmar para comparar entradas, pero el sistema alcanzó poca memoria libre (27 de 30 GB) y detuvo mi comando de espera; paré mis procesos de compilación para no perjudicar al resto de la máquina. No hay resultado, ni positivo ni negativo. Repetir cuando haya memoria libre y bajo petición del usuario: `./gradlew clean :app:assembleFossRelease` dos veces y comparar `unzip -v`. Un APK reproducible es requisito de F-Droid (como en UltimateDeck).
 - **Efecto secundario:** `gradle clean` borró `app/build` y `native-comaps/build`; la próxima compilación nativa tardará (≈ 3-5 min).
 - **Revertir:** `git revert` de este commit; no cambia código de la app salvo la línea del manifiesto.
+
+## 2026-10-07 · El código se publica en GitHub (primer push a `master`, autorizado por el usuario)
+- **Decisión:** `git push origin master` (excepción única a «nunca empujes a `master`»), tras preguntar al usuario («¿subo ya el código?» → «Si»). 29 commits, repositorio público `qtekfun/UltimateMaps`, rama por defecto `master`; local y remoto idénticos (`aa9ebab`).
+- **Antes de publicar se escaneó** lo versionado (sin `third_party`): sin claves, tokens, números de serie del móvil, IP privadas ni correos personales. Se publican: el autor `Qtekfun <qtekfun@gmail.com>` de los commits, 19 `logcat` de las pruebas del spike (sin datos personales encontrados) y los enlaces a la sesión de Claude de los mensajes de commit.
+- **No se hizo:** quitar los logs del historial (exigiría reescribirlo: «Cuándo preguntar» nº 5). Quedan solo en local las ramas `spike/*` y `feat/*`.
+- **Pendiente del usuario:** protección de `master` y CI (sin checks, las PR no se mergean solas); los secretos `UM_*`.
+- **Desde ahora:** una rama y una PR por tarea; esta misma entrada va por PR.
