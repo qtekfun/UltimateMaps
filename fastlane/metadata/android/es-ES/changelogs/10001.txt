@@ -1,0 +1,1 @@
+Primera versión candidata (MVP): mapa sin conexión, descarga de regiones, búsqueda sin conexión, vista previa de ruta, sitios guardados, GPX/KML y enlaces de mapas. Solo España.

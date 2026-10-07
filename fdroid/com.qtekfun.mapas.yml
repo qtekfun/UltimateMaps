@@ -1,0 +1,17 @@
+Categories:
+  - Navigation
+License: GPL-3.0-or-later
+AuthorName: qtekfun
+SourceCode: https://github.com/qtekfun/UltimateMaps
+IssueTracker: https://github.com/qtekfun/UltimateMaps/issues
+Changelog: https://github.com/qtekfun/UltimateMaps/blob/HEAD/CHANGELOG.md
+
+AutoName: Mapas
+
+RepoType: git
+Repo: https://github.com/qtekfun/UltimateMaps.git
+Binaries: 
+  https://github.com/qtekfun/UltimateMaps/releases/download/v%v/UltimateMaps-%v.apk
+
+AutoUpdateMode: Version
+UpdateCheckMode: Tags ^v[0-9]+\.[0-9]+\.[0-9]+(-rc\.[0-9]+)?$
