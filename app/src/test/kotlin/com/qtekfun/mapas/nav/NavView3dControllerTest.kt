@@ -40,6 +40,16 @@ class NavView3dControllerTest {
         assertTrue(r.settings.settings.value.view3d)
     }
 
+    @Test fun `the mute button writes the voice setting and the screen follows it`() {
+        val r = rig()
+        assertTrue(r.screen.ui.value.voiceOn)
+        r.screen.setVoice(false)
+        r.await("muted") { !it.voiceOn }
+        assertFalse(r.settings.settings.value.voiceEnabled)
+        r.settings.update { it.copy(voiceEnabled = true) }
+        r.await("unmuted from Settings") { it.voiceOn }
+    }
+
     @Test fun `the choice made in Settings reaches a trip in progress`() {
         val r = rig()
         r.beginParked()

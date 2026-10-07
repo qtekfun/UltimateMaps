@@ -42,7 +42,7 @@ class NavScreenTest {
 
     private val actions = NavActions(
         onStop = { calls += "stop" }, onRecenter = { calls += "recenter" }, onGlove = { calls += "glove:$it" },
-        onView3d = { calls += "view3d:$it" }, onOverview = { calls += "overview" },
+        onView3d = { calls += "view3d:$it" }, onVoice = { calls += "voice:$it" }, onOverview = { calls += "overview" },
         onFaster = { calls += "faster" }, onSlower = { calls += "slower" }, onExit = { calls += "exit" },
         onResume = { calls += "resume" }, onDiscard = { calls += "discard" },
     )
@@ -236,6 +236,19 @@ class NavScreenTest {
         rule.onNodeWithTag("nav_view_toggle").assertContentDescriptionEquals("Flat 2D view on. Switch to the 3D view")
         rule.onNodeWithTag("nav_view_toggle").performClick()
         assertEquals(listOf("view3d:false", "view3d:true"), calls)
+    }
+
+    @Test fun `the mute button shows the state, describes it, and asks for the opposite`() {
+        show(driving().copy(voiceOn = true))
+        assertEquals("Mute", text("nav_mute"))
+        rule.onNodeWithTag("nav_mute").assertContentDescriptionEquals("Voice on. Tap to mute the spoken guidance")
+        rule.onNodeWithTag("nav_mute").performClick()
+        ui = driving().copy(voiceOn = false)
+        rule.waitForIdle()
+        assertEquals("Unmute", text("nav_mute"))
+        rule.onNodeWithTag("nav_mute").assertContentDescriptionEquals("Voice muted. Tap to turn the spoken guidance back on")
+        rule.onNodeWithTag("nav_mute").performClick()
+        assertEquals(listOf("voice:false", "voice:true"), calls)
     }
 
     @Test fun `the 2D 3D toggle and the route overview button are at least 56 dp in glove mode`() {

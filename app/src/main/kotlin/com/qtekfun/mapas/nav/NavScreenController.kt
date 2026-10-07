@@ -51,6 +51,8 @@ data class NavUi(
     val view3d: Boolean = true,
     /** Extruded 3D buildings are wanted while [view3d] (navigation setting). */
     val buildings3d: Boolean = true,
+    /** Spoken guidance is on (false: muted). Persisted in the navigation settings, like [view3d]. */
+    val voiceOn: Boolean = true,
     /** The whole remaining route is framed for a moment ([NavScreenController.showOverview]); the camera does not follow meanwhile. */
     val overview: Boolean = false,
 ) {
@@ -97,7 +99,7 @@ class NavScreenController(
     private val stopFlashMillis: Long = STOP_FLASH_MILLIS,
     private val overviewMillis: Long = OVERVIEW_MILLIS,
 ) {
-    private fun idleUi() = NavUi(glove = prefs.glove, view3d = settings.settings.value.view3d, buildings3d = settings.settings.value.buildings3d)
+    private fun idleUi() = NavUi(glove = prefs.glove, view3d = settings.settings.value.view3d, buildings3d = settings.settings.value.buildings3d, voiceOn = settings.settings.value.voiceEnabled)
 
     private val _ui = MutableStateFlow(idleUi())
     val ui: StateFlow<NavUi> = _ui.asStateFlow()
@@ -123,7 +125,7 @@ class NavScreenController(
     init {
         // The 2D/3D switch lives in the settings (the Settings screen changes it too): follow it.
         scope.launch {
-            settings.settings.collect { st -> _ui.update { if (it.view3d == st.view3d && it.buildings3d == st.buildings3d) it else it.copy(view3d = st.view3d, buildings3d = st.buildings3d) } }
+            settings.settings.collect { st -> _ui.update { if (it.view3d == st.view3d && it.buildings3d == st.buildings3d && it.voiceOn == st.voiceEnabled) it else it.copy(view3d = st.view3d, buildings3d = st.buildings3d, voiceOn = st.voiceEnabled) } }
         }
         scope.launch { controller.state.collect(::onState) }
         scope.launch { controller.problem.collect { p -> _ui.update { it.copy(problem = p) } } }
@@ -189,6 +191,9 @@ class NavScreenController(
 
     /** Switches between the 3D and the flat 2D camera; the choice is saved in the navigation settings. */
     fun setView3d(on: Boolean) = settings.update { it.copy(view3d = on) }
+
+    /** Mutes or unmutes the spoken guidance (the same switch as Settings, Navigation, Voice guidance). */
+    fun setVoice(on: Boolean) = settings.update { it.copy(voiceEnabled = on) }
 
     /**
      * Frames the whole remaining route for [overviewMillis] (the map side is [NavHost]'s), then goes back to following.
