@@ -39,3 +39,9 @@ class Track(val info: TrackInfo, val segments: List<List<TrackPoint>>)
 
 /** Result of [PlacesRepository.addPlaceIfNew]. */
 data class AddResult(val id: Long, val created: Boolean)
+
+/** Fixed personal places that are not part of any list: the user's Home and Work and the parked car. */
+enum class SpecialSlot { HOME, WORK, PARKING }
+
+/** The place stored in a [SpecialSlot]. [savedAt] is epoch milliseconds. */
+data class SpecialPlace(val slot: SpecialSlot, val name: String, val point: LatLon, val savedAt: Long = 0)
