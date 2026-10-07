@@ -78,10 +78,10 @@ The Overpass API is not needed: it timed out for a whole-country query, and the 
 | Match of report and DATEX | 563 of 707 report fixed radars match a DATEX point (same road, same kilometre within 20 m); 144 do not (17 newer than the stale DATEX file, many on regional roads): **dropped, not guessed** |
 | Anchors for placing kilometre points | 6,923 (road, km) -> coordinates from DGT incident, traffic-camera and variable-message-panel feeds plus the radar points; 787 distinct mobile-radar roads, **554 of them have no anchor at all** (mostly regional `CM-`, `CV-`... roads) |
 | Interpolation error (leave-one-out on the 690 DATEX points) | placeable 364; median 104 m, 75th percentile 314 m, 90th 670 m, 95th 972 m. With a gap of 1 km or less between anchors: median 38 m, 90th percentile 342 m. Too coarse for a "camera ahead" alert, so report-only fixed radars are not placed; fine for a rough zone line |
-| Result: fixed cameras (DGT only + OSM sample) | see the summary table in `cameras-implementation.md` |
+| Result: fixed cameras | **2,608** (690 DGT booths + 2,526 OSM nodes, 608 merged within 100 m), 1,643 with a road axis, 2,236 with an enforced limit (from OSM); 47 average-speed sections |
 | Mobile-radar zones | 1,325 in the file; only 25 can be drawn (both ends between anchors); the other 1,300 are stored as text (road, province, kilometres) |
-| OSM `highway=speed_camera` | see `cameras-implementation.md` (Overpass tiles inside the ES area; one whole-country query timed out) |
-| Output size | about 53 KB for the DGT data plus a Madrid OSM sample; the analysis estimate of under 150 KB holds |
+| OSM `highway=speed_camera` | 2,526 nodes inside Spain from Overpass in 3-degree tiles restricted to the ES area (a whole-country query timed out; 5 ocean-only tiles never answered; "at least", not a verified total); 28 dropped as mobile or disused |
+| Output size | **80,526 bytes** for everything above; the analysis estimate of under 150 KB holds |
 
 Direction: the DATEX file has none (`tpegDirection` is always `unknown`); the report gives "Creciente/Decreciente" (kilometre
 points increasing/decreasing), which the converter joins to the booths it can match and combines with a local road bearing
