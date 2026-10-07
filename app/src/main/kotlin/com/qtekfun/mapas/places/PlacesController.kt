@@ -56,6 +56,8 @@ class PlacesController(
     private val service: Lazy<PlacesService>,
     private val near: () -> LatLon?,
     private val onMarkers: (List<LatLon>) -> Unit,
+    /** Called after every reload (imports and deletes end in one), for views of other stored data such as tracks. */
+    private val onReloaded: () -> Unit = {},
 ) {
     val state = PlacesState()
     private var refreshJob: Job? = null
@@ -172,6 +174,7 @@ class PlacesController(
             state.openList = loaded.second
             state.rows = loaded.third
             onMarkers(loaded.third.map { it.place.point })
+            onReloaded()
         }
     }
 
