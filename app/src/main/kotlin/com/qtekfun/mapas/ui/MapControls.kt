@@ -89,8 +89,20 @@ fun DrawScope.drawCompassIcon(tint: Color) {
     drawPath(south, tint.copy(alpha = 0.55f))
 }
 
+/** How far the heading is from north, 0 to 180 degrees: 359.9 (how the map engine reports it) is 0.1 away, not 359.9. */
+fun degreesFromNorth(bearingDegrees: Float): Float {
+    val b = ((bearingDegrees % 360f) + 360f) % 360f
+    return if (b > 180f) 360f - b else b
+}
+
+/** The compass shows when the map is rotated or tilted: tapping it brings the map back to north-up and flat. */
+fun compassVisible(bearingDegrees: Float, tiltDegrees: Float): Boolean =
+    degreesFromNorth(bearingDegrees) > COMPASS_THRESHOLD || tiltDegrees > COMPASS_THRESHOLD
+
+private const val COMPASS_THRESHOLD = 0.5f
+
 /**
- * Column of map buttons (top-right, like Apple Maps). The compass only appears when the map is rotated.
+ * Column of map buttons (top-right, like Apple Maps). The compass only appears when the map is rotated or tilted.
  */
 @Composable
 fun MapButtons(
@@ -101,9 +113,10 @@ fun MapButtons(
     onLocate: () -> Unit,
     onResetNorth: () -> Unit,
     modifier: Modifier = Modifier,
+    tiltDegrees: Float = 0f,
 ) {
     Column(modifier = modifier, horizontalAlignment = Alignment.End) {
-        if (kotlin.math.abs(bearingDegrees) > 0.5f) {
+        if (compassVisible(bearingDegrees, tiltDegrees)) {
             MapButton(compassDescription, onResetNorth, tag = "btn_compass") { tint ->
                 // Rotation is applied through the Canvas transform below to keep the icon crisp.
                 rotate(-bearingDegrees) { drawCompassIcon(tint) }
