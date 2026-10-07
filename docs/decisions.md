@@ -225,7 +225,7 @@ Formato: fecha · decisión · motivo · alternativas descartadas · cómo rever
   - **Cercanías:** GTFS-RT público sin clave, CC BY 4.0, 20 s; el tiempo real solo trae la siguiente parada, así que el tablero completo exige el GTFS estático (14 MB).
   - **Metro:** solo **Bilbao** tiene tiempo real abierto sin clave. **Metro de Madrid no** (solo estático, «Powered by CRTM»); TMB, Valencia, Sevilla y EMT exigen clave → solo con clave del usuario.
 - **Desmentido:** «Metro de Madrid sin clave» del roadmap anterior.
-- **Bloqueo antes de publicar la función:** la **licencia de reutilización** del servicio de combustible no está verificada (las fichas de datos.gob.es devuelven 404). Hay que aclararlo con el Ministerio. Es decisión/acción del usuario.
+- **~~Bloqueo antes de publicar la función~~ (corregido más abajo: riesgo bajo con atribución):** la **licencia de reutilización** del servicio de combustible no está verificada (las fichas de datos.gob.es devuelven 404). Hay que aclararlo con el Ministerio. Es decisión/acción del usuario.
 - **Sigue sin verificar:** límites de uso (ninguno publicado), texto de atribución de Renfe, licencia de la librería protobuf.
 ## 2026-10-07 · Guiado (maniobras, carriles, límites) desde el núcleo, sin ejecutar
 - **Decisión:** `Route(..., withGuidance)` + `nativeRouteGuidance` (JNI nuevo; `nativeRoute` intacto) + `GuidanceWire` en Kotlin; `routingEngine(withGuidance = false)` por defecto, así la vista previa no cambia. Detalle, formato y lo no verificado en `docs/phase2/maneuvers.md`.
@@ -250,7 +250,7 @@ Formato: fecha · decisión · motivo · alternativas descartadas · cómo rever
 - **Reparto (3 agentes, rama base `feat/fuel-model`):** E `feat/fuel-data-settings` (cliente del Ministerio **por combustible** con `FiltroProducto/{id}` para no revelar la zona, caché, índice espacial, y la primera pantalla de Ajustes), F `feat/fuel-map-route` (precio sobre cada gasolinera en el mapa, ficha al tocar, «Ir» y «Añadir parada», ruta con paradas), G `feat/nav-robustness` (seguimiento robusto y paradas intermedias, `NavigationService` en primer plano con estado persistente, **aislar el núcleo nativo en otro proceso** para que un `CHECK` abortado no mate la guía, y política de rutas fallidas).
 - **Motivo de aislar el núcleo:** ya abortó el proceso entero en el Pixel 8 (SIGABRT por un `CHECK` de CoMaps); en carretera sería perder la navegación.
 - **Compilación nativa serializada** entre agentes con `flock /tmp/claude-1000/native-build.lock` (poca RAM; una compilación nativa a la vez).
-- **Sigue abierto:** licencia de reutilización del servicio de combustible sin verificar (bloquea anunciar la función, no desarrollarla).
+- **Sigue abierto:** licencia de reutilización del servicio de combustible sin texto literal (después se resolvió como riesgo bajo con atribución).
 
 ## 2026-10-07 · Licencia de combustible: el usuario indica que no habrá problema; la evidencia lo apoya, con atribución obligatoria
 - **Petición del usuario:** «Lo de las licencias no creo que haya nada. Revisa gasolineras España en PlayStore que lo usa».
@@ -266,7 +266,7 @@ Formato: fecha · decisión · motivo · alternativas descartadas · cómo rever
 ## 2026-10-07 · Gasolineras: datos, caché y Ajustes (rama `feat/fuel-data-settings`)
 - **Decisión:** una petición por combustible (`FiltroProducto/{id}`, nunca por zona) con parser JSON en streaming propio (sin dependencias nuevas), caché binaria atómica por combustible, índice en rejilla inmutable (lecturas sin cerrojos) y `FuelDataManager`; pantalla de Ajustes (`SettingsActivity`) con Privacidad y Gasolineras, confirmación al activar y engranaje discreto en el mapa. Detalle en `docs/phase7/fuel-implementation.md`.
 - **Motivo:** privacidad (el servidor no sabe dónde estás), robustez ante un servicio sin documentar y sin red de seguridad (si falla un combustible, se conserva su dato) y no descargar nunca al arrancar.
-- **Licencia de reutilización NO verificada:** se muestra la atribución prudente (cita de la fuente, fecha, «información no oficial», sin llamar «oficial» al precio), pero **es un bloqueo antes de anunciar la función**: aclararlo por escrito con el Ministerio.
+- **Licencia de reutilización NO verificada:** se muestra la atribución prudente (cita de la fuente, fecha, «información no oficial», sin llamar «oficial» al precio), pero **superado por la decisión posterior del 2026-10-07 («Licencia de combustible»): riesgo bajo con atribución, ya no es un bloqueo**; aclararlo por escrito con el Ministerio es opcional.
 - **Cambios fuera de `:core-fuel`:** `DefaultNetworkPolicy.removeEndpoint` (`:core-net`), `implementation(project(":core-fuel"))` en `app/build.gradle.kts`, un engranaje en `MapScreen`/`MapControls` y una línea en `MainActivity`.
 - **Límites:** las preferencias no entran en copia (no hay exportación y `allowBackup=false`); el host se lista como propósito `OTHER`; nombres de combustible solo en español; sin medir en dispositivo.
 - **Alternativa descartada:** descargar el fichero nacional (12 MB, un solo combustible interesa) o filtrar por provincia (revela la zona).

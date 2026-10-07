@@ -31,6 +31,7 @@ import com.qtekfun.mapas.ui.MapScreenState
 import com.qtekfun.mapas.ui.Notice
 import com.qtekfun.mapas.search.PanelHost
 import com.qtekfun.mapas.ui.theme.MapasTheme
+import com.qtekfun.mapas.core.fuel.FuelTypes
 
 class MainActivity : ComponentActivity() {
     private val state = MapScreenState()
@@ -58,7 +59,13 @@ class MainActivity : ComponentActivity() {
             onCameraIdle = { state.bearing = it.bearing.toFloat() },
         )
         lifecycle.addObserver(engine)
-        panel = PanelHost(this, engine, state)
+        val app = application as MapasApp
+        panel = PanelHost(
+            this, engine, state,
+            fuelRepository = app.fuel.repository,
+            fuelSettings = app.fuelSettings,
+            fuelName = { id -> FuelTypes.byId(id)?.displayName ?: id },
+        )
         panel.onRequestLocation = ::onLocate
         state.onOpenMaps = { startActivity(Intent(this, RegionsActivity::class.java)) }
         state.onOpenSettings = { startActivity(Intent(this, SettingsActivity::class.java)) }
