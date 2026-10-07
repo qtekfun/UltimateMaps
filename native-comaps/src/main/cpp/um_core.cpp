@@ -287,6 +287,12 @@ struct Core::Impl
     {
       auto const & cf = f.GetCountryFile();
       auto const mwmId = dataSource.GetMwmIdByCountryFile(cf);
+      // World and WorldCoasts are leaves of this countries.txt but are not routable maps. Registering them is harmful:
+      // World covers the whole planet, so "are the start and finish maps near" is always true (the router then runs the
+      // slow Joints mode instead of cross-mwm leaps, tens of seconds and often "route not found" on long trips) and
+      // every neighbour query warns that World has no cross-mwm section.
+      if (cf.GetName() == WORLD_FILE_NAME || cf.GetName() == WORLD_COASTS_FILE_NAME)
+        continue;
       if (mwmId.IsAlive() && storage->IsLeaf(cf.GetName()))
         numMwmIds->RegisterFile(cf);
     }
