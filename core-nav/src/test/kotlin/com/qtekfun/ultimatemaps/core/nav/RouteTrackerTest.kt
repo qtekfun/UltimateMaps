@@ -371,6 +371,22 @@ class RouteTrackerTest {
         assertFalse(tracker.snapshot().overSpeedLimit)
     }
 
+    @Test fun overspeedFiresOnlyStrictlyAboveTheLimitAndToleranceAtTheBoundary() {
+        fun over(limit: Int, speedKmh: Float, tolerance: Double = 0.0): Boolean {
+            val b = RouteBuilder().lineTo(0.0, 5000.0)
+            val plan = b.plan(listOf(maneuver(b.lastIndex, TurnType.ARRIVE)), listOf(SpeedLimit(0, b.lastIndex, limit)))
+            val tracker = RouteTracker(plan, NavConfig(speedToleranceKmh = tolerance))
+            var t = 1000L
+            repeat(6) { tracker.onFix(fix(pt(0.0, 100.0 + (t / 1000) * speedKmh / 3.6), t, speed = speedKmh / 3.6f)); t += 1000 }
+            return tracker.snapshot().overSpeedLimit
+        }
+        assertFalse(over(50, 50f), "exactly the limit (the device test showed a warning here)")
+        assertFalse(over(50, 50.4f), "rounds to 50 on the speedometer")
+        assertTrue(over(50, 51f))
+        assertFalse(over(50, 55f, tolerance = 5.0), "at limit + tolerance")
+        assertTrue(over(50, 56f, tolerance = 5.0))
+    }
+
     @Test fun lanesOfTheNextManeuverArePublished() {
         val lanes = listOf(
             Lane(setOf(LaneDirection.LEFT), recommended = false),

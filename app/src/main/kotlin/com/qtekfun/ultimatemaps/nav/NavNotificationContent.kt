@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.annotation.StringRes
 import com.qtekfun.ultimatemaps.R
 import com.qtekfun.ultimatemaps.core.nav.NavProblem
+import com.qtekfun.ultimatemaps.core.voice.DistanceUnits
 import com.qtekfun.ultimatemaps.core.nav.NavState
 import com.qtekfun.ultimatemaps.core.nav.NavStatus
 import com.qtekfun.ultimatemaps.core.routing.TurnType
@@ -36,13 +37,13 @@ object NavNotificationTexts {
         TurnType.ARRIVE_RIGHT -> R.string.nav_turn_arrive_right
     }
 
-    fun of(context: Context, state: NavState?, problem: NavProblem?, locale: Locale = Locale.getDefault()): NavNotificationContent {
+    fun of(context: Context, state: NavState?, problem: NavProblem?, locale: Locale = Locale.getDefault(), units: DistanceUnits = DistanceUnits.METRIC): NavNotificationContent {
         val app = context.getString(R.string.app_name)
         if (problem == NavProblem.LOCATION_PERMISSION) return NavNotificationContent(app, context.getString(R.string.nav_problem_permission))
         if (problem == NavProblem.LOCATION_DISABLED) return NavNotificationContent(app, context.getString(R.string.nav_problem_gps_off))
         if (state == null) return NavNotificationContent(app, context.getString(R.string.nav_resumed))
         val remaining = context.getString(
-            R.string.nav_remaining, RouteFormat.distance(state.remainingMeters, locale), RouteFormat.duration(state.remainingSeconds),
+            R.string.nav_remaining, RouteFormat.distance(state.remainingMeters, locale, units), RouteFormat.duration(state.remainingSeconds),
         )
         return when (state.status) {
             NavStatus.ARRIVED -> NavNotificationContent(context.getString(R.string.nav_arrived), app)
@@ -54,7 +55,7 @@ object NavNotificationTexts {
                 val street = next.maneuver.streetName?.takeIf { it.isNotBlank() }
                 val action = if (street != null) context.getString(R.string.nav_onto_street, turn, street) else turn
                 NavNotificationContent(
-                    context.getString(R.string.nav_in_distance, RouteFormat.distance(next.distanceMeters.coerceAtLeast(0.0), locale), action),
+                    context.getString(R.string.nav_in_distance, RouteFormat.distance(next.distanceMeters.coerceAtLeast(0.0), locale, units), action),
                     remaining,
                 )
             }

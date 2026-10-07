@@ -2,7 +2,7 @@
 <resources>
     <!-- Settings: section -->
     <string name="cam_title">Speed cameras and traffic</string>
-    <string name="cam_intro">All of this is optional and off by default. Cameras come from a small file in the map data release; traffic incidents are downloaded live, only when you turn them on. Your position is never sent anywhere.</string>
+    <string name="cam_intro">Optional, off by default. Camera data is a small file from the map data release; traffic is downloaded only when you turn it on. Your position is never sent.</string>
 
     <string name="cam_fixed_title">Fixed speed cameras</string>
     <string name="cam_fixed_body">Fixed cameras and average-speed sections, on the map and as an alert ahead.</string>
@@ -18,13 +18,13 @@
     <string name="cam_only_speeding_body">For cameras with a known limit, stay quiet while you are under it. Cameras with an unknown limit always warn.</string>
 
     <!-- Settings: legal note and acknowledgement dialog -->
-    <string name="cam_legal_note">Mobile-radar zones are only the stretches the DGT publishes; the exact position of a mobile control is not published and is never shown. Alerts are informational and can be wrong or out of date. Check the traffic rules where you drive; you are responsible for how you drive.</string>
+    <string name="cam_legal_note">Mobile-radar zones are the stretches the DGT publishes; the exact spot of a mobile control is never shown. Alerts are informational and can be wrong or out of date. You are responsible for how you drive.</string>
     <string name="cam_confirm_title">Speed camera data</string>
-    <string name="cam_confirm_body">This turns on a warning about speed cameras.\n\n- Fixed cameras and average-speed sections come from the DGT (CC BY) and OpenStreetMap (ODbL). The DGT list says where a camera may be, not that it is switched on.\n- Mobile-radar zones are stretches of road published by the DGT. The app has no live data, no police controls and no user reports, and it never will.\n- The file comes from the map data server you chose; nothing about your position is sent.\n- Warnings are informational and may be wrong or out of date. Check the traffic rules where you drive.</string>
+    <string name="cam_confirm_body">This turns on speed camera warnings.\n\n- Sources: DGT (CC BY) and OpenStreetMap (ODbL). A camera on the list may not be switched on.\n- Mobile-radar zones are road stretches published by the DGT. No live data, police controls or user reports.\n- The file comes from the map data server you chose; nothing about your position is sent.\n- Informational only: it may be wrong or out of date.</string>
     <string name="cam_confirm_yes">I understand, turn on</string>
     <string name="cam_confirm_no">Cancel</string>
     <string name="cam_incidents_confirm_title">Traffic data</string>
-    <string name="cam_incidents_confirm_body">This downloads the DGT national traffic file (about 200 KB, compressed) from nap.dgt.es when you turn it on, when you press Update now and when the app opens with old data. The whole country is downloaded and filtered on your phone: your position and route are never sent. Offline mode blocks it.</string>
+    <string name="cam_incidents_confirm_body">This downloads the DGT national traffic file (about 200 KB) from nap.dgt.es when you turn it on, press Update now or open the app with old data. It is filtered on your phone: your position and route are never sent. Offline mode blocks it.</string>
     <string name="cam_incidents_confirm_offline">Offline mode is on: nothing is downloaded until you turn it off.</string>
 
     <!-- Settings: data card -->

@@ -26,9 +26,7 @@
 
     <string name="notice_link_title">Map link</string>
     <string name="notice_search_title">Search: %1$s</string>
-    <string name="notice_search_body">Offline search is not available yet, so this link only moved the map.</string>
-    <string name="notice_place_title">Place</string>
-    <string name="notice_place_body">Opened from a map link.</string>
+    <string name="notice_search_body">No offline maps are installed, so this link could only move the map.</string>
     <string name="notice_location_title">Location</string>
     <string name="location_permission_denied">Location permission was denied. Enable it in the system settings to see where you are.</string>
     <string name="location_unavailable">No location provider is available on this device.</string>
