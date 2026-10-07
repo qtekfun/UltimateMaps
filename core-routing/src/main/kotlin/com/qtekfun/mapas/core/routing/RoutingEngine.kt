@@ -25,7 +25,13 @@ data class RouteRequest(
     val options: RouteOptions = RouteOptions(),
 )
 
-data class RoutePlan(val geometry: List<LatLon>, val distanceMeters: Double, val durationSeconds: Double)
+data class RoutePlan(
+    val geometry: List<LatLon>,
+    val distanceMeters: Double,
+    val durationSeconds: Double,
+    /** Maneuvers, lanes and speed limits for turn-by-turn; [RouteGuidance.EMPTY] when the engine gives none. */
+    val guidance: RouteGuidance = RouteGuidance.EMPTY,
+)
 
 /** On-device routing contract. Returns null when no route exists. */
 interface RoutingEngine : AutoCloseable {
