@@ -38,6 +38,10 @@ echo "== json strings and categories"
 echo "== desktop UI strings (libs/platform/localized_types_map.cpp)"
 ./tools/unix/generate_desktop_ui_strings.sh
 
+# Feature type names ("Pharmacy" / "Farmacia") per language for the search results' category (CoMaps only generates English).
+echo "== localized type names (native-comaps/src/main/cpp/generated/um_localized_types.inc)"
+python3 "$ROOT/scripts/gen-localized-types.py" --comaps "$C"
+
 # The core sets Android's default style (default/light) with SetCurrentStyle and therefore loads
 # drules_proto_default_light.bin; without it, CoMaps init fails (verified on the Pixel 8). It is generated BEFORE the
 # vehicle style: each libkomwm rewrites classificator.txt/types.txt/visibility.txt and vehicle must come last, as in
