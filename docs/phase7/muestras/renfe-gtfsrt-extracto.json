@@ -1,0 +1,128 @@
+{
+ "_nota": "Extracto de gtfsrt.renfe.com (JSON), 2026-10-07; posiciones redondeadas. Licencia CC BY 4.0 (data.renfe.com).",
+ "trip_updates": {
+  "header": {
+   "gtfsRealtimeVersion": "2.0",
+   "timestamp": "1791367430"
+  },
+  "entity": [
+   {
+    "id": "TUUPDATE_3078X23530C1",
+    "tripUpdate": {
+     "trip": {
+      "tripId": "3078X23530C1",
+      "scheduleRelationship": "SCHEDULED"
+     },
+     "stopTimeUpdate": [
+      {
+       "arrival": {
+        "delay": -60,
+        "time": "1791367854"
+       },
+       "stopId": "50704"
+      }
+     ],
+     "vehicle": {
+      "wheelchairAccessible": "WHEELCHAIR_INACCESSIBLE"
+     },
+     "delay": -60
+    }
+   },
+   {
+    "id": "TUUPDATE_3078X23533C1",
+    "tripUpdate": {
+     "trip": {
+      "tripId": "3078X23533C1",
+      "scheduleRelationship": "SCHEDULED"
+     },
+     "stopTimeUpdate": [
+      {
+       "arrival": {
+        "delay": 900,
+        "time": "1791367409"
+       },
+       "stopId": "50704"
+      }
+     ],
+     "vehicle": {
+      "wheelchairAccessible": "WHEELCHAIR_INACCESSIBLE"
+     },
+     "delay": 900
+    }
+   },
+   {
+    "id": "TUUPDATE_5178X77422R4",
+    "tripUpdate": {
+     "trip": {
+      "tripId": "5178X77422R4",
+      "scheduleRelationship": "SCHEDULED"
+     },
+     "stopTimeUpdate": [
+      {
+       "arrival": {
+        "delay": 2340,
+        "time": "1791367858"
+       },
+       "stopId": "72211"
+      },
+      {
+       "stopId": "78805",
+       "scheduleRelationship": "SKIPPED"
+      },
+      {
+       "stopId": "78804",
+       "scheduleRelationship": "SKIPPED"
+      }
+     ],
+     "delay": 2340
+    }
+   }
+  ]
+ },
+ "vehicle_positions": {
+  "header": {
+   "gtfsRealtimeVersion": "2.0",
+   "timestamp": "1791367430"
+  },
+  "entity": [
+   {
+    "id": "VP_C3-17907",
+    "vehicle": {
+     "trip": {
+      "tripId": "3078X80903C3"
+     },
+     "position": {
+      "latitude": 37.4,
+      "longitude": -6.0
+     },
+     "currentStatus": "STOPPED_AT",
+     "timestamp": "1791367423",
+     "stopId": "51003",
+     "vehicle": {
+      "id": "17907",
+      "label": "C3-17907"
+     }
+    }
+   },
+   {
+    "id": "VP_C1-23530",
+    "vehicle": {
+     "trip": {
+      "tripId": "3078X23530C1"
+     },
+     "position": {
+      "latitude": 37.5,
+      "longitude": -5.9
+     },
+     "currentStatus": "STOPPED_AT",
+     "timestamp": "1791367423",
+     "stopId": "50702",
+     "vehicle": {
+      "id": "23530",
+      "label": "C1-23530"
+     }
+    }
+   }
+  ]
+ }
+}
