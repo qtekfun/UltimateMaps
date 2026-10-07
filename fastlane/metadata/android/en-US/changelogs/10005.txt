@@ -1,0 +1,1 @@
+Release candidate: clearer route panel, a 3D follow view while navigating, and a more visible Settings button. Offline map, region downloads, offline search, turn-by-turn navigation with voice, optional petrol-station prices. Spain only.
