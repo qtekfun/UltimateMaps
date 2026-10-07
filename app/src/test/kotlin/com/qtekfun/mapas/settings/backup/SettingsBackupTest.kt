@@ -39,6 +39,8 @@ fun nonDefaultValue(spec: SettingSpec, consentOn: Boolean): Any = when (spec.typ
     SettingType.STRING -> when (spec.key) {
         "units" -> "IMPERIAL"
         "voice_language" -> "EN"
+        "cam_alert_mode" -> "VOICE"
+        "incident_alert_mode" -> "SILENT"
         "bike_cycleways" -> "STRONGLY_PREFER"
         "map_fuel" -> "g95e5"
         "source_url" -> "https://fuel.example.org/api/"
