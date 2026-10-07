@@ -207,7 +207,7 @@ class RegionsController(
 
     /** The catalog of a server the user configured decides where its files are hosted; each host is listed as a possible connection. */
     private fun whitelistAssetHosts(catalog: RegionCatalog) {
-        val assets = catalog.regions.flatMap { it.assets.values } + listOfNotNull(catalog.base?.world, catalog.base?.worldCoasts, catalog.cameras)
+        val assets = catalog.regions.flatMap { it.assets.values } + listOfNotNull(catalog.base?.world, catalog.base?.worldCoasts, catalog.cameras) + catalog.transit.map { it.asset }
         assets.mapNotNull { parsedHost(it.url, requireHttps = !allowInsecure) }.toSet().forEach(::whitelist)
     }
 

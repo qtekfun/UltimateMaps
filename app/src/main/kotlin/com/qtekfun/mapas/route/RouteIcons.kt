@@ -73,4 +73,13 @@ internal object RouteIcons {
             Piece("M6 16L10 9H15L18 16"), Piece("M10 9L12 16H6"), Piece("M8.5 6.5H11"), Piece("M15 9L14 6H16"),
         )
     }
+
+    val transit: ImageVector by lazy {
+        build(
+            "route_transit",
+            Piece("M6 4.5H18Q19 4.5 19 5.5V16Q19 17 18 17H6Q5 17 5 16V5.5Q5 4.5 6 4.5Z"),
+            Piece("M5 11H19"), Piece("M7.5 20L9 17"), Piece("M16.5 20L15 17"),
+            Piece("M8.5 14H8.6"), Piece("M15.4 14H15.5"),
+        )
+    }
 }

@@ -34,9 +34,11 @@ class RegionsActivity : ComponentActivity() {
             onCancel = controller::cancel,
             onDelete = controller::delete,
             onDismissFailure = controller::dismissFailure,
+            onTransitDownload = { id -> (application as MapasApp).transit.download(id) },
+            onTransitDelete = { id -> (application as MapasApp).transit.delete(id) },
         )
         setContent {
-            MapasTheme(darkTheme = isSystemInDarkTheme()) { RegionsScreen(controller.uiState(), actions) }
+            MapasTheme(darkTheme = isSystemInDarkTheme()) { RegionsScreen(controller.uiState().copy(transit = (application as MapasApp).transit.rows()), actions) }
         }
     }
 
