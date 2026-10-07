@@ -38,6 +38,16 @@ echo "== cadenas json y categorias"
 echo "== cadenas de UI de escritorio (libs/platform/localized_types_map.cpp)"
 ./tools/unix/generate_desktop_ui_strings.sh
 
+# El nucleo fija el estilo por defecto de Android (default/light) con SetCurrentStyle y por eso carga
+# drules_proto_default_light.bin; sin el, CoMaps init falla (comprobado en el Pixel 8). Se genera ANTES que el estilo
+# vehicle: cada libkomwm reescribe classificator.txt/types.txt/visibility.txt y vehicle debe quedar el ultimo, como en
+# tools/unix/generate_drules.sh.
+echo "== drules default/light (lo pide el arranque del nucleo)"
+python3 tools/kothic/src/libkomwm.py --txt \
+  -s data/styles/default/light/style.mapcss \
+  -o data/drules_proto_default_light \
+  -p data/styles/default/include/
+
 # classificator.txt, types.txt, visibility.txt, colors.txt y patterns.txt salen de compilar UN estilo
 # (el de vehiculo, como hace generate_drules.sh al final: «produce same visibility.txt & classificator.txt»).
 echo "== classificator/types/visibility desde el estilo vehicle"
@@ -46,13 +56,5 @@ python3 tools/kothic/src/libkomwm.py --txt \
   -o data/drules_proto_vehicle_light \
   -p data/styles/vehicle/include/
 python3 tools/python/transit/transit_colors_export.py data/colors.txt > /dev/null
-
-# El nucleo carga al arrancar el fichero de reglas del estilo por defecto de la plataforma (walking/light);
-# sin el, CoMaps init falla con "File not found drules_proto_walking_light.bin" (comprobado en el Pixel 8).
-echo "== drules walking/light (lo pide el arranque del nucleo)"
-python3 tools/kothic/src/libkomwm.py --txt \
-  -s data/styles/walking/light/style.mapcss \
-  -o data/drules_proto_walking_light \
-  -p data/styles/walking/include/
 
 echo "Listo. Comprueba: ls data/classificator.txt data/categories.txt libs/platform/localized_types_map.cpp"
