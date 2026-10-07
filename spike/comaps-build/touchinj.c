@@ -1,6 +1,6 @@
-// Inyector de gestos en el dispositivo (temporizacion local, sin jitter de adb inalambrico).
-// Compilar: $NDK/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android30-clang -O2 touchinj.c -o touchinj -lm
-// Uso: touchinj <pan|zoom|rotate> <segundos> [hz=120]    escribe en /dev/input/event3 (goodix_ts0, protocolo B)
+// Gesture injector on the device (local timing, no wireless adb jitter).
+// Build: $NDK/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android30-clang -O2 touchinj.c -o touchinj -lm
+// Usage: touchinj <pan|zoom|rotate> <seconds> [hz=120]    writes to /dev/input/event3 (goodix_ts0, protocol B)
 #include <fcntl.h>
 #include <linux/input.h>
 #include <math.h>
@@ -53,7 +53,7 @@ int main(int argc, char **argv) {
       double ph = fmod(t, 2.0) / 2.0;
       double d = 120 + 480 * (0.5 - 0.5 * cos(2 * M_PI * ph));
       mv(0, CX - d / 2, CY); mv(1, CX + d / 2, CY);
-    } else {  // rotate: 360 grados cada 3 s, radio 250 px
+    } else {  // rotate: 360 degrees every 3 s, radius 250 px
       double a = 2 * M_PI * fmod(t, 3.0) / 3.0, r = 250;
       mv(0, CX - r * cos(a), CY - r * sin(a)); mv(1, CX + r * cos(a), CY + r * sin(a));
     }

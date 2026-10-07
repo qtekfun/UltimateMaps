@@ -45,7 +45,7 @@ try:
     setloc(*pts[0][:2], pts[0][2], 0)
     time.sleep(2)
     adb("logcat", "-c")
-    # ruta Sol -> Plaza de Castilla en coche; la app puede restaurar otra, de modo que se repite
+    # car route Sol -> Plaza de Castilla; the app may restore another one, so it is repeated
     adb("shell", "am", "force-stop", "app.comaps.fdroid")
     time.sleep(1)
     adb("shell", "am start -W -a android.intent.action.VIEW -d 'comaps://route?sll=40.4168,-3.7038&saddr=A&dll=40.4663,-3.6890&daddr=B&type=vehicle' app.comaps.fdroid")
@@ -53,15 +53,15 @@ try:
         setloc(*pts[0][:2], pts[0][2], 0)
         time.sleep(1)
     open(P + "-planner.png", "wb").write(subprocess.run(["adb", "exec-out", "screencap", "-p"], capture_output=True).stdout)
-    sh("input", "tap", "890", "2128")  # Empezar
+    sh("input", "tap", "890", "2128")  # Start
     for _ in range(4):
         setloc(*pts[0][:2], pts[0][2], 0)
         time.sleep(1)
-    sh("input", "tap", "828", "1396")  # Aceptar: planificar desde la ubicacion actual
+    sh("input", "tap", "828", "1396")  # Accept: plan from the current location
     for _ in range(6):
         setloc(*pts[0][:2], pts[0][2], 0)
         time.sleep(1)
-    sh("input", "tap", "890", "2128")  # Empezar de nuevo
+    sh("input", "tap", "890", "2128")  # Start again
     for _ in range(3):
         setloc(*pts[0][:2], pts[0][2], 0)
         time.sleep(1)

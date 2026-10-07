@@ -17,7 +17,7 @@ def pct(v, p):
     return v[min(len(v) - 1, int(math.ceil(p * len(v))) - 1)] if v else None
 
 
-# rafagas
+# bursts
 bursts, cur = [], [ts[0]] if ts else []
 for a, b in zip(ts, ts[1:]):
     if (b - a) / 1e6 > 100:

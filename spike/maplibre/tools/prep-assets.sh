@@ -1,6 +1,6 @@
 #!/bin/bash
-# Prepara style.json (protomaps basemaps 5.7.2, flavor light, lang es, BSD-3), sprites y glyphs locales.
-# Uso: prep-assets.sh <dir_trabajo>   (requiere node/npm; descarga assets de protomaps basemaps-assets)
+# Prepares style.json (protomaps basemaps 5.7.2, light flavor, lang es, BSD-3), local sprites and glyphs.
+# Usage: prep-assets.sh <work_dir>   (requires node/npm; downloads assets from protomaps basemaps-assets)
 set -e
 W=${1:?dir de trabajo}
 mkdir -p "$W" && cd "$W"
