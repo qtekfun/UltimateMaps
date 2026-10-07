@@ -4,6 +4,10 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 
 ## [Unreleased]
 
+### Added
+
+- **Backup and restore of the settings** (Settings, Backup and restore) to move to a new phone. *Export settings* saves a small JSON file (`ultimatemaps-settings-YYYYMMDD.json`) where you choose, through the system file picker; *Import settings* reads one, shows what will change (per group) and only then writes it, then says how many values were restored and how many skipped. It carries the navigation, fuel, camera and incident preferences, the search-history and recording switches, offline mode, the catalog address and the list of installed maps (ids only). It never carries locations (map camera, parked car), recorded tracks, search history, caches, downloaded data or any credential. After an import the Maps screen offers to download the same maps again; nothing downloads by itself and offline mode is respected. Switches that start a connection or need a notice (speed cameras, mobile zones, incidents, V16, roadworks, petrol stations) are NOT turned on by an import: they are shown as "to turn on again" and the camera notice must be accepted again. *Export everything* writes one ZIP with the places backup and the settings; importing it restores both (places are added, nothing is deleted). The file format is versioned (`schema` 1): unknown keys are ignored, wrong values are skipped and counted, a file from a newer format or a corrupt one is refused without changing anything. A test fails when a new preference key is neither exported nor in an explicit exclusion list. Verified with JVM tests only (no device).
+
 ## [0.1.0-rc.7] - pending
 
 ### Added
