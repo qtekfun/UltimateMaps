@@ -1,6 +1,7 @@
 package com.qtekfun.mapas.nativecomaps
 
 import com.qtekfun.mapas.core.geo.LatLon
+import com.qtekfun.mapas.core.routing.BikeCycleways
 import com.qtekfun.mapas.core.routing.RouteOptions
 import com.qtekfun.mapas.core.routing.RouteRequest
 import com.qtekfun.mapas.core.routing.RoutingProfile
@@ -89,5 +90,30 @@ class CoMapsCoreTest {
     @Test fun `malformed replies are rejected`() {
         assertFailsWith<IllegalArgumentException> { decodeSearch(arrayOf("x")) }
         assertFailsWith<IllegalArgumentException> { decodeRoute(doubleArrayOf(0.0, 1.0)) }
+    }
+
+    @Test fun `the cycle level lives in bits 4 and 5 and round trips`() {
+        val expected = mapOf(BikeCycleways.OFF to 0, BikeCycleways.PREFER to 16, BikeCycleways.STRONGLY_PREFER to 32, BikeCycleways.ONLY to 48)
+        for ((level, bits) in expected) {
+            assertEquals(bits, RouteOptions(bikeCycleways = level).toFlags(), level.name)
+            assertEquals(bits or 15, RouteOptions(true, true, true, true, level).toFlags(), level.name)
+            assertEquals(RouteOptions(avoidFerries = true, bikeCycleways = level), RouteOptions.fromFlags(bits or 4), level.name)
+        }
+        assertEquals(RouteOptions(), RouteOptions.fromFlags(0))
+    }
+
+    @Test fun `the cycle level reaches the native bridge for a bike route`() {
+        val f = FakeBridge()
+        core(f).routingEngine().route(RouteRequest(a, b, profile = RoutingProfile.BIKE, options = RouteOptions(bikeCycleways = BikeCycleways.ONLY)))
+        assertEquals(2, f.lastRoute!!.first)
+        assertEquals(48, f.lastRoute!!.third)
+    }
+
+    @Test fun `the no cycle route code is a failure with its own code, distinct from route not found`() {
+        val f = FakeBridge().apply { routeReply = doubleArrayOf(RouteCode.NO_CYCLE_ROUTE.toDouble(), 0.0, 0.0) }
+        val outcome = core(f).routingEngine().routeDetailed(RouteRequest(a, b, profile = RoutingProfile.BIKE))
+        assertNull(outcome.plan)
+        assertEquals(RouteCode.NO_CYCLE_ROUTE, outcome.code)
+        assertTrue(outcome.code != RouteCode.ROUTE_NOT_FOUND)
     }
 }

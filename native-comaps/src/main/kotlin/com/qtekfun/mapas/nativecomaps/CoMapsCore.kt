@@ -22,6 +22,13 @@ object RouteCode {
     const val HAS_WARNINGS = 16
 
     /**
+     * Own code (not from CoMaps): bike routing with [com.qtekfun.mapas.core.routing.BikeCycleways.ONLY] found no route
+     * (start or end not near cycle infrastructure, or a gap in the network). The UI suggests "Prefer". Same value as
+     * `um::kRouteNoCycleRoute` in C++.
+     */
+    const val NO_CYCLE_ROUTE = 1004
+
+    /**
      * Own codes (not coming from CoMaps) of the isolated core: the `:core` process died and so did the retry,
      * it could not be started/connected, or the call failed for another reason. A timeout is returned as
      * [CANCELLED] (the UI already shows it as "took too long").
@@ -154,11 +161,6 @@ internal fun RoutingProfile.toNative(): Int = when (this) {
     RoutingProfile.FOOT -> 1
     RoutingProfile.BIKE -> 2
 }
-
-/** Same bits as `um::AvoidFlags` in C++. */
-internal fun RouteOptions.toFlags(): Int =
-    (if (avoidMotorways) 1 else 0) or (if (avoidTolls) 2 else 0) or
-        (if (avoidFerries) 4 else 0) or (if (avoidUnpaved) 8 else 0)
 
 internal fun decodeSearch(raw: Array<String>): List<SearchResult> {
     require(raw.size % 5 == 0) { "malformed search response: ${raw.size}" }

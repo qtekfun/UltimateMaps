@@ -104,7 +104,7 @@ class CoreHost(private val core: CoreHandle, private val maxParked: Int = 4) {
         )
     }
 
-    private fun optionsOf(f: Int) = com.qtekfun.mapas.core.routing.RouteOptions(f and 1 != 0, f and 2 != 0, f and 4 != 0, f and 8 != 0)
+    private fun optionsOf(f: Int) = com.qtekfun.mapas.core.routing.RouteOptions.fromFlags(f)
 
     /** Number of replies parked and not yet fetched (tests and diagnostics). */
     val parkedCount: Int get() = synchronized(lock) { parked.size }
