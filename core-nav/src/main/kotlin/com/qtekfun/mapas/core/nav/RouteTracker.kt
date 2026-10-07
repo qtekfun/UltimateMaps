@@ -75,7 +75,8 @@ class RouteTracker(
         rawLon = fix.point.lon
         rawBearing = fix.bearingDegrees ?: Float.NaN
         hasRaw = true
-        val fixSpeed = fix.speedMps?.toDouble()?.takeIf { it.isFinite() && it >= 0.0 } ?: Double.NaN
+        val reported = fix.speedMps
+        val fixSpeed = if (reported != null && reported.isFinite() && reported >= 0f) reported.toDouble() else Double.NaN
         lastFixTime = t
 
         val heading = if (!rawBearing.isNaN() && (fixSpeed.isNaN() || fixSpeed >= config.headingMinSpeedMps)) {

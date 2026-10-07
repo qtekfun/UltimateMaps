@@ -203,3 +203,11 @@ Formato: fecha · decisión · motivo · alternativas descartadas · cómo rever
 - **Qué debe hacer quien ya tiene una región instalada:** la app solo baja `World` al **instalar** una región cuando aún no lo tiene; una región ya instalada no lo dispara. Basta descargar cualquier otra región (p. ej. Ceuta, 1,5 MB, + 62 MB de World) o borrar y volver a bajar la región.
 - **Salvaguarda:** `scripts/gen-region-catalog.py` avisa ahora si hay regiones descargables pero no `--base-dir`.
 - **Lo que no detectaron los tests:** ninguno cubría «catálogo real publicado → buscar»; el circuito descarga → enlace → búsqueda no se probó de punta a punta con la release real. Pendiente (con el teléfono, cuando el usuario lo permita).
+
+## 2026-10-07 · Motor de seguimiento de ruta `:core-nav` (rama `feat/nav-following`)
+- **Decisión:** módulo Kotlin JVM puro con un núcleo síncrono (`RouteTracker`) y un envoltorio de corrutinas (`NavigationSession`, `StateFlow<NavState>` + `SharedFlow<Announcement>`). Umbrales y su porqué en `docs/phase2/following.md`. Identificadores de estado en inglés (`ON_ROUTE`, `OFF_ROUTE`, `REROUTING`, `ARRIVED`, `NO_SIGNAL`) como el resto del código.
+- **Dependencia nueva:** `kotlinx-coroutines` 1.11.0 (core y test), Apache-2.0, registrada en `LICENSES.md`. Alternativa descartada: callbacks propios (reinventar `StateFlow`, y la UI Compose ya espera flujos).
+- **Motivo del núcleo síncrono:** el tiempo sale solo de los fijos y los ticks, así que las pruebas son exactas sin dormir; la sesión solo añade concurrencia (un único consumidor, sin locks).
+- **Descartado:** emparejar con el mapa de calles (no hay datos en JVM puro; la ventana monótona + rumbo basta para bucles y solapes); proyectar siempre al segmento global más cercano (salta de paso en rutas con bucles).
+- **Medido:** ≈ 0,5-0,8 µs por fijo y 0 B asignados en `onFix` (JVM de escritorio; no es el Pixel 8). Detalle en el doc.
+- **Revertir:** `git revert` de los commits de la rama; no toca ningún otro módulo (solo `settings.gradle.kts`, `libs.versions.toml` y `LICENSES.md`).
