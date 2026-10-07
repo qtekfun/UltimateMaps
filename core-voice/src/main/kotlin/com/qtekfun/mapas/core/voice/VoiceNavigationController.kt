@@ -29,8 +29,8 @@ import java.util.Locale
  * - "You have arrived" when the status becomes ARRIVED, unless the arrival maneuver was just announced (so it is
  *   not said twice).
  *
- * Turning the voice off, or ending the navigation, stops what is being said (but not the arrival message: the
- * service ends the navigation right after arriving).
+ * Turning the voice off, or ending the navigation (also [close]), stops what is being said, but not the arrival
+ * message: the service ends the navigation right after arriving.
  *
  * Wiring (see `docs/phase2/voice.md`): `VoiceNavigationController.of(app.navigation, scope, guide, settings)`
  * and [start] when a navigation starts or resumes; [close] when it ends or the service is destroyed.
@@ -76,7 +76,8 @@ class VoiceNavigationController(
     override fun close() {
         jobs.forEach(Job::cancel)
         jobs = emptyList()
-        guide.stop()
+        // After arriving the service shuts everything down at once: let "You have arrived" finish.
+        if (lastStatus != NavStatus.ARRIVED) guide.stop()
     }
 
     private fun language() = settings.value.voiceLanguage.resolve(locale())

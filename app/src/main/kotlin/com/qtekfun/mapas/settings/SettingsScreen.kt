@@ -65,6 +65,8 @@ class SettingsEnv(
     val setOffline: (Boolean) -> Unit,
     val catalogUrl: () -> String,
     val openMaps: () -> Unit,
+    /** Navigation section (voice and route defaults); null hides it. */
+    val navigation: NavigationSettingsEnv? = null,
 )
 
 /** The first Settings screen: Privacy (offline mode, region catalog, possible connections) and Petrol stations. */
@@ -97,6 +99,7 @@ fun SettingsScreen(env: SettingsEnv, onBack: () -> Unit, modifier: Modifier = Mo
             BasicText(stringResource(R.string.settings_title), style = Mapas.typography.largeTitle.copy(color = Mapas.colors.label))
             PrivacySection(env, settings, offline)
             FuelSection(env, settings, offline)
+            env.navigation?.let { NavigationSection(it) }
             Spacer(Modifier.height(32.dp))
         }
     }
@@ -380,19 +383,19 @@ private fun ConfirmDialog(server: String, offline: Boolean, onConfirm: () -> Uni
 // ---------------------------------------------------------------- Parts
 
 @Composable
-private fun SectionTitle(text: String) {
+internal fun SectionTitle(text: String) {
     Spacer(Modifier.height(20.dp))
     BasicText(text, style = Mapas.typography.title.copy(color = Mapas.colors.label))
     Spacer(Modifier.height(8.dp))
 }
 
 @Composable
-private fun Card(tag: String, content: @Composable () -> Unit) {
+internal fun Card(tag: String, content: @Composable () -> Unit) {
     Column(Modifier.fillMaxWidth().clip(Mapas.shapes.control).background(Mapas.colors.field).padding(12.dp).testTag(tag)) { content() }
 }
 
 @Composable
-private fun TextButton(label: String, tag: String, enabled: Boolean = true, onClick: () -> Unit) {
+internal fun TextButton(label: String, tag: String, enabled: Boolean = true, onClick: () -> Unit) {
     BasicText(
         label,
         style = Mapas.typography.callout.copy(color = if (enabled) Mapas.colors.accent else Mapas.colors.secondaryLabel),
@@ -404,7 +407,7 @@ private fun TextButton(label: String, tag: String, enabled: Boolean = true, onCl
 }
 
 @Composable
-private fun SwitchRow(title: String, body: String, checked: Boolean, tag: String, onChange: (Boolean) -> Unit) {
+internal fun SwitchRow(title: String, body: String, checked: Boolean, tag: String, onChange: (Boolean) -> Unit) {
     Row(
         Modifier.fillMaxWidth().toggleable(value = checked, role = Role.Switch, onValueChange = onChange).testTag(tag),
         verticalAlignment = Alignment.CenterVertically,
@@ -428,7 +431,7 @@ private fun SwitchRow(title: String, body: String, checked: Boolean, tag: String
 }
 
 @Composable
-private fun ChoiceRow(label: String, selected: Boolean, radio: Boolean, tag: String, onChange: (Boolean) -> Unit) {
+internal fun ChoiceRow(label: String, selected: Boolean, radio: Boolean, tag: String, onChange: (Boolean) -> Unit) {
     val mark = when {
         radio -> if (selected) "◉" else "○"
         else -> if (selected) "☑" else "☐"

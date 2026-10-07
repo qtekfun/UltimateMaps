@@ -9,8 +9,9 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import com.qtekfun.mapas.MapasApp
 import com.qtekfun.mapas.regions.RegionsActivity
 import com.qtekfun.mapas.ui.theme.MapasTheme
+import com.qtekfun.mapas.voice.VoiceModule
 
-/** The Settings screen (privacy and petrol stations). Opened from the gear on the map. */
+/** The Settings screen (privacy, petrol stations, navigation). Opened from the gear on the map. */
 class SettingsActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,6 +26,7 @@ class SettingsActivity : ComponentActivity() {
             setOffline = regions::setOfflineMode,
             catalogUrl = { regions.serverUrl },
             openMaps = { startActivity(Intent(this, RegionsActivity::class.java)) },
+            navigation = NavigationSettingsEnv(VoiceModule.settings(this), VoiceModule.guide(this)),
         )
         setContent {
             MapasTheme(darkTheme = isSystemInDarkTheme()) { SettingsScreen(env, onBack = ::finish) }
