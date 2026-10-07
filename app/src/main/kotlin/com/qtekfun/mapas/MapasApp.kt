@@ -24,6 +24,7 @@ import com.qtekfun.mapas.core.cameras.ManeuverGuard
 import com.qtekfun.mapas.core.cameras.CameraAsset
 import com.qtekfun.mapas.core.cameras.CameraDataManager
 import com.qtekfun.mapas.core.cameras.CameraSettingsStore
+import com.qtekfun.mapas.core.cameras.IncidentBannerMachine
 import com.qtekfun.mapas.core.cameras.IncidentCache
 import com.qtekfun.mapas.core.cameras.IncidentDataManager
 import com.qtekfun.mapas.regions.CatalogState
@@ -106,12 +107,19 @@ class MapasApp : Application() {
     /** The visual alert ahead (chip on the map and the navigation screen); created with the app so the screens can observe it before any switch is on. */
     val alertBanner = AlertBannerTracker()
 
+    /**
+     * The temporary banner for incidents on the route ahead; created with the app (like [alertBanner]) so the navigation
+     * screen can observe it before any switch is on. It reads the incident repository only when a position arrives.
+     */
+    val incidentBanner = IncidentBannerMachine({ incidents.repository }, { cameraSettings.settings.value }, System::currentTimeMillis)
+
     /** Alerts ahead (cameras, zones, incidents): route-based while navigating, free-driving while the app is on screen. */
     val cameraAlerts: CameraAlerts by lazy {
         val voice by lazy {
             AlertVoice(
                 VoiceModule.guide(this), VoiceModule.settings(this).settings,
                 maneuverImminent = { navigation.state.value?.let { ManeuverGuard.blocksVoice(it.nextManeuver?.distanceMeters, it.speedMps) } ?: false },
+                alertVoiceOn = { cameraSettings.settings.value.voiceEnabled },
             )
         }
         CameraAlerts(
@@ -127,6 +135,7 @@ class MapasApp : Application() {
             },
             onAlert = { voice.onAlert(it) },
             banner = alertBanner,
+            incidentBanner = incidentBanner,
         )
     }
 
@@ -201,6 +210,7 @@ class MapasApp : Application() {
             service = AndroidNavServiceControl(this),
             prefs = SharedNavUiPrefs(this),
             settings = com.qtekfun.mapas.voice.VoiceModule.settings(this), // the 2D/3D choice lives with the navigation settings
+            cameraSettings = cameraSettings,
         ).also {
             it.addSink(VoiceNavSink(this))
             it.addSink(AlertNavSink { if (alertsStarted) cameraAlerts else null })

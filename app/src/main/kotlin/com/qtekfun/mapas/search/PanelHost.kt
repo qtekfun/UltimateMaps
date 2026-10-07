@@ -187,11 +187,17 @@ class PanelHost(
         settings = PrefsHistorySettings(activity),
     )
 
-    /** A navigation is running (the sheet is hidden then, except for the station card). */
+    /** A navigation is running (the sheet is hidden then, except for the station and hazard cards). */
     val navigating: Boolean get() = navScreen?.ui?.value?.active == true
 
     /** A petrol-station card is open (it is shown over the navigation screen too). */
     val fuelCardOpen: Boolean get() = fuelCard.card.station != null
+
+    /** A camera or incident card is open (it is shown over the navigation screen too). */
+    val hazardCardOpen: Boolean get() = hazardCard.card.info != null
+
+    /** The sheet may be drawn above the navigation screen: a station card or a hazard card is open. */
+    val cardOverNavigation: Boolean get() = fuelCardOpen || hazardCardOpen
 
     val fuelCard = FuelCardController(
         repository = fuelRepository,

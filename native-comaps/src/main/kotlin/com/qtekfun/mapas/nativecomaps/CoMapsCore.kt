@@ -6,8 +6,10 @@ import com.qtekfun.mapas.core.routing.RoutePlan
 import com.qtekfun.mapas.core.routing.RouteRequest
 import com.qtekfun.mapas.core.routing.RoutingEngine
 import com.qtekfun.mapas.core.routing.RoutingProfile
+import com.qtekfun.mapas.core.search.PlaceExtras
 import com.qtekfun.mapas.core.search.SearchEngine
 import com.qtekfun.mapas.core.search.SearchResult
+import com.qtekfun.mapas.core.search.Wheelchair
 
 /** Codes of CoMaps' `routing::RouterResultCode` that the UI needs to tell apart. */
 object RouteCode {
@@ -172,12 +174,44 @@ internal fun RoutingProfile.toNative(): Int = when (this) {
     RoutingProfile.BIKE -> 2
 }
 
-internal fun decodeSearch(raw: Array<String>): List<SearchResult> {
-    require(raw.size % 5 == 0) { "malformed search response: ${raw.size}" }
-    return raw.toList().chunked(5).mapNotNull { (name, address, category, lat, lon) ->
-        val p = LatLon.ofOrNull(lat.toDoubleOrNull() ?: return@mapNotNull null, lon.toDoubleOrNull() ?: return@mapNotNull null)
+/**
+ * Layout of the flat string array that `nativeSearch` returns. The only place that knows the stride: C++
+ * (`kSearchStride` in `um_jni.cpp`) must match [VERSION].
+ *
+ * - v1: name, address, category, lat, lon (stride 5).
+ * - v2: v1 + phone, website, wheelchair, opening hours (stride 9); an absent tag is the empty string.
+ */
+internal object SearchWire {
+    const val V1 = 1
+    const val V2 = 2
+
+    /** The layout the bundled native library produces. */
+    const val VERSION = V2
+
+    fun stride(version: Int): Int = when (version) {
+        V1 -> 5
+        V2 -> 9
+        else -> throw IllegalArgumentException("unknown search layout: $version")
+    }
+}
+
+internal fun decodeSearch(raw: Array<String>, version: Int = SearchWire.VERSION): List<SearchResult> {
+    val stride = SearchWire.stride(version)
+    require(raw.size % stride == 0) { "malformed search response: ${raw.size}" }
+    return raw.toList().chunked(stride).mapNotNull { f ->
+        val p = LatLon.ofOrNull(f[3].toDoubleOrNull() ?: return@mapNotNull null, f[4].toDoubleOrNull() ?: return@mapNotNull null)
             ?: return@mapNotNull null
-        SearchResult(name, p, address.ifEmpty { null }, category.ifEmpty { null })
+        val extras = if (version >= SearchWire.V2) {
+            PlaceExtras(
+                phone = f[5].ifBlank { null },
+                website = f[6].ifBlank { null },
+                wheelchair = Wheelchair.fromOsm(f[7]),
+                openingHours = f[8].ifBlank { null },
+            ).takeUnless { it.isEmpty }
+        } else {
+            null
+        }
+        SearchResult(f[0], p, f[1].ifEmpty { null }, f[2].ifEmpty { null }, extras = extras)
     }
 }
 

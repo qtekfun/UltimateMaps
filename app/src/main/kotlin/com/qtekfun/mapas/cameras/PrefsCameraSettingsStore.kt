@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import com.qtekfun.mapas.core.cameras.CameraSettings
 import com.qtekfun.mapas.core.cameras.CameraSettingsStore
 import com.qtekfun.mapas.core.cameras.normalized
+import com.qtekfun.mapas.settings.backup.SettingsReloadable
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -12,11 +13,17 @@ import kotlinx.coroutines.flow.StateFlow
  * [CameraSettingsStore] over SharedPreferences (`mapas_cameras`). Every value is normalized on the way in and out, so a
  * damaged or hand-edited file can never turn a camera layer on without the acknowledgement. Everything is off by default.
  */
-class PrefsCameraSettingsStore(private val prefs: SharedPreferences) : CameraSettingsStore {
+class PrefsCameraSettingsStore(private val prefs: SharedPreferences) : CameraSettingsStore, SettingsReloadable {
     constructor(context: Context) : this(context.getSharedPreferences(PREFS, Context.MODE_PRIVATE))
 
     private val state = MutableStateFlow(read())
     override val settings: StateFlow<CameraSettings> = state
+
+    /** Re-reads the file (after a settings restore wrote to it behind this store's back). */
+    @Synchronized
+    override fun reload() {
+        state.value = read()
+    }
 
     @Synchronized
     override fun update(transform: (CameraSettings) -> CameraSettings) {
@@ -30,6 +37,7 @@ class PrefsCameraSettingsStore(private val prefs: SharedPreferences) : CameraSet
             .putBoolean(KEY_ROADWORKS, next.roadworksEnabled)
             .putBoolean(KEY_ONLY_SPEEDING, next.warnOnlyIfSpeeding)
             .putBoolean(KEY_ACK, next.acknowledged)
+            .putBoolean(KEY_VOICE, next.voiceEnabled)
             .putInt(KEY_REFRESH, next.incidentRefreshMinutes)
             .apply()
         state.value = next
@@ -46,6 +54,7 @@ class PrefsCameraSettingsStore(private val prefs: SharedPreferences) : CameraSet
             roadworksEnabled = bool(KEY_ROADWORKS, d.roadworksEnabled),
             warnOnlyIfSpeeding = bool(KEY_ONLY_SPEEDING, d.warnOnlyIfSpeeding),
             acknowledged = bool(KEY_ACK, d.acknowledged),
+            voiceEnabled = bool(KEY_VOICE, d.voiceEnabled),
             incidentRefreshMinutes = runCatching { prefs.getInt(KEY_REFRESH, d.incidentRefreshMinutes) }.getOrDefault(d.incidentRefreshMinutes),
         ).normalized()
     }
@@ -59,6 +68,7 @@ class PrefsCameraSettingsStore(private val prefs: SharedPreferences) : CameraSet
         const val KEY_ROADWORKS = "roadworks"
         const val KEY_ONLY_SPEEDING = "only_if_speeding"
         const val KEY_ACK = "acknowledged"
+        const val KEY_VOICE = "voice_alerts"
         const val KEY_REFRESH = "incident_refresh_minutes"
     }
 }

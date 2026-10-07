@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import com.qtekfun.mapas.core.voice.NavSettings
 import com.qtekfun.mapas.core.voice.NavSettingsStore
+import com.qtekfun.mapas.settings.backup.SettingsReloadable
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -12,11 +13,17 @@ import kotlinx.coroutines.flow.StateFlow
  * unknown or damaged value falls back to its default, so a hand-edited file cannot break navigation. Voice on,
  * metric/imperial by region, nothing avoided by default.
  */
-class PrefsNavSettingsStore(private val prefs: SharedPreferences) : NavSettingsStore {
+class PrefsNavSettingsStore(private val prefs: SharedPreferences) : NavSettingsStore, SettingsReloadable {
     constructor(context: Context) : this(context.getSharedPreferences(PREFS, Context.MODE_PRIVATE))
 
     private val state = MutableStateFlow(read())
     override val settings: StateFlow<NavSettings> = state
+
+    /** Re-reads the file (after a settings restore wrote to it behind this store's back). */
+    @Synchronized
+    override fun reload() {
+        state.value = read()
+    }
 
     @Synchronized
     override fun update(transform: (NavSettings) -> NavSettings) {
