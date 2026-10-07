@@ -27,6 +27,7 @@ import com.qtekfun.mapas.places.PanelNote
 import com.qtekfun.mapas.places.PanelRow
 import com.qtekfun.mapas.places.PanelTextField
 import com.qtekfun.mapas.places.PlaceCard
+import com.qtekfun.mapas.places.TrackLayerController
 import com.qtekfun.mapas.places.PlaceInfo
 import com.qtekfun.mapas.places.PlacesController
 import com.qtekfun.mapas.places.PlacesMessage
@@ -74,6 +75,7 @@ fun SheetPanel(
     route: RoutePreviewController? = null,
     fuel: FuelCardHost? = null,
     navStart: NavStartHost? = null,
+    tracks: TrackLayerController? = null,
 ) {
     val card = places.state.card
     Column(modifier.fillMaxWidth().testTag("sheet_panel")) {
@@ -115,7 +117,7 @@ fun SheetPanel(
             if (places.state.mode == PanelMode.SEARCH) {
                 SearchPane(search, actions, Modifier.weight(1f, fill = false))
             } else {
-                ListsPanel(places, actions.onShowSaved, actions.onImport, actions.onExport, actions.onFocusField, Modifier.weight(1f, fill = false))
+                ListsPanel(places, actions.onShowSaved, actions.onImport, actions.onExport, actions.onFocusField, Modifier.weight(1f, fill = false), tracks)
             }
         }
         places.state.message?.let {

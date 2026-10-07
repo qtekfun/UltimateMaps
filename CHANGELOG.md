@@ -7,6 +7,7 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 ### Added
 
 - Google Takeout import (offline): in Saved places, "Import" now also accepts a Takeout ZIP or one of its CSV / GeoJSON files and creates one list per file. Places without coordinates are skipped and counted in the result summary. The Takeout layouts are assumptions, not verified against a current real export; see `docs/decisions.md`.
+- Imported GPX tracks and routes can be drawn on the map as coloured lines (a MapLibre layer under the route line): Saved places, lists overview, "Tracks on the map", with Show/Hide and "Zoom to track" per track. Works offline. Not seen on a device yet.
 
 ## [0.1.0-rc.5] - pending
 

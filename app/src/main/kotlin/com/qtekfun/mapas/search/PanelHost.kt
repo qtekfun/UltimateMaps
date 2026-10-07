@@ -16,6 +16,7 @@ import com.qtekfun.mapas.fuel.FuelCardState
 import com.qtekfun.mapas.map.FuelMapLayer
 import com.qtekfun.mapas.map.NoFuelData
 import com.qtekfun.mapas.map.StaticFuelSettings
+import com.qtekfun.mapas.core.map.CameraPadding
 import com.qtekfun.mapas.core.map.CameraState
 import com.qtekfun.mapas.core.map.MapEngine
 import com.qtekfun.mapas.places.DocumentLaunchers
@@ -23,6 +24,7 @@ import com.qtekfun.mapas.places.GeoFormat
 import com.qtekfun.mapas.places.GeoShare
 import com.qtekfun.mapas.places.PlaceInfo
 import com.qtekfun.mapas.places.PlacesController
+import com.qtekfun.mapas.places.TrackLayerController
 import com.qtekfun.mapas.places.openPlacesService
 import com.qtekfun.mapas.places.toPlaceInfo
 import com.qtekfun.mapas.core.search.SearchResult
@@ -115,12 +117,28 @@ class PanelHost(
         )
     }
 
+    private val placesService = lazy { openPlacesService(activity) }
+
     val places = PlacesController(
         scope = activity.lifecycleScope,
         io = Dispatchers.IO,
-        service = lazy { openPlacesService(activity) },
+        service = placesService,
         near = { userLocation ?: engine.cameraState().center },
         onMarkers = engine::showMarkers,
+        onReloaded = { tracks.refresh() },
+    )
+
+    /** Imported GPX tracks drawn as map lines (toggle and fit per track in the lists overview). */
+    val tracks = TrackLayerController(
+        scope = activity.lifecycleScope,
+        io = Dispatchers.IO,
+        service = placesService,
+        render = engine::showTracks,
+        fit = { points ->
+            val d = activity.resources.displayMetrics.density
+            // The bottom sheet covers roughly the lower half of the screen.
+            engine.frameRoute(points, CameraPadding((40 * d).toInt(), (80 * d).toInt(), (40 * d).toInt(), (300 * d).toInt()))
+        },
     )
 
     val fuelCard = FuelCardController(
@@ -227,7 +245,7 @@ class PanelHost(
                 )
             }
         }
-        SheetPanel(search, places, actions, route = route, fuel = fuel, navStart = navStart)
+        SheetPanel(search, places, actions, route = route, fuel = fuel, navStart = navStart, tracks = tracks)
     }
 
     private companion object {

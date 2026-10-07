@@ -6,6 +6,7 @@ import com.qtekfun.mapas.core.data.Place
 import com.qtekfun.mapas.core.data.PlaceList
 import com.qtekfun.mapas.core.data.PlacesRepository
 import com.qtekfun.mapas.core.data.TakeoutImport
+import com.qtekfun.mapas.core.data.TrackInfo
 import com.qtekfun.mapas.core.data.TakeoutSummary
 import com.qtekfun.mapas.core.geo.LatLon
 import com.qtekfun.mapas.core.geo.distanceTo
@@ -123,6 +124,13 @@ class PlacesService(private val repo: PlacesRepository, private val defaultList:
     fun deleteList(id: Long): Boolean = repo.deleteList(id)
 
     fun removeFromList(listId: Long, placeId: Long) = repo.removeFromList(listId, placeId)
+
+    /** Imported GPX tracks and routes (without geometry), newest first. */
+    fun tracks(): List<TrackInfo> = repo.tracks().sortedByDescending { it.createdAt }
+
+    /** The geometry of track [id] as plain points, or null when it no longer exists. */
+    fun trackSegments(id: Long): List<List<LatLon>>? =
+        repo.track(id)?.segments?.map { seg -> seg.map { it.point } }
 
     /** Places of [listId] (all when null) matching [query]; by distance from [near] or by name. */
     fun rows(listId: Long?, query: String?, near: LatLon?, byDistance: Boolean): List<PlaceRow> =
