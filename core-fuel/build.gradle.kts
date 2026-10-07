@@ -6,6 +6,7 @@ kotlin { jvmToolchain(21) }
 
 dependencies {
     api(project(":core-geo"))
+    api(project(":core-net"))
     api(libs.kotlinx.coroutines.core)
     testImplementation(platform(libs.junit.bom))
     testImplementation(libs.junit.jupiter)
