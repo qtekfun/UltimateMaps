@@ -9,6 +9,7 @@ import com.qtekfun.mapas.regions.RegionsController
 import com.qtekfun.mapas.search.CoMapsSearchBackend
 import com.qtekfun.mapas.search.PrefsHistorySettings
 import com.qtekfun.mapas.settings.PrefsNavSettingsStore
+import com.qtekfun.mapas.transit.follow.PrefsTransitTripSettings
 import org.junit.Test
 import java.io.File
 import java.lang.reflect.Modifier
@@ -33,6 +34,7 @@ class SettingsSchemaCoverageTest {
     private val knownKeys: Set<String> = buildSet {
         addAll(keysOf(PrefsNavSettingsStore::class.java, PrefsNavSettingsStore.PREFS))
         addAll(keysOf(PrefsFuelSettingsStore::class.java, PrefsFuelSettingsStore.PREFS))
+        addAll(keysOf(PrefsTransitTripSettings::class.java, PrefsTransitTripSettings.PREFS))
         addAll(keysOf(PrefsCameraSettingsStore::class.java, PrefsCameraSettingsStore.PREFS))
         addAll(keysOf(PrefsHistorySettings::class.java, PrefsHistorySettings.PREFS))
         addAll(keysOf(PrefsRecordingSettings::class.java, PrefsRecordingSettings.PREFS))
@@ -81,7 +83,7 @@ class SettingsSchemaCoverageTest {
         val expected = sortedSetOf(
             "AndroidNavServiceControl.kt", "AndroidPlaces.kt", "AndroidSettingsStorage.kt", "CoMapsSearchBackend.kt", "MapasApp.kt",
             "PendingRestore.kt", "PrefsCameraSettingsStore.kt", "PrefsCameraStateStore.kt", "PrefsFuelSettingsStore.kt",
-            "PrefsNavSettingsStore.kt", "RecordingController.kt", "RegionsController.kt", "SearchHistory.kt",
+            "PrefsNavSettingsStore.kt", "RecordingController.kt", "RegionsController.kt", "SearchHistory.kt", "TransitTripSettings.kt",
         )
         assertEquals(expected, found, "a new SharedPreferences file needs a SettingsSchema entry or an exclusion, then add its file here")
     }

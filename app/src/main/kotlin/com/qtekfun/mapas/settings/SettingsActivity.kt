@@ -58,7 +58,7 @@ class SettingsActivity : ComponentActivity() {
             setOffline = regions::setOfflineMode,
             catalogUrl = { regions.serverUrl },
             openMaps = { startActivity(Intent(this, RegionsActivity::class.java)) },
-            navigation = NavigationSettingsEnv(VoiceModule.settings(this), VoiceModule.guide(this)),
+            navigation = NavigationSettingsEnv(VoiceModule.settings(this), VoiceModule.guide(this), transitTrip = app.transitTripSettings),
             history = HistorySettingsEnv(PrefsHistorySettings(this), clear = ::clearSearchHistory),
             cameras = CamerasSettingsEnv(
                 app.cameraSettings, app.cameraData, app.incidents, offline = { regions.offline }, onChanged = app::ensureCameraAlerts,
@@ -86,7 +86,7 @@ class SettingsActivity : ComponentActivity() {
                 "recording/enabled" to { v: Any -> app.recording.setEnabled(v as Boolean) },
             ),
             onFinish = {
-                listOf(app.fuelSettings, app.cameraSettings, VoiceModule.settings(this)).forEach { (it as? SettingsReloadable)?.reload() }
+                listOf(app.fuelSettings, app.cameraSettings, VoiceModule.settings(this), app.transitTripSettings).forEach { (it as? SettingsReloadable)?.reload() }
                 app.ensureCameraAlerts()
             },
         )

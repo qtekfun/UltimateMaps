@@ -120,6 +120,7 @@ dependencies {
     testImplementation(platform(libs.androidx.compose.bom))
     testImplementation(libs.androidx.compose.ui.test.junit4)
     testImplementation(kotlin("test-junit"))
+    testImplementation(libs.kotlinx.coroutines.test) // virtual time for the transit trip host tests
     debugImplementation(platform(libs.androidx.compose.bom))
     debugImplementation(libs.androidx.compose.ui.test.manifest)
 }

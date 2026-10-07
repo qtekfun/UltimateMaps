@@ -239,7 +239,7 @@ curl -sL -o renfe_cercanias.zip https://ssl.renfe.com/ftransit/Fichero_CER_FOMEN
 ./gradlew --no-daemon -Dorg.gradle.workers.max=2 -Dorg.gradle.jvmargs=-Xmx1536m :core-transit:transitBench -PtransitData=$HOME/mapas-data/transit/raw
 ```
 
-## 7. The feature as built (branch `feat/transit`)
+## 7. What is built (branches `feat/transit` and `feat/transit-follow`)
 
 What exists, verified by JVM and Robolectric tests only (nothing was tried on a device; no `adb` was used):
 
@@ -262,11 +262,33 @@ What exists, verified by JVM and Robolectric tests only (nothing was tried on a 
 Feed ranges read from the data: Metro Ligero 2026-01-01..2027-07-22, EMT 2026-09-29..2026-12-31, interurban 2026-09-10..2027-10-10, other urban 2026-09-10..2027-10-10, Renfe 2026-10-07..2026-11-05. **Metro de Madrid: ended 2026-05-27, left out.** The index is therefore valid 2026-10-07 to 2026-11-05 (limited by Renfe's rolling window) and has no Metro de Madrid lines.
 Metro Ligero shows a start of 2026-01-01 in this derivation (earlier than the feed's published 2026-07-22 version date): the start comes from its calendar, not from `feed_info`; harmless for validity (the intersection start is Renfe's 2026-10-07).
 
-### What the live step-by-step follower needs (next task)
+### The live step-by-step follower (built, branch `feat/transit-follow`, tried only by JVM and Robolectric tests)
 
-- The `Itinerary` as it is: ride stops with scheduled arrival/departure and coordinates are enough to show "next stop", "stops left", "get off at" and to compare time with the schedule ("I am X min ahead/behind"). Nothing in the model depends on the index.
-- Missing today: **shapes** (to project the position along the line instead of to the nearest stop; the index has none, a first follower can snap to the stop sequence), **a matching rule** between GNSS fixes and the current leg (nearest stop within a radius plus the stop order; metro has no GNSS underground, so it has to tolerate gaps and fall back to the schedule), **time zone and clock** (use `TransitClock` and the city zone; the model times are absolute), **a foreground service** if guidance must run with the screen off (owner decision, as for recording), **prompts** ("get off at the next stop", "transfer to line X, walk 120 m") through the existing voice queue, and a **"you are off the plan" re-plan** with `TransitService.plan` from the current position (it already takes any origin and instant).
-- The planner is synchronized and reuses a workspace: re-plans must run on one worker thread (the controller uses the IO dispatcher).
+Owner request (2026-10-07): "step-by-step route in public transport so I know whether I am going as expected, for buses, metro, Cercanias". "As expected" can only mean the **schedule** (there is no real-time data): you are on the planned leg, near the stop you should be at for the scheduled time, with the planned number of stops left, and the clock against the scheduled times ("about N min behind plan").
+
+| Piece | Where |
+|---|---|
+| Follower (pure) | `core-transit/.../follow/ItineraryFollower.kt`: inputs the `Itinerary`, location fixes (with accuracy) and an injected clock; output `FollowState` (phase, line, headsign, next stop, stops left, scheduled times, plan offset, connection status, `canReplan`, `basis` GNSS / ESTIMATED / NO_SIGNAL) and `FollowPrompt`s. Phases: `BEFORE_START`, `WAITING`, `ON_BOARD`, `ALIGHT_NEXT`, `TRANSFER`, `FINAL_WALK`, `ARRIVED`, `OFF_PLAN`. All thresholds are in `FollowerConfig`, each documented as a design choice |
+| Trip store | `follow/TransitTripStore.kt`: itinerary + progress + zone id, atomic write, 3 h expiry, corrupt or foreign files discarded; no position of the traveller |
+| Trip controller | `follow/TransitTripController.kt`: owns the one trip (coroutines, ticker every second, throttled saving, `start`/`resume`/`stop`/`replan`), `TransitReplanner` is a function the app supplies |
+| Voice phrases | `core-voice/.../TransitPhrases.kt` (Spanish and English), priorities and queue keys |
+| Chime | `ChimeKind.TRANSIT` in `core-cameras` (`AlertSound.kt`), the same generated PCM as the camera and incident chimes |
+| App model | `app/.../transit/follow/TransitTripHost.kt` (start, stop, re-plan, resume offer, mute and glove), `TransitTripSpeaker.kt` (voice / chime / silent through `AlertDeliveryPolicy`), `TransitTripSettings.kt` (`mapas_transit_trip/prompts`) |
+| Screen | `TransitTripScreen.kt`: banner with the instruction, plan-versus-clock chip, signal and connection strips, Re-plan button, stops of the current line with the position marked, ETA, Stop; glove mode and night theme from `NavigationTheme`; live regions for screen readers; `TransitTripOverlay` adds keep-screen-on, show over the lock screen and the map line |
+| Service | `TransitTripService.kt`: foreground type `location`, modelled on `NavigationService`; notification text from `TransitTripNotificationTexts` (headline = banner, second line = detail + plan chip); the Android 16 status-bar chip is built by `TransitTripTexts.chip` and `TransitTripLiveUpdate` (same switch as the navigation chip) |
+| Entry | *Start* button (`transit_trip_start`) on the itinerary card, shown when a follower is available and the itinerary has a vehicle leg |
+
+How a fix is matched (design choices, none measured):
+
+- The leg's stops joined by straight lines (no shapes in the index) form a corridor of 150 m plus the fix accuracy; the fix is projected on the nearest segment inside the look-ahead window (3 segments) giving progress `stop + fraction`. Progress never goes backwards while fixes keep arriving, and skipping two or more stops needs two agreeing fixes. A stop counts as reached within 50 m plus accuracy (at most 250 m). Fixes worse than 200 m are ignored.
+- Boarding: at the boarding stop (the first fix inside its radius) the phase is `WAITING` and stays so even if a fix wanders out; two fixes moving at 2.5 m/s or more, away from the stop and inside the line's corridor, mean boarded. 2.5 m/s (about 9 km/h) is above brisk walking (1.4 to 2 m/s) and below the slowest urban bus hop found on the real Madrid index (3.2 m/s); the first choice, 4 m/s, failed on that bus.
+- Underground: with no usable fix for 45 s on a tram, metro or rail leg, progress is the timetable position shifted by the last known offset, flagged `ESTIMATED` everywhere (banner strip, plan chip "On plan (estimate)", prompts "by the timetable"). The estimate never completes a ride and never goes past the stop before the alighting one; the first real fix afterwards resynchronises even backwards. Buses are not extrapolated.
+- Plan offset: `now - scheduled time at the matched position`, dead band 90 s ("On plan"), "About N min behind/ahead of plan" otherwise (ahead only while riding). Connection: next departure minus (projected arrival at its stop + walking time at 1.25 m/s, detour 1.3, the planner's own numbers); under 60 s *at risk*, more than 30 s negative *missed*; waiting at the stop, *missed* 120 s after the scheduled departure.
+- Off plan: 4 fixes in a row outside the corridor on board, or a walk that moves 250 m further from its target than the closest it got. It clears by itself when the position fits again. **Re-plan is only a button.**
+
+What it does not do: platform information (the index has none; "Change here" names the line and the stop), real time, shapes, a camera that follows the traveller on the map, telling two lines apart on the same street, stopping a car navigation that is running at the same time. Hooks left for later: the chip text builder is `TransitTripTexts.chip` (already plugged into the Live Update notification).
+
+On a phone: `docs/phase2/transit-follow-checklist.md`.
 
 ### Not built / open
 
