@@ -20,6 +20,7 @@ class FuelCardController(
     val card: FuelCardState,
     private val category: () -> String? = { null },
     private val onOpened: () -> Unit = {},
+    private val beforeGo: () -> Unit = {},
 ) {
     /** The map reported a tap on station [id]: while a route origin is being picked it is that origin, else its card. */
     fun onStationTap(id: String) {
@@ -35,6 +36,7 @@ class FuelCardController(
 
     /** "Go": a new route from the current location (or the chosen origin) to the station; replaces any stops. */
     fun go(station: FuelStation) {
+        beforeGo()
         card.close()
         route.start(station.toPlaceInfo(category()))
     }

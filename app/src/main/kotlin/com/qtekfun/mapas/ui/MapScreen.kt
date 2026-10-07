@@ -70,6 +70,11 @@ fun MapScreen(
     sheetPanel: (@Composable () -> Unit)? = null,
     /** While true (navigating) the search sheet and the map buttons are hidden; the attribution moves into the navigation panel. */
     navigating: Boolean = false,
+    /**
+     * While navigating, show the sheet anyway (above the navigation screen) with [sheetPanel]: used for the petrol-station card
+     * opened by tapping a station on the map, which would otherwise stay hidden behind the navigation screen.
+     */
+    navSheet: Boolean = false,
     /** Drawn over the map and under nothing else: the navigation screen. */
     overlay: (@Composable BoxScope.() -> Unit)? = null,
     mapContent: @Composable () -> Unit,
@@ -113,27 +118,31 @@ fun MapScreen(
                 .padding(end = margin, top = 8.dp),
         )
 
-        if (!navigating) BottomSheet(
-            detent = state.detent,
-            onDetentChange = { state.detent = it },
-            sheetDescription = stringResource(R.string.sheet_description),
-            handleDescription = stringResource(R.string.sheet_expand),
-            detentLabel = { d ->
-                when (d) {
-                    SheetDetent.COLLAPSED -> collapsedLabel
-                    SheetDetent.MEDIUM -> mediumLabel
-                    SheetDetent.FULL -> fullLabel
-                }
-            },
-            topInset = topPadding + 64.dp,
-            expandActionLabel = stringResource(R.string.sheet_action_expand),
-            collapseActionLabel = stringResource(R.string.sheet_action_collapse),
-            modifier = Modifier.fillMaxSize(),
-        ) {
-            SheetContent(state, sheetPanel)
+        val sheet: @Composable () -> Unit = {
+            BottomSheet(
+                detent = state.detent,
+                onDetentChange = { state.detent = it },
+                sheetDescription = stringResource(R.string.sheet_description),
+                handleDescription = stringResource(R.string.sheet_expand),
+                detentLabel = { d ->
+                    when (d) {
+                        SheetDetent.COLLAPSED -> collapsedLabel
+                        SheetDetent.MEDIUM -> mediumLabel
+                        SheetDetent.FULL -> fullLabel
+                    }
+                },
+                topInset = topPadding + 64.dp,
+                expandActionLabel = stringResource(R.string.sheet_action_expand),
+                collapseActionLabel = stringResource(R.string.sheet_action_collapse),
+                modifier = Modifier.fillMaxSize(),
+            ) {
+                SheetContent(state, sheetPanel)
+            }
         }
+        if (!navigating) sheet()
 
         overlay?.invoke(this)
+        if (navigating && navSheet) sheet()
 
         if (state.aboutVisible) AboutDialog(onDismiss = { state.aboutVisible = false })
     }

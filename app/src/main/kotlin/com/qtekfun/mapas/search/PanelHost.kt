@@ -150,6 +150,12 @@ class PanelHost(
         settings = PrefsHistorySettings(activity),
     )
 
+    /** A navigation is running (the sheet is hidden then, except for the station card). */
+    val navigating: Boolean get() = navScreen?.ui?.value?.active == true
+
+    /** A petrol-station card is open (it is shown over the navigation screen too). */
+    val fuelCardOpen: Boolean get() = fuelCard.card.station != null
+
     val fuelCard = FuelCardController(
         repository = fuelRepository,
         route = route,
@@ -157,6 +163,8 @@ class PanelHost(
         card = FuelCardState(),
         category = { activity.getString(R.string.fuel_category) },
         onOpened = { screen.notice = null; screen.detent = SheetDetent.MEDIUM },
+        // "Go" replaces the destination: the running navigation ends and the route preview takes over.
+        beforeGo = { navScreen?.takeIf { it.ui.value.active }?.stop() },
     )
 
     private val fuelLayer = FuelMapLayer(
@@ -267,6 +275,7 @@ class PanelHost(
                 updatedMillis = { fuelRepository.lastUpdateMillis.value },
                 now = System::currentTimeMillis,
                 onGo = fuelCard::go, onAddStop = fuelCard::addStop, onSave = fuelCard::save,
+                navigating = { navigating },
             )
         }
         val navStart = remember(navLauncher) {
