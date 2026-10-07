@@ -4,6 +4,10 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 
 ## [Unreleased]
 
+### Added
+
+- Camera and incident alerts have their own mute. Settings, Speed cameras and traffic has a new switch "Voice alerts for cameras and incidents" (on by default, shown while a category is on), and the navigation screen has a "Mute alerts" / "Unmute alerts" button next to Mute (shown only while a category is on). Muting alerts silences only their voice: the chip keeps showing, and the navigation Mute still silences everything. Alerts still work only while the app is on screen in free driving (no background service). Verified by tests only, not on a device.
+
 ## [0.1.0-rc.7] - pending
 
 ### Added
