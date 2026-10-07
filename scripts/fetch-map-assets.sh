@@ -1,12 +1,12 @@
 #!/bin/bash
-# Para el MANTENEDOR (no lo ejecuta la app ni el flujo automático): descarga sprites y glyphs del
-# proyecto protomaps/basemaps-assets (sprites BSD-3; fuentes Noto Sans, SIL OFL 1.1) y genera los estilos.
-# La app NO descarga nada en ejecución. Solo se empaqueta lo pequeño: rangos latinos y de puntuación de
-# 3 fuentes; el resto de rangos falla sin bloquear el render (MapLibre registra el fallo y sigue).
+# For the MAINTAINER (neither the app nor the automatic flow runs it): downloads sprites and glyphs from the
+# protomaps/basemaps-assets project (sprites BSD-3; Noto Sans fonts, SIL OFL 1.1) and generates the styles.
+# The app does NOT download anything at runtime. Only the small part is packaged: Latin and punctuation ranges of
+# 3 fonts; the other ranges fail without blocking rendering (MapLibre logs the failure and carries on).
 #
-# Uso: scripts/fetch-map-assets.sh [lang]          (lang de las etiquetas, por defecto es)
-# Variables: BASEMAPS_MODULES=<dir con node_modules/@protomaps/basemaps> para no usar npm (sin red a npm);
-#            SKIP_STYLE=1 para no regenerar los estilos (solo sprites y glyphs).
+# Usage: scripts/fetch-map-assets.sh [lang]          (label language, default es)
+# Variables: BASEMAPS_MODULES=<dir with node_modules/@protomaps/basemaps> to avoid npm (no network to npm);
+#            SKIP_STYLE=1 to skip regenerating the styles (sprites and glyphs only).
 set -euo pipefail
 ROOT=$(cd "$(dirname "$0")/.." && pwd)
 OUT=$ROOT/app/src/main/assets/map
@@ -14,7 +14,7 @@ LANG_CODE=${1:-es}
 W=$(mktemp -d)
 trap 'rm -rf "$W"' EXIT
 if [ "${SKIP_STYLE:-0}" != 1 ]; then
-  # El import ESM se resuelve desde el directorio del script: se copia junto a node_modules.
+  # The ESM import is resolved from the script's directory: it is copied next to node_modules.
   cp "$ROOT/scripts/gen-map-style.mjs" "$W/"
   if [ -n "${BASEMAPS_MODULES:-}" ]; then
     ln -s "$BASEMAPS_MODULES/node_modules" "$W/node_modules"

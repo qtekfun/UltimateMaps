@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Initializes the CoMaps submodules with --depth 1 (same command configure.sh uses, but shallow).
+# Initialises the CoMaps submodules with --depth 1 (same command configure.sh uses, but shallow).
 set -x
 cd ~/repos/comaps-spike
 git submodule update --init --recursive --depth 1 --jobs 4
