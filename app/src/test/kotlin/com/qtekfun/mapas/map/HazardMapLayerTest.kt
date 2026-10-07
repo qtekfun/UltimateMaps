@@ -106,10 +106,10 @@ class HazardMapLayerTest {
         assertEquals(listOf("inc:i0"), pins.last().map { it.id })
         assertTrue(lines.last().isEmpty())
         s.value = CameraSettings(fixedEnabled = true, acknowledged = true)
-        await("cameras only") { pins.size >= 2 }
+        await("cameras only") { pins.lastOrNull()?.map { it.id }?.toSet() == setOf("cam:f0", "cam:s0") }
         assertEquals(setOf("cam:f0", "cam:s0"), pins.last().map { it.id }.toSet())
         s.value = CameraSettings(incidentsEnabled = true, roadworksEnabled = true)
-        await("incidents + roadworks") { pins.size >= 3 }
+        await("incidents + roadworks") { pins.lastOrNull()?.map { it.id }?.toSet() == setOf("inc:i1", "inc:i2") }
         assertEquals(setOf("inc:i1", "inc:i2"), pins.last().map { it.id }.toSet())
     }
 
