@@ -1,15 +1,17 @@
 package com.qtekfun.ultimatemaps.link
 
+import com.qtekfun.ultimatemaps.core.geo.CoordinateQuery
 import com.qtekfun.ultimatemaps.core.geo.LatLon
 import com.qtekfun.ultimatemaps.core.geo.link.MapLink
 import com.qtekfun.ultimatemaps.core.geo.link.MapLinkParser
+import com.qtekfun.ultimatemaps.places.PlaceInfo
 
 /** What the UI should do with an incoming map link. Never involves the network (RF-11, RF-12). */
 sealed interface LinkOutcome {
     /** Centre the map on [point] and drop a pin. */
     data class ShowPlace(val point: LatLon, val zoom: Double?, val label: String?) : LinkOutcome
 
-    /** A text search: offline search is not implemented yet, so only warn (and move to [near] if known). */
+    /** A text search: the UI runs it through the search box's coordinator (after moving to [near] if known). */
     data class Search(val query: String, val near: LatLon?, val zoom: Double?) : LinkOutcome
 
     /** Shortened link: resolving it needs the network and is off by default, so only warn. */
@@ -17,6 +19,10 @@ sealed interface LinkOutcome {
 
     data object Unrecognized : LinkOutcome
 }
+
+/** The place card for a link's point: the link's label, or its coordinates when it has none (never a blank name). */
+fun LinkOutcome.ShowPlace.toPlaceInfo(): PlaceInfo =
+    PlaceInfo(label?.takeIf { it.isNotBlank() } ?: CoordinateQuery.formatDecimal(point), point)
 
 /** The pin the map must show after this outcome: the place, or none (never the pin of a previous link). */
 fun LinkOutcome.pinPoint(): LatLon? = (this as? LinkOutcome.ShowPlace)?.point

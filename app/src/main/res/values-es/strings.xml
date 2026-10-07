@@ -26,9 +26,7 @@
 
     <string name="notice_link_title">Enlace de mapa</string>
     <string name="notice_search_title">Búsqueda: %1$s</string>
-    <string name="notice_search_body">La búsqueda sin conexión aún no está disponible, así que este enlace solo ha movido el mapa.</string>
-    <string name="notice_place_title">Lugar</string>
-    <string name="notice_place_body">Abierto desde un enlace de mapa.</string>
+    <string name="notice_search_body">No hay mapas sin conexión instalados, así que este enlace solo ha podido mover el mapa.</string>
     <string name="notice_location_title">Ubicación</string>
     <string name="location_permission_denied">Se denegó el permiso de ubicación. Actívalo en los ajustes del sistema para ver dónde estás.</string>
     <string name="location_unavailable">Este dispositivo no tiene ningún proveedor de ubicación disponible.</string>

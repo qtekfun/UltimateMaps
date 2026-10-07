@@ -42,6 +42,7 @@ import com.qtekfun.ultimatemaps.settings.SettingsActivity
 import com.qtekfun.ultimatemaps.ui.MapScreen
 import com.qtekfun.ultimatemaps.ui.MapScreenState
 import com.qtekfun.ultimatemaps.ui.Notice
+import com.qtekfun.ultimatemaps.link.toPlaceInfo
 import com.qtekfun.ultimatemaps.search.PanelHost
 import com.qtekfun.ultimatemaps.ui.theme.MapasTheme
 import com.qtekfun.ultimatemaps.cameras.HazardDescriber
@@ -158,12 +159,15 @@ class MainActivity : ComponentActivity() {
         engine.showPin(result.pinPoint()) // always replaces (or clears) the pin of the previous link
         when (val outcome = result) {
             is LinkOutcome.ShowPlace -> {
-                engine.animateTo(CameraState(outcome.point, (outcome.zoom ?: DEFAULT_LINK_ZOOM).coerceIn(0.0, 22.0)))
-                state.notice = Notice.Place(outcome.label)
+                // The same card as a search result (Save, Route, Share, Home/Work); it also moves the map and clears the notice.
+                panel.showLinkPlace(outcome.toPlaceInfo(), (outcome.zoom ?: DEFAULT_LINK_ZOOM).coerceIn(0.0, 22.0))
             }
             is LinkOutcome.Search -> {
                 outcome.near?.let { engine.animateTo(CameraState(it, (outcome.zoom ?: DEFAULT_LINK_ZOOM).coerceIn(0.0, 22.0))) }
-                state.notice = Notice.Search(outcome.query)
+                // Offline search runs as if the text had been typed in the search box. With no region installed
+                // (known only after the first scan) a neutral notice says the link could only move the map.
+                state.notice = if (panel.search.state.regionsAvailable == false) Notice.Search(outcome.query) else null
+                panel.runLinkSearch(outcome.query)
             }
             LinkOutcome.ShortLinkNotResolved -> state.notice = Notice.ShortLink
             LinkOutcome.Unrecognized -> state.notice = Notice.Unrecognized

@@ -30,7 +30,7 @@ class LinkHandlerTest {
     }
 
     @Test
-    fun textSearchOnlyWarns() {
+    fun textSearchIsReturnedForTheSearchBox() {
         val o = assertIs<LinkOutcome.Search>(LinkHandler.handle("geo:0,0?q=Plaza%20Mayor"))
         assertEquals("Plaza Mayor", o.query)
     }
@@ -53,5 +53,19 @@ class LinkHandlerTest {
         val o = LinkHandler.handle("https://www.google.com/maps/dir/?api=1&destination=40.4168,-3.7038")
         assertNotNull(o)
         assertIs<LinkOutcome.ShowPlace>(o)
+    }
+
+    @Test
+    fun linkPlaceWithoutNameUsesItsCoordinatesAsTheName() {
+        val o = assertIs<LinkOutcome.ShowPlace>(LinkHandler.handle("geo:40.4168,-3.7038"))
+        val info = o.toPlaceInfo()
+        assertEquals("40.41680, -3.70380", info.name)
+        assertEquals(o.point, info.point)
+    }
+
+    @Test
+    fun linkPlaceKeepsItsLabelAsTheName() {
+        val o = assertIs<LinkOutcome.ShowPlace>(LinkHandler.handle("https://maps.apple.com/?ll=41.3851,2.1734&q=Barcelona"))
+        assertEquals("Barcelona", o.toPlaceInfo().name)
     }
 }
