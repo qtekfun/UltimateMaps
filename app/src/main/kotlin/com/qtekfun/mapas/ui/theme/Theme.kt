@@ -33,6 +33,8 @@ data class MapasColors(
     val onAccent: Color,
     val warning: Color,
     val field: Color,
+    /** The raised, selected segment of a segmented control (the track is [field]). */
+    val segmentThumb: Color,
     val isDark: Boolean,
 )
 
@@ -75,6 +77,7 @@ val LightMapasColors = MapasColors(
     onAccent = Color(0xFFFFFFFF),
     warning = Color(0xFFFF9500),
     field = Color(0x1F767680),
+    segmentThumb = Color(0xFFFFFFFF),
     isDark = false,
 )
 
@@ -90,6 +93,7 @@ val DarkMapasColors = MapasColors(
     onAccent = Color(0xFFFFFFFF),
     warning = Color(0xFFFF9F0A),
     field = Color(0x3D767680),
+    segmentThumb = Color(0xFF636366),
     isDark = true,
 )
 

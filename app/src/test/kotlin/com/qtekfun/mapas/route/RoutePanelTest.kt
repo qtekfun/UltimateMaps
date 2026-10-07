@@ -1,6 +1,19 @@
 package com.qtekfun.mapas.route
 
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.SemanticsProperties
+import androidx.compose.ui.test.SemanticsMatcher
+import androidx.compose.ui.test.assert
+import androidx.compose.ui.test.assertContentDescriptionEquals
+import androidx.compose.ui.test.assertHeightIsAtLeast
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsNotSelected
+import androidx.compose.ui.test.assertIsOff
+import androidx.compose.ui.test.assertIsOn
+import androidx.compose.ui.test.assertIsSelected
+import androidx.compose.ui.test.assertWidthIsAtLeast
+import androidx.compose.ui.unit.dp
+import com.qtekfun.mapas.core.routing.RouteOptions
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
@@ -83,12 +96,14 @@ class RoutePanelTest {
         show()
         rule.onNodeWithText("To Plaza Mayor").assertIsDisplayed()
         rule.onNodeWithTag("route_summary").assertIsDisplayed()
-        rule.onNodeWithText("12.3 km · 25 min").assertIsDisplayed()
+        rule.onNodeWithText("25 min").assertIsDisplayed() // the time first, large...
+        rule.onNodeWithText("12.3 km").assertIsDisplayed() // ...then the distance
 
         // Switch profile: the click and the profile are on the main thread (deterministic); the computation, in the background.
         rule.onNodeWithTag("profile_foot").performClick()
         settle { profiles.size == 2 && route.state.status == RouteStatus.DONE }
         assertEquals(listOf(RoutingProfile.CAR, RoutingProfile.FOOT), profiles)
+        rule.onNodeWithTag("route_options_toggle").performClick() // the options are collapsed by default
         rule.onNodeWithTag("avoid_motorways").assertIsNotEnabled() // car-only option
 
         rule.onNodeWithTag("route_close").performClick()
@@ -115,7 +130,8 @@ class RoutePanelTest {
         rule.onNodeWithText("Stops (2 of 5)").assertIsDisplayed()
         rule.onNodeWithText("1. Uno").assertIsDisplayed()
         rule.onNodeWithText("2. Dos").assertIsDisplayed()
-        rule.onNodeWithText("12.3 km · 25 min").assertIsDisplayed() // total of the whole route
+        rule.onNodeWithText("25 min").assertIsDisplayed() // total of the whole route
+        rule.onNodeWithText("12.3 km").assertIsDisplayed()
         rule.onNodeWithTag("route_stop_up_0").assertIsNotEnabled()
         rule.onNodeWithTag("route_stop_down_1").assertIsNotEnabled()
 
@@ -124,5 +140,38 @@ class RoutePanelTest {
         rule.onNodeWithTag("route_stop_remove_0").performClick()
         assertEquals(listOf("Uno"), route.state.stops.map { it.name })
         settle { route.state.status == RouteStatus.DONE }
+    }
+
+    @Test
+    fun travelModeIsASingleSelectionGroupOfRadioButtons() {
+        route.start(PlaceInfo("Plaza Mayor", LatLon(40.1, -3.1)))
+        settle { route.state.status == RouteStatus.DONE }
+        show()
+        rule.onNodeWithTag("profile_car").assertIsSelected().assert(SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.RadioButton))
+        rule.onNodeWithTag("profile_foot").assertIsNotSelected().assert(SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.RadioButton))
+        rule.onNodeWithTag("profile_bike").assertIsNotSelected()
+    }
+
+    @Test
+    fun closeIsAnIconWithADescriptionAndATouchTarget() {
+        route.start(PlaceInfo("Plaza Mayor", LatLon(40.1, -3.1)))
+        settle { route.state.status == RouteStatus.DONE }
+        show()
+        rule.onNodeWithTag("route_close").assertContentDescriptionEquals("Close").assertHeightIsAtLeast(48.dp).assertWidthIsAtLeast(48.dp)
+    }
+
+    @Test
+    fun optionsAreCollapsedAndTheHeaderSummarisesWhatIsAvoided() {
+        route.start(PlaceInfo("Plaza Mayor", LatLon(40.1, -3.1)))
+        settle { route.state.status == RouteStatus.DONE }
+        route.setOptions(RouteOptions(avoidTolls = true, avoidFerries = true))
+        settle { profiles.size == 2 && route.state.status == RouteStatus.DONE }
+        show()
+        rule.onNodeWithTag("avoid_tolls").assertDoesNotExist()
+        rule.onNodeWithText("Avoiding: tolls, ferries").assertIsDisplayed()
+
+        rule.onNodeWithTag("route_options_toggle").performClick()
+        rule.onNodeWithTag("avoid_tolls").assertIsOn().assert(SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.Checkbox))
+        rule.onNodeWithTag("avoid_unpaved").assertIsOff()
     }
 }

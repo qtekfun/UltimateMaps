@@ -27,4 +27,13 @@
     <string name="route_err_not_found">No route found with these options. Try changing the profile or the avoid options.</string>
     <string name="route_err_timeout">The route took too long to calculate. Try again or choose a closer point.</string>
     <string name="route_err_internal">The route could not be calculated.</string>
+    <string name="route_change_short">Change</string>
+    <string name="route_profile_group">Travel mode</string>
+    <string name="route_options_title">Route options</string>
+    <string name="route_options_none">None</string>
+    <string name="route_options_avoiding">Avoiding: %1$s</string>
+    <string name="route_avoid_short_motorways">motorways</string>
+    <string name="route_avoid_short_tolls">tolls</string>
+    <string name="route_avoid_short_ferries">ferries</string>
+    <string name="route_avoid_short_unpaved">unpaved</string>
 </resources>
