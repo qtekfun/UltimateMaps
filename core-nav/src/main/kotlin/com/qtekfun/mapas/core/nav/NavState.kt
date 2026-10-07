@@ -50,7 +50,20 @@ data class NavState(
     val offRouteMeters: Double,
     /** Starts at 0 and increases each time the route is replaced by a reroute. */
     val routeRevision: Int,
+    /** Intermediate stops of this route not reached (nor skipped) yet. */
+    val stopsRemaining: Int = 0,
+    /** Metres along the route to the next intermediate stop; null when there is none left. */
+    val nextStopMeters: Double? = null,
 )
+
+/** Things that happen on the way besides voice prompts. Each is emitted once. */
+sealed interface NavEvent {
+    /** The user reached intermediate stop number [stopIndex] (0-based, in route order). Navigation goes on. */
+    data class StopReached(val stopIndex: Int, val point: LatLon) : NavEvent
+
+    /** The user rejoined the route beyond stop [stopIndex] without passing it (after a reroute or a long signal loss). */
+    data class StopSkipped(val stopIndex: Int, val point: LatLon) : NavEvent
+}
 
 enum class AnnouncementKind { FAR, NEAR, NOW }
 

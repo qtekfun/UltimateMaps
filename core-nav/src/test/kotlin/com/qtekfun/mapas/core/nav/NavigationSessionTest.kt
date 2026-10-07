@@ -55,7 +55,9 @@ class NavigationSessionTest {
     }
 
     private fun planFrom(from: LatLon, east: Double): RoutePlan {
-        val to = LatLon(from.lat, from.lon + east / (111_194.9266 * Math.cos(Math.toRadians(from.lat))))
+        // A reroute ends at the destination of the route being followed (straightPlan's: 2 km north); a plan that
+        // ends elsewhere is discarded as an engine glitch (see NavigationSession.isSane).
+        val to = pt(0.0, 2000.0)
         return RoutePlan(listOf(from, to), east, east / 10.0)
     }
 
