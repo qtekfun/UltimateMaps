@@ -4,6 +4,11 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 
 ## [Unreleased]
 
+### Added
+
+- **Browse by category.** A row of chips under the search field (pharmacy, supermarket, restaurant, cafe, fuel, ATM, hospital, parking, lodging, toilets). Tapping one lists the nearest places of that category with their straight-line distance and shows them as pins on the map; tapping it again, or typing, clears it. It uses the search core's pure category mode, offline. The core ranks inside a 20 km area, so the list is sorted by distance within what the core returned. Not tried on a device.
+- **Alternative routes (by one extra restriction).** In the route panel, "Show alternatives" calculates up to two more routes that avoid one more road type (motorways and tolls by car; unpaved roads and ferries on foot or by bike), draws them lighter and lists them with their time and the difference to your route. Tapping one selects it and "Start" and "Simulate" use it. These are not "next best" routes: the core has no alternative-route search (see `docs/phase2/categories-alternatives.md`). Each one is a full route calculation, so it only runs on request. Not tried on a device.
+
 ## [0.1.0-rc.6] - pending
 
 ### Added
