@@ -197,7 +197,9 @@ void FillGuidance(routing::Route const & route, RouteOut & out)
     bool const roundabout = wire == kTurnRoundaboutEnter || wire == kTurnRoundaboutLeave;
     maneuvers.push_back(t.m_index);
     maneuvers.push_back(wire);
-    maneuvers.push_back(roundabout && t.m_exitNum > 0 ? t.m_exitNum : -1);
+    // OJO: `m_exitNum` es uint32_t; en un ternario con `-1` C++ lo promociona todo a uint32_t y el -1 llegaba como
+    // 4294967295 (visto en el Pixel 8: «salidaRotonda no es un entero»). Convertir a double ANTES.
+    maneuvers.push_back(roundabout && t.m_exitNum > 0 ? static_cast<double>(t.m_exitNum) : -1.0);
     maneuvers.push_back(nameId);
     maneuvers.push_back(static_cast<double>(t.m_lanes.size()));
     for (auto const & lane : t.m_lanes)
