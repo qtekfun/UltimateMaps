@@ -199,7 +199,7 @@ class ItineraryFollower(
                     updateDelay(ride, nowMs)
                 }
             } else {
-                ridingCount = 0
+                ridingCount = (ridingCount - 1).coerceAtLeast(0) // one slow fix (a traffic light) does not undo the evidence
             }
             if (!boarded) {
                 if (atStop) {
