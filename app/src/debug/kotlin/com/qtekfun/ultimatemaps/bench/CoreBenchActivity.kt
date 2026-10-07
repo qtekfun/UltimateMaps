@@ -10,6 +10,7 @@ import com.qtekfun.ultimatemaps.core.routing.RouteRequest
 import com.qtekfun.ultimatemaps.core.routing.RoutingProfile
 import com.qtekfun.ultimatemaps.nativecomaps.CoMapsCore
 import com.qtekfun.ultimatemaps.nativecomaps.RouteOutcome
+import com.qtekfun.ultimatemaps.nativecomaps.RoutePerfMode
 import java.io.File
 import kotlin.concurrent.thread
 
@@ -26,7 +27,8 @@ class CoreBenchActivity : Activity() {
         setContentView(TextView(this).apply { text = "Core test bench: see logcat (UMBENCH)" })
         // `--ez guidance true`: instead of the full bench, dumps the guidance of test routes (maneuvers, lanes, limits).
         val guidanceOnly = intent?.getBooleanExtra("guidance", false) == true
-        // `--ez matrix true`: long routes between cities to find where routing fails between regions.
+        // `--ez matrix true`: long routes between cities to find where routing fails between regions (also takes
+        // `--es perf <mode>` and `--ei runs <n>`, see dumpMatrix).
         val matrix = intent?.getBooleanExtra("matrix", false) == true
         thread(name = "umbench") {
             runCatching { if (matrix) dumpMatrix() else if (guidanceOnly) dumpGuidance() else run() }.onFailure { Log.e(tag, "FAILED: $it", it) }
@@ -48,13 +50,29 @@ class CoreBenchActivity : Activity() {
             "Madrid" to "Tarragona", "Madrid" to "Barcelona", "Zaragoza" to "Lleida", "Zaragoza" to "Barcelona",
             "Lleida" to "Barcelona", "Lleida" to "Tarragona", "Tarragona" to "Barcelona", "Barcelona" to "Madrid",
         )
+        // `--es perf <tokens>`: long-route switches of the core (see RoutePerfMode: quiet, prune, cache, cand8, tmo5, safe, fast...).
+        // `--ei runs <n>`: how many times each pair is routed in a row (with `cache` the second run shows the reuse).
+        val perf = RoutePerfMode.parse(intent?.getStringExtra("perf"))
+        val runs = (intent?.getIntExtra("runs", 1) ?: 1).coerceIn(1, 10)
+        core.setPerfMode(perf)
+        val perfName = RoutePerfMode.describe(perf)
+        Log.i(tag, "matrix perf=$perfName ($perf) runs=$runs")
         val router = core.routingEngine()
         for ((a, b) in pairs) {
-            val t0 = SystemClock.elapsedRealtime()
-            val out = router.routeDetailed(RouteRequest(c.getValue(a), c.getValue(b), profile = RoutingProfile.CAR))
-            Log.i(tag, "matrix $a->$b code=${out.code} ms=${SystemClock.elapsedRealtime() - t0} km=${out.plan?.distanceMeters?.div(1000)?.toInt()} absent=${out.absentCountries}")
+            repeat(runs) { run ->
+                val t0 = SystemClock.elapsedRealtime()
+                val out = router.routeDetailed(RouteRequest(c.getValue(a), c.getValue(b), profile = RoutingProfile.CAR))
+                val ms = SystemClock.elapsedRealtime() - t0
+                // m= and s= are exact: with the "safe" modes they must equal the default run's, which proves identical routes.
+                Log.i(
+                    tag,
+                    "matrix perf=$perfName run=$run $a->$b code=${out.code} ms=$ms km=${out.plan?.distanceMeters?.div(1000)?.toInt()} " +
+                        "m=${out.plan?.distanceMeters} s=${out.plan?.durationSeconds} pts=${out.plan?.geometry?.size} " +
+                        "absent=${out.absentCountries} stats[${core.lastRouteStats()}]",
+                )
+            }
         }
-        Log.i(tag, "FIN matrix")
+        Log.i(tag, "FIN matrix perf=$perfName")
     }
 
     /** Dumps to logcat the guidance of an urban route in Madrid by car, bike and on foot. Not run yet: see docs/phase2/maneuvers.md. */
