@@ -14,14 +14,14 @@ android {
 
     defaultConfig {
         minSdk = 26
-        ndk { abiFilters += "arm64-v8a" } // solo arm64-v8a (decision de Fase 1)
+        ndk { abiFilters += "arm64-v8a" } // arm64-v8a only (Phase 1 decision)
         externalNativeBuild {
             cmake {
                 cppFlags += listOf("-fexceptions", "-frtti")
                 arguments += listOf(
                     "-DANDROID_STL=c++_static",
                     "-DANDROID_TOOLCHAIN=clang",
-                    // Maximo 6 trabajos de compilacion/enlace en paralelo (RAM limitada).
+                    // At most 6 parallel compile/link jobs (limited RAM).
                     "-DNJOBS=${providers.gradleProperty("comaps.njobs").getOrElse("6")}",
                 )
                 targets += "umcomaps"
@@ -44,11 +44,11 @@ android {
     testOptions { unitTests.all { it.useJUnitPlatform() } }
 }
 
-// Datos de runtime del nucleo, con lista blanca. Quedan FUERA a proposito:
-//  - fonts/ (incluye 06_code2000.ttf, shareware, incompatible con GPLv3),
-//  - symbols/, symbols-svg/, search-icons/, styles/ (iconos Entypo CC BY-SA 3.0 y datos de render),
-//  - drules_proto*.bin salvo drules_proto_default_light.bin (el arranque del nucleo lo exige), vulkan_shaders/ (solo los usa el render, que es de MapLibre).
-// Los ficheros generados (classificator.txt, categories.txt, ...) los produce scripts/comaps-prepare.sh.
+// Core runtime data, with an allowlist. Deliberately left OUT:
+//  - fonts/ (includes 06_code2000.ttf, shareware, incompatible with GPLv3),
+//  - symbols/, symbols-svg/, search-icons/, styles/ (Entypo icons CC BY-SA 3.0 and render data),
+//  - drules_proto*.bin except drules_proto_default_light.bin (core startup requires it), vulkan_shaders/ (only used by the renderer, which is MapLibre's).
+// The generated files (classificator.txt, categories.txt, ...) are produced by scripts/comaps-prepare.sh.
 abstract class PrepareComapsAssets @Inject constructor(private val fs: FileSystemOperations) : DefaultTask() {
     @get:InputDirectory
     @get:PathSensitive(PathSensitivity.RELATIVE)

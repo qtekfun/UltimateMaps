@@ -1,5 +1,5 @@
-# Compila el APK de release firmado para un tag de versión (vX.Y.Z o vX.Y.Z-rc.N) y lo publica como
-# GitHub Release, con las notas de esa versión sacadas de CHANGELOG.md. Ver RELEASING.md.
+# Builds the signed release APK for a version tag (vX.Y.Z or vX.Y.Z-rc.N) and publishes it as a
+# GitHub Release, with that version's notes taken from CHANGELOG.md. See RELEASING.md.
 name: Release
 
 on:
@@ -25,38 +25,38 @@ jobs:
 
       - uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
 
-      # El núcleo nativo fija NDK y CMake exactos (native-comaps/build.gradle.kts); no depender de lo que traiga la imagen.
+      # The native core pins exact NDK and CMake versions (native-comaps/build.gradle.kts); do not rely on what the image ships.
       - name: Instalar NDK y CMake exactos
         run: |
           yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null || true
           "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "ndk;28.2.13676358" "cmake;3.31.6" "platforms;android-37"
 
-      # El núcleo de CoMaps es un submódulo (tag fijado) y sus datos generados no se versionan.
-      # El script inicializa solo los submódulos anidados necesarios (necesita red y PyPI).
-      - name: Preparar el núcleo de CoMaps
+      # The CoMaps core is a submodule (pinned tag) and its generated data is not versioned.
+      # The script initializes only the nested submodules it needs (requires network and PyPI).
+      - name: Prepare the CoMaps core
         run: |
           git submodule update --init third_party/comaps
           bash scripts/comaps-prepare.sh
 
-      - name: Comprobar que el tag coincide con appVersion
+      - name: Check that the tag matches appVersion
         run: |
           version=$(grep '^appVersion=' gradle.properties | cut -d= -f2)
           test "v$version" = "$GITHUB_REF_NAME" || { echo "El tag $GITHUB_REF_NAME no coincide con appVersion $version"; exit 1; }
 
-      - name: Comprobar que hay notas de esta versión en CHANGELOG.md
+      - name: Check that CHANGELOG.md has notes for this version
         run: |
           version="${GITHUB_REF_NAME#v}"
           awk -v v="$version" '$0 ~ "^## \\[" v "\\]" {found=1; next} found && /^## \[/ {exit} found {print}' CHANGELOG.md > notes.md
           test -s notes.md || { echo "CHANGELOG.md no tiene notas para $version"; exit 1; }
 
-      - name: Comprobar, compilar y firmar el APK de release
+      - name: Check, build and sign the release APK
         env:
           UM_KEYSTORE_BASE64: ${{ secrets.UM_KEYSTORE_BASE64 }}
           UM_KEYSTORE_PASSWORD: ${{ secrets.UM_KEYSTORE_PASSWORD }}
           UM_KEY_ALIAS: ${{ secrets.UM_KEY_ALIAS }}
           UM_KEY_PASSWORD: ${{ secrets.UM_KEY_PASSWORD }}
         run: |
-          # Sin clave no se publica nada: un APK sin firmar no se puede actualizar sobre otro firmado.
+          # Without a key nothing is published: an unsigned APK cannot be installed as an update over a signed one.
           test -n "$UM_KEYSTORE_BASE64" || { echo "Falta el secreto UM_KEYSTORE_BASE64"; exit 1; }
           export UM_KEYSTORE_FILE="$RUNNER_TEMP/release.jks"
           echo "$UM_KEYSTORE_BASE64" | base64 -d > "$UM_KEYSTORE_FILE"
