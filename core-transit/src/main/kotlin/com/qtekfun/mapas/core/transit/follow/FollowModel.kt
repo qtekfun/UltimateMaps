@@ -124,8 +124,12 @@ data class FollowerConfig(
     val corridorM: Double = 150.0,
     /** While tracking, only this many segments ahead of the current one are considered (loop lines, parallel lines). */
     val lookaheadSegments: Int = 3,
-    /** At or above this speed the traveller is on a vehicle, not walking (about 14 km/h; brisk walking is under 2.5 m/s). */
-    val ridingSpeedMps: Float = 4f,
+    /**
+     * At or above this speed (about 9 km/h) the traveller is on a vehicle, not walking: brisk walking is 1.4 to 2 m/s. Urban
+     * buses are slow on average (a 610 m hop of a Madrid bus line in the feed is timetabled at 3.2 m/s), so the threshold must
+     * stay well under that; a higher one (4 m/s was the first choice) never recognised that bus.
+     */
+    val ridingSpeedMps: Float = 2.5f,
     /** Consecutive agreeing fixes needed to board, to skip several stops at once or to leave the plan. */
     val confirmFixes: Int = 2,
     val offPlanFixes: Int = 4,
