@@ -82,7 +82,7 @@ class MapasApp : Application() {
      * `cameras` entry through [networkPolicy], cached, and absent-tolerant. Nothing is downloaded when it is created.
      */
     val cameraData: CameraDataManager by lazy {
-        CameraDataManager(cameraSettings, policy, ::cameraAsset, File(filesDir, "cameras"))
+        CameraDataManager(cameraSettings, policy, ::cameraAsset, File(filesDir, "cameras"), syncCatalog = { force -> regions.syncCatalog(force) })
     }
 
     private fun cameraAsset(): CameraAsset? =
