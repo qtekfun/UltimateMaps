@@ -61,9 +61,8 @@ fun CamerasSection(env: CamerasSettingsEnv) {
     var confirmCamera by remember { mutableStateOf<CameraSwitch?>(null) }
     var confirmTraffic by remember { mutableStateOf<TrafficSwitch?>(null) }
 
-    SectionTitle(stringResource(R.string.cam_title))
     BasicText(stringResource(R.string.cam_intro), style = Mapas.typography.callout.copy(color = Mapas.colors.secondaryLabel))
-    Spacer(Modifier.height(8.dp))
+    SectionTitle(stringResource(R.string.hub_group_cameras))
     Card("cam_switches_card") {
         SwitchRow(
             stringResource(R.string.cam_fixed_title), stringResource(R.string.cam_fixed_body), s.fixedEnabled, "cam_fixed_switch",
@@ -83,7 +82,7 @@ fun CamerasSection(env: CamerasSettingsEnv) {
         Spacer(Modifier.height(10.dp))
         AlertModeCard(stringResource(R.string.alert_mode_cam_title), s.cameraAlertMode, "cam_alert_mode") { m -> env.store.update { it.copy(cameraAlertMode = m) } }
     }
-    Spacer(Modifier.height(10.dp))
+    SectionTitle(stringResource(R.string.hub_group_incidents))
     Card("cam_traffic_card") {
         SwitchRow(
             stringResource(R.string.cam_incidents_title), stringResource(R.string.cam_incidents_body), s.incidentsEnabled, "cam_incidents_switch",
@@ -133,6 +132,20 @@ fun CamerasSection(env: CamerasSettingsEnv) {
     if (s.anything) {
         Spacer(Modifier.height(10.dp))
         DataCard(env, s)
+    }
+    if (s.anyIncident) {
+        Spacer(Modifier.height(10.dp))
+        AdvancedGroup("cam_advanced") {
+            Card("cam_refresh_card") {
+                BasicText(stringResource(R.string.cam_refresh_title), style = Mapas.typography.body.copy(color = Mapas.colors.label))
+                INCIDENT_REFRESH_CHOICES_MINUTES.forEach { m ->
+                    ChoiceRow(
+                        if (m >= 60) stringResource(R.string.cam_refresh_hour) else stringResource(R.string.cam_refresh_minutes, m),
+                        s.incidentRefreshMinutes == m, radio = true, tag = "cam_refresh_$m",
+                    ) { env.store.update { cur -> cur.copy(incidentRefreshMinutes = m) } }
+                }
+            }
+        }
     }
     Spacer(Modifier.height(10.dp))
     BasicText(
@@ -217,14 +230,6 @@ private fun DataCard(env: CamerasSettingsEnv, s: CameraSettings) {
                 CameraAttribution.forIncidents(english),
                 style = Mapas.typography.callout.copy(color = Mapas.colors.secondaryLabel), modifier = Modifier.testTag("cam_attribution_incidents"),
             )
-            Spacer(Modifier.height(6.dp))
-            BasicText(stringResource(R.string.cam_refresh_title), style = Mapas.typography.callout.copy(color = Mapas.colors.label))
-            INCIDENT_REFRESH_CHOICES_MINUTES.forEach { m ->
-                ChoiceRow(
-                    if (m >= 60) stringResource(R.string.cam_refresh_hour) else stringResource(R.string.cam_refresh_minutes, m),
-                    s.incidentRefreshMinutes == m, radio = true, tag = "cam_refresh_$m",
-                ) { env.store.update { cur -> cur.copy(incidentRefreshMinutes = m) } }
-            }
         }
         val running = camState is CameraUpdateState.Running || incState is IncidentUpdateState.Running
         TextButton(stringResource(R.string.cam_update_now), "cam_update_now", enabled = !running) {

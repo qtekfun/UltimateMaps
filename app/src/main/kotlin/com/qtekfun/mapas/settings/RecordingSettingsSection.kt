@@ -39,7 +39,7 @@ fun RecordingSection(env: RecordingSettingsEnv) {
             onChange = { on -> env.controller.setEnabled(on); deleted = false },
         )
         Spacer(Modifier.height(6.dp))
-        TextButton(stringResource(R.string.recording_delete_all), "recording_delete_all") {
+        DestructiveButton(stringResource(R.string.recording_delete_all), "recording_delete_all") {
             env.controller.deleteRecorded()
             deleted = true
         }

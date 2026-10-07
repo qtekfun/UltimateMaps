@@ -45,7 +45,7 @@ fun HistorySection(env: HistorySettingsEnv) {
             },
         )
         Spacer(Modifier.height(6.dp))
-        TextButton(stringResource(R.string.history_clear), "history_clear") {
+        DestructiveButton(stringResource(R.string.history_clear), "history_clear") {
             env.clear()
             cleared = true
         }
