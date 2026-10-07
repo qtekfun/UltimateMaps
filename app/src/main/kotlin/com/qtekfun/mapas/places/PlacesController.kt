@@ -93,6 +93,28 @@ class PlacesController(
         }
     }
 
+    /** Whether [info] is already saved (asks the database off the main thread). */
+    fun isSaved(info: PlaceInfo, onResult: (Boolean) -> Unit) {
+        scope.launch { onResult(withContext(io) { service.value.savedId(info) } != null) }
+    }
+
+    /** Saves or unsaves [info] without opening the place card (used by the petrol-station card). */
+    fun toggleSaved(info: PlaceInfo, onResult: (Boolean) -> Unit = {}) {
+        scope.launch {
+            val savedId = withContext(io) { service.value.savedId(info) }
+            if (savedId != null) {
+                withContext(io) { service.value.unsave(savedId) }
+                state.message = PlacesMessage.Removed
+                onResult(false)
+            } else {
+                val saved = withContext(io) { service.value.save(info) }
+                state.message = PlacesMessage.Saved(saved.listName)
+                onResult(true)
+            }
+            reload()
+        }
+    }
+
     // --- Lists ---
 
     fun showMode(mode: PanelMode) {
