@@ -26,6 +26,9 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.qtekfun.ultimatemaps.R
 import com.qtekfun.ultimatemaps.ui.theme.Mapas
@@ -40,6 +43,8 @@ fun PanelButton(
     primary: Boolean = false,
     enabled: Boolean = true,
     tag: String? = null,
+    horizontalPadding: Dp = 14.dp,
+    singleLine: Boolean = false,
 ) {
     val bg = if (primary) Mapas.colors.accent else Mapas.colors.field
     val fg = if (primary) Mapas.colors.onAccent else Mapas.colors.accent
@@ -49,11 +54,16 @@ fun PanelButton(
             .clip(Mapas.shapes.control)
             .background(bg)
             .clickable(enabled = enabled, role = Role.Button, onClick = onClick)
-            .padding(horizontal = 14.dp, vertical = 8.dp)
+            .padding(horizontal = horizontalPadding, vertical = 8.dp)
             .let { if (tag != null) it.testTag(tag) else it },
         contentAlignment = Alignment.Center,
     ) {
-        BasicText(text, style = Mapas.typography.body.copy(color = if (enabled) fg else Mapas.colors.secondaryLabel))
+        BasicText(
+            text,
+            style = Mapas.typography.body.copy(color = if (enabled) fg else Mapas.colors.secondaryLabel, textAlign = TextAlign.Center),
+            maxLines = if (singleLine) 1 else Int.MAX_VALUE,
+            overflow = if (singleLine) TextOverflow.Ellipsis else TextOverflow.Clip,
+        )
     }
 }
 

@@ -316,12 +316,23 @@ class PanelHost(
         (tracks.recording?.controller)?.let { r -> activity.lifecycleScope.launch { r.stored.collect { tracks.refresh() } } }
     }
 
-    private fun show(info: PlaceInfo) {
+    private fun show(info: PlaceInfo, zoom: Double = PLACE_ZOOM) {
         screen.notice = null
         screen.detent = SheetDetent.MEDIUM
         engine.showPin(info.point)
-        engine.animateTo(CameraState(info.point, PLACE_ZOOM))
+        engine.animateTo(CameraState(info.point, zoom))
         places.showCard(info)
+    }
+
+    /** A `geo:` or map link with a point: the same place card as a search result. */
+    fun showLinkPlace(info: PlaceInfo, zoom: Double) = show(info, zoom)
+
+    /** A map link with search text: shows the Search tab and runs the text through the search box's coordinator. */
+    fun runLinkSearch(query: String) {
+        places.closeCard()
+        places.showMode(PanelMode.SEARCH)
+        search.onQueryChange(query)
+        screen.detent = SheetDetent.FULL
     }
 
     /** A search result: the route origin while one is being picked, otherwise the place card. */

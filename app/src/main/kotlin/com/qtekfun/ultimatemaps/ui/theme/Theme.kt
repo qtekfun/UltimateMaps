@@ -66,7 +66,7 @@ data class MapasDimens(
 )
 
 val LightMapasColors = MapasColors(
-    sheet = Color(0xF2FFFFFF),
+    sheet = Color(0xFFFFFFFF),
     sheetHandle = Color(0x4D3C3C43),
     control = Color(0xF2FFFFFF),
     controlPressed = Color(0xFFE5E5EA),
@@ -82,7 +82,7 @@ val LightMapasColors = MapasColors(
 )
 
 val DarkMapasColors = MapasColors(
-    sheet = Color(0xF21C1C1E),
+    sheet = Color(0xFF1C1C1E),
     sheetHandle = Color(0x4DEBEBF5),
     control = Color(0xF22C2C2E),
     controlPressed = Color(0xFF3A3A3C),

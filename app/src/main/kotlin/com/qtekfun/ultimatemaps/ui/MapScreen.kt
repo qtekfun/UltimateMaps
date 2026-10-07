@@ -42,7 +42,6 @@ sealed interface Notice {
     data object ShortLink : Notice
     data object Unrecognized : Notice
     data class Search(val query: String) : Notice
-    data class Place(val label: String?) : Notice
     data object LocationDenied : Notice
     data object LocationUnavailable : Notice
 }
@@ -228,7 +227,6 @@ private fun noticeText(n: Notice): Pair<String, String> = when (n) {
     Notice.ShortLink -> stringResource(R.string.notice_link_title) to stringResource(R.string.link_short_needs_resolve)
     Notice.Unrecognized -> stringResource(R.string.notice_link_title) to stringResource(R.string.link_not_recognized)
     is Notice.Search -> stringResource(R.string.notice_search_title, n.query) to stringResource(R.string.notice_search_body)
-    is Notice.Place -> (n.label ?: stringResource(R.string.notice_place_title)) to stringResource(R.string.notice_place_body)
     Notice.LocationDenied -> stringResource(R.string.notice_location_title) to stringResource(R.string.location_permission_denied)
     Notice.LocationUnavailable -> stringResource(R.string.notice_location_title) to stringResource(R.string.location_unavailable)
 }

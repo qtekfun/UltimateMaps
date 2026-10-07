@@ -85,7 +85,7 @@ class PersonalPanelTest {
         rule.onNodeWithTag("quick_work").assertIsDisplayed()
         rule.onNodeWithTag("quick_parking").assertIsDisplayed()
         rule.onNodeWithTag("quick_sos").assertIsDisplayed()
-        rule.onNodeWithText("Park here").assertIsDisplayed()
+        rule.onNodeWithText("Park").assertIsDisplayed()
     }
 
     @Test fun anEmptyHomeChipExplainsHowToSetIt() {
@@ -133,7 +133,7 @@ class PersonalPanelTest {
         assertNull(quick.state.parking)
         assertNull(markers.last())
         rule.onAllNodesWithTag("quick_park_clear").assertCountEquals(0)
-        rule.onNodeWithText("Park here").assertIsDisplayed()
+        rule.onNodeWithText("Park").assertIsDisplayed()
     }
 
     @Test fun theSosChipOpensTheEmergencyScreen() {
