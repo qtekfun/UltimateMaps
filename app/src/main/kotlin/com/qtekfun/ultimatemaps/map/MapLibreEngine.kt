@@ -49,6 +49,7 @@ import org.maplibre.android.style.layers.PropertyFactory.circleStrokeColor
 import org.maplibre.android.style.layers.PropertyFactory.circleStrokeWidth
 import org.maplibre.android.style.sources.GeoJsonSource
 import android.graphics.RectF
+import com.qtekfun.ultimatemaps.core.map.ChargerPin
 import com.qtekfun.ultimatemaps.core.map.FuelPin
 import com.qtekfun.ultimatemaps.core.map.HazardLine
 import com.qtekfun.ultimatemaps.core.map.HazardKind
@@ -119,6 +120,9 @@ class MapLibreEngine(
     private var pendingFuel: List<FuelPin> = emptyList()
     private var fuelSource: GeoJsonSource? = null
     private var fuelTapListener: ((String) -> Unit)? = null
+    private var pendingChargers: List<ChargerPin> = emptyList()
+    private var chargerSource: GeoJsonSource? = null
+    private var chargerTapListener: ((String) -> Unit)? = null
     private var pendingHazardPins: List<HazardPin> = emptyList()
     private var pendingHazardLines: List<HazardLine> = emptyList()
     private var hazardPinSource: GeoJsonSource? = null
@@ -454,6 +458,64 @@ class MapLibreEngine(
         fuelTapListener = listener
     }
 
+    // --- EV charging stations ---
+
+    override fun showChargers(pins: List<ChargerPin>) {
+        pendingChargers = pins
+        pushChargers()
+    }
+
+    override fun setChargerTapListener(listener: ((String) -> Unit)?) {
+        chargerTapListener = listener
+    }
+
+    private fun pushChargers() {
+        val source = chargerSource ?: return
+        if (map == null) return
+        source.setGeoJson(
+            FeatureCollection.fromFeatures(
+                pendingChargers.map { p ->
+                    Feature.fromGeometry(Point.fromLngLat(p.point.lon, p.point.lat)).apply {
+                        addStringProperty(CHG_ID, p.id)
+                        addBooleanProperty(CHG_FAST, p.fast)
+                    }
+                },
+            ),
+        )
+    }
+
+    private fun addChargerLayer(style: Style, dark: Boolean) {
+        val d = view.resources.displayMetrics
+        style.addImage(ChargerIcons.NORMAL, ChargerIcons.render(false, dark, d.density, d.densityDpi))
+        style.addImage(ChargerIcons.FAST, ChargerIcons.render(true, dark, d.density, d.densityDpi))
+        style.addSource(GeoJsonSource(CHG_SOURCE).also { chargerSource = it })
+        style.addLayer(
+            SymbolLayer(CHG_LAYER, CHG_SOURCE).withProperties(
+                iconImage(Expression.switchCase(Expression.get(CHG_FAST), Expression.literal(ChargerIcons.FAST), Expression.literal(ChargerIcons.NORMAL))),
+                iconAllowOverlap(true), iconAnchor(Property.ICON_ANCHOR_CENTER),
+            ),
+        )
+        pushChargers()
+    }
+
+    /** Charger under the finger (within a 48 dp square), unless a saved marker sits right under it. */
+    private fun chargerAt(m: MapLibreMap, p: LatLng): String? {
+        val listener = chargerTapListener ?: return null
+        if (chargerSource == null || pendingChargers.isEmpty()) return null
+        val d = view.resources.displayMetrics.density
+        val at = m.projection.toScreenLocation(p)
+        val half = HZ_TOUCH_DP / 2 * d
+        val hits = m.queryRenderedFeatures(RectF(at.x - half, at.y - half, at.x + half, at.y + half), CHG_LAYER)
+        if (hits.isEmpty()) return null
+        val best = hits.minByOrNull { f ->
+            val g = f.geometry() as? Point
+            if (g == null) Double.MAX_VALUE else (g.latitude() - p.latitude).let { a -> a * a } + (g.longitude() - p.longitude).let { a -> a * a }
+        }
+        val id = best?.getStringProperty(CHG_ID) ?: return null
+        listener(id)
+        return id
+    }
+
     // --- Speed cameras and traffic incidents ---
 
     override fun showHazards(pins: List<HazardPin>, lines: List<HazardLine>) {
@@ -622,6 +684,7 @@ class MapLibreEngine(
     private fun handleTap(p: LatLng): Boolean {
         val m = map
         if (m != null && fuelAt(m, p) != null) return true
+        if (m != null && chargerAt(m, p) != null) return true
         if (m != null && hazardAt(m, p) != null) return true
         val listener = tapListener ?: return false
         listener(LatLon.ofOrNull(p.latitude, p.longitude) ?: return false)
@@ -719,6 +782,7 @@ class MapLibreEngine(
             addRouteLayer(style, wanted == MapTheme.DARK) // below the markers, pin and user dots
             addTransitLayer(style, wanted == MapTheme.DARK)
             addHazardLayers(style, wanted == MapTheme.DARK)
+            addChargerLayer(style, wanted == MapTheme.DARK)
             addFuelLayer(style, wanted == MapTheme.DARK)
             style.addSource(user)
             style.addSource(pin)
@@ -867,6 +931,10 @@ class MapLibreEngine(
         const val HZ_TOUCH_DP = 44f
         const val HZ_ZONE_COLOR = 0xFFE8710A.toInt()
         const val HZ_LINE_COLOR = 0xFFD93025.toInt()
+        const val CHG_SOURCE = "mapas-chg-src"
+        const val CHG_LAYER = "mapas-chg"
+        const val CHG_ID = "id"
+        const val CHG_FAST = "fast"
         const val FUEL_SOURCE = "mapas-fuel-src"
         const val FUEL_LAYER = "mapas-fuel"
         const val FUEL_ID = "id"

@@ -45,11 +45,12 @@ fun nonDefaultValue(spec: SettingSpec, consentOn: Boolean): Any = when (spec.typ
         "bike_cycleways" -> "STRONGLY_PREFER"
         "preference" -> "LOCAL"
         "map_fuel" -> "g95e5"
+        "min_power" -> "KW_50"
         "source_url" -> "https://fuel.example.org/api/"
         "catalog_url" -> "https://maps.example.org/catalog.json"
         else -> error("no non-default value for ${spec.id}")
     }
-    SettingType.STRING_SET -> setOf("g95e5", "goa")
+    SettingType.STRING_SET -> if (spec.key == "sockets") setOf("TYPE2", "CCS") else setOf("g95e5", "goa")
 }
 
 @RunWith(RobolectricTestRunner::class) // org.json needs the Android implementation
@@ -89,7 +90,7 @@ class SettingsBackupTest {
         val result = SettingsBackup.apply(file, b, pending)
 
         val consentIds = SettingsSchema.specs.filter { it.policy == RestorePolicy.NEEDS_CONSENT }.map { it.id }.toSet()
-        assertEquals(setOf("cameras/fixed", "cameras/mobile_zones", "cameras/incidents", "cameras/v16", "cameras/roadworks", "fuel/enabled"), consentIds)
+        assertEquals(setOf("cameras/fixed", "cameras/mobile_zones", "cameras/incidents", "cameras/v16", "cameras/roadworks", "fuel/enabled", "chargers/enabled"), consentIds)
         consentIds.forEach { assertEquals(false, b.read(SettingsSchema.byId(it)!!), "$it must stay off") }
         assertEquals(consentIds, pending.consent)
         assertEquals(consentIds.size, result.needConsent)

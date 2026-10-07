@@ -109,6 +109,11 @@ class RegionCatalog(
      * the app then simply has no transit data.
      */
     val transit: List<TransitAsset> = emptyList(),
+    /**
+     * Optional small file with EV-charging-station data (`chargers-es.bin`, built by `scripts/build-chargers.py`). Catalogs
+     * without it are valid; the app then simply has no charger data.
+     */
+    val chargers: RegionAsset? = null,
 ) {
     val regions: List<Region> = regions.toList()
     private val byId = this.regions.associateBy { it.id }
@@ -128,6 +133,7 @@ class RegionCatalog(
             checkAsset(it.worldCoasts, "base.worldCoasts")
         }
         cameras?.let { checkAsset(it, "cameras") }
+        chargers?.let { checkAsset(it, "chargers") }
         require(transit.map { it.id }.toSet().size == transit.size) { "duplicate transit ids" }
         transit.forEach { t ->
             require(t.id.matches(ID_RE)) { "invalid transit id ${t.id}" }
@@ -173,6 +179,7 @@ class RegionCatalog(
             put("worldCoasts", assetJson(base.worldCoasts))
         })
         if (cameras != null) put("cameras", assetJson(cameras))
+        if (chargers != null) put("chargers", assetJson(chargers))
         if (transit.isNotEmpty()) put("transit", buildJsonArray {
             transit.forEach { t ->
                 add(buildJsonObject {
@@ -246,6 +253,7 @@ class RegionCatalog(
                 )
             }
             val cameras = (root["cameras"] as? JsonObject)?.let { asset(it) }
+            val chargers = (root["chargers"] as? JsonObject)?.let { asset(it) }
             val transit = (root["transit"] as? kotlinx.serialization.json.JsonArray)?.map { e ->
                 val o = e.jsonObject
                 TransitAsset(
@@ -280,7 +288,7 @@ class RegionCatalog(
                     }?.toMap().orEmpty(),
                 )
             }
-            RegionCatalog(root.getValue("catalogVersion").jsonPrimitive.content, regions, baseMaps, cameras, transit)
+            RegionCatalog(root.getValue("catalogVersion").jsonPrimitive.content, regions, baseMaps, cameras, transit, chargers)
         } catch (e: CatalogException) {
             throw e
         } catch (e: Exception) { // malformed JSON, missing fields, failed invariants
