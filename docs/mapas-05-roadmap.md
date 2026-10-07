@@ -13,7 +13,8 @@ Las duraciones son estimaciones orientativas a tiempo parcial y se revisan al te
 | **F4. Sync e importación** | Nextcloud/WebDAV, importación de Google Takeout | 1 mes | Dos dispositivos convergen; Takeout real importado |
 | **F5. Pulido y publicación** | Rendimiento, estilo, accesibilidad, ROM chinas, metadatos de F-Droid, builds reproducibles | 1-2 meses | Publicado en F-Droid y GitHub |
 | **F6. Android Auto** | Investigación y, si procede, implementación | A estimar | Decidir tras F5 |
-| **F7. Datos opcionales** | Precios de combustible por tipo (GLP, gasolina, diésel…) y transporte público en tiempo real (Cercanías, Metro…), **cada fuente activable y configurable en Ajustes**, desactivada por defecto | Estimación del estudio: ~24-35 días con tablero completo de Cercanías (sin medir) | Cada fuente se puede activar, configurar y apagar en Ajustes; con todas apagadas no hay ninguna conexión nueva; los datos se ven en el mapa o en la ficha |
+| **F2b. Gasolineras** | Precios por combustible (GLP, gasolina, diésel…) descargados según Ajustes, precio sobre cada gasolinera en el mapa, ficha al tocarla y añadirla a la ruta como destino o parada | 2-3 semanas (estimación) | Con un combustible elegido se ven los precios en el mapa y se puede ir a una gasolinera o pararse en ella |
+| **F7. Datos opcionales** | Transporte público en tiempo real: **Cercanías** (el metro se descarta). Activable y configurable en Ajustes, apagado por defecto | A estimar | Se puede activar, configurar y apagar en Ajustes; con todo apagado no hay ninguna conexión nueva |
 
 Total orientativo hasta F5: 6-12 meses. Cada fase termina con una versión utilizable.
 
@@ -41,7 +42,7 @@ Total orientativo hasta F5: 6-12 meses. Cada fase termina con una versión utili
 | R16 | Un solo dispositivo de prueba (gama alta con GMS) | Cierta | Alto | Conseguir gama media, ROM china sin GMS y de-Googled |
 | R17 | Volumen de datos de C (≈ 5,3 GB para España) | Media | Medio | Descarga por regiones; valorar estilo con datos .mwm |
 
-## F7. Datos opcionales: detalle
+## F2b y F7: datos opcionales, detalle
 
 Decidido por el usuario el 2026-10-07: entran en el roadmap, **configurables en Ajustes**. Detalle de diseño en `mapas-03-arquitectura.md` («Fuentes de datos opcionales y ajustes») y requisitos RF-15 a RF-17.
 
@@ -51,11 +52,7 @@ Verificado el 2026-10-07 por el estudio `docs/phase7/verificacion-fuentes.md` (a
 | --- | --- | --- | --- |
 | **Precios de combustible** (Ministerio) | Servicio abierto, **sin clave**, JSON o XML. Fichero nacional: 12,2 MB (sin compresión), 11.499 estaciones. Campo de GLP: `Precio Gases licuados del petróleo` (999 estaciones); también GNC (134), GNL (94), hidrógeno (2), gasolina 95/98, gasóleo A. **El servicio se actualiza cada 30 minutos**, no a diario. Coma decimal | Descargar y filtrar en local. **Mejor por producto** (`EstacionesTerrestres/FiltroProducto/{id}`; GLP = 377 KB): no revela la ubicación. **No usar filtros por provincia o municipio**: revelan dónde está el usuario | **Licencia de reutilización** (las fichas oficiales ya no existen): aclararlo con el Ministerio antes de publicar. Límites de uso: no hay ninguno publicado. No hay fecha por estación |
 | **Cercanías (Renfe)** | GTFS-RT público **sin clave** (`gtfsrt.renfe.com`), protobuf y JSON, **CC BY 4.0**, refresco cada 20 s. Estaciones por `stop_id` del GTFS | El tiempo real solo trae la siguiente parada de cada tren: un tablero de salidas completo exige además el GTFS estático (14 MB). Alternativa reducida: trenes que se acercan y avisos | Texto exacto de atribución de Renfe; licencia de la librería protobuf |
-| **Metro de Bilbao** | GTFS-RT completo **sin clave**, estático de 1,7 MB, CC BY 4.0 | Primer metro a implementar: el único con tiempo real público, oficial y comprobado | — |
-| **Metro de Madrid** | **No hay tiempo real abierto.** Solo GTFS estático del CRTM (licencia con «Powered by CRTM») | Solo horarios sin conexión | — |
-| **TMB (Barcelona), Valencia, Sevilla, EMT** | Piden clave o solo hay estático con clave | Solo con **clave puesta por el usuario** en Ajustes | — |
-
-Orden y estimaciones del estudio (son estimaciones, sin medir): combustible 6-9 días; módulo GTFS/GTFS-RT genérico con Metro Bilbao 6-8; Cercanías 5-8 (tablero completo) o 2-3 (reducido); ajustes e interfaz común 5-7; TMB y similares 3-4 cada uno con clave del usuario. Total con tablero completo: unos 24-35 días.
+Estimaciones del estudio (sin medir): combustible 6-9 días; Cercanías 5-8 (tablero completo) o 2-3 (reducido); ajustes e interfaz común 5-7. **Metro descartado por el usuario (2026-10-07).**
 
 Reglas: todo por `NetworkPolicy`, desactivado por defecto, con un aviso al activar de qué se envía y a quién, y sin enviar nunca la ubicación del usuario. `PRIVACY.md` y la lista de conexiones posibles se actualizan con cada fuente.
 
