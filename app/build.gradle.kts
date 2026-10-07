@@ -88,7 +88,17 @@ android {
     lint {
         abortOnError = true
     }
+
+    // The repository's NOTICE (third-party notices and licence texts) is shown in the About settings as an asset.
+    sourceSets.getByName("main").assets.srcDir(layout.buildDirectory.dir("generated/notice"))
 }
+
+val copyNotice = tasks.register<Copy>("copyNotice") {
+    from(rootProject.layout.projectDirectory.file("NOTICE"))
+    rename { "NOTICE.txt" }
+    into(layout.buildDirectory.dir("generated/notice"))
+}
+tasks.matching { it.name.startsWith("merge") && it.name.endsWith("Assets") }.configureEach { dependsOn(copyNotice) }
 
 kotlin { jvmToolchain(21) }
 

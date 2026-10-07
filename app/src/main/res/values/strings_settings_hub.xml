@@ -50,5 +50,9 @@
     <string name="hub_about_version_title">Version</string>
     <string name="hub_about_license_title">Licence</string>
     <string name="hub_about_license_body">Free software under the GNU General Public License v3 (GPLv3).</string>
+    <string name="about_notice_title">Third-party notices</string>
+    <string name="about_notice_show">Show licences of the included software</string>
+    <string name="about_notice_hide">Hide licences</string>
+    <string name="about_notice_unavailable">The notices file is not available in this build.</string>
     <string name="hub_about_source">Source code: github.com/qtekfun/UltimateMaps</string>
 </resources>

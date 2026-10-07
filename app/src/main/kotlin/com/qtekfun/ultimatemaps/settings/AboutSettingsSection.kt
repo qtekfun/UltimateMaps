@@ -4,6 +4,10 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
@@ -19,6 +23,8 @@ import com.qtekfun.ultimatemaps.ui.theme.Mapas
 class AboutSettingsEnv(
     val version: String = "",
     val transitAttributions: () -> List<String> = { emptyList() },
+    /** The text of the NOTICE file (third-party notices and licence texts); read only when the user opens it. */
+    val notice: () -> String = { "" },
 )
 
 /** Category "About": version, licence, source code and every attribution the app owes (map data, petrol prices, transit data). */
@@ -56,5 +62,26 @@ fun AboutSettingsSection(env: AboutSettingsEnv) {
             modifier = Modifier.testTag("about_fuel"),
         )
         TransitAboutBlock(env.transitAttributions())
+    }
+    NoticeBlock(env.notice)
+}
+
+/** "Third-party notices": the NOTICE text (licence texts that the libraries inside the app ask to ship), collapsed by default. */
+@Composable
+private fun NoticeBlock(notice: () -> String) {
+    SectionTitle(stringResource(R.string.about_notice_title))
+    Card("about_notice_card") {
+        var shown by remember { mutableStateOf(false) }
+        TextButton(
+            stringResource(if (shown) R.string.about_notice_hide else R.string.about_notice_show),
+            "about_notice_toggle",
+        ) { shown = !shown }
+        if (shown) {
+            BasicText(
+                notice().ifBlank { stringResource(R.string.about_notice_unavailable) },
+                style = Mapas.typography.callout.copy(color = Mapas.colors.secondaryLabel),
+                modifier = Modifier.testTag("about_notice_text"),
+            )
+        }
     }
 }
