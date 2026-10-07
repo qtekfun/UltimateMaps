@@ -132,6 +132,36 @@ class GenCatalogTest(unittest.TestCase):
         self.assertNotIn("assets", c["regions"][0])
         self.assertTrue(any("Andorra" in m for m in msgs))
 
+    def test_names_are_optional_and_per_language(self):
+        names = {"es": {"Spain": "Espana", "Spain_Community of Madrid": "Comunidad de Madrid",
+                        "Andorra": "Andorra", "Spain_Castile and Leon_West": "Castilla y Leon — Oeste"}}
+        c = gen.build(COUNTRIES, catalog_version="t", names=names)
+        by = {r["id"]: r for r in c["regions"]}
+        self.assertEqual({"es": "Espana"}, by["spain"]["names"])
+        self.assertEqual({"es": "Comunidad de Madrid"}, by["spain_community-of-madrid"]["names"])
+        self.assertNotIn("names", by["andorra"])  # same as the English name: nothing to add
+        self.assertEqual("Community of Madrid", by["spain_community-of-madrid"]["name"])  # `name` is untouched
+        plain = gen.build(COUNTRIES, catalog_version="t")
+        self.assertTrue(all("names" not in r for r in plain["regions"]))
+
+    def test_load_names_skips_missing_languages_and_short_description_keys(self):
+        with tempfile.TemporaryDirectory() as t:
+            os.makedirs(os.path.join(t, "es.json"))
+            with open(os.path.join(t, "es.json", "localize.json"), "w", encoding="utf-8") as f:
+                f.write('{"Spain": "Espa\\u00f1a", "Spain Short": "x", "Spain Description": "y", "Dash": "A \\u2014 B", "Empty": " "}')
+            logs = []
+            got = gen.load_names(t, ["es", "gl"], log=logs.append)
+        self.assertEqual({"es": {"Spain": "España", "Dash": "A - B"}}, got)
+        self.assertEqual(1, len(logs))
+        with self.assertRaises(SystemExit):
+            gen.load_names(t, ["../x"])
+
+    def test_base_files_get_no_region_entry(self):
+        countries = {"id": "Countries", "v": 1, "g": [{"id": "World", "s": 1}, {"id": "WorldCoasts", "s": 1},
+                                                      {"id": "Andorra", "s": 5}]}
+        c = gen.build(countries, catalog_version="t")
+        self.assertEqual(["andorra"], [r["id"] for r in c["regions"]])
+
     def test_download_cap(self):
         with self.assertRaises(SystemExit):
             gen.fetch_mwm("https://m.example/", "Andorra", 21 << 20, tempfile.gettempdir(), 20 << 20)
