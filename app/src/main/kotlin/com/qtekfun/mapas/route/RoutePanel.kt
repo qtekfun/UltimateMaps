@@ -20,12 +20,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import com.qtekfun.mapas.R
 import com.qtekfun.mapas.core.routing.RoutingProfile
+import com.qtekfun.mapas.nav.LaunchStatus
+import com.qtekfun.mapas.nav.NavStartHost
+import com.qtekfun.mapas.nav.RouteFailureMessages
 import com.qtekfun.mapas.places.PanelButton
 import com.qtekfun.mapas.places.PanelNote
 import com.qtekfun.mapas.ui.theme.Mapas
@@ -40,6 +44,7 @@ fun RoutePanel(
     onUseLocation: () -> Unit,
     originSearch: @Composable () -> Unit,
     modifier: Modifier = Modifier,
+    navStart: NavStartHost? = null,
 ) {
     val s = route.state
     val scroll = rememberScrollState()
@@ -76,8 +81,35 @@ fun RoutePanel(
             PanelButton(stringResource(R.string.route_pick_cancel), route::cancelPickOrigin, Modifier.fillMaxWidth(), tag = "route_pick_cancel")
         } else {
             Status(s)
+            if (navStart != null && s.status == RouteStatus.DONE) {
+                Spacer(Modifier.height(8.dp))
+                StartButtons(navStart)
+            }
             Spacer(Modifier.height(8.dp))
             Controls(route, onUseLocation)
+        }
+    }
+}
+
+/** "Start" and "Simulate": ask for the guided route and navigate it (see [com.qtekfun.mapas.nav.NavLauncher]). */
+@Composable
+private fun StartButtons(host: NavStartHost) {
+    val computing = host.state.status == LaunchStatus.COMPUTING
+    Column(Modifier.fillMaxWidth().testTag("route_start_block")) {
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            PanelButton(
+                stringResource(R.string.nav_ui_start), host.onStart, Modifier.weight(1f),
+                primary = true, enabled = !computing, tag = "route_start",
+            )
+            PanelButton(
+                stringResource(R.string.nav_ui_simulate), host.onSimulate, Modifier.weight(1f),
+                enabled = !computing, tag = "route_simulate",
+            )
+        }
+        if (computing) PanelNote(stringResource(R.string.nav_ui_computing), "route_start_status")
+        val failure = host.state.failure
+        if (host.state.status == LaunchStatus.FAILED && failure != null) {
+            PanelNote(RouteFailureMessages.of(LocalContext.current, failure, null), "route_start_status")
         }
     }
 }

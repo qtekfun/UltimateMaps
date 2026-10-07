@@ -31,6 +31,7 @@ import com.qtekfun.mapas.places.PlaceInfo
 import com.qtekfun.mapas.places.PlacesController
 import com.qtekfun.mapas.places.PlacesMessage
 import com.qtekfun.mapas.places.subtitleOf
+import com.qtekfun.mapas.nav.NavStartHost
 import com.qtekfun.mapas.route.RoutePanel
 import com.qtekfun.mapas.route.RoutePreviewController
 import com.qtekfun.mapas.ui.theme.Mapas
@@ -72,6 +73,7 @@ fun SheetPanel(
     modifier: Modifier = Modifier,
     route: RoutePreviewController? = null,
     fuel: FuelCardHost? = null,
+    navStart: NavStartHost? = null,
 ) {
     val card = places.state.card
     Column(modifier.fillMaxWidth().testTag("sheet_panel")) {
@@ -84,7 +86,7 @@ fun SheetPanel(
                 onGo = fuel.onGo, onAddStop = fuel.onAddStop, onSave = fuel.onSave,
             )
         } else if (route != null && route.state.active) {
-            RoutePanel(route, actions.onUseLocation, originSearch = { SearchPane(search, actions, Modifier) })
+            RoutePanel(route, actions.onUseLocation, originSearch = { SearchPane(search, actions, Modifier) }, navStart = navStart)
         } else if (card != null) {
             PlaceCard(
                 info = card,

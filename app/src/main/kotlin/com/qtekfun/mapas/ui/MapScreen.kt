@@ -3,6 +3,7 @@ package com.qtekfun.mapas.ui
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -67,6 +68,10 @@ fun MapScreen(
     onResetNorth: () -> Unit,
     modifier: Modifier = Modifier,
     sheetPanel: (@Composable () -> Unit)? = null,
+    /** While true (navigating) the search sheet and the map buttons are hidden; the attribution moves into the navigation panel. */
+    navigating: Boolean = false,
+    /** Drawn over the map and under nothing else: the navigation screen. */
+    overlay: (@Composable BoxScope.() -> Unit)? = null,
     mapContent: @Composable () -> Unit,
 ) {
     val statusTop = WindowInsets.statusBars
@@ -78,7 +83,8 @@ fun MapScreen(
         mapContent()
 
         val topPadding = with(LocalDensity.current) { statusTop.getTop(this).toDp() }
-        AttributionLabel(
+        // While navigating, the attribution moves into the navigation panel (the banner would cover it here).
+        if (!navigating) AttributionLabel(
             text = stringResource(R.string.attribution_osm),
             onClick = { state.aboutVisible = true },
             modifier = Modifier
@@ -86,7 +92,7 @@ fun MapScreen(
                 .windowInsetsPadding(WindowInsets.statusBars)
                 .padding(start = margin, top = 8.dp),
         )
-        SettingsGear(
+        if (!navigating) SettingsGear(
             description = stringResource(R.string.settings_open),
             onClick = state.onOpenSettings,
             modifier = Modifier
@@ -94,7 +100,7 @@ fun MapScreen(
                 .windowInsetsPadding(WindowInsets.statusBars)
                 .padding(start = margin, top = 44.dp),
         )
-        MapButtons(
+        if (!navigating) MapButtons(
             bearingDegrees = state.bearing,
             locating = state.locating,
             locateDescription = stringResource(R.string.map_locate),
@@ -107,7 +113,7 @@ fun MapScreen(
                 .padding(end = margin, top = 8.dp),
         )
 
-        BottomSheet(
+        if (!navigating) BottomSheet(
             detent = state.detent,
             onDetentChange = { state.detent = it },
             sheetDescription = stringResource(R.string.sheet_description),
@@ -126,6 +132,8 @@ fun MapScreen(
         ) {
             SheetContent(state, sheetPanel)
         }
+
+        overlay?.invoke(this)
 
         if (state.aboutVisible) AboutDialog(onDismiss = { state.aboutVisible = false })
     }

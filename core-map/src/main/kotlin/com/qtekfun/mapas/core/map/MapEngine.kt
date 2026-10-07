@@ -89,4 +89,12 @@ interface MapEngine : AutoCloseable {
 
     /** Reports the visible rectangle and zoom when a camera gesture or animation ends (never per frame); null removes it. */
     fun setViewportListener(listener: ((GeoBounds, Double) -> Unit)?) {}
+
+    // --- Navigation ---
+
+    /**
+     * Reports when the USER starts moving the camera with a gesture (not animations the app asked for), so that
+     * the navigation screen can stop following and offer "recenter". Called once per gesture start; null removes it.
+     */
+    fun setCameraGestureListener(listener: (() -> Unit)?) {}
 }
