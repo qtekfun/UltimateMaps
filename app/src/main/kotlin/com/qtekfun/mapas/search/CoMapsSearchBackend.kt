@@ -5,6 +5,7 @@ import android.os.SystemClock
 import android.util.Log
 import com.qtekfun.mapas.core.search.SearchEngine
 import com.qtekfun.mapas.nativecomaps.CoMapsCore
+import com.qtekfun.mapas.regions.CoreLinks
 import java.util.Locale
 
 /** The production [SearchBackend]: one [CoMapsCore] per process, started lazily on the first search. */
@@ -26,6 +27,7 @@ class CoMapsSearchBackend(private val context: Context) : SearchBackend {
         fun prepareCore(context: Context, maps: CoreMaps): CoMapsCore {
             val app = context.applicationContext
             CORE.init(app.applicationInfo.sourceDir, maps.mapsDir.absolutePath, app.cacheDir.absolutePath, locale())
+            CoreLinks.coreLoaded = true // from now on a deleted region needs an app restart (see CoreLinks)
             CORE.refreshMaps() // also picks up regions installed after the first start
             return CORE
         }

@@ -41,6 +41,9 @@
     <string name="offline_body">Ninguna conexión, ni siquiera para descargas.</string>
     <string name="server_title">Servidor de mapas</string>
     <string name="server_hint">https://ejemplo.org/mapas/catalog.json</string>
+    <string name="server_use_default">Usar el servidor por defecto</string>
+    <string name="search_restart_needed">Un mapa que has borrado puede seguir saliendo en la búsqueda hasta que reinicies la aplicación.</string>
+    <string name="search_link_problem">Algunos mapas descargados no se han podido poner a disposición de la búsqueda en este almacenamiento.</string>
     <string name="server_save">Guardar y actualizar</string>
     <string name="server_invalid">Escribe una dirección https:// válida.</string>
     <string name="server_none_title">Sin servidor de mapas</string>

@@ -33,6 +33,8 @@ class RegionsControllerTest {
     private lateinit var policy: DefaultNetworkPolicy
     private val render = ByteArray(300) { (it * 7).toByte() }
     private val search = ByteArray(200) { (it * 3).toByte() }
+    private val world = ByteArray(120) { (it * 5).toByte() }
+    private val coasts = ByteArray(90) { (it * 11).toByte() }
     private val base get() = "http://127.0.0.1:${server.address.port}"
     private var catalogJson = ""
 
@@ -47,6 +49,8 @@ class RegionsControllerTest {
                 "/catalog.json" -> catalogJson.toByteArray()
                 "/madrid.pmtiles" -> render
                 "/madrid.mwm" -> search
+                "/World.mwm" -> world
+                "/WorldCoasts.mwm" -> coasts
                 else -> null
             }
             if (body == null) {
@@ -58,9 +62,12 @@ class RegionsControllerTest {
             ex.close()
         }
         server.start()
-        catalogJson = """{"schema":1,"catalogVersion":"t","regions":[
+        catalogJson = """{"schema":1,"catalogVersion":"t",
+          "base":{"version":"2","world":{"url":"World.mwm","size":${world.size},"sha256":"${sha(world)}","file":"World.mwm"},
+                  "worldCoasts":{"url":"WorldCoasts.mwm","size":${coasts.size},"sha256":"${sha(coasts)}","file":"WorldCoasts.mwm"}},
+          "regions":[
           {"id":"spain","name":"Spain","parent":null,"version":"2"},
-          {"id":"madrid","name":"Madrid","parent":"spain","version":"2","assets":{
+          {"id":"madrid","comapsId":"Spain_Community of Madrid","name":"Madrid","parent":"spain","version":"2","assets":{
             "render":{"url":"madrid.pmtiles","size":${render.size},"sha256":"${sha(render)}","file":"madrid.pmtiles"},
             "search":{"url":"madrid.mwm","size":${search.size},"sha256":"${sha(search)}","file":"madrid.mwm"}}},
           {"id":"huge","name":"Huge","parent":"spain","version":"2","assets":{
@@ -73,17 +80,46 @@ class RegionsControllerTest {
     }
 
     @After
-    fun tearDown() = server.stop(0)
+    fun tearDown() {
+        server.stop(0)
+        CoreLinks.resetForTests()
+    }
 
     private fun controller(): RegionsController =
         RegionsController(context, policy, policy::addEndpoint, allowInsecure = true, downloadExecutor = direct, ioExecutor = direct, startService = {})
             .also { it.restore() }
 
     @Test
-    fun `without a server nothing is contacted and the state is NoServer`() {
+    fun `the default catalog is the project's data release and only lists hosts, never connects`() {
         val c = controller()
+        assertEquals(RegionsController.DEFAULT_CATALOG_URL, c.serverUrl)
+        assertTrue(RegionsController.DEFAULT_CATALOG_URL.startsWith("https://github.com/qtekfun/UltimateMaps-data/releases/latest/download/"))
+        val listed = policy.possibleConnections().filter { it.purpose == ConnectionPurpose.MAP_DOWNLOAD }
+        assertEquals(
+            setOf("github.com", "release-assets.githubusercontent.com", "objects.githubusercontent.com"),
+            listed.map { it.host }.toSet(),
+        )
+        assertTrue(listed.all { it.enabled })
+        assertTrue(policy.recentConnections().isEmpty()) // nothing was contacted
+        assertEquals(0, hits.get())
+    }
+
+    @Test
+    fun `a custom server does not whitelist the github hosts`() {
+        context.getSharedPreferences(RegionsController.PREFS, Context.MODE_PRIVATE).edit().putString("catalog_url", "https://maps.example.org/c.json").commit()
+        controller()
+        assertEquals(listOf("maps.example.org"), policy.possibleConnections().map { it.host })
+    }
+
+    @Test
+    fun `clearing the server on purpose survives a restart and nothing is contacted`() {
+        val c = controller()
+        assertTrue(c.saveServerUrl(""))
         assertEquals(CatalogState.NoServer, c.catalogState)
-        c.refreshCatalog()
+        val again = controller()
+        assertEquals("", again.serverUrl)
+        again.refreshCatalog()
+        assertEquals(CatalogState.NoServer, again.catalogState)
         assertEquals(CatalogState.NoServer, c.catalogState)
         assertEquals(0, hits.get())
         assertTrue(policy.recentConnections().isEmpty())
@@ -162,7 +198,17 @@ class RegionsControllerTest {
         assertTrue(entry.region.files.values.all { it.isFile })
         assertEquals(entry.region.files.getValue(com.qtekfun.mapas.core.regions.AssetKind.RENDER).readBytes().toList(), render.toList())
 
+        // The core finds it where it looks: maps-core/<version>/<comapsId>.mwm, with World next to it.
+        val core = File(context.filesDir, "maps-core/2")
+        assertEquals(listOf("Spain_Community of Madrid.mwm", "World.mwm", "WorldCoasts.mwm"), core.list()!!.sorted())
+        assertEquals(search.toList(), File(core, "Spain_Community of Madrid.mwm").readBytes().toList())
+        assertEquals(world.toList(), File(core, "World.mwm").readBytes().toList())
+        assertFalse(c.linkProblem)
+
+        CoreLinks.coreLoaded = true // the core is running: deleting needs a restart to forget the map
         c.delete("madrid")
+        assertTrue(c.restartForSearch)
+        assertFalse(File(context.filesDir, "maps-core/2").exists())
         assertTrue(c.installed.isEmpty())
         assertFalse(File(context.filesDir, "regions/madrid").exists())
     }
