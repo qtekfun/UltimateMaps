@@ -8,6 +8,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.semantics.getOrNull
 import androidx.compose.ui.test.SemanticsNodeInteractionsProvider
+import androidx.compose.ui.test.assertDoesNotExist
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.hasTestTag
@@ -94,7 +95,7 @@ internal class HubFixture {
                 set(v) { historyOn = v }
         }, clear = {}),
         cameras = CamerasSettingsEnv(camStore, cameras, incidents, offline = { offline }, locale = { Locale.ENGLISH }),
-        about = AboutSettingsEnv(version = "1.2.3", transitAttributions = { listOf("Test transit data") }),
+        about = AboutSettingsEnv(version = "1.2.3", transitAttributions = { listOf("Test transit data") }, notice = { "Test notice text" }),
     )
 }
 
@@ -211,6 +212,14 @@ class SettingsHubTest {
         rule.onNodeWithTag("about_fuel").assertIsDisplayed()
         rule.onNodeWithTag("about_source").assertIsDisplayed()
         rule.onNodeWithTag("about_transit").assertIsDisplayed()
+    }
+
+    @Test fun theAboutCategoryShowsTheThirdPartyNoticesOnDemand() {
+        show()
+        rule.openCategory("about")
+        rule.onNodeWithTag("about_notice_text").assertDoesNotExist()
+        rule.onNodeWithTag("about_notice_toggle").performScrollTo().performClick()
+        rule.onNodeWithTag("about_notice_text").assertTextEquals("Test notice text")
     }
 
     @Test fun theHubAndTheRowsAreAccessible() {

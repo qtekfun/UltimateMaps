@@ -1,80 +1,30 @@
 #!/usr/bin/env bash
 #
-# Prepares third_party/comaps for the project's own native build (:native-comaps).
-# It is a subset of third_party/comaps/configure.sh WITHOUT: World.mwm download, symbols or drules
-# for all styles (rendering is MapLibre's). Idempotent.
+# Developer/CI path: prepares third_party/comaps for the project's own native build (:native-comaps) from scratch.
+# It fetches the nested submodules the build needs (network), REGENERATES the generated files (PyPI: protobuf for kothic,
+# plus jq) into native-comaps/generated/, and stages them (scripts/comaps-stage.sh).
+#
+# You do NOT need this to build: the generated files are committed, so
+#   git submodule update --init --recursive third_party/comaps && scripts/comaps-stage.sh
+# is enough, and works offline once the submodules are checked out (it is what F-Droid runs). The Gradle build runs the
+# stage step by itself. Use this script only to refresh the committed files after bumping the submodule.
 #
 # Requirements: git, jq, python3 (+venv/pip with PyPI access the first time), bash, curl.
-# Does not need `uconv` (it was only used for Google Play listings).
-#
-# The generated files stay unversioned inside third_party/comaps (the submodule is marked
-# with ignore = untracked).
+# Does not need `uconv`. Does not download World.mwm and does not generate symbols or drules for all styles
+# (rendering is MapLibre's).
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 C="$ROOT/third_party/comaps"
-cd "$C"
 
 echo "== required submodules (without glfw, imgui, freetype, harfbuzz, vulkan, googletest...)"
-git submodule update --init --recursive --depth 1 -- \
+(cd "$C" && git submodule update --init --recursive --depth 1 -- \
   3party/boost 3party/expat 3party/jansson/jansson 3party/pugixml/pugixml 3party/protobuf/protobuf \
   3party/icu/icu 3party/glm 3party/fast_double_parser 3party/utfcpp 3party/glaze 3party/just_gtfs \
-  3party/fast_obj 3party/gflags tools/kothic tools/osmctools
+  3party/fast_obj 3party/gflags tools/kothic tools/osmctools)
 
-if [ ! -d 3party/boost/boost ]; then
-  echo "== boost: bootstrap + b2 headers"
-  (cd 3party/boost && ./bootstrap.sh && ./b2 headers)
-fi
+"$ROOT/scripts/comaps-generate.sh"
+"$ROOT/scripts/comaps-stage.sh"
 
-# Local venv with protobuf 3.x (required by kothic)
-set +u
-source ./tools/unix/activate_venv.sh
-set -u
-
-echo "== json strings and categories"
-./tools/unix/generate_json_strings.sh
-./tools/unix/generate_categories.sh
-
-echo "== desktop UI strings (libs/platform/localized_types_map.cpp)"
-./tools/unix/generate_desktop_ui_strings.sh
-
-# Feature type names ("Pharmacy" / "Farmacia") per language for the search results' category (CoMaps only generates English).
-echo "== localized type names (native-comaps/src/main/cpp/generated/um_localized_types.inc)"
-python3 "$ROOT/scripts/gen-localized-types.py" --comaps "$C"
-
-# The core sets Android's default style (default/light) with SetCurrentStyle and therefore loads
-# drules_proto_default_light.bin; without it, CoMaps init fails (verified on the Pixel 8). It is generated BEFORE the
-# vehicle style: each libkomwm rewrites classificator.txt/types.txt/visibility.txt and vehicle must come last, as in
-# tools/unix/generate_drules.sh.
-echo "== drules default/light (required by core startup)"
-python3 tools/kothic/src/libkomwm.py --txt \
-  -s data/styles/default/light/style.mapcss \
-  -o data/drules_proto_default_light \
-  -p data/styles/default/include/
-
-# classificator.txt, types.txt, visibility.txt, colors.txt and patterns.txt come from compiling ONE style
-# (the vehicle one, as generate_drules.sh does at the end: "produce same visibility.txt & classificator.txt").
-echo "== classificator/types/visibility from the vehicle style"
-python3 tools/kothic/src/libkomwm.py --txt \
-  -s data/styles/vehicle/light/style.mapcss \
-  -o data/drules_proto_vehicle_light \
-  -p data/styles/vehicle/include/
-python3 tools/python/transit/transit_colors_export.py data/colors.txt > /dev/null
-
-# Project patches to the CoMaps core (native-comaps/patches/*.patch), applied idempotently: a patch that is
-# already applied (it reverses cleanly) is skipped; one that neither applies nor reverses fails the script.
-echo "== project patches"
-for patch in "$ROOT"/native-comaps/patches/*.patch; do
-  [ -e "$patch" ] || continue
-  if git apply --check "$patch" 2>/dev/null; then
-    git apply "$patch"
-    echo "applied $(basename "$patch")"
-  elif git apply --check -R "$patch" 2>/dev/null; then
-    echo "already applied: $(basename "$patch")"
-  else
-    echo "ERROR: $(basename "$patch") neither applies nor is already applied; the submodule diverged" >&2
-    exit 1
-  fi
-done
-
-echo "Done. Check: ls data/classificator.txt data/categories.txt libs/platform/localized_types_map.cpp"
+echo "Done. Check: ls $C/data/classificator.txt $C/data/categories.txt $C/libs/platform/localized_types_map.cpp"
+echo "If the files under native-comaps/generated/ changed, commit them (scripts/comaps-check-generated.sh verifies them)."

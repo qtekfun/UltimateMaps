@@ -48,7 +48,8 @@ android {
 //  - fonts/ (includes 06_code2000.ttf, shareware, incompatible with GPLv3),
 //  - symbols/, symbols-svg/, search-icons/, styles/ (Entypo icons CC BY-SA 3.0 and render data),
 //  - drules_proto*.bin except drules_proto_default_light.bin (core startup requires it), vulkan_shaders/ (only used by the renderer, which is MapLibre's).
-// The generated files (classificator.txt, categories.txt, ...) are produced by scripts/comaps-prepare.sh.
+// The generated files (classificator.txt, categories.txt, ...) are committed in native-comaps/generated/ and copied into
+// the submodule by scripts/comaps-stage.sh (offline, no PyPI); scripts/comaps-generate.sh regenerates them.
 abstract class PrepareComapsAssets @Inject constructor(private val fs: FileSystemOperations) : DefaultTask() {
     @get:InputDirectory
     @get:PathSensitive(PathSensitivity.RELATIVE)
@@ -62,7 +63,7 @@ abstract class PrepareComapsAssets @Inject constructor(private val fs: FileSyste
         val data = dataDir.get().asFile
         val needed = listOf("classificator.txt", "categories.txt", "countries.txt", "packed_polygons.bin")
         val missing = needed.filter { !File(data, it).exists() }
-        if (missing.isNotEmpty()) throw GradleException("Missing CoMaps data $missing: run scripts/comaps-prepare.sh")
+        if (missing.isNotEmpty()) throw GradleException("Missing CoMaps data $missing: run scripts/comaps-stage.sh")
         fs.sync {
             from(data) {
                 include(
@@ -78,7 +79,27 @@ abstract class PrepareComapsAssets @Inject constructor(private val fs: FileSyste
     }
 }
 
+// Copies the committed generated files into the submodule, builds countries-strings, creates the Boost headers and
+// applies the project patches (scripts/comaps-stage.sh). Offline; a no-op once done. The submodule and its nested
+// submodules must be checked out.
+val stageComaps = tasks.register<Exec>("stageComaps") {
+    val stamp = layout.buildDirectory.file("stageComaps.stamp")
+    inputs.dir(rootProject.layout.projectDirectory.dir("native-comaps/generated"))
+    inputs.dir(rootProject.layout.projectDirectory.dir("native-comaps/patches"))
+    inputs.file(rootProject.layout.projectDirectory.file("scripts/comaps-stage.sh"))
+    outputs.file(stamp)
+    workingDir = rootProject.projectDir
+    commandLine("bash", "scripts/comaps-stage.sh")
+    doLast { stamp.get().asFile.apply { parentFile.mkdirs() }.writeText("ok\n") }
+}
+
+// The native build compiles files that the staging step creates inside the submodule.
+tasks.matching { it.name.startsWith("configureCMake") || it.name.startsWith("buildCMake") }.configureEach {
+    dependsOn(stageComaps)
+}
+
 val prepareComapsAssets = tasks.register<PrepareComapsAssets>("prepareComapsAssets") {
+    dependsOn(stageComaps)
     dataDir.set(comapsData)
     outDir.set(comapsAssets)
 }
