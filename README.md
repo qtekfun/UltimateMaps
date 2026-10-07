@@ -14,6 +14,7 @@ An Android maps and navigation app that is **offline and private**: map, search 
 - **Speed cameras and traffic (optional, off by default, one switch per category):** fixed cameras and average-speed sections, stretches where the DGT says mobile radars may operate (never exact points), live traffic incidents and V16 beacons, on the map and as spoken alerts ahead. Data from the DGT (CC BY) and OpenStreetMap (ODbL); traffic is downloaded only when you turn it on and never with your position. Informational and possibly out of date.
 - **Navigation screen with voice** (new, not yet verified on a device): turn banner, lanes, speed limit, arrival time, night and glove modes, a route simulator, and voice guidance in English and Spanish.
 - Saved places and lists, with GPX and KML import and export.
+- **Backup and restore of the settings** (Settings): save your preferences and the list of installed maps to a file (or everything, with your places, in one ZIP) and restore them on a new phone. No locations or credentials in the settings file; switches that start a download are not turned on by a restore.
 - Opens Google Maps, Apple Maps, Waze and `geo:` links.
 
 ## What it does not do (yet)
