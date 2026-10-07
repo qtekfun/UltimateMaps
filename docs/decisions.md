@@ -218,3 +218,12 @@ Formato: fecha · decisión · motivo · alternativas descartadas · cómo rever
 - **Prerrequisito detectado:** la app **no tiene todavía pantalla de Ajustes** (solo el modo sin red dentro de «Mapas»). Se añade a F2 (voz, unidades, privacidad) con secciones reservadas para F7.
 - **Sin verificar (spike antes de codificar):** URL, formato, frecuencia y licencia del fichero de precios del Ministerio; datos abiertos y tiempo real de Renfe/Cercanías; si Metro de Madrid u otros piden clave. Lo escrito sobre esas APIs es de memoria.
 - **Revertir:** quitar la fila F7 y las RF-15 a RF-17; no hay código.
+
+## 2026-10-07 · Estudio de verificación de F7: lo que cambia en el roadmap
+- **Resultado (agente D, `docs/phase7/verificacion-fuentes.md`; combustible re-verificado por mí con una descarga real):**
+  - **Combustible:** servicio abierto sin clave; 12,2 MB nacional, 999 estaciones con GLP (377 KB con `FiltroProducto/17`); se actualiza **cada 30 min** (el roadmap decía «diaria»: corregido). Filtrar por provincia o municipio revela la zona del usuario → se descarta; se usa descarga entera o por producto.
+  - **Cercanías:** GTFS-RT público sin clave, CC BY 4.0, 20 s; el tiempo real solo trae la siguiente parada, así que el tablero completo exige el GTFS estático (14 MB).
+  - **Metro:** solo **Bilbao** tiene tiempo real abierto sin clave. **Metro de Madrid no** (solo estático, «Powered by CRTM»); TMB, Valencia, Sevilla y EMT exigen clave → solo con clave del usuario.
+- **Desmentido:** «Metro de Madrid sin clave» del roadmap anterior.
+- **Bloqueo antes de publicar la función:** la **licencia de reutilización** del servicio de combustible no está verificada (las fichas de datos.gob.es devuelven 404). Hay que aclararlo con el Ministerio. Es decisión/acción del usuario.
+- **Sigue sin verificar:** límites de uso (ninguno publicado), texto de atribución de Renfe, licencia de la librería protobuf.
