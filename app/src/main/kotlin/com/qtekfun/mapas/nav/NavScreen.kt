@@ -67,6 +67,8 @@ class NavActions(
     val onStop: () -> Unit = {},
     val onRecenter: () -> Unit = {},
     val onGlove: (Boolean) -> Unit = {},
+    val onView3d: (Boolean) -> Unit = {},
+    val onOverview: () -> Unit = {},
     val onFaster: () -> Unit = {},
     val onSlower: () -> Unit = {},
     val onExit: () -> Unit = {},
@@ -135,6 +137,13 @@ private fun BoxScope.Driving(ui: NavUi, nav: NavState, actions: NavActions) {
                     NavButton(
                         stringResource(R.string.nav_ui_recenter), actions.onRecenter, Modifier.testTag("nav_recenter"),
                         container = c.statusInfo, content = c.onStatus,
+                    )
+                }
+                ViewToggle(ui, actions)
+                if (!ui.overview) {
+                    NavButton(
+                        stringResource(R.string.nav_ui_overview), actions.onOverview, Modifier.testTag("nav_overview"),
+                        description = stringResource(R.string.nav_ui_overview_description),
                     )
                 }
                 GloveToggle(ui, actions, Modifier)
@@ -383,6 +392,18 @@ private fun SimulationBar(ui: NavUi, actions: NavActions) {
         )
         NavButton("+", actions.onFaster, Modifier.testTag("nav_sim_faster"), description = stringResource(R.string.nav_ui_sim_faster))
     }
+}
+
+/** The 2D/3D switch: shows the current mode ("3D" highlighted when the tilted camera is on); at least the touch target (56 dp in glove mode). */
+@Composable
+private fun ViewToggle(ui: NavUi, actions: NavActions) {
+    val c = NavTheme.colors
+    val description = stringResource(if (ui.view3d) R.string.nav_ui_view3d_on_description else R.string.nav_ui_view2d_on_description)
+    NavButton(
+        stringResource(if (ui.view3d) R.string.nav_ui_view_3d else R.string.nav_ui_view_2d), { actions.onView3d(!ui.view3d) }, Modifier.testTag("nav_view_toggle"),
+        container = if (ui.view3d) c.laneRecommended else c.panel, content = if (ui.view3d) c.onLaneRecommended else c.onPanel,
+        description = description,
+    )
 }
 
 @Composable

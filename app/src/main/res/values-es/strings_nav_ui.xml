@@ -30,6 +30,13 @@
     <string name="nav_ui_sim_speed">%1$d km/h</string>
     <string name="nav_ui_sim_faster">Más rápido</string>
     <string name="nav_ui_sim_slower">Más lento</string>
+    <!-- Vista 3D, resumen de ruta -->
+    <string name="nav_ui_view_3d">3D</string>
+    <string name="nav_ui_view_2d">2D</string>
+    <string name="nav_ui_view3d_on_description">Vista 3D activada. Cambiar a la vista plana 2D</string>
+    <string name="nav_ui_view2d_on_description">Vista plana 2D activada. Cambiar a la vista 3D</string>
+    <string name="nav_ui_overview">Ruta</string>
+    <string name="nav_ui_overview_description">Mostrar un momento toda la ruta que queda</string>
     <!-- Resumen de llegada -->
     <string name="nav_ui_summary_title">Has llegado</string>
     <string name="nav_ui_summary_body">%1$s en %2$s</string>
