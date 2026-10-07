@@ -10,7 +10,16 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.unit.dp
+import com.qtekfun.mapas.cameras.CameraAlertBanner
+import com.qtekfun.mapas.cameras.LocalAlertBanner
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -47,6 +56,7 @@ class MainActivity : ComponentActivity() {
     private lateinit var navHost: NavHost
 
     private val permissionLauncher = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { grants ->
+        (application as MapasApp).refreshCameraAlerts() // free-driving alerts need the permission too
         if (grants.values.any { it }) startLocation() else state.notice = Notice.LocationDenied
     }
 
@@ -88,13 +98,19 @@ class MainActivity : ComponentActivity() {
             val dark = isSystemInDarkTheme()
             LaunchedEffect(dark) { engine.setTheme(if (dark) MapTheme.DARK else MapTheme.LIGHT) }
             val navUi by navHost.uiState()
+            CompositionLocalProvider(LocalAlertBanner provides app.alertBanner.state) {
             MapasTheme(darkTheme = dark) {
                 MapScreen(
                     state = state, onLocate = ::onLocate, onResetNorth = engine::resetNorth, sheetPanel = { panel.Content() },
-                    navigating = navUi.active, navSheet = panel.fuelCardOpen, overlay = { navHost.Overlay(dark) },
+                    navigating = navUi.active, navSheet = panel.fuelCardOpen, overlay = {
+                        navHost.Overlay(dark)
+                        // Driving without a navigation: the same alert, under the map controls (the navigation screen draws its own).
+                        if (!navUi.active) CameraAlertBanner(Modifier.align(Alignment.TopCenter).windowInsetsPadding(WindowInsets.statusBars).padding(top = 96.dp))
+                    },
                 ) {
                     AndroidView(factory = { engine.view }, modifier = Modifier.fillMaxSize())
                 }
+            }
             }
         }
         if (savedInstanceState == null) {
