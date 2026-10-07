@@ -17,6 +17,11 @@ Primera versión candidata: un MVP en desarrollo (ver `docs/mvp-plan.md`), no un
 - Sitios guardados y listas, con importación y exportación GPX y KML y copia de seguridad.
 - Apertura de enlaces de Google Maps, Apple Maps, Waze y `geo:`; los enlaces cortos no hacen ninguna petición de red.
 - Ubicación sin Google Play Services.
+- **Pantalla de Ajustes** (engranaje en el mapa): privacidad (modo sin red, catálogo, lista de conexiones posibles) y gasolineras.
+- **Gasolineras y precios** (opcional, apagado por defecto): descarga solo los combustibles que marques (GLP, gasolinas, gasóleos, GNC…), muestra el precio del combustible elegido sobre cada gasolinera, ficha al tocarla con **Ir** y **Añadir parada** (hasta 5), y atribución al Ministerio. La ubicación nunca sale del dispositivo.
+- Ruta con paradas intermedias.
+- Buscador en la lista de mapas y panel inferior más fácil de arrastrar.
+- El motor de búsqueda y rutas corre en un proceso aparte: si falla, la app sigue.
 - Cadenas en español e inglés.
 
 ### Limitaciones conocidas
