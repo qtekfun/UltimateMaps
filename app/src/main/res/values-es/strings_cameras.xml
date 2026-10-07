@@ -2,7 +2,7 @@
 <resources>
     <!-- Ajustes: sección -->
     <string name="cam_title">Radares y tráfico</string>
-    <string name="cam_intro">Todo esto es opcional y está desactivado por defecto. Los radares salen de un fichero pequeño de la publicación de datos de mapas; las incidencias de tráfico se descargan en directo, solo cuando las activas. Tu posición no se envía a ningún sitio.</string>
+    <string name="cam_intro">Opcional y desactivado por defecto. Los datos de radares son un fichero pequeño de la publicación de datos de mapas; el tráfico se descarga solo si lo activas. Tu posición nunca se envía.</string>
 
     <string name="cam_fixed_title">Radares fijos</string>
     <string name="cam_fixed_body">Radares fijos y tramos de velocidad media, en el mapa y como aviso por delante.</string>
@@ -18,13 +18,13 @@
     <string name="cam_only_speeding_body">En radares con límite conocido, no avisa mientras vas por debajo. Los radares con límite desconocido siempre avisan.</string>
 
     <!-- Ajustes: nota legal y diálogo de aceptación -->
-    <string name="cam_legal_note">Las zonas de radar móvil son solo los tramos que publica la DGT; la posición exacta de un control móvil no se publica y nunca se muestra. Los avisos son informativos y pueden ser erróneos o estar desactualizados. Comprueba las normas de tráfico donde conduzcas; eres responsable de cómo conduces.</string>
+    <string name="cam_legal_note">Las zonas de radar móvil son los tramos que publica la DGT; el punto exacto de un control móvil nunca se muestra. Los avisos son informativos y pueden ser erróneos o estar desactualizados. Eres responsable de cómo conduces.</string>
     <string name="cam_confirm_title">Datos de radares</string>
-    <string name="cam_confirm_body">Esto activa un aviso de radares.\n\n- Los radares fijos y los tramos de velocidad media vienen de la DGT (CC BY) y de OpenStreetMap (ODbL). La lista de la DGT indica dónde puede haber un radar, no que esté encendido.\n- Las zonas de radar móvil son tramos de carretera publicados por la DGT. La app no tiene datos en directo, ni controles policiales, ni avisos de usuarios, y nunca los tendrá.\n- El fichero viene del servidor de datos de mapas que elegiste; no se envía nada sobre tu posición.\n- Los avisos son informativos y pueden ser erróneos o estar desactualizados. Comprueba las normas de tráfico donde conduzcas.</string>
+    <string name="cam_confirm_body">Esto activa los avisos de radares.\n\n- Fuentes: DGT (CC BY) y OpenStreetMap (ODbL). Un radar de la lista puede no estar encendido.\n- Las zonas de radar móvil son tramos de carretera publicados por la DGT. Sin datos en directo, controles policiales ni avisos de usuarios.\n- El fichero viene del servidor de datos de mapas que elegiste; no se envía nada sobre tu posición.\n- Solo informativo: puede ser erróneo o estar desactualizado.</string>
     <string name="cam_confirm_yes">Lo entiendo, activar</string>
     <string name="cam_confirm_no">Cancelar</string>
     <string name="cam_incidents_confirm_title">Datos de tráfico</string>
-    <string name="cam_incidents_confirm_body">Esto descarga el fichero nacional de tráfico de la DGT (unos 200 KB comprimido) desde nap.dgt.es al activarlo, al pulsar Actualizar ahora y al abrir la app con datos antiguos. Se descarga todo el país y se filtra en tu móvil: tu posición y tu ruta nunca se envían. El modo sin conexión lo bloquea.</string>
+    <string name="cam_incidents_confirm_body">Esto descarga el fichero nacional de tráfico de la DGT (unos 200 KB) desde nap.dgt.es al activarlo, al pulsar Actualizar ahora o al abrir la app con datos antiguos. Se filtra en tu móvil: tu posición y tu ruta nunca se envían. El modo sin conexión lo bloquea.</string>
     <string name="cam_incidents_confirm_offline">El modo sin conexión está activo: no se descargará nada hasta que lo desactives.</string>
 
     <!-- Ajustes: tarjeta de datos -->
