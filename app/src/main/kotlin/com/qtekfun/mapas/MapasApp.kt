@@ -112,6 +112,7 @@ class MapasApp : Application() {
             AlertVoice(
                 VoiceModule.guide(this), VoiceModule.settings(this).settings,
                 maneuverImminent = { navigation.state.value?.let { ManeuverGuard.blocksVoice(it.nextManeuver?.distanceMeters, it.speedMps) } ?: false },
+                alertVoiceOn = { cameraSettings.settings.value.voiceEnabled },
             )
         }
         CameraAlerts(

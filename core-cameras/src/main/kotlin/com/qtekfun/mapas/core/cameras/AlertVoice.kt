@@ -50,16 +50,20 @@ class AlertVoice(
     private val settings: StateFlow<NavSettings>,
     /** True while a maneuver is about to be announced: the alert is then not spoken (see [ManeuverGuard]). */
     private val maneuverImminent: () -> Boolean = { false },
+    /** The alerts' own voice switch ([CameraSettings.voiceEnabled]); false: the chip still shows but nothing is spoken. */
+    private val alertVoiceOn: () -> Boolean = { true },
     private val locale: () -> Locale = Locale::getDefault,
 ) {
     /**
-     * Speaks [e] unless the navigation voice is off or muted (the same switch as the Mute button; it does not depend on
-     * "important prompts only", which is about maneuvers) or a maneuver is imminent. Alerts use [VoicePriority.ADVISORY]:
-     * they wait behind every driving instruction and never interrupt or discard one.
+     * Speaks [e] unless the navigation voice is off or muted (the same switch as the Mute button), the alerts' own voice
+     * is off ([alertVoiceOn]) or a maneuver is imminent. It does not depend on "important prompts only", which is about
+     * maneuvers. Alerts use [VoicePriority.ADVISORY]: they wait behind every driving instruction and never interrupt or
+     * discard one.
      */
     fun onAlert(e: AlertEvent) {
         val s = settings.value
         if (!s.voiceEnabled) return
+        if (!alertVoiceOn()) return
         if (maneuverImminent()) return
         val lang = s.voiceLanguage.resolve(locale())
         guide.setVolume(s.volumePercent) // free driving has no navigation controller to have set it

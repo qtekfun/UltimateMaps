@@ -30,6 +30,7 @@ class PrefsCameraSettingsStore(private val prefs: SharedPreferences) : CameraSet
             .putBoolean(KEY_ROADWORKS, next.roadworksEnabled)
             .putBoolean(KEY_ONLY_SPEEDING, next.warnOnlyIfSpeeding)
             .putBoolean(KEY_ACK, next.acknowledged)
+            .putBoolean(KEY_VOICE, next.voiceEnabled)
             .putInt(KEY_REFRESH, next.incidentRefreshMinutes)
             .apply()
         state.value = next
@@ -46,6 +47,7 @@ class PrefsCameraSettingsStore(private val prefs: SharedPreferences) : CameraSet
             roadworksEnabled = bool(KEY_ROADWORKS, d.roadworksEnabled),
             warnOnlyIfSpeeding = bool(KEY_ONLY_SPEEDING, d.warnOnlyIfSpeeding),
             acknowledged = bool(KEY_ACK, d.acknowledged),
+            voiceEnabled = bool(KEY_VOICE, d.voiceEnabled),
             incidentRefreshMinutes = runCatching { prefs.getInt(KEY_REFRESH, d.incidentRefreshMinutes) }.getOrDefault(d.incidentRefreshMinutes),
         ).normalized()
     }
@@ -59,6 +61,7 @@ class PrefsCameraSettingsStore(private val prefs: SharedPreferences) : CameraSet
         const val KEY_ROADWORKS = "roadworks"
         const val KEY_ONLY_SPEEDING = "only_if_speeding"
         const val KEY_ACK = "acknowledged"
+        const val KEY_VOICE = "voice_alerts"
         const val KEY_REFRESH = "incident_refresh_minutes"
     }
 }
