@@ -179,6 +179,18 @@ class ConverterTest(unittest.TestCase):
         self.assertEqual(1, len(nodes))
         self.assertEqual(0, dropped)
 
+    def test_geojsonseq_without_feature_ids_keeps_every_node(self):
+        # `osmium export` writes no feature id by default; an empty id used to make every node a duplicate of the first.
+        p = os.path.join(self.tmp, "n.geojsonseq")
+        feats = [
+            {"type": "Feature", "properties": {"highway": "speed_camera"}, "geometry": {"type": "Point", "coordinates": [-3.5 + i / 100, 40.5]}}
+            for i in range(3)
+        ]
+        feats.append(feats[0])  # the same position twice is still a duplicate
+        write(p, "".join("\x1e" + json.dumps(f) + "\n" for f in feats))
+        nodes, dropped = bc.load_osm([], [p])
+        self.assertEqual(3, len(nodes))
+
     def test_no_source_is_an_error(self):
         with self.assertRaises(SystemExit):
             bc.main(["-o", os.path.join(self.tmp, "x.bin")])
