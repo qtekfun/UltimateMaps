@@ -42,29 +42,36 @@ object AlertPhrases {
 }
 
 /**
- * Speaks the alerts through the navigation's [VoiceGuide], honouring the navigation voice settings (voice on/off,
- * language, units). Without voice the alert is not spoken (the visual alert still shows).
+ * Announces the alerts audibly, per category [AlertSoundMode]: a chime through [player] or a sentence through the
+ * navigation's [VoiceGuide] (honouring the navigation voice settings: on/off, language, units, volume). The decision is
+ * [AlertDeliveryPolicy]. The visual alert is not this class's business and always shows.
  */
 class AlertVoice(
     private val guide: VoiceGuide,
     private val settings: StateFlow<NavSettings>,
     /** True while a maneuver is about to be announced: the alert is then not spoken (see [ManeuverGuard]). */
     private val maneuverImminent: () -> Boolean = { false },
-    /** The alerts' own voice switch ([CameraSettings.voiceEnabled]); false: the chip still shows but nothing is spoken. */
-    private val alertVoiceOn: () -> Boolean = { true },
+    /** The mode of the category an alert belongs to ([CameraSettings.modeFor]). */
+    private val modeFor: (AlertCategory) -> AlertSoundMode = { AlertSoundMode.VOICE },
+    /** The quick mute ([CameraSettings.alertsMuted]). */
+    private val alertsMuted: () -> Boolean = { false },
+    private val player: AlertSoundPlayer = AlertSoundPlayer { _, _ -> },
     private val locale: () -> Locale = Locale::getDefault,
 ) {
     /**
-     * Speaks [e] unless the navigation voice is off or muted (the same switch as the Mute button), the alerts' own voice
-     * is off ([alertVoiceOn]) or a maneuver is imminent. It does not depend on "important prompts only", which is about
-     * maneuvers. Alerts use [VoicePriority.ADVISORY]: they wait behind every driving instruction and never interrupt or
-     * discard one.
+     * Chimes or speaks [e] as its category's mode says, unless the navigation voice is off or muted (the same switch as the
+     * Mute button), the alerts are quick-muted or a maneuver is imminent. It does not depend on "important prompts only",
+     * which is about maneuvers. Spoken alerts use [VoicePriority.ADVISORY]: they wait behind every driving instruction and
+     * never interrupt or discard one.
      */
     fun onAlert(e: AlertEvent) {
         val s = settings.value
-        if (!s.voiceEnabled) return
-        if (!alertVoiceOn()) return
-        if (maneuverImminent()) return
+        val delivery = AlertDeliveryPolicy.decide(modeFor(e.target.category), alertsMuted(), s.voiceEnabled, maneuverImminent())
+        if (delivery == AlertDelivery.NONE) return
+        if (delivery == AlertDelivery.CHIME) {
+            player.play(e.target.category.chimeKind, s.volumePercent)
+            return
+        }
         val lang = s.voiceLanguage.resolve(locale())
         guide.setVolume(s.volumePercent) // free driving has no navigation controller to have set it
         guide.speak(
