@@ -178,6 +178,7 @@ Answers to the audit questions (verified by `CameraAlertsWiringTest`, `CameraAle
   (`MAP_DOWNLOAD` purpose, https, hash checked). The data card in Settings shows "never" or the error when it failed.
 - **Mute.** Alerts use the navigation voice switch, so Mute and "Voice guidance off" silence them (intended). "Important prompts only"
   does not: it filters maneuver prompts only. The chip appears in every case.
+  Since `feat/camera-mute` the alerts also have their own voice switch (`voice_alerts`, Settings and a navigation-screen button); it silences only their voice.
 
 Visual alert: `AlertBannerTracker` (core, pure) holds what the warner last announced and counts the distance down (route mode: by
 progress along the route; free mode: straight distance, dismissed when the driver is more than 40 m beyond the closest approach;
