@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Simulacion de navegacion por adb: provider GPS de prueba (cmd location) alimentado a 1 Hz a lo largo de un recorrido
-Sol -> Cibeles -> Colon -> Castellana -> Plaza de Castilla, con la ruta en coche calculada por la app. Hace capturas
-cada ~10 s y guarda el logcat. Bajo el lock del dispositivo. Limpia el provider al terminar.
-Uso: nav_sim.py <prefijo salida> [segundos=70]"""
+"""Navigation simulation over adb: test GPS provider (cmd location) fed at 1 Hz along a route
+Sol -> Cibeles -> Colon -> Castellana -> Plaza de Castilla, with the car route computed by the app. Takes screenshots
+every ~10 s and saves the logcat. Under the device lock. Cleans up the provider when done.
+Usage: nav_sim.py <output prefix> [seconds=70]"""
 import fcntl, math, subprocess, sys, time
 
 P = sys.argv[1]
@@ -45,7 +45,7 @@ try:
     setloc(*pts[0][:2], pts[0][2], 0)
     time.sleep(2)
     adb("logcat", "-c")
-    # car route Sol -> Plaza de Castilla; the app may restore another one, so it is repeated
+    # Sol -> Plaza de Castilla route by car; the app may restore another one, so it is repeated
     adb("shell", "am", "force-stop", "app.comaps.fdroid")
     time.sleep(1)
     adb("shell", "am start -W -a android.intent.action.VIEW -d 'comaps://route?sll=40.4168,-3.7038&saddr=A&dll=40.4663,-3.6890&daddr=B&type=vehicle' app.comaps.fdroid")
@@ -53,7 +53,7 @@ try:
         setloc(*pts[0][:2], pts[0][2], 0)
         time.sleep(1)
     open(P + "-planner.png", "wb").write(subprocess.run(["adb", "exec-out", "screencap", "-p"], capture_output=True).stdout)
-    sh("input", "tap", "890", "2128")  # Start
+    sh("input", "tap", "890", "2128")  # Empezar
     for _ in range(4):
         setloc(*pts[0][:2], pts[0][2], 0)
         time.sleep(1)
@@ -61,7 +61,7 @@ try:
     for _ in range(6):
         setloc(*pts[0][:2], pts[0][2], 0)
         time.sleep(1)
-    sh("input", "tap", "890", "2128")  # Start again
+    sh("input", "tap", "890", "2128")  # Start over
     for _ in range(3):
         setloc(*pts[0][:2], pts[0][2], 0)
         time.sleep(1)

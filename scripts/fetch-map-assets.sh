@@ -1,12 +1,12 @@
 #!/bin/bash
 # For the MAINTAINER (neither the app nor the automatic flow runs it): downloads sprites and glyphs from the
 # protomaps/basemaps-assets project (sprites BSD-3; Noto Sans fonts, SIL OFL 1.1) and generates the styles.
-# The app does NOT download anything at runtime. Only the small part is packaged: Latin and punctuation ranges of
+# The app does NOT download anything at runtime. Only the small stuff is packaged: Latin and punctuation ranges of
 # 3 fonts; the other ranges fail without blocking rendering (MapLibre logs the failure and carries on).
 #
 # Usage: scripts/fetch-map-assets.sh [lang]          (label language, default es)
 # Variables: BASEMAPS_MODULES=<dir with node_modules/@protomaps/basemaps> to avoid npm (no network to npm);
-#            SKIP_STYLE=1 to skip regenerating the styles (sprites and glyphs only).
+#            SKIP_STYLE=1 to not regenerate the styles (sprites and glyphs only).
 set -euo pipefail
 ROOT=$(cd "$(dirname "$0")/.." && pwd)
 OUT=$ROOT/app/src/main/assets/map

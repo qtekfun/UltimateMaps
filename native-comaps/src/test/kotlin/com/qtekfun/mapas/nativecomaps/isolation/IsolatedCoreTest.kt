@@ -290,7 +290,7 @@ class IsolatedCoreTest {
 
     @Test fun `an init the core refuses is reported with its reason`() {
         val refusing = object : NativeBridge by Bridge() {
-            override fun init(apk: String, writableDir: String, tmpDir: String, locale: String) = "sin classificator"
+            override fun init(apk: String, writableDir: String, tmpDir: String, locale: String) = "missing classificator"
         }
         val host = CoreHost(CoMapsCore(refusing))
         val reply = CoreProtocol.decodeReply(host.handle(CoreProtocol.OP_INIT, CoreProtocol.encodeInit(CoreProtocol.InitArgs("a", "m", "t", "en"))))

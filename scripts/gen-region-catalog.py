@@ -1,23 +1,23 @@
 #!/usr/bin/env python3
-"""Generates the region catalogue (JSON schema 1, see docs/phase1/regions.md) by joining:
+"""Generates the region catalog (JSON schema 1, see docs/phase1/regions.md) by joining:
 
   * the CoMaps hierarchy and .mwm files (`third_party/comaps/data/countries.txt`), and
-  * our own PMTiles extracts (one `<id>.pmtiles` file per region).
+  * the project's own PMTiles extracts (one `<id>.pmtiles` file per region).
 
 Real fields of `countries.txt` (verified against the version 261004 file):
   root:  {"id": "Countries", "v": 261004, "map_series": "2026.06.28", "g": [...]}
-  nodo:  {"id": "Spain_Community of Madrid", "s": <size in bytes of the .mwm>, "sha1_base64": "...",
+  node:  {"id": "Spain_Community of Madrid", "s": <.mwm bytes>, "sha1_base64": "...",
           "old": [...], "affiliations": [...], "country_name_synonyms": {...}}
-  group: {"id": "Spain", "g": [children...]}     (groups carry neither "s" nor "sha1_base64")
-`v` is the data version (YYMMDD) and applies to the whole tree. CoMaps' SHA-1 is NOT used: the SHA-256 is
-computed from the real files (our own catalogue is the root of trust for the hash).
+  group: {"id": "Spain", "g": [children...]}        (groups carry neither "s" nor "sha1_base64")
+`v` is the data version (YYMMDD) and applies to the whole tree. The CoMaps SHA-1 is NOT used: the SHA-256 is
+computed from the real files (the project's own catalog is the root of trust for the hash).
 
-A leaf is downloadable only if BOTH files (.mwm and .pmtiles) exist with their SHA-256; the other nodes
-are emitted anyway (full hierarchy) but without `assets`, and the app shows them as "not available" ("no disponible").
+A leaf is downloadable only if BOTH files (.mwm and .pmtiles) exist with their SHA-256; the remaining nodes
+are still emitted (full hierarchy) but without `assets`, and the app shows them as "not available".
 
-CoMaps ids contain spaces and are not valid as a region id (`[A-Za-z0-9_.-]`): our own id is the
-original in ASCII lowercase with the gaps as `-` (`spain_community-of-madrid`); the original goes in
-`comapsId` (an extra field the parser ignores) so that the engine requests the right .mwm.
+CoMaps ids contain spaces and are not valid as a region id (`[A-Za-z0-9_.-]`): the own id is the
+original in lowercase ASCII with the gaps replaced by `-` (`spain_community-of-madrid`); the original goes in
+`comapsId` (an extra field the parser ignores) so the engine requests the right .mwm.
 
 Examples (no network):
   scripts/gen-region-catalog.py --mwm-dir ~/mirror/mwm --pmtiles-dir ~/mirror/pmtiles \\
@@ -25,10 +25,10 @@ Examples (no network):
   scripts/gen-region-catalog.py -o hierarchy.json          # hierarchy only, nothing downloadable
 
 `--base-dir` adds the `base` block with `World.mwm` and `WorldCoasts.mwm` (they are not a region, but the core requires them
-alongside each region; the app downloads them once per version). Without it, the catalogue has no `base`.
+next to each region; the app downloads them once per version). Without it, the catalog has no `base`.
 
-With the network, only on explicit request and with a size cap: --fetch-mwm <comapsId> downloads THAT .mwm
-(by default ≤ 20 MB) to --mwm-dir to compute its SHA-256.
+With network, only on explicit request and with a size cap: --fetch-mwm <comapsId> downloads THAT .mwm
+(by default <= 20 MB) to --mwm-dir to compute its SHA-256.
 """
 import argparse
 import datetime
@@ -100,7 +100,7 @@ BASE_FILES = (("world", "World.mwm"), ("worldCoasts", "WorldCoasts.mwm"))
 
 
 def build_base(version, base_dir, base_url, log=lambda m: None):
-    """`base` block (World.mwm and WorldCoasts.mwm, which the core requires alongside each region) or None if either is missing."""
+    """`base` block (World.mwm and WorldCoasts.mwm, which the core requires next to each region) or None if either is missing."""
     if not base_dir:
         return None
     if not base_url:
@@ -110,7 +110,7 @@ def build_base(version, base_dir, base_url, log=lambda m: None):
     for key, name in BASE_FILES:
         path = os.path.join(base_dir, name)
         if not os.path.isfile(path):
-            log(f"WARNING {path} is missing; the catalogue will have no `base`")
+            log(f"WARNING {path} is missing; the catalog will not carry `base`")
             return None
         out[key] = {"url": base_url + name, "size": os.path.getsize(path), "sha256": sha256_of(path), "file": name}
     return out
@@ -131,7 +131,7 @@ def build(countries, mwm_dir=None, pmtiles_dir=None, mwm_base=None, pmtiles_base
     for node, _ in nodes:
         s = slug(node["id"])
         if node["id"] not in slugs and s in slugs.values():
-            raise SystemExit(f"id collision after normalising: {node['id']} -> {s}")
+            raise SystemExit(f"id collision after normalizing: {node['id']} -> {s}")
         slugs[node["id"]] = s
     regions = []
     for node, parent in nodes:
@@ -187,16 +187,16 @@ def main(argv=None):
                                                          "data", "countries.txt"))
     ap.add_argument("--mwm-dir", help="directory with <comapsId>.mwm (its SHA-256 is computed)")
     ap.add_argument("--pmtiles-dir", help="directory with <own id>.pmtiles")
-    ap.add_argument("--mwm-base", help="base URL of the .mwm files (default: the CoMaps structure)")
+    ap.add_argument("--mwm-base", help="base URL of the .mwm files (by default the CoMaps structure)")
     ap.add_argument("--pmtiles-base", help="base URL of the .pmtiles files (required with --pmtiles-dir)")
-    ap.add_argument("--catalog-version", help="default: today's date (YYYY-MM-DD)")
+    ap.add_argument("--catalog-version", help="by default, today's date (YYYY-MM-DD)")
     ap.add_argument("--fetch-mwm", action="append", default=[], metavar="COMAPS_ID",
-                    help="download that .mwm to --mwm-dir (network; only if requested)")
+                    help="downloads that .mwm to --mwm-dir (network; only on request)")
     ap.add_argument("--max-download-mb", type=int, default=20)
-    ap.add_argument("--base-dir", help="directory with World.mwm and WorldCoasts.mwm (the catalogue's `base` block)")
-    ap.add_argument("--base-url", help="base URL of World*.mwm (default: --mwm-base)")
+    ap.add_argument("--base-dir", help="directory with World.mwm and WorldCoasts.mwm (the catalog's `base` block)")
+    ap.add_argument("--base-url", help="base URL of World*.mwm (by default, --mwm-base)")
     ap.add_argument("--mwm-url-by-slug", action="store_true",
-                    help="the .mwm URL uses our own id (`<slug>.mwm`), e.g. on GitHub Releases, which renames spaces")
+                    help="the .mwm URL uses the own id (`<slug>.mwm`), e.g. on GitHub Releases, which renames spaces")
     ap.add_argument("-o", "--output", default="-")
     a = ap.parse_args(argv)
     with open(a.countries, encoding="utf-8") as f:
@@ -211,8 +211,8 @@ def main(argv=None):
         with open(a.output, "w", encoding="utf-8") as f:
             f.write(text)
     if "base" not in cat and any("assets" in r for r in cat["regions"]):
-        print("WARNING: the catalogue has downloadable regions but NOT the `base` block (World.mwm and WorldCoasts.mwm): "
-              "the app will download them, but search will say \"no hay mapas\" (\"no maps\"). Pass --base-dir.", file=sys.stderr)
+        print("WARNING: the catalog has downloadable regions but NOT the `base` block (World.mwm and WorldCoasts.mwm): "
+              "the app will download them, but search will say \"no maps\". Pass --base-dir.", file=sys.stderr)
     n = len(cat["regions"])
     d = sum(1 for r in cat["regions"] if "assets" in r)
     print(f"{n} regions, {d} downloadable", file=sys.stderr)

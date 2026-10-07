@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Types queries into the CoMaps search UI character by character (input text) and saves a logcat with the lines
+# Types queries into CoMaps' search UI character by character (input text) and saves a logcat with the lines
 # "Search ended in N ms" / "Emitting a new batch ... ms since the search has started" from the core.
 # Usage: search_typing.sh <output prefix> <query1> [query2 ...]   (spaces as %s)
 P=$1; shift

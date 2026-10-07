@@ -8,12 +8,12 @@ import com.qtekfun.mapas.core.routing.SpeedLimit
 import com.qtekfun.mapas.core.routing.TurnType
 
 /**
- * Decodificador del guiado que devuelve `um::Core::Route(withGuidance = true)` (ver `um_core.hpp`).
- * Todo son enteros dentro de un `DoubleArray`:
- * `[version, nManiobras, nLimites, maniobras..., limites...]`
- * - maniobra: `indiceGeometria, giro, salidaRotonda(-1), indiceNombre(-1), nCarriles, (mascaraLaneWay, recomendado)*`
- * - limite: `desde, hasta, kmh(-1 = sin dato)`
- * Un array vacio significa «sin guiado». Cualquier incoherencia lanza [IllegalArgumentException] (nunca se lee fuera).
+ * Decoder of the guidance returned by `um::Core::Route(withGuidance = true)` (see `um_core.hpp`).
+ * Everything is integers inside a `DoubleArray`:
+ * `[version, nManeuvers, nLimits, maneuvers..., limits...]`
+ * - maneuver: `geometryIndex, turn, roundaboutExit(-1), nameIndex(-1), nLanes, (laneWayMask, recommended)*`
+ * - limit: `from, to, kmh(-1 = no data)`
+ * An empty array means "no guidance". Any inconsistency throws [IllegalArgumentException] (it never reads out of bounds).
  */
 internal object GuidanceWire {
     const val VERSION = 1
@@ -23,24 +23,24 @@ internal object GuidanceWire {
         if (raw.isEmpty()) return RouteGuidance.EMPTY
         val r = Reader(raw)
         val version = r.int("version")
-        require(version == VERSION) { "version de guiado desconocida: $version" }
-        val nMan = r.count("nManiobras", raw.size)
-        val nLim = r.count("nLimites", raw.size)
+        require(version == VERSION) { "unknown guidance version: $version" }
+        val nMan = r.count("nManeuvers", raw.size)
+        val nLim = r.count("nLimits", raw.size)
 
         val maneuvers = ArrayList<Maneuver>(nMan)
         repeat(nMan) {
-            val index = r.int("indiceGeometria")
-            require(index in 0 until geometrySize) { "indice de geometria fuera de rango: $index (puntos: $geometrySize)" }
+            val index = r.int("geometryIndex")
+            require(index in 0 until geometrySize) { "geometry index out of range: $index (points: $geometrySize)" }
             val type = turnOf(r.int("giro"))
-            val exit = r.int("salidaRotonda")
-            require(exit >= -1) { "salida de rotonda invalida: $exit" }
-            val nameIdx = r.int("indiceNombre")
-            require(nameIdx in -1 until names.size) { "indice de nombre fuera de rango: $nameIdx (nombres: ${names.size})" }
-            val nLanes = r.count("nCarriles", MAX_LANES)
+            val exit = r.int("roundaboutExit")
+            require(exit >= -1) { "invalid roundabout exit: $exit" }
+            val nameIdx = r.int("nameIndex")
+            require(nameIdx in -1 until names.size) { "name index out of range: $nameIdx (names: ${names.size})" }
+            val nLanes = r.count("nLanes", MAX_LANES)
             val lanes = List(nLanes) {
                 val mask = r.int("mascara")
-                val rec = r.int("recomendado")
-                require(rec == 0 || rec == 1) { "marca de carril recomendado invalida: $rec" }
+                val rec = r.int("recommended")
+                require(rec == 0 || rec == 1) { "invalid recommended lane flag: $rec" }
                 Lane(directionsOf(mask), rec == 1)
             }
             val isRoundabout = type == TurnType.ROUNDABOUT_ENTER || type == TurnType.ROUNDABOUT_LEAVE
@@ -55,16 +55,16 @@ internal object GuidanceWire {
 
         val limits = ArrayList<SpeedLimit>(nLim)
         repeat(nLim) {
-            val start = r.int("desde")
-            val end = r.int("hasta")
+            val start = r.int("from")
+            val end = r.int("to")
             val kmh = r.int("kmh")
             require(start in 0 until geometrySize && end in start until geometrySize) {
-                "tramo de limite invalido: $start..$end (puntos: $geometrySize)"
+                "invalid limit stretch: $start..$end (points: $geometrySize)"
             }
-            require(kmh == -1 || kmh in 1..400) { "limite de velocidad invalido: $kmh" }
+            require(kmh == -1 || kmh in 1..400) { "invalid speed limit: $kmh" }
             limits += SpeedLimit(start, end, if (kmh == -1) null else kmh)
         }
-        require(r.exhausted()) { "guiado con datos sobrantes: ${raw.size - r.pos}" }
+        require(r.exhausted()) { "guidance with leftover data: ${raw.size - r.pos}" }
         return RouteGuidance(maneuvers, limits)
     }
 
@@ -75,20 +75,20 @@ internal object GuidanceWire {
         fun exhausted() = pos == a.size
 
         fun int(what: String): Int {
-            require(pos < a.size) { "guiado truncado leyendo $what (posicion $pos de ${a.size})" }
+            require(pos < a.size) { "guidance truncated while reading $what (position $pos of ${a.size})" }
             val v = a[pos++]
-            require(v == Math.rint(v) && v >= Int.MIN_VALUE && v <= Int.MAX_VALUE) { "$what no es un entero: $v" }
+            require(v == Math.rint(v) && v >= Int.MIN_VALUE && v <= Int.MAX_VALUE) { "$what is not an integer: $v" }
             return v.toInt()
         }
 
         fun count(what: String, max: Int): Int {
             val n = int(what)
-            require(n in 0..max) { "$what fuera de rango: $n" }
+            require(n in 0..max) { "$what out of range: $n" }
             return n
         }
     }
 
-    /** Codigos de `um::WireTurn`. Explicitos a proposito: no dependen del orden del enum de Kotlin. */
+    /** Codes of `um::WireTurn`. Explicit on purpose: they do not depend on the order of the Kotlin enum. */
     private fun turnOf(code: Int): TurnType = when (code) {
         0 -> TurnType.DEPART
         1 -> TurnType.STRAIGHT
@@ -108,10 +108,10 @@ internal object GuidanceWire {
         15 -> TurnType.ARRIVE
         16 -> TurnType.ARRIVE_LEFT
         17 -> TurnType.ARRIVE_RIGHT
-        else -> throw IllegalArgumentException("giro desconocido: $code")
+        else -> throw IllegalArgumentException("unknown turn: $code")
     }
 
-    /** Bit i de la mascara = `routing::turns::lanes::LaneWay` de valor i. El bit 0 (`None`) no aporta direccion. */
+    /** Bit i of the mask = `routing::turns::lanes::LaneWay` of value i. Bit 0 (`None`) contributes no direction. */
     private val laneBits = mapOf(
         1 to LaneDirection.U_TURN, // ReverseLeft
         2 to LaneDirection.SHARP_LEFT,
@@ -127,7 +127,7 @@ internal object GuidanceWire {
     )
 
     private fun directionsOf(mask: Int): Set<LaneDirection> {
-        require(mask >= 0 && mask < (1 shl 12)) { "mascara de carril invalida: $mask" }
+        require(mask >= 0 && mask < (1 shl 12)) { "invalid lane mask: $mask" }
         return laneBits.filterKeys { mask and (1 shl it) != 0 }.values.toSet()
     }
 }

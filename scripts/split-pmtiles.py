@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """Cuts a source PMTiles into one PMTiles per CoMaps region, using the polygons in
-`third_party/comaps/data/borders/<id>.poly` (Osmosis format). Output: one `<slug>.pmtiles` per region,
-with the same slug as `gen-region-catalog.py`, so the catalogue matches the .mwm files 1:1.
+`third_party/comaps/data/borders/<id>.poly` (Osmosis format). Output: `<slug>.pmtiles` per region,
+with the same slug as `gen-region-catalog.py`, so the catalog fits 1:1 with the .mwm files.
 
 Usage:
   scripts/split-pmtiles.py --pmtiles BIN --source SOURCE --out DIR [--prefix Spain_] [--only ID ...]
-SOURCE may be a local file or the URL of a Protomaps build. It is idempotent: it skips what is already done.
-A clipped PMTiles includes the whole tiles that touch the polygon, so neighbouring regions
+SOURCE can be a local file or the URL of a Protomaps build. It is idempotent: it skips what is already done.
+A cropped PMTiles includes the whole tiles that touch the polygon, so neighboring regions
 overlap at the border (rendering must take that into account).
 """
 import argparse
@@ -28,7 +28,7 @@ def _slug():
 
 
 def read_poly(path):
-    """Returns a GeoJSON MultiPolygon: each outer ring is a polygon; holes (`!name`) are added to the last one."""
+    """Returns a MultiPolygon GeoJSON: each outer ring is a polygon; the holes (`!nombre`) are added to the last one."""
     polys = []
     with open(path, encoding="utf-8") as f:
         lines = [l.strip() for l in f if l.strip()]
