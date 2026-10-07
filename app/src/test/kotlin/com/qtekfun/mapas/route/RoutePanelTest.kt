@@ -103,4 +103,26 @@ class RoutePanelTest {
         show()
         rule.onNodeWithText("Maps are missing for this route. Download the regions it crosses.").assertIsDisplayed()
     }
+
+    @Test
+    fun listsStopsWithTotalsAndMovesAndRemovesThem() {
+        route.start(PlaceInfo("Destino", LatLon(40.1, -3.1)))
+        settle { route.state.status == RouteStatus.DONE }
+        route.addStop(PlaceInfo("Uno", LatLon(40.02, -3.02)))
+        route.addStop(PlaceInfo("Dos", LatLon(40.05, -3.05)))
+        settle { route.state.status == RouteStatus.DONE }
+        show()
+        rule.onNodeWithText("Stops (2 of 5)").assertIsDisplayed()
+        rule.onNodeWithText("1. Uno").assertIsDisplayed()
+        rule.onNodeWithText("2. Dos").assertIsDisplayed()
+        rule.onNodeWithText("12.3 km · 25 min").assertIsDisplayed() // total of the whole route
+        rule.onNodeWithTag("route_stop_up_0").assertIsNotEnabled()
+        rule.onNodeWithTag("route_stop_down_1").assertIsNotEnabled()
+
+        rule.onNodeWithTag("route_stop_down_0").performClick()
+        assertEquals(listOf("Dos", "Uno"), route.state.stops.map { it.name })
+        rule.onNodeWithTag("route_stop_remove_0").performClick()
+        assertEquals(listOf("Uno"), route.state.stops.map { it.name })
+        settle { route.state.status == RouteStatus.DONE }
+    }
 }

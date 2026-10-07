@@ -2,6 +2,11 @@ package com.qtekfun.mapas.route
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.size
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -63,6 +68,7 @@ fun RoutePanel(
             style = Mapas.typography.callout.copy(color = Mapas.colors.secondaryLabel),
             modifier = Modifier.testTag("route_origin"),
         )
+        if (!s.pickingOrigin) Stops(route)
         Spacer(Modifier.height(8.dp))
         if (s.pickingOrigin) {
             PanelNote(stringResource(R.string.route_pick_hint), "route_pick_hint")
@@ -75,6 +81,51 @@ fun RoutePanel(
         }
     }
 }
+
+/** Stops between the origin and the destination: name, move up / down and remove, each a 48 dp touch target. */
+@Composable
+private fun Stops(route: RoutePreviewController) {
+    val stops = route.state.stops
+    if (stops.isEmpty()) return
+    Column(Modifier.fillMaxWidth().padding(top = 8.dp).testTag("route_stops")) {
+        BasicText(
+            stringResource(R.string.route_stops_title, stops.size, RoutePreviewController.MAX_STOPS),
+            style = Mapas.typography.callout.copy(color = Mapas.colors.secondaryLabel),
+        )
+        stops.forEachIndexed { i, stop ->
+            Row(Modifier.fillMaxWidth().heightIn(min = STOP_ROW_MIN), verticalAlignment = Alignment.CenterVertically) {
+                BasicText(
+                    "${i + 1}. ${stop.name}",
+                    style = Mapas.typography.body.copy(color = Mapas.colors.label),
+                    maxLines = 1,
+                    modifier = Modifier.weight(1f).testTag("route_stop_$i"),
+                )
+                StopButton("↑", stringResource(R.string.route_stop_up, stop.name), i > 0, "route_stop_up_$i") { route.moveStop(i, -1) }
+                StopButton("↓", stringResource(R.string.route_stop_down, stop.name), i < stops.lastIndex, "route_stop_down_$i") { route.moveStop(i, 1) }
+                StopButton("✕", stringResource(R.string.route_stop_remove, stop.name), true, "route_stop_remove_$i") { route.removeStop(i) }
+            }
+        }
+        if (stops.size >= RoutePreviewController.MAX_STOPS) {
+            PanelNote(stringResource(R.string.route_stops_limit, RoutePreviewController.MAX_STOPS), "route_stops_limit")
+        }
+    }
+}
+
+@Composable
+private fun StopButton(glyph: String, description: String, enabled: Boolean, tag: String, onClick: () -> Unit) {
+    Box(
+        Modifier
+            .size(STOP_ROW_MIN)
+            .clickable(enabled = enabled, role = Role.Button, onClick = onClick)
+            .semantics { contentDescription = description }
+            .testTag(tag),
+        contentAlignment = Alignment.Center,
+    ) {
+        BasicText(glyph, style = Mapas.typography.body.copy(color = if (enabled) Mapas.colors.accent else Mapas.colors.separator))
+    }
+}
+
+private val STOP_ROW_MIN = 48.dp
 
 @Composable
 private fun Controls(route: RoutePreviewController, onUseLocation: () -> Unit) {
@@ -148,6 +199,7 @@ private fun errorText(e: RouteError?): Int = when (e) {
     RouteError.NEED_MORE_MAPS -> R.string.route_err_need_more_maps
     RouteError.START_NOT_FOUND -> R.string.route_err_start
     RouteError.END_NOT_FOUND -> R.string.route_err_end
+    RouteError.STOP_NOT_FOUND -> R.string.route_err_stop
     RouteError.ROUTE_NOT_FOUND -> R.string.route_err_not_found
     RouteError.TIMEOUT -> R.string.route_err_timeout
     RouteError.INTERNAL, null -> R.string.route_err_internal
