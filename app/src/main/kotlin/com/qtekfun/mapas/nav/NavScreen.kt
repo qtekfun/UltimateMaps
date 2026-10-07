@@ -126,6 +126,7 @@ private fun BoxScope.Driving(ui: NavUi, nav: NavState, actions: NavActions) {
     Column(Modifier.align(Alignment.TopCenter).fillMaxWidth()) {
         Banner(ui, nav)
         StatusStrip(ui)
+        com.qtekfun.mapas.cameras.CameraAlertBanner(Modifier.padding(horizontal = 12.dp, vertical = 6.dp).align(Alignment.CenterHorizontally), glove = ui.glove)
         // Without a text-to-speech engine (frequent without Google) the trip goes on silently: say so, and where to fix it.
         VoiceProblemBanner(voiceStatus, onClick = { context.startActivity(Intent(context, SettingsActivity::class.java)) })
     }

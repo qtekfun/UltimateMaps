@@ -21,6 +21,7 @@ class NavAlertFeed(
     private val state: Flow<NavState?>,
     private val route: Flow<RoutePlan?>,
     private val warner: AlertWarner,
+    private val banner: AlertBannerTracker? = null,
     private val clock: () -> Long = System::currentTimeMillis,
 ) : AutoCloseable {
     private var jobs: List<Job> = emptyList()
@@ -34,12 +35,14 @@ class NavAlertFeed(
             scope.launch {
                 route.collect { plan ->
                     geometry = plan?.geometry?.takeIf { it.size >= 2 }?.let { RouteGeometry(it) }
+                    banner?.dismiss() // distances along the old route mean nothing on the new one
                 }
             },
             scope.launch {
                 state.collect { s ->
                     val g = geometry
                     if (s != null && g != null && s.status == NavStatus.ON_ROUTE && !s.estimated) {
+                        banner?.onRouteProgress(s.traveledMeters)
                         warner.onRouteFix(g, s.traveledMeters, s.position.lat, s.position.lon, s.speedMps.toFloat(), clock())
                     }
                 }
@@ -51,6 +54,7 @@ class NavAlertFeed(
         jobs.forEach(Job::cancel)
         jobs = emptyList()
         geometry = null
+        banner?.clear()
     }
 }
 
@@ -62,6 +66,7 @@ class NavAlertFeed(
 class FreeDrivingFeed(
     private val location: LocationSource,
     private val warner: AlertWarner,
+    private val banner: AlertBannerTracker? = null,
     private val clock: () -> Long = System::currentTimeMillis,
 ) {
     private var running = false
@@ -72,6 +77,7 @@ class FreeDrivingFeed(
         running = true
         warner.reset()
         location.start { fix: LocationFix ->
+            banner?.onFreePosition(fix.point.lat, fix.point.lon)
             warner.onFreeFix(
                 fix.point.lat, fix.point.lon, fix.bearingDegrees, fix.speedMps,
                 if (fix.timeMillis != 0L) fix.timeMillis else clock(),
@@ -84,6 +90,7 @@ class FreeDrivingFeed(
         if (!running) return
         running = false
         location.stop()
+        banner?.clear()
     }
 
     val isRunning: Boolean @Synchronized get() = running

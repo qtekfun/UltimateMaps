@@ -54,7 +54,7 @@ Pure and deterministic: fixes and the time come in as arguments. Two entry point
 - The voice goes through the navigation `VoiceGuide` / `SpeechDirector` (`NORMAL` priority, key per group, 6 s max age) and the
   navigation voice settings (on/off, language, units, volume). Wording is cautious ("possible fixed speed camera"; zones are
   "stretch where mobile speed cameras may operate"; V16 is "stopped vehicle with a V16 beacon").
-- The numbers above are design values, not measured. There is no visual banner for alerts (voice and map only).
+- The numbers above are design values, not measured. Since the alert fix (section 9) there is also a visual chip.
 
 Free-driving alerts only work with the app on screen: there is no background service for them (navigation has its own foreground
 service, and route-based alerts work there). With every switch off no location listener exists at all.
@@ -143,4 +143,48 @@ rule. Revisit only after checking an `.mwm` for the section and testing on a dev
    dataset. A better road geometry source (OSM road refs with kilometre posts, or a dataset with PK geometry) is needed to make
    the rest useful; until then they are text only.
 6. Whether free-driving alerts should also work with the screen off (needs a foreground service and a visible notification).
-7. Whether to add a visual alert banner, and whether roadworks and weather should ever be announced.
+7. Whether roadworks and weather should ever be announced (a visual alert banner now exists, section 9).
+
+## 9. Alert fix and visual alert (2026-10-07, branch `fix/camera-alerts`, no phone)
+
+The owner used rc.6 while driving and heard no warnings. Cause 1 (the data file was not in the data release) is outside the code.
+Reading the code and driving it with tests found these defects, all fixed:
+
+1. **The catalog could never name the camera file.** `CameraDataManager` looks the file up in the cached catalog, and the
+   catalog was refreshed only by opening "Maps". A phone with a catalog cached before the `cameras` block existed answered
+   "no catalog entry" forever (silently on foreground; an error only under "Update now"). Now `refresh` calls `syncCatalog` first
+   (`RegionsController.syncCatalog`): forced for "enable" and "Update now", once per process on foreground, never in offline mode,
+   and a failure keeps the cached catalog. The request is the same catalog request the Maps screen makes (same server, same policy).
+2. **Route alerts depended on a screen event.** Only `NavScreenController` told `CameraAlerts` that a trip began (`AlertNavSink`).
+   A trip resumed by `NavigationService` after the process was killed (null intent), or a switch turned on during a trip (the alerts
+   object did not exist when the trip began), got no alerts. `CameraAlerts` now also follows `NavigationController.state`.
+3. **Voice priority.** Alerts were `NORMAL`, which discards pending far turn prompts and interrupts a far prompt being spoken, and
+   a camera sentence queued ahead of a near turn prompt delayed it. New `VoicePriority.ADVISORY`: speaks only when no instruction
+   waits, never interrupts or discards anything, is interrupted by `NORMAL`/`URGENT`, is dropped first when the queue is full.
+   In addition `ManeuverGuard` stops the alert from being spoken while the next maneuver is closer than the navigation's own
+   "near" band (10 s of travel, 60 to 400 m) at the current speed: the driver is about to be told what to do; the chip still shows.
+   The alert is already marked as warned, so it is not repeated (a camera right after a turn may therefore be silent: visual only).
+4. **Free-driving permission.** Answering the location permission dialog did not re-evaluate the free-driving feed until the app
+   was next foregrounded; `MainActivity` now calls `refreshCameraAlerts()` from the permission result.
+
+Answers to the audit questions (verified by `CameraAlertsWiringTest`, `CameraAlertsEndToEndTest`, `DataManagersTest`):
+
+- **When are alerts active?** A camera/incident switch on (camera switches also need the stored acknowledgement) AND, for the
+  camera layers, data loaded (cache or download) AND either a navigation is running (route-based, works with the screen locked or the
+  app in the background because it is fed by the navigation foreground service) or the app is on screen with the location permission
+  (free driving). With no navigation and the app in the background there is nothing, by design.
+- **Download and consent.** Enabling a camera switch shows the one-time notice (`cam_confirm_*`); until accepted the switch stays off
+  (normalisation enforces it). After acceptance the catalog is refreshed and the file is fetched through `NetworkPolicy`
+  (`MAP_DOWNLOAD` purpose, https, hash checked). The data card in Settings shows "never" or the error when it failed.
+- **Mute.** Alerts use the navigation voice switch, so Mute and "Voice guidance off" silence them (intended). "Important prompts only"
+  does not: it filters maneuver prompts only. The chip appears in every case.
+
+Visual alert: `AlertBannerTracker` (core, pure) holds what the warner last announced and counts the distance down (route mode: by
+progress along the route; free mode: straight distance, dismissed when the driver is more than 40 m beyond the closest approach;
+that slack is a design value). `CameraAlertBanner` draws it: red chip for cameras and zones, brown for incidents, the icon, a title,
+the distance and a round limit sign when known; one content description with a polite live region; 52 dp tall, 72 dp in glove mode.
+It sits under the maneuver banner on the navigation screen and under the map controls otherwise. Distances in the chip are metric
+(like the route panel), while the voice follows the navigation units setting.
+
+Not verified: everything on a device (see `camera-alerts-checklist.md`); how the chip looks over real maps; whether the 10 s guard
+is the right threshold; the timing numbers of section 2.

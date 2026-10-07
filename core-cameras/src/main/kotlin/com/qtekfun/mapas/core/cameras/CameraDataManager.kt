@@ -104,6 +104,13 @@ class CameraDataManager(
     private val clock: () -> Long = System::currentTimeMillis,
     private val scope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.IO),
     private val io: CoroutineDispatcher = Dispatchers.IO,
+    /**
+     * Brings the catalog up to date before the camera file is looked up (the catalog the app has cached can predate the
+     * `cameras` block: without this the file would never be found until the user opened "Maps"). `force` is true when the
+     * user just turned a switch on or pressed "Update now"; on a plain foreground it may do nothing. Failures are ignored:
+     * the cached catalog is then used.
+     */
+    private val syncCatalog: suspend (force: Boolean) -> Unit = {},
 ) {
     val repository = CameraDataRepository()
 
@@ -147,6 +154,9 @@ class CameraDataManager(
     suspend fun refresh(trigger: CameraTrigger): DownloadFailure? = lock.withLock {
         val s = settingsStore.settings.value
         if (!s.anyCamera) return null
+        if (!policy.offlineMode) {
+            try { syncCatalog(trigger != CameraTrigger.FOREGROUND) } catch (e: kotlinx.coroutines.CancellationException) { throw e } catch (e: Exception) { /* use the cached catalog */ }
+        }
         val a = asset()
         val cachedSha = withContext(io) { runCatching { shaFile.readText().trim() }.getOrNull() }
         val haveData = repository.data !== CameraDataset.EMPTY
