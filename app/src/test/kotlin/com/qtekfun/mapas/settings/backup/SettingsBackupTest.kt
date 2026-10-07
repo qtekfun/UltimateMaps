@@ -42,6 +42,7 @@ fun nonDefaultValue(spec: SettingSpec, consentOn: Boolean): Any = when (spec.typ
         "cam_alert_mode" -> "VOICE"
         "incident_alert_mode" -> "SILENT"
         "bike_cycleways" -> "STRONGLY_PREFER"
+        "preference" -> "LOCAL"
         "map_fuel" -> "g95e5"
         "source_url" -> "https://fuel.example.org/api/"
         "catalog_url" -> "https://maps.example.org/catalog.json"
