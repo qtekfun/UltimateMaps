@@ -13,6 +13,14 @@ data class FeedSource(
 )
 
 /**
+ * Days on which the whole index can be trusted: the intersection of the calendar ranges of its feeds (epoch days,
+ * both ends inclusive). [unverifiedFeeds] counts feeds whose range was ignored at build time; they add no bound.
+ */
+data class TransitValidity(val firstDay: Int, val lastDay: Int, val unverifiedFeeds: Int) {
+    operator fun contains(day: Int): Boolean = day in firstDay..lastDay
+}
+
+/**
  * Immutable, planner-ready transit timetable (RAPTOR layout).
  *
  * A *pattern* is the set of trips of one line that serve the same ordered list of stops. Trips of a pattern are
@@ -86,6 +94,26 @@ class TransitIndex(
         if (serviceAdded[s].binarySearch(day) >= 0) return true
         if (day < serviceStart[s] || day > serviceEnd[s]) return false
         return (serviceMask[s] shr Math.floorMod(day + 3, 7)) and 1 != 0
+    }
+
+    /**
+     * The calendar window every verified feed covers, or null when no feed declares one. A feed that was built with
+     * its calendar range ignored contributes nothing here (see [FeedSource.calendarRangeIgnored]).
+     */
+    fun validity(): TransitValidity? {
+        var from = Int.MIN_VALUE
+        var to = Int.MAX_VALUE
+        var unverified = 0
+        for (s in sources) {
+            if (s.calendarRangeIgnored) {
+                unverified++
+                continue
+            }
+            if (s.calendarStartDay != Int.MIN_VALUE) from = maxOf(from, s.calendarStartDay)
+            if (s.calendarEndDay != Int.MAX_VALUE) to = minOf(to, s.calendarEndDay)
+        }
+        if (from == Int.MIN_VALUE && to == Int.MAX_VALUE) return null
+        return TransitValidity(from, to, unverified)
     }
 
     fun describe(): String =

@@ -10,6 +10,11 @@ class FeedOptions(
      */
     val stopNamespace: String,
     val attribution: String,
+    /**
+     * Drops trips whose last arrival is not after their first departure (circular or untimed trips in some CRTM
+     * feeds): they would teleport riders. Counted in [TransitIndexBuilder.droppedTrips].
+     */
+    val dropNonPositiveDuration: Boolean = false,
 )
 
 /**
@@ -46,6 +51,10 @@ class TransitIndexBuilder {
 
     private val patterns = LinkedHashMap<PatternKey, PatternAcc>()
     private val sources = ArrayList<FeedSource>()
+
+    /** Trips left out by [FeedOptions.dropNonPositiveDuration], summed over the feeds added so far. */
+    var droppedTrips = 0
+        private set
 
     private val trFrom = IntList()
     private val trTo = IntList()
@@ -124,11 +133,17 @@ class TransitIndexBuilder {
         val freqByTrip = HashMap<Int, ArrayList<Int>>()
         for (i in feed.freqTrip.indices) freqByTrip.getOrPut(feed.freqTrip[i]) { ArrayList(2) }.add(i)
 
+        val usedServices = HashSet<Int>()
         for (trip in feed.tripIds.indices) {
             val a = feed.tripStopStart[trip]
             val b = feed.tripStopStart[trip + 1]
             val n = b - a
             if (n < 2) continue
+            if (options.dropNonPositiveDuration && feed.stTimeArr[b - 1] <= feed.stTimeDep[a]) {
+                droppedTrips++
+                continue
+            }
+            usedServices.add(feed.tripService[trip])
             val stops = IntArray(n) { stopOf(feed.stTimeStop[a + it]) }
             val line = lineOf(feed.tripRoute[trip])
             val key = PatternKey(line, stops)
@@ -174,9 +189,27 @@ class TransitIndexBuilder {
             trMin.add(feed.transferMinSec[i])
         }
 
-        sources.add(
-            FeedSource(options.label, feed.feedVersion, feed.feedStartDay, feed.feedEndDay, options.attribution, ignoredCalendarRange),
-        )
+        // Validity: the days the kept trips can actually run (their services), narrowed by feed_info when it declares
+        // a range. Feeds without feed_info (EMT) would otherwise look unbounded.
+        var from = Int.MAX_VALUE
+        var to = Int.MIN_VALUE
+        if (!ignoredCalendarRange) {
+            for (i in usedServices) {
+                val sv = feed.services[i]
+                if (sv.mask != 0 && sv.startDay != Int.MIN_VALUE && sv.endDay != Int.MAX_VALUE) {
+                    from = minOf(from, sv.startDay)
+                    to = maxOf(to, sv.endDay)
+                }
+                if (sv.added.isNotEmpty()) {
+                    from = minOf(from, sv.added.first())
+                    to = maxOf(to, sv.added.last())
+                }
+            }
+        }
+        val derived = from <= to
+        val start = if (derived) maxOf(from, feed.feedStartDay) else feed.feedStartDay
+        val end = if (derived) minOf(to, feed.feedEndDay) else feed.feedEndDay
+        sources.add(FeedSource(options.label, feed.feedVersion, start, end, options.attribution, ignoredCalendarRange))
     }
 
     fun build(): TransitIndex {
