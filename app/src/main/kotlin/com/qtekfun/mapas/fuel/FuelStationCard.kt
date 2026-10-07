@@ -26,6 +26,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.qtekfun.mapas.R
 import com.qtekfun.mapas.core.fuel.FuelStation
+import com.qtekfun.mapas.core.nav.AddStopResult
+import com.qtekfun.mapas.core.nav.StopInsertion
 import com.qtekfun.mapas.map.FuelMapLayer
 import com.qtekfun.mapas.places.PanelButton
 import com.qtekfun.mapas.places.PanelNote
@@ -45,16 +47,24 @@ class FuelCardState {
     /** Why the last "Add stop" was refused (shown in the card); null when none. */
     var notice by mutableStateOf<StopResult?>(null)
 
+    /** An "Add stop" to the trip in progress is being calculated. */
+    var adding by mutableStateOf(false)
+
+    /** Why the last "Add stop" to the trip in progress was refused (the trip is unchanged); null when none. */
+    var navNotice by mutableStateOf<AddStopResult?>(null)
+
     fun open(station: FuelStation) {
         this.station = station
         saved = false
         notice = null
+        navNotice = null
     }
 
     fun close() {
         station = null
         saved = false
         notice = null
+        navNotice = null
     }
 }
 
@@ -108,10 +118,21 @@ private fun noticeText(n: StopResult): String? = when (n) {
     StopResult.ADDED -> null
 }
 
+@Composable
+private fun navNoticeText(n: AddStopResult): String? = when (n) {
+    AddStopResult.NO_ROUTE -> stringResource(R.string.nav_stop_no_route)
+    AddStopResult.LIMIT -> stringResource(R.string.nav_stop_limit, StopInsertion.MAX_STOPS)
+    AddStopResult.DUPLICATE -> stringResource(R.string.nav_stop_duplicate)
+    AddStopResult.SAME_AS_DESTINATION -> stringResource(R.string.nav_stop_is_destination)
+    AddStopResult.BUSY -> stringResource(R.string.nav_stop_busy)
+    AddStopResult.NOT_NAVIGATING -> stringResource(R.string.nav_stop_not_navigating)
+    AddStopResult.ADDED -> null
+}
+
 /**
  * Petrol-station card: brand, address, municipality, hours, the price of EVERY downloaded fuel (the one drawn on
  * the map first and in bold), the source attribution and the Go / Add stop / Save buttons. "Add stop" only appears
- * while a route is active. Every touch target is at least 48 dp.
+ * while a route is previewed or a trip is being navigated (then it re-plans the trip in progress). Every touch target is at least 48 dp.
  */
 @Composable
 fun FuelStationCard(
@@ -186,11 +207,15 @@ fun FuelStationCard(
             modifier = Modifier.testTag("fuel_price_note"),
         )
         state.notice?.let { n -> noticeText(n)?.let { PanelNote(it, "fuel_notice") } }
+        state.navNotice?.let { n -> navNoticeText(n)?.let { PanelNote(it, "fuel_nav_notice") } }
         Spacer(Modifier.height(12.dp))
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             PanelButton(stringResource(R.string.fuel_go), { onGo(s) }, button.weight(1f), primary = true, tag = "fuel_go")
             if (routeActive) {
-                PanelButton(stringResource(R.string.fuel_add_stop), { onAddStop(s) }, button.weight(1f), tag = "fuel_add_stop")
+                PanelButton(
+                    stringResource(if (state.adding) R.string.nav_stop_adding else R.string.fuel_add_stop),
+                    { onAddStop(s) }, button.weight(1f), enabled = !state.adding, tag = "fuel_add_stop",
+                )
             }
             PanelButton(
                 stringResource(if (state.saved) R.string.fuel_saved else R.string.fuel_save),

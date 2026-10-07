@@ -1,6 +1,7 @@
 package com.qtekfun.mapas.nav
 
 import com.qtekfun.mapas.core.geo.LatLon
+import com.qtekfun.mapas.core.nav.AddStopResult
 import com.qtekfun.mapas.core.nav.NavEvent
 import com.qtekfun.mapas.core.nav.NavProblem
 import com.qtekfun.mapas.core.nav.NavState
@@ -159,6 +160,22 @@ class NavScreenController(
         }
         sinks.forEach { runCatching { it.onNavigationStarted(simulate) } }
         return true
+    }
+
+    /**
+     * Adds [point] as a stop of the trip in progress (see [NavigationController.addStop]). The trip, the service, the
+     * voice and the camera go on; only the route changes. A simulated trip restarts its walk on the new route (which
+     * begins where the vehicle is). Any result but ADDED leaves the trip as it was.
+     */
+    suspend fun addStop(point: LatLon): AddStopResult {
+        val ui = _ui.value
+        if (!ui.active || ui.phase == NavPhase.ARRIVED) return AddStopResult.NOT_NAVIGATING
+        val outcome = controller.addStop(point)
+        val plan = outcome.plan
+        if (outcome.result == AddStopResult.ADDED && plan != null && _ui.value.simulated) {
+            synchronized(lock) { simulation.start(plan, 0.0, simulation.speedKmh) }
+        }
+        return outcome.result
     }
 
     /** The user ends the trip (or leaves the arrival summary): everything is cleaned, including the saved state. */

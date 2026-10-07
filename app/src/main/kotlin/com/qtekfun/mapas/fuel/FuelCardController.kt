@@ -2,9 +2,13 @@ package com.qtekfun.mapas.fuel
 
 import com.qtekfun.mapas.core.fuel.FuelRepository
 import com.qtekfun.mapas.core.fuel.FuelStation
+import com.qtekfun.mapas.core.geo.LatLon
+import com.qtekfun.mapas.core.nav.AddStopResult
 import com.qtekfun.mapas.places.PlacesController
 import com.qtekfun.mapas.route.RoutePreviewController
 import com.qtekfun.mapas.route.StopResult
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 /**
  * Glue between a tap on a station, its card and the route / saved places. Main thread only. No Android here, so it
@@ -21,6 +25,11 @@ class FuelCardController(
     private val category: () -> String? = { null },
     private val onOpened: () -> Unit = {},
     private val beforeGo: () -> Unit = {},
+    /** True while a trip is being navigated: "Add stop" then edits the trip in progress through [navStops]. */
+    private val navigating: () -> Boolean = { false },
+    /** Adds a stop to the trip in progress (`NavScreenController.addStop`); null where there is no navigation. */
+    private val navStops: (suspend (LatLon) -> AddStopResult)? = null,
+    private val scope: CoroutineScope? = null,
 ) {
     /** The map reported a tap on station [id]: while a route origin is being picked it is that origin, else its card. */
     fun onStationTap(id: String) {
@@ -43,8 +52,34 @@ class FuelCardController(
 
     /** "Add stop": inserts it before the destination. Closes the card when added, otherwise says why not. */
     fun addStop(station: FuelStation) {
+        val nav = navStops
+        val launcher = scope
+        if (navigating() && nav != null && launcher != null) {
+            addNavStop(station, nav, launcher)
+            return
+        }
         val result = route.addStop(station.toPlaceInfo(category()))
         if (result == StopResult.ADDED) card.close() else card.notice = result
+    }
+
+    /** During navigation: re-plan the trip through the station. The card shows "adding" meanwhile and closes on success. */
+    private fun addNavStop(station: FuelStation, nav: suspend (LatLon) -> AddStopResult, launcher: CoroutineScope) {
+        if (card.adding) return
+        card.adding = true
+        card.navNotice = null
+        card.notice = null
+        launcher.launch {
+            val result = try {
+                nav(station.location)
+            } catch (e: kotlinx.coroutines.CancellationException) {
+                card.adding = false
+                throw e
+            } catch (_: Exception) {
+                AddStopResult.NO_ROUTE
+            }
+            card.adding = false
+            if (result == AddStopResult.ADDED) card.close() else if (card.station?.id == station.id) card.navNotice = result
+        }
     }
 
     fun save(station: FuelStation) {
