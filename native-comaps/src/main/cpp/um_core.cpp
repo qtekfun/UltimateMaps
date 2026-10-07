@@ -48,6 +48,8 @@
 #include <memory>
 #include <mutex>
 #include <set>
+#include <string>
+#include <unordered_map>
 
 // CoMaps escribe sus logs y sus CHECK/ASSERT por funciones propias; en Android hay que enchufarlas a logcat o un
 // fallo del núcleo se pierde en silencio (el proceso aborta sin mensaje). Etiqueta: UMCORE. Sin ubicaciones del usuario.
@@ -119,6 +121,132 @@ routing::RoutingOptions::OptionType ToOptionMask(Profile p, int32_t flags)
   if (flags & kAvoidUnpaved)
     mask |= O::Dirty;  // "Dirty" = sin asfaltar; "Paved" es la opcion contraria
   return mask;
+}
+
+// Traduce CarDirection (coche y bici: IndexRouter usa CarDirectionsEngine para Bicycle) y PedestrianDirection (a pie)
+// al giro del cable. Devuelve -1 si no hay maniobra que mostrar (None, StayOnRoundAbout).
+int32_t WireTurnOf(routing::turns::TurnItem const & t)
+{
+  using routing::turns::CarDirection;
+  using routing::turns::PedestrianDirection;
+  switch (t.m_turn)
+  {
+  case CarDirection::GoStraight: return kTurnStraight;
+  case CarDirection::TurnRight: return kTurnRight;
+  case CarDirection::TurnSharpRight: return kTurnSharpRight;
+  case CarDirection::TurnSlightRight: return kTurnSlightRight;
+  case CarDirection::TurnLeft: return kTurnLeft;
+  case CarDirection::TurnSharpLeft: return kTurnSharpLeft;
+  case CarDirection::TurnSlightLeft: return kTurnSlightLeft;
+  case CarDirection::UTurnLeft: return kTurnUTurnLeft;
+  case CarDirection::UTurnRight: return kTurnUTurnRight;
+  case CarDirection::EnterRoundAbout: return kTurnRoundaboutEnter;
+  case CarDirection::LeaveRoundAbout: return kTurnRoundaboutLeave;
+  case CarDirection::StartAtEndOfStreet: return kTurnDepart;
+  case CarDirection::ReachedYourDestination: return kTurnArrive;
+  case CarDirection::ExitHighwayToLeft: return kTurnExitLeft;
+  case CarDirection::ExitHighwayToRight: return kTurnExitRight;
+  case CarDirection::None:
+  case CarDirection::StayOnRoundAbout:  // FixupCarTurns ya la borra; se ignora por si acaso
+  default: break;
+  }
+  switch (t.m_pedestrianTurn)
+  {
+  case PedestrianDirection::GoStraight: return kTurnStraight;
+  case PedestrianDirection::TurnRight: return kTurnRight;
+  case PedestrianDirection::TurnLeft: return kTurnLeft;
+  case PedestrianDirection::ReachedYourDestination: return kTurnArrive;
+  default: return -1;
+  }
+}
+
+// Rellena out.guidance / out.guidanceNames desde route.GetRouteSegments(). Los indices de geometria son los de
+// route.GetPoly(): hay un punto mas que segmentos y la maniobra del segmento i cae en el punto i+1 (TurnItem::m_index).
+void FillGuidance(routing::Route const & route, RouteOut & out)
+{
+  auto const & segs = route.GetRouteSegments();
+  size_t const pointCount = route.GetPoly().GetSize();
+  if (segs.empty() || pointCount < 2)
+    return;
+
+  std::vector<double> maneuvers;
+  size_t nMan = 0;
+  std::unordered_map<std::string, int32_t> nameIdx;
+  for (auto const & s : segs)
+  {
+    auto const & t = s.GetTurn();
+    int32_t const wire = WireTurnOf(t);
+    if (wire < 0 || t.m_index >= pointCount)
+      continue;
+
+    int32_t nameId = -1;
+    if (t.m_index < segs.size())
+    {
+      routing::RouteSegment::RoadNameInfo rni;
+      route.GetClosestStreetNameAfterIdx(t.m_index, rni);
+      std::string const & name = !rni.m_name.empty() ? rni.m_name : !rni.m_ref.empty() ? rni.m_ref : rni.m_destination;
+      if (!name.empty())
+      {
+        auto const ins = nameIdx.emplace(name, static_cast<int32_t>(out.guidanceNames.size()));
+        if (ins.second)
+          out.guidanceNames.push_back(name);
+        nameId = ins.first->second;
+      }
+    }
+
+    bool const roundabout = wire == kTurnRoundaboutEnter || wire == kTurnRoundaboutLeave;
+    maneuvers.push_back(t.m_index);
+    maneuvers.push_back(wire);
+    maneuvers.push_back(roundabout && t.m_exitNum > 0 ? t.m_exitNum : -1);
+    maneuvers.push_back(nameId);
+    maneuvers.push_back(static_cast<double>(t.m_lanes.size()));
+    for (auto const & lane : t.m_lanes)
+    {
+      uint32_t mask = 0;
+      for (auto way : lane.laneWays.GetActiveLaneWays())
+        mask |= 1u << static_cast<uint32_t>(way);
+      maneuvers.push_back(mask);
+      maneuvers.push_back(lane.recommendedWay != routing::turns::lanes::LaneWay::None ? 1 : 0);
+    }
+    ++nMan;
+  }
+
+  // Limites: un tramo por racha de segmentos con el mismo limite numerico (-1 = sin dato; maxspeed none/walk tampoco
+  // es numerico). Segmento i = puntos [i, i+1]. Solo se emiten si algun segmento tiene dato.
+  std::vector<double> limits;
+  size_t nLim = 0;
+  bool anyLimit = false;
+  std::vector<int32_t> kmh(segs.size(), -1);
+  for (size_t i = 0; i < segs.size(); ++i)
+  {
+    auto const & sl = segs[i].GetSpeedLimit();
+    if (sl.IsValid() && sl.IsNumeric())
+    {
+      kmh[i] = static_cast<int32_t>(sl.GetSpeedKmPH());
+      anyLimit = true;
+    }
+  }
+  if (anyLimit)
+  {
+    for (size_t i = 0; i < segs.size();)
+    {
+      size_t j = i;
+      while (j + 1 < segs.size() && kmh[j + 1] == kmh[i])
+        ++j;
+      limits.push_back(static_cast<double>(i));
+      limits.push_back(static_cast<double>(j + 1));
+      limits.push_back(kmh[i]);
+      ++nLim;
+      i = j + 1;
+    }
+  }
+
+  out.guidance.reserve(3 + maneuvers.size() + limits.size());
+  out.guidance.push_back(kGuidanceWireVersion);
+  out.guidance.push_back(static_cast<double>(nMan));
+  out.guidance.push_back(static_cast<double>(nLim));
+  out.guidance.insert(out.guidance.end(), maneuvers.begin(), maneuvers.end());
+  out.guidance.insert(out.guidance.end(), limits.begin(), limits.end());
 }
 }  // namespace
 
@@ -321,7 +449,8 @@ std::vector<SearchHit> Core::Search(std::string const & query, bool hasPos, doub
   return out;
 }
 
-RouteOut Core::Route(Profile profile, std::vector<double> const & pts, int32_t avoidFlags, int timeoutSec)
+RouteOut Core::Route(Profile profile, std::vector<double> const & pts, int32_t avoidFlags, int timeoutSec,
+                     bool withGuidance)
 {
   RouteOut out;
   if (!m_impl->initialized || pts.size() < 4 || pts.size() % 2 != 0)
@@ -359,6 +488,19 @@ RouteOut Core::Route(Profile profile, std::vector<double> const & pts, int32_t a
       }
       out.distanceMeters = route.GetTotalDistanceMeters();
       out.durationSeconds = route.GetTotalTimeSec();
+      if (withGuidance)
+      {
+        try
+        {
+          FillGuidance(route, out);
+        }
+        catch (RootException const & e)
+        {
+          LOG(LERROR, ("Guidance failed:", e.Msg()));
+          out.guidance.clear();
+          out.guidanceNames.clear();
+        }
+      }
     }
   }
   catch (RootException const & e)

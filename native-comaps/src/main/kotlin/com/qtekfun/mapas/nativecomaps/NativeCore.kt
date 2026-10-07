@@ -12,6 +12,9 @@ internal class NativeCore : NativeBridge {
     ): Array<String>
     external fun nativeRoute(profile: Int, points: DoubleArray, avoidFlags: Int, timeoutSec: Int): DoubleArray
 
+    /** `Object[3]`: `{ DoubleArray ruta, DoubleArray guiado, Array<String> nombres }` (ver [RawGuidedRoute]). */
+    external fun nativeRouteGuidance(profile: Int, points: DoubleArray, avoidFlags: Int, timeoutSec: Int): Array<Any?>
+
     override fun init(apk: String, writableDir: String, tmpDir: String, locale: String): String =
         nativeInit(apk, writableDir, tmpDir, locale)
 
@@ -23,6 +26,17 @@ internal class NativeCore : NativeBridge {
 
     override fun route(profile: Int, points: DoubleArray, avoidFlags: Int, timeoutSec: Int): DoubleArray =
         nativeRoute(profile, points, avoidFlags, timeoutSec)
+
+    override fun routeGuidance(profile: Int, points: DoubleArray, avoidFlags: Int, timeoutSec: Int): RawGuidedRoute {
+        val r = nativeRouteGuidance(profile, points, avoidFlags, timeoutSec)
+        require(r.size == 3) { "respuesta de ruta con guiado mal formada: ${r.size} elementos" }
+        val rawNames = r[2] as? Array<*> ?: throw IllegalArgumentException("nombres no es Array<String>")
+        return RawGuidedRoute(
+            route = r[0] as? DoubleArray ?: throw IllegalArgumentException("ruta no es DoubleArray"),
+            guidance = r[1] as? DoubleArray ?: throw IllegalArgumentException("guiado no es DoubleArray"),
+            names = Array(rawNames.size) { rawNames[it] as? String ?: "" },
+        )
+    }
 
     companion object {
         init {
@@ -44,4 +58,10 @@ internal interface NativeBridge {
 
     /** `[code, distanciaM, duracionS, lat0, lon0, ...]`. */
     fun route(profile: Int, points: DoubleArray, avoidFlags: Int, timeoutSec: Int): DoubleArray
+
+    /** Igual que [route] pero con el guiado (maniobras y limites). El calculo extra solo ocurre en esta llamada. */
+    fun routeGuidance(profile: Int, points: DoubleArray, avoidFlags: Int, timeoutSec: Int): RawGuidedRoute
 }
+
+/** Ruta en el formato de [NativeBridge.route] + guiado en el de [GuidanceWire] + tabla de nombres de calle. */
+internal class RawGuidedRoute(val route: DoubleArray, val guidance: DoubleArray, val names: Array<String>)

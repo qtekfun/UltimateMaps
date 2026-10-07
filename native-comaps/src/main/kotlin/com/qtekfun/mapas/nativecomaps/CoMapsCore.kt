@@ -23,7 +23,7 @@ object RouteCode {
 }
 
 /** Resultado detallado de una ruta: [plan] es null si no hay ruta y [code] dice por que. */
-data class RouteOutcome(val code: Int, val plan: RoutePlan?)
+data class RouteOutcome(val code: Int, val plan: RoutePlan?, val guidanceError: String? = null)
 
 /** Un [RoutingEngine] que ademas explica por que no hay ruta. */
 interface DetailedRoutingEngine : RoutingEngine {
@@ -61,7 +61,13 @@ class CoMapsCore internal constructor(private val bridge: NativeBridge) : AutoCl
     fun searchEngine(locale: String = "en", timeoutMs: Int = 8000): SearchEngine =
         CoMapsSearchEngine(this, locale, timeoutMs)
 
-    fun routingEngine(timeoutSec: Int = 120): DetailedRoutingEngine = CoMapsRoutingEngine(this, timeoutSec)
+    /**
+     * [withGuidance] = false (por defecto) es la ruta de siempre, sin coste extra. Con `true`, `RoutePlan.guidance`
+     * trae maniobras, carriles y limites; si el guiado llega mal formado la ruta sigue valiendo (guiado vacio) y
+     * [RouteOutcome.guidanceError] dice por que.
+     */
+    fun routingEngine(timeoutSec: Int = 120, withGuidance: Boolean = false): DetailedRoutingEngine =
+        CoMapsRoutingEngine(this, timeoutSec, withGuidance)
 
     internal fun search(query: String, near: LatLon?, limit: Int, locale: String, timeoutMs: Int): List<SearchResult> {
         check(initialized) { "CoMapsCore.init() no llamado" }
@@ -69,9 +75,13 @@ class CoMapsCore internal constructor(private val bridge: NativeBridge) : AutoCl
         return decodeSearch(raw)
     }
 
-    internal fun route(request: RouteRequest, timeoutSec: Int): RouteOutcome {
+    internal fun route(request: RouteRequest, timeoutSec: Int, withGuidance: Boolean = false): RouteOutcome {
         check(initialized) { "CoMapsCore.init() no llamado" }
         val pts = (listOf(request.from) + request.via + request.to).flatMap { listOf(it.lat, it.lon) }
+        if (withGuidance) {
+            val g = bridge.routeGuidance(request.profile.toNative(), pts.toDoubleArray(), request.options.toFlags(), timeoutSec)
+            return decodeGuidedRoute(g)
+        }
         val raw = bridge.route(request.profile.toNative(), pts.toDoubleArray(), request.options.toFlags(), timeoutSec)
         return decodeRoute(raw)
     }
@@ -92,11 +102,14 @@ internal class CoMapsSearchEngine(
     override fun close() = Unit
 }
 
-internal class CoMapsRoutingEngine(private val core: CoMapsCore, private val timeoutSec: Int) :
-    DetailedRoutingEngine {
+internal class CoMapsRoutingEngine(
+    private val core: CoMapsCore,
+    private val timeoutSec: Int,
+    private val withGuidance: Boolean = false,
+) : DetailedRoutingEngine {
     override fun route(request: RouteRequest): RoutePlan? = routeDetailed(request).plan
 
-    override fun routeDetailed(request: RouteRequest): RouteOutcome = core.route(request, timeoutSec)
+    override fun routeDetailed(request: RouteRequest): RouteOutcome = core.route(request, timeoutSec, withGuidance)
 
     override fun close() = Unit
 }
@@ -127,4 +140,15 @@ internal fun decodeRoute(raw: DoubleArray): RouteOutcome {
     if (code != RouteCode.NO_ERROR && code != RouteCode.HAS_WARNINGS) return RouteOutcome(code, null)
     val geometry = (3 until raw.size step 2).mapNotNull { LatLon.ofOrNull(raw[it], raw[it + 1]) }
     return RouteOutcome(code, RoutePlan(geometry, raw[1], raw[2]))
+}
+
+/** Ruta + guiado. La ruta se valida igual de estricta que en [decodeRoute]; un guiado roto no tumba la ruta. */
+internal fun decodeGuidedRoute(g: RawGuidedRoute): RouteOutcome {
+    val base = decodeRoute(g.route)
+    val plan = base.plan ?: return base
+    return try {
+        base.copy(plan = plan.copy(guidance = GuidanceWire.decode(g.guidance, g.names, plan.geometry.size)))
+    } catch (e: IllegalArgumentException) {
+        base.copy(guidanceError = e.message ?: "guiado mal formado")
+    }
 }
