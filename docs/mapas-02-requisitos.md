@@ -1,54 +1,54 @@
-# 02 · Requisitos
+# 02 · Requirements
 
-Los umbrales marcados como «objetivo» son propuestas que el spike debe validar o corregir.
+Thresholds marked "target" are proposals that the spike must validate or correct.
 
-## Alcance de la v1
+## v1 scope
 
-**Dentro:** mapa offline, búsqueda offline, routing y navegación offline (coche, moto, bici, a pie), moto (evitar autopistas/peajes, curvas, modo guantes, grabación), sitios y listas, import/export, sync opcional con Nextcloud/WebDAV, abrir enlaces de mapas, ajustes de privacidad.
+**In:** offline map, offline search, offline routing and navigation (car, motorcycle, bike, on foot), motorcycle (avoid motorways/tolls, twisty roads, glove mode, recording), places and lists, import/export, optional Nextcloud/WebDAV sync, opening map links, privacy settings.
 
-**Fuera (v1):** tráfico en cualquier forma (el transporte público en tiempo real de F7 no es «tráfico» de carretera: es opcional y posterior a la v1), Google/Waze/Apple como proveedores de datos, iOS, reseñas y fotos de sitios, transporte público, cuentas y cualquier backend propio. Android Auto, en una fase posterior.
+**Out (v1):** road traffic data in any form (the real-time public transport of F7 is not road "traffic": it is optional and comes after v1), Google/Waze/Apple as data providers, iOS, reviews and photos of places, public transport, accounts and any own backend. Android Auto, in a later phase.
 
-## Requisitos funcionales
+## Functional requirements
 
-| ID | Requisito | Criterio de aceptación |
+| ID | Requirement | Acceptance criterion |
 | --- | --- | --- |
-| RF-01 | Mapa vectorial offline con giro, inclinación, modo día/noche y edificios 3D opcionales, estilo Apple Maps | Checklist de estilo del spike con ≥ 8 de 10 puntos |
-| RF-02 | Gestor de regiones: lista jerárquica del mundo, tamaños, descarga reanudable, verificación por hash, actualización y borrado; almacenamiento interno o tarjeta | Descargar, interrumpir, reanudar y verificar una región sin intervención |
-| RF-03 | Búsqueda offline por nombre, dirección y categoría de POI, con resultados mientras se escribe y tolerancia a errores | Primeros resultados en ≤ 100 ms (objetivo) |
-| RF-04 | Routing offline con perfiles coche, moto, bici y a pie; evitar autopistas, peajes, ferris y vías sin asfaltar; alternativas y paradas intermedias | Ruta Madrid–Barcelona en ≤ 2 s (objetivo) |
-| RF-05 | Navegación giro a giro con voz, recálculo, indicaciones de carril, límite de velocidad y aviso al superarlo, modo noche automático y simulación de ruta | Ruta simulada completa sin errores de guiado |
-| RF-06 | Moto: perfil propio, evitar autopistas/peajes, rutas con curvas (nivel de sinuosidad configurable), pantalla siempre encendida opcional, modo guantes (objetivos táctiles grandes, contraste alto) | Prueba real en moto con el soporte habitual |
-| RF-07 | Grabación de recorridos: servicio en primer plano, pausa/reanudar, estadísticas, exportación GPX y recuperación tras cierre inesperado | Una grabación de 2 h sobrevive a un cierre forzado |
-| RF-08 | Sitios y listas: favoritos, listas con color, icono y notas, ordenación por distancia, visibles en el mapa | Crear, editar y buscar dentro de listas |
-| RF-09 | Importar y exportar GPX, KML/KMZ y Google Takeout; copia de seguridad completa | Importar un Takeout real y un GPX de 10 000 puntos |
-| RF-10 | Sync opcional con Nextcloud/WebDAV: listas y tracks, con gestión de conflictos y credenciales en Android Keystore | La app funciona igual sin sync; dos dispositivos convergen |
-| RF-11 | Abrir enlaces: `geo:`, Google Maps (largos y cortos), Apple Maps y Waze; resolver enlaces cortos solo si el usuario lo activa; búsqueda por nombre si el enlace no trae coordenadas | Batería de tests con ≥ 30 enlaces reales |
-| RF-12 | Privacidad: sin telemetría, modo «sin red», lista visible de conexiones posibles, fuente de teselas online opcional y desactivada por defecto | Con el modo «sin red», cero conexiones salientes |
-| RF-13 | Atribución de OpenStreetMap visible | Siempre presente en el mapa o en «Acerca de» según ODbL |
-| RF-14 | Android Auto | Fase posterior |
-| RF-15 | Gasolineras y precios de combustible: descargar los combustibles marcados en Ajustes (GLP, gasolina 95/98, diésel, GNC…), **mostrar en el mapa el precio del combustible elegido sobre cada gasolinera**, tocar una gasolinera para ver su ficha (marca, dirección, horario, precios de todos los combustibles configurados) y **añadirla a la ruta** (como destino o como parada) | Con el ajuste activado y un combustible elegido se ven los precios sobre las gasolineras al acercar el mapa; tocar una abre su ficha con «Ir» y «Añadir parada»; con el ajuste apagado no hay ninguna conexión; la ubicación nunca sale del dispositivo; se muestra la fecha de los datos y funciona con los últimos datos descargados sin red |
-| RF-16 | Transporte público en tiempo real (F7): próximas salidas y avisos de una estación de **Cercanías** (el metro queda fuera por decisión del usuario) | Opcional y apagado por defecto; si falla, la app sigue igual; muestra la hora de la última actualización |
-| RF-17 | Ajustes: pantalla con privacidad (modo sin red, catálogo de regiones, lista de conexiones posibles con el estado de cada una), preferencias de navegación (voz, unidades, evitar por defecto) y **fuentes de datos opcionales**: activar o apagar cada una; en gasolineras, **qué combustibles se descargan**, **cuál se muestra en el mapa**, frecuencia de actualización y la URL de la fuente; en Cercanías, la estación. Persisten y se pueden exportar con la copia de seguridad | Cada interruptor se obtiene y se respeta sin reiniciar; al activar una fuente se avisa de qué se envía y a quién; con el modo sin red, ninguna fuente se conecta |
+| RF-01 | Offline vector map with rotation, tilt, day/night mode and optional 3D buildings, Apple Maps style | Spike style checklist with ≥ 8 of 10 points |
+| RF-02 | Region manager: hierarchical list of the world, sizes, resumable download, hash verification, update and deletion; internal storage or card | Download, interrupt, resume and verify a region without intervention |
+| RF-03 | Offline search by name, address and POI category, with results while typing and typo tolerance | First results in ≤ 100 ms (target) |
+| RF-04 | Offline routing with car, motorcycle, bike and on-foot profiles; avoid motorways, tolls, ferries and unpaved roads; alternatives and intermediate stops | Madrid–Barcelona route in ≤ 2 s (target) |
+| RF-05 | Turn-by-turn navigation with voice, rerouting, lane guidance, speed limit and a warning when exceeding it, automatic night mode and route simulation | Full simulated route without guidance errors |
+| RF-06 | Motorcycle: own profile, avoid motorways/tolls, twisty routes (configurable sinuosity level), optional always-on screen, glove mode (large touch targets, high contrast) | Real test on a motorcycle with the usual mount |
+| RF-07 | Track recording: foreground service, pause/resume, statistics, GPX export and recovery after an unexpected close | A 2 h recording survives a forced close |
+| RF-08 | Places and lists: favorites, lists with color, icon and notes, sorting by distance, visible on the map | Create, edit and search within lists |
+| RF-09 | Import and export GPX, KML/KMZ and Google Takeout; full backup | Import a real Takeout and a 10,000-point GPX |
+| RF-10 | Optional Nextcloud/WebDAV sync: lists and tracks, with conflict handling and credentials in Android Keystore | The app works the same without sync; two devices converge |
+| RF-11 | Open links: `geo:`, Google Maps (long and short), Apple Maps and Waze; resolve short links only if the user enables it; search by name if the link carries no coordinates | Test suite with ≥ 30 real links |
+| RF-12 | Privacy: no telemetry, "no network" mode, visible list of possible connections, optional online tile source disabled by default | With the "no network" mode, zero outgoing connections |
+| RF-13 | Visible OpenStreetMap attribution | Always present on the map or in "About" as per ODbL |
+| RF-14 | Android Auto | Later phase |
+| RF-15 | Petrol stations and fuel prices: download the fuels ticked in Settings (LPG, petrol 95/98, diesel, CNG…), **draw the price of the chosen fuel over each station on the map**, open a station card on tap (brand, address, opening hours, prices of every configured fuel) and **add the station to the route** (as destination or as a stop) | With the setting on and a fuel chosen, prices show over the stations when zoomed in; tapping one opens its card with "Go" and "Add stop"; with the setting off there is no connection; the location never leaves the device; the data date is shown and it works offline with the last downloaded data |
+| RF-16 | Real-time public transport (F7): next departures and alerts for a **Cercanías** station (the metro is out by the user's decision) | Optional and off by default; if it fails, the app carries on unchanged; shows the time of the last update |
+| RF-17 | Settings: a screen with privacy (offline mode, region catalog, list of possible connections with the state of each), navigation preferences (voice, units, avoid by default) and **optional data sources**: turn each on or off; for petrol stations, **which fuels are downloaded**, **which one is shown on the map**, update frequency and the source URL; for Cercanías, the station | Each switch is stored and honored without a restart; turning a source on warns what is sent and to whom; with offline mode on, no source connects |
 
-### Enlaces de mapas (detalle RF-11)
+### Map links (RF-11 detail)
 
-- Esquemas y dominios a registrar: `geo:`, `https://www.google.com/maps/*`, `https://maps.google.com/*`, `https://maps.app.goo.gl/*`, `https://goo.gl/maps/*`, `https://maps.apple.com/*`, `https://waze.com/ul*`, `https://www.waze.com/*`.
-- En Android 12 y posteriores, una app no verificada para esos dominios no se abre sola: el usuario debe activarla en «Abrir por defecto → Añadir enlaces». La app debe guiarle.
-- Un enlace corto exige una petición de red a Google para conocer el destino. Ajuste desactivado por defecto, con aviso de qué se envía.
+- Schemes and domains to register: `geo:`, `https://www.google.com/maps/*`, `https://maps.google.com/*`, `https://maps.app.goo.gl/*`, `https://goo.gl/maps/*`, `https://maps.apple.com/*`, `https://waze.com/ul*`, `https://www.waze.com/*`.
+- On Android 12 and later, an app that is not verified for those domains does not open on its own: the user must enable it under "Open by default → Add links". The app must guide them.
+- A short link requires a network request to Google to learn the destination. Setting disabled by default, with a notice of what is sent.
 
-## Requisitos no funcionales
+## Non-functional requirements
 
-| ID | Requisito | Objetivo |
+| ID | Requirement | Target |
 | --- | --- | --- |
-| RNF-01 | Fluidez del mapa | ≥ 60 fps en gama media (p95 de frame time ≤ 16,6 ms en gestos); en pantallas de 90/120 Hz, p95 ≤ 11,1/8,3 ms en gama alta |
-| RNF-02 | Arranque en frío hasta mapa interactivo | ≤ 1 s en gama media-alta; ≤ 2 s en gama baja |
-| RNF-03 | Funciona sin Google Play Services | Todas las funciones de la v1, en ROM chinas, LineageOS sin GApps, GrapheneOS y microG |
-| RNF-04 | Compatible con F-Droid | Sin dependencias propietarias en el sabor base; sin anti-features |
-| RNF-05 | Fiabilidad de navegación en segundo plano | Servicio en primer plano con tipo `location`; guía y detección de exclusión de ahorro de batería en ROM agresivas |
-| RNF-06 | Privacidad | Cero telemetría; sin informes de fallos remotos (solo registro local exportable a mano); los logs no guardan ubicaciones por defecto |
-| RNF-07 | Compatibilidad | `minSdk` 26 (propuesto), target SDK = última estable, ABI arm64-v8a obligatoria |
-| RNF-08 | Batería | Medir en el spike y fijar umbral; GPS a 1 Hz en navegación y sin wake locks innecesarios |
-| RNF-09 | Tamaño | App sin datos < 100 MB (objetivo) |
-| RNF-10 | Licencias | GPLv3; compatibilidad de cada dependencia registrada en `LICENSES.md` |
-| RNF-11 | Calidad | Tests unitarios (parsers de enlaces, importadores, sync), tests de navegación con rutas simuladas, CI y Baseline Profiles |
-| RNF-12 | Accesibilidad e idioma | Tamaño de fuente del sistema, contraste, TalkBack básico; español e inglés con cadenas externalizadas |
+| RNF-01 | Map fluidity | ≥ 60 fps on mid-range (p95 frame time ≤ 16.6 ms during gestures); on 90/120 Hz displays, p95 ≤ 11.1/8.3 ms on high-end |
+| RNF-02 | Cold start to interactive map | ≤ 1 s on mid-to-high-end; ≤ 2 s on low-end |
+| RNF-03 | Works without Google Play Services | All v1 features, on Chinese ROMs, LineageOS without GApps, GrapheneOS and microG |
+| RNF-04 | F-Droid compatible | No proprietary dependencies in the base flavor; no anti-features |
+| RNF-05 | Background navigation reliability | Foreground service with type `location`; guidance and detection of battery-saver exclusion on aggressive ROMs |
+| RNF-06 | Privacy | Zero telemetry; no remote crash reports (only a local log that can be exported by hand); logs do not store locations by default |
+| RNF-07 | Compatibility | `minSdk` 26 (proposed), target SDK = latest stable, arm64-v8a ABI mandatory |
+| RNF-08 | Battery | Measure in the spike and set a threshold; GPS at 1 Hz during navigation and no unnecessary wake locks |
+| RNF-09 | Size | App without data < 100 MB (target) |
+| RNF-10 | Licenses | GPLv3; compatibility of each dependency recorded in `LICENSES.md` |
+| RNF-11 | Quality | Unit tests (link parsers, importers, sync), navigation tests with simulated routes, CI and Baseline Profiles |
+| RNF-12 | Accessibility and language | System font size, contrast, basic TalkBack; Spanish and English with externalized strings |
