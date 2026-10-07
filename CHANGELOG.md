@@ -1,35 +1,35 @@
 # Changelog
 
-Los cambios relevantes se listan aquí. El formato sigue [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y las versiones siguen [SemVer](https://semver.org/lang/es/).
+All notable changes are listed here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and versions follow [Semantic Versioning](https://semver.org).
 
 ## [Unreleased]
 
-## [0.1.0-rc.3] - pendiente
+## [0.1.0-rc.3] - pending
 
-Primera versión candidata publicada (las `rc.1` y `rc.2` solo existieron como pre-releases de prueba): un MVP en desarrollo (ver `docs/mvp-plan.md`), no una app terminada. Solo España.
+First release candidate (`rc.1` and `rc.2` only existed as test pre-releases): an MVP under development (see `docs/mvp-plan.md`), not a finished app. Spain only.
 
-### Añadido
+### Added
 
-- Mapa vectorial fuera de línea (MapLibre Native + PMTiles) con tema claro y oscuro, etiquetas e iconos, y atribución de OpenStreetMap siempre visible.
-- Descarga de regiones desde «Mapas»: lista jerárquica, descargas reanudables verificadas con SHA-256, pausar, reanudar, borrar y actualizar, servicio en primer plano y modo sin red. El catálogo por defecto está en `UltimateMaps-data`.
-- Búsqueda de lugares y direcciones fuera de línea con el núcleo de CoMaps, con ficha (guardar, ruta, compartir).
-- Vista previa de ruta en coche, a pie o en bici, con opciones de evitar autopistas, peajes, ferris y caminos sin asfaltar (sin guía giro a giro).
-- Sitios guardados y listas, con importación y exportación GPX y KML y copia de seguridad.
-- Apertura de enlaces de Google Maps, Apple Maps, Waze y `geo:`; los enlaces cortos no hacen ninguna petición de red.
-- Ubicación sin Google Play Services.
-- **Pantalla de Ajustes** (engranaje en el mapa): privacidad (modo sin red, catálogo, lista de conexiones posibles) y gasolineras.
-- **Gasolineras y precios** (opcional, apagado por defecto): descarga solo los combustibles que marques (GLP, gasolinas, gasóleos, GNC…), muestra el precio del combustible elegido sobre cada gasolinera, ficha al tocarla con **Ir** y **Añadir parada** (hasta 5), y atribución al Ministerio. La ubicación nunca sale del dispositivo.
-- Ruta con paradas intermedias.
-- **Pantalla de navegación** (sin probar aún en un dispositivo): botones *Empezar* y *Simular* en el panel de ruta; banner con el giro, la calle y los carriles, límite de velocidad con aviso, hora de llegada, modo noche y modo guantes, pantalla siempre encendida, reanudar tras un cierre inesperado.
-- Voz de navegación (sin probar aún en un dispositivo) (texto es/en, km/mi, cola con prioridades, enfoque de audio con atenuación, guía para instalar un motor TTS libre sin GMS) y sección «Navegación» en Ajustes (voz, volumen, unidades, idioma, evitar por defecto). Sin probar en dispositivo.
-- Buscador en la lista de mapas y panel inferior más fácil de arrastrar.
-- El motor de búsqueda y rutas corre en un proceso aparte: si falla, la app sigue.
-- Cadenas en español e inglés.
+- Offline vector map (MapLibre Native + PMTiles) with light and dark themes, labels and icons, and an always-visible OpenStreetMap attribution.
+- Region downloads from "Maps": hierarchical list, resumable downloads verified with SHA-256, pause, resume, delete and update, foreground service and an offline mode. The default catalog lives in `UltimateMaps-data`.
+- Offline search for places and addresses with the CoMaps core, with a place card (save, route, share).
+- Route preview by car, on foot or by bike, with options to avoid motorways, tolls, ferries and unpaved roads, and intermediate stops (up to 5).
+- Saved places and lists, with GPX and KML import and export and a full backup.
+- Opening links from Google Maps, Apple Maps, Waze and `geo:`; short links make no network request.
+- Location without Google Play Services.
+- **Settings screen** (gear on the map): privacy (offline mode, catalog, list of possible connections), petrol stations and navigation.
+- **Petrol stations and prices** (optional, off by default): downloads only the fuels you tick (LPG, petrols, diesels, CNG…), draws the price of the chosen fuel over each station, and opens a card on tap with **Go** and **Add stop**. Prices are published by the Spanish Ministry for the Ecological Transition and are unofficial; the location never leaves the device.
+- **Navigation screen** (not yet tested on a device): *Start* and *Simulate* buttons in the route panel; banner with the turn, street and lanes, speed limit with a warning, arrival time, night mode and glove mode, screen kept on, resume after an unexpected close.
+- **Voice guidance** (not yet tested on a device): English and Spanish phrases, km/mi, a prioritized queue, audio-focus ducking, and a guide to install a free text-to-speech engine without GMS; voice, volume, units, language and "avoid by default" options in Settings.
+- Search box in the maps list and a bottom sheet that is easier to drag.
+- The search and routing engine runs in its own process: if it fails, the app keeps running.
+- English and Spanish strings.
 
-### Limitaciones conocidas
+### Known limitations
 
-- **Velocidad:** la búsqueda tarda de 0,5 a 4 s por consulta en un Pixel 8 con 7 regiones (el objetivo era 0,1 s). La ruta larga Madrid–Barcelona no se ha podido calcular con las 7 regiones probadas.
-- Sin navegación giro a giro, voz, carriles ni límites de velocidad; sin perfil de moto.
-- Solo se dibuja bien la región cuyo PMTiles está instalado; con muchas regiones el rendimiento del mapa no está medido.
-- Probado solo en un dispositivo (gama alta, con GMS). Sin probar: ROM chinas, dispositivos sin Google, gama media.
-- El APK de la release no está minificado.
+- **Speed:** search takes 0.3 to 4 s per query on a Pixel 8 with 7 regions (the target was 0.1 s). Long routes (for example Madrid–Barcelona) return "route not found" with the 7 regions tested.
+- The navigation screen and the voice have only automated tests; nothing has been verified on a device yet.
+- Lanes have only been seen on urban routes; speed limits exist for car routes only; there is no motorcycle profile.
+- With many regions installed, map performance has not been measured.
+- Tested on a single device (high-end, with GMS). Not tested: Chinese ROMs, devices without Google, mid-range phones.
+- The release APK is not minified.

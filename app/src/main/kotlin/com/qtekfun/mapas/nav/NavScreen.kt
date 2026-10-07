@@ -114,6 +114,7 @@ fun NavScreen(ui: NavUi, actions: NavActions, dark: Boolean, modifier: Modifier 
 @Composable
 private fun BoxScope.Driving(ui: NavUi, nav: NavState, actions: NavActions) {
     val c = NavTheme.colors
+    LightStatusBarIcons()
     val context = LocalContext.current
     val voiceStatus by VoiceModule.guide(context).status.collectAsState()
     Column(Modifier.align(Alignment.TopCenter).fillMaxWidth()) {
