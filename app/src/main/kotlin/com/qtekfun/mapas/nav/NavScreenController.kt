@@ -217,7 +217,8 @@ class NavScreenController(
         if (st == null) {
             // The controller ended. After an arrival the service stops it on its own: the summary stays until dismissed.
             val ui = _ui.value
-            if (!ui.active || ui.phase == NavPhase.ARRIVED) return
+            // No snapshot seen yet: this null is the controller replacing the previous trip while [begin] starts ours.
+            if (!ui.active || ui.phase == NavPhase.ARRIVED || ui.nav == null) return
             val last = ui.nav
             if (last != null && last.remainingMeters <= ARRIVAL_SLACK_METERS) {
                 // The ARRIVED snapshot was conflated away: the last one was a few metres from the end.

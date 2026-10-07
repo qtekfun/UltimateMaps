@@ -37,7 +37,7 @@ object NavIcons {
     private val merge = listOf(p("M14 42Q14 30 24 24V8"), p("M34 42Q34 30 24 24"), p("M16 16L24 8L32 16"))
     private val depart = listOf(p("M24 38V10"), p("M14 20L24 10L34 20"), dot(24, 43, 3))
     private val arrive = listOf(p("M24 44Q10 30 10 20A14 14 0 0 1 38 20Q38 30 24 44Z"), ring(24, 20, 5))
-    private val arriveRight = listOf(p("M20 42Q8 30 8 21A12 12 0 0 1 32 21Q32 30 20 42Z"), ring(20, 21, 4), p("M33 43H43"), p("M38 38L43 43L38 48"))
+    private val arriveRight = listOf(p("M20 42Q8 30 8 21A12 12 0 0 1 32 21Q32 30 20 42Z"), ring(20, 21, 4), p("M33 38H43"), p("M38 33L43 38L38 43"))
 
     private fun turnSpec(type: TurnType): Spec = when (type) {
         TurnType.DEPART -> Spec(false, depart)
@@ -65,7 +65,7 @@ object NavIcons {
     private val laneRight = listOf(p("M24 42V28Q24 18 34 18H41"), p("M34 11L41 18L34 25"))
     private val laneSlightRight = listOf(p("M24 42V32Q24 24 30 18L37 11"), p("M28 11H37V20"))
     private val laneSharpRight = listOf(p("M20 42V22L38 36"), p("M28 35.5L38 36L35 26.8"))
-    private val laneMergeRight = listOf(p("M14 42Q14 30 24 24"), p("M34 42V34Q34 28 24 22V10"), p("M17 17L24 10L31 17"))
+    private val laneMergeRight = listOf(p("M16 42V34Q16 26 30 22V10"), p("M22 18L30 10L38 18"))
     private val laneUTurn = listOf(p("M32 42V20A8 8 0 0 0 16 20V30"), p("M10 24L16 31L22 24"))
 
     private fun laneSpec(d: LaneDirection): Spec = when (d) {
