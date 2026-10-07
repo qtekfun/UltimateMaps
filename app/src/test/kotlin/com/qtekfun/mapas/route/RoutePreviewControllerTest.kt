@@ -1,6 +1,7 @@
 package com.qtekfun.mapas.route
 
 import com.qtekfun.mapas.core.geo.LatLon
+import com.qtekfun.mapas.core.routing.BikeCycleways
 import com.qtekfun.mapas.core.routing.RouteOptions
 import com.qtekfun.mapas.core.routing.RoutePlan
 import com.qtekfun.mapas.core.routing.RouteRequest
@@ -65,7 +66,12 @@ class RoutePreviewControllerTest {
     private val opens = AtomicInteger()
     private var location: LatLon? = home
 
-    private fun controller(engine: FakeEngine, regions: Regions = Regions(installed), timeoutMs: Long = 5_000) =
+    private fun controller(
+        engine: FakeEngine,
+        regions: Regions = Regions(installed),
+        timeoutMs: Long = 5_000,
+        defaultBike: BikeCycleways = BikeCycleways.OFF,
+    ) =
         RoutePreviewController(
             scope, Dispatchers.IO, regions,
             backend = { _, _ -> opens.incrementAndGet(); engine },
@@ -75,6 +81,7 @@ class RoutePreviewControllerTest {
             clock = { ticks.addAndGet(7) },
             log = log,
             timeoutMs = timeoutMs,
+            defaultBikeCycleways = { defaultBike },
         )
 
     private fun await(what: String, cond: () -> Boolean) {
@@ -259,5 +266,38 @@ class RoutePreviewControllerTest {
         val text = log.events.joinToString("\n")
         assertNull(Regex("""\d+\.\d{3,}""").find(text))
         assertTrue("Secret" !in text && "40.41" !in text && "2.17" !in text)
+    }
+
+    @Test
+    fun theNoCycleRouteCodeHasItsOwnErrorAndTheLevelReachesTheEngine() {
+        assertEquals(RouteError.NO_CYCLE_ROUTE, RoutePreviewController.errorFor(RouteOutcome(RouteCode.NO_CYCLE_ROUTE, null)))
+        val engine = FakeEngine { RouteOutcome(RouteCode.NO_CYCLE_ROUTE, null) }
+        val c = controller(engine)
+        c.setProfile(RoutingProfile.BIKE)
+        c.start(dest)
+        await("first error") { c.state.status == RouteStatus.ERROR }
+        c.setOptions(RouteOptions(bikeCycleways = BikeCycleways.ONLY))
+        await("second error") { engine.requests.size == 2 && c.state.status == RouteStatus.ERROR }
+        assertEquals(RouteError.NO_CYCLE_ROUTE, c.state.error)
+        assertEquals(BikeCycleways.ONLY, engine.requests.last().options.bikeCycleways)
+        assertEquals(RoutingProfile.BIKE, engine.requests.last().profile)
+    }
+
+    @Test
+    fun aNewPreviewStartsFromTheSettingsDefaultAndARunningOneKeepsTheUsersChoice() {
+        val engine = FakeEngine { ok() }
+        val c = controller(engine, defaultBike = BikeCycleways.PREFER)
+        c.start(dest)
+        await("first") { c.state.status == RouteStatus.DONE }
+        assertEquals(BikeCycleways.PREFER, c.state.options.bikeCycleways)
+        c.setOptions(c.state.options.copy(bikeCycleways = BikeCycleways.ONLY))
+        await("second") { engine.requests.size == 2 && c.state.status == RouteStatus.DONE }
+        c.start(dest) // already active: the choice for this trip stays
+        await("third") { engine.requests.size == 3 && c.state.status == RouteStatus.DONE }
+        assertEquals(BikeCycleways.ONLY, engine.requests.last().options.bikeCycleways)
+        c.close()
+        c.start(dest) // a new session goes back to the default
+        await("fourth") { engine.requests.size == 4 && c.state.status == RouteStatus.DONE }
+        assertEquals(BikeCycleways.PREFER, engine.requests.last().options.bikeCycleways)
     }
 }

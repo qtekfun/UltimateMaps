@@ -4,6 +4,10 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 
 ## [Unreleased]
 
+### Added
+
+- Bike routes can prefer cycle infrastructure: Off, Prefer, Strongly prefer or Only cycle infrastructure. It is a row in the route panel for the bike profile and a default in Settings, Navigation. Off keeps the standard routing (which already favours tagged cycleways and lanes); Prefer and Strongly prefer lower the weight of other roads; Only excludes them and, when it finds nothing, says so and suggests Prefer. It relies on OpenStreetMap tags (a cycle lane, a cycle track and "bicycle=yes" are not told apart) and needs a patch to the CoMaps core, applied by `scripts/comaps-prepare.sh`. Route quality has not been judged on a device.
+
 ### Fixed
 
 - Navigation location: on Android 12 and later the app now asks for high-accuracy updates explicitly. It used the legacy request, which for the fused provider is a low-power one, a likely cause of the repeated "no GPS signal, estimated position" while driving (not yet confirmed on a drive).

@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.qtekfun.mapas.core.geo.LatLon
 import com.qtekfun.mapas.core.geo.distanceTo
+import com.qtekfun.mapas.core.routing.BikeCycleways
 import com.qtekfun.mapas.core.routing.RouteOptions
 import com.qtekfun.mapas.core.routing.RoutePlan
 import com.qtekfun.mapas.core.routing.RouteRequest
@@ -28,7 +29,7 @@ import kotlinx.coroutines.withTimeoutOrNull
 enum class RouteStatus { IDLE, NEEDS_ORIGIN, COMPUTING, DONE, ERROR }
 
 /** Why there is no route; mapped to a message by the UI. */
-enum class RouteError { NO_REGIONS, NEED_MORE_MAPS, START_NOT_FOUND, END_NOT_FOUND, STOP_NOT_FOUND, ROUTE_NOT_FOUND, TIMEOUT, INTERNAL }
+enum class RouteError { NO_REGIONS, NEED_MORE_MAPS, START_NOT_FOUND, END_NOT_FOUND, STOP_NOT_FOUND, ROUTE_NOT_FOUND, NO_CYCLE_ROUTE, TIMEOUT, INTERNAL }
 
 /** Outcome of [RoutePreviewController.addStop]; everything but [ADDED] leaves the route as it was. */
 enum class StopResult { ADDED, DUPLICATE, SAME_AS_DESTINATION, LIMIT, NO_ROUTE }
@@ -92,6 +93,8 @@ class RoutePreviewController(
     private val log: RouteLog,
     private val mutex: Mutex = Mutex(),
     private val timeoutMs: Long = TIMEOUT_MS,
+    /** Cycle-infrastructure level a new bike preview starts from (the Settings default). */
+    private val defaultBikeCycleways: () -> BikeCycleways = { BikeCycleways.OFF },
 ) {
     val state = RouteState()
 
@@ -108,6 +111,8 @@ class RoutePreviewController(
 
     /** Starts a preview from the current location to [destination] (keeps the profile and options). */
     fun start(destination: PlaceInfo) {
+        // A new preview starts from the Settings default for the cycle level; a running one keeps what the user chose.
+        if (!state.active) state.options = state.options.copy(bikeCycleways = defaultBikeCycleways())
         state.active = true
         state.destination = destination
         state.stops = emptyList()
@@ -316,6 +321,7 @@ class RoutePreviewController(
             RouteCode.INTERMEDIATE_NOT_FOUND -> RouteError.STOP_NOT_FOUND
             RouteCode.ROUTE_NOT_FOUND, RouteCode.NO_ERROR, RouteCode.HAS_WARNINGS ->
                 RouteError.ROUTE_NOT_FOUND
+            RouteCode.NO_CYCLE_ROUTE -> RouteError.NO_CYCLE_ROUTE
             RouteCode.CANCELLED -> RouteError.TIMEOUT // the native router gave up on its own budget
             else -> RouteError.INTERNAL
         }

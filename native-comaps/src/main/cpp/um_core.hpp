@@ -28,6 +28,16 @@ enum AvoidFlags : int32_t
   kAvoidUnpaved = 1 << 3,
 };
 
+// Bike cycle-infrastructure level (BikeCycleways in Kotlin), 2 bits of the same flags integer: 0 = off, 1 = prefer,
+// 2 = strongly prefer, 3 = only. Only meaningful for the bike profile (see native-comaps/patches).
+constexpr int32_t kCycleLevelShift = 4;
+constexpr int32_t kCycleLevelMask = 3 << kCycleLevelShift;
+constexpr int32_t kCycleLevelOnly = 3;
+
+// Own result code (not a routing::RouterResultCode): "Only cycle infrastructure" found no route. Same value as
+// RouteCode.NO_CYCLE_ROUTE in Kotlin.
+constexpr int32_t kRouteNoCycleRoute = 1004;
+
 struct RouteOut
 {
   // routing::RouterResultCode as an integer (0 = NoError, 8 = RouteNotFound, 9 = NeedMoreMaps, ...).
