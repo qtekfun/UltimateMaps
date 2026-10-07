@@ -1,8 +1,10 @@
 package com.qtekfun.mapas.nav
 
+import com.qtekfun.mapas.core.cameras.AlertSoundMode
 import com.qtekfun.mapas.core.cameras.InMemoryCameraSettingsStore
 import org.junit.After
 import org.junit.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
@@ -24,15 +26,22 @@ class NavCameraMuteControllerTest {
         r.await("category off") { !it.cameraAlertsOn }
     }
 
-    @Test fun `muting writes only the camera flag and the screen follows it in both directions`() {
+    @Test fun `muting writes only the muted flag, keeps the modes and the screen follows it in both directions`() {
         val r = rig()
+        store.update { it.copy(cameraAlertMode = AlertSoundMode.VOICE, incidentAlertMode = AlertSoundMode.SILENT) }
         r.screen.setCameraVoice(false)
         r.await("alerts muted") { !it.cameraVoiceOn }
-        assertFalse(store.settings.value.voiceEnabled)
+        assertTrue(store.settings.value.alertsMuted)
+        assertEquals(AlertSoundMode.VOICE, store.settings.value.cameraAlertMode, "the per-category modes are not erased")
+        assertEquals(AlertSoundMode.SILENT, store.settings.value.incidentAlertMode)
         assertTrue(r.settings.settings.value.voiceEnabled, "the navigation voice is untouched")
         assertTrue(r.screen.ui.value.voiceOn)
-        store.update { it.copy(voiceEnabled = true) } // from Settings
-        r.await("alerts unmuted from Settings") { it.cameraVoiceOn }
+        r.screen.setCameraVoice(true)
+        r.await("alerts unmuted") { it.cameraVoiceOn }
+        assertFalse(store.settings.value.alertsMuted)
+        assertEquals(AlertSoundMode.VOICE, store.settings.value.cameraAlertMode, "restored on unmute")
+        store.update { it.copy(alertsMuted = true) } // from elsewhere
+        r.await("muted from elsewhere") { !it.cameraVoiceOn }
     }
 
     @Test fun `the navigation mute does not change the alerts flag`() {
@@ -40,6 +49,6 @@ class NavCameraMuteControllerTest {
         r.screen.setVoice(false)
         r.await("nav muted") { !it.voiceOn }
         assertTrue(r.screen.ui.value.cameraVoiceOn)
-        assertTrue(store.settings.value.voiceEnabled)
+        assertFalse(store.settings.value.alertsMuted)
     }
 }
