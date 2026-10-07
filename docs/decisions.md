@@ -567,3 +567,10 @@ Format: date · decision · reason · discarded alternatives · how to revert it
 - **Merging rule from the owner:** merge a pull request only when its checks are green. Protecting `master` with required checks is the owner's step (repository settings).
 - **Not covered:** the native build (`assembleFossDebug`, NDK) and instrumented tests; add them when the runner time allows.
 
+## 2026-10-07 · Working rules for the night run, CI for the data repository, and the data workflow (owner asleep)
+- **Owner instruction:** keep working, publish test builds when enough has changed, document every decision here. Merge a pull request only when its CI checks are green; at most 2 subagents at a time.
+- **CI:** the app repository has `ci.yml` (jobs `core` and `app`, both green on their own PR: 2 min 28 s and 10 min 56 s). The data repository (`UltimateMaps-data`) got a small CI that validates its workflow files (YAML plus `bash -n` of every run block), because its workflow broke three times today only when run. Protecting `master` with required checks is still the owner's step.
+- **Data workflow:** the weekly workflow now builds the Spain regions, the world base, the speed-camera file and the Madrid public-transport index. The transit step runs first (it needs the Android SDK that the disk-cleaning step used to delete), then the SDK is removed. Manual re-runs for the same dates use the `tag_suffix` input (`-b` to `-g` today); only the two newest data releases are kept.
+- **Transit index:** built from the six real feeds (CRTM Metro, Metro Ligero, EMT, interurban, other urban; Renfe Cercanías). Metro de Madrid is left out by the tool because its feed expired on 2026-05-27. The index is valid for about 30 days (Renfe's window), so the weekly run keeps it fresh.
+- **Subagent hygiene:** a subagent that stalls without committing is resumed with a message asking it to commit first; its worktree keeps the work.
+
