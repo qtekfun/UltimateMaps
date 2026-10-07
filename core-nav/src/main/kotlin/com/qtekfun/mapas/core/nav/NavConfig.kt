@@ -22,6 +22,10 @@ data class RerouteConfig(
     val retryDelayMillis: Long = 2_000L,
     /** Wait after a failed cycle before trying again while still off route. */
     val cooldownMillis: Long = 8_000L,
+    /** A new route must start within this distance of the user... */
+    val maxStartDistanceMeters: Double = 500.0,
+    /** ...and end within this distance of the old destination; otherwise it is discarded as an engine glitch. */
+    val maxEndDistanceMeters: Double = 500.0,
 )
 
 /** All thresholds of the follower. See `docs/phase2/following.md` for the reason behind each default. */
