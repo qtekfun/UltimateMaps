@@ -22,7 +22,7 @@
 
     <string name="search_placeholder">Buscar (próximamente)</string>
     <string name="no_maps_title">Aún no hay mapas</string>
-    <string name="no_maps_body">La descarga de regiones llegará pronto. Mientras tanto el mapa solo muestra el fondo.</string>
+    <string name="no_maps_body">Descarga una región en Mapas para ver el mapa. Hasta entonces solo se muestra el fondo.</string>
 
     <string name="notice_link_title">Enlace de mapa</string>
     <string name="notice_search_title">Búsqueda: %1$s</string>
@@ -32,4 +32,57 @@
     <string name="notice_location_title">Ubicación</string>
     <string name="location_permission_denied">Se denegó el permiso de ubicación. Actívalo en los ajustes del sistema para ver dónde estás.</string>
     <string name="location_unavailable">Este dispositivo no tiene ningún proveedor de ubicación disponible.</string>
+
+    <!-- Pantalla Mapas (regiones) -->
+    <string name="regions_title">Mapas</string>
+    <string name="maps_entry_title">Mapas</string>
+    <string name="maps_entry_body">Descargar y gestionar regiones</string>
+    <string name="offline_title">Modo sin red</string>
+    <string name="offline_body">Ninguna conexión, ni siquiera para descargas.</string>
+    <string name="server_title">Servidor de mapas</string>
+    <string name="server_hint">https://ejemplo.org/mapas/catalog.json</string>
+    <string name="server_save">Guardar y actualizar</string>
+    <string name="server_invalid">Escribe una dirección https:// válida.</string>
+    <string name="server_none_title">Sin servidor de mapas</string>
+    <string name="server_none_body">Los mapas solo se descargan de un servidor que tú eliges. Escribe arriba la dirección de un catálogo. No se contacta con nadie hasta entonces.</string>
+    <string name="storage_title">Almacenamiento</string>
+    <string name="storage_internal">Almacenamiento interno</string>
+    <string name="storage_card">Tarjeta SD</string>
+    <string name="storage_free">%1$s libres de %2$s</string>
+    <string name="storage_card_warning">Los mapas en tarjeta pueden no dibujarse en algunos dispositivos.</string>
+    <string name="catalog_loading">Cargando catálogo…</string>
+    <string name="catalog_error_offline">El modo sin red está activado, así que no se ha pedido el catálogo. Desactívalo para actualizar.</string>
+    <string name="catalog_error_denied">Este servidor no está permitido para descargas.</string>
+    <string name="catalog_error_network">No se pudo cargar el catálogo. Revisa tu conexión.</string>
+    <string name="catalog_error_invalid">El servidor devolvió un catálogo no válido.</string>
+    <string name="catalog_stale">Se muestra la lista guardada. No se pudo actualizar.</string>
+    <string name="catalog_empty">El catálogo no tiene regiones.</string>
+    <string name="region_download">Descargar</string>
+    <string name="region_pause">Pausar</string>
+    <string name="region_resume">Reanudar</string>
+    <string name="region_cancel">Cancelar</string>
+    <string name="region_delete">Borrar</string>
+    <string name="region_update">Actualizar</string>
+    <string name="region_retry">Reintentar</string>
+    <string name="region_unavailable">Aún no disponible</string>
+    <string name="region_queued">En espera…</string>
+    <string name="region_progress">%1$d %% de %2$s</string>
+    <string name="region_paused">En pausa al %1$d %%</string>
+    <string name="region_group_summary">%1$d de %2$d instaladas · %3$s</string>
+    <string name="region_installed_size">Instalada · %1$s</string>
+    <string name="region_update_available">Actualización disponible · %1$s</string>
+    <string name="regions_installed_other">Instaladas (fuera de la lista)</string>
+    <string name="fail_offline">El modo sin red está activado: no se ha descargado nada.</string>
+    <string name="fail_not_allowed">Este servidor no está permitido para descargas.</string>
+    <string name="fail_no_space">Falta espacio: hacen falta %1$s y hay %2$s libres.</string>
+    <string name="fail_network">Descarga interrumpida. Reintenta para continuar donde se quedó.</string>
+    <string name="fail_corrupt">El fichero no pasó la verificación y se descartó. Reintenta.</string>
+    <string name="delete_title">¿Borrar %1$s?</string>
+    <string name="delete_body">Libera %1$s. Podrás descargarla de nuevo más tarde.</string>
+    <string name="regions_channel_name">Descargas de mapas</string>
+    <string name="regions_notification_title">Descargando mapas</string>
+    <string name="regions_notification_progress">%1$d %% de %2$s</string>
+    <string name="regions_notification_waiting">Empezando…</string>
+    <string name="regions_notification_queued">%1$d más en espera</string>
+    <string name="regions_pause">Pausar</string>
 </resources>

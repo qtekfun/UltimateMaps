@@ -3,6 +3,7 @@ package com.qtekfun.mapas.map
 import android.content.Context
 import android.content.res.AssetManager
 import com.qtekfun.mapas.core.map.MapTheme
+import com.qtekfun.mapas.regions.RegionStorage
 import java.io.File
 
 /** Turns the packaged style template into a style JSON for a concrete device. Pure, JVM-testable. */
@@ -27,8 +28,13 @@ class MapFiles(private val context: Context) {
     private val assetsDir get() = File(context.filesDir, "map")
     private val tilesDir get() = File(context.filesDir, "maps")
 
-    /** First .pmtiles file in `filesDir/maps` (by name), or null when no region is installed. */
-    fun pmtiles(): File? = tilesDir.listFiles { f -> f.isFile && f.name.endsWith(".pmtiles") }?.minByOrNull { it.name }
+    /**
+     * The PMTiles file to draw: the first installed region's (see `regions.RegionStorage`), else any .pmtiles
+     * left by hand in `filesDir/maps`; null when nothing is installed. The style has one tile source, so only
+     * one region is drawn for now.
+     */
+    fun pmtiles(): File? = RegionStorage.firstInstalledRender(context)
+        ?: tilesDir.listFiles { f -> f.isFile && f.name.endsWith(".pmtiles") }?.minByOrNull { it.name }
 
     fun isInstalled(): Boolean = File(assetsDir, MARKER).readTextOrNull() == ASSET_VERSION
 
@@ -62,6 +68,6 @@ class MapFiles(private val context: Context) {
 
     private companion object {
         const val MARKER = ".version"
-        const val ASSET_VERSION = "1"
+        const val ASSET_VERSION = "2" // 2: sprites, glyphs and label layers (M0)
     }
 }

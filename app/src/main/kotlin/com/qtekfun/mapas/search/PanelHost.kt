@@ -99,6 +99,7 @@ class PanelHost(
             onImport = documents::pickFile,
             onExport = { format: GeoFormat -> documents.createFile(format, EXPORT_NAME) },
             onFocusField = { screen.detent = SheetDetent.FULL },
+            onOpenMaps = { screen.onOpenMaps() },
         )
         SheetPanel(search, places, actions)
     }

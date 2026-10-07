@@ -40,6 +40,18 @@ class DefaultNetworkPolicy(
 
     override fun possibleConnections(): List<AllowedEndpoint> = synchronized(lock) { endpoints.toList() }
 
+    /**
+     * Adds or replaces a whitelist entry at run time (e.g. the map server the user typed in). The caller is
+     * responsible for the user having asked for it; the entry then appears in [possibleConnections].
+     */
+    fun addEndpoint(endpoint: AllowedEndpoint) {
+        synchronized(lock) {
+            val key = endpoint.host.trim().lowercase()
+            endpoints.removeAll { it.host.lowercase() == key && it.purpose == endpoint.purpose }
+            endpoints.add(endpoint.copy(host = key))
+        }
+    }
+
     override fun setEndpointEnabled(host: String, purpose: ConnectionPurpose, enabled: Boolean) {
         synchronized(lock) {
             val key = host.trim().lowercase()

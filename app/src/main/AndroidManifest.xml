@@ -1,15 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <!--
-        The viewer makes no connections (RF-12): the INTERNET permission that the MapLibre library declares
-        is removed. Add it back only together with the first NetworkPolicy-gated feature (downloads).
+        INTERNET is requested for the region-download flow only (the MapLibre library declares it too, so the
+        merged manifest has it either way). Every connection goes through NetworkPolicy; with offline mode on,
+        none is attempted. The map itself reads local files and the style references no remote URL.
     -->
-    <uses-permission android:name="android.permission.INTERNET" tools:node="remove" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <uses-feature android:name="android.hardware.location" android:required="false" />
     <uses-feature android:name="android.hardware.location.gps" android:required="false" />
@@ -77,5 +80,18 @@
                 <data android:pathPrefix="/ul" />
             </intent-filter>
         </activity>
+
+        <!-- "Maps" screen: catalog, downloads, storage -->
+        <activity
+            android:name=".regions.RegionsActivity"
+            android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize|keyboard|keyboardHidden|uiMode|density"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+
+        <!-- Region downloads keep running with the screen off: foreground service of type dataSync (Android 14+) -->
+        <service
+            android:name=".regions.RegionDownloadService"
+            android:exported="false"
+            android:foregroundServiceType="dataSync" />
     </application>
 </manifest>

@@ -47,6 +47,7 @@ class MapLibreEngine(
     private var map: MapLibreMap? = null
     private var theme = initialTheme
     private var loadedTheme: MapTheme? = null
+    private var loadedTiles: String? = null
     private var pendingUser: LatLon? = null
     private var pendingPin: LatLon? = null
     private var pendingMarkers: List<LatLon> = emptyList()
@@ -158,7 +159,13 @@ class MapLibreEngine(
         }
     }
 
+    /** Reloads the style if the installed tiles changed (a region was downloaded or deleted) since it was loaded. */
+    fun refreshTilesIfChanged() {
+        if (map != null && loadedTheme != null && files.pmtiles()?.path != loadedTiles) loadStyle()
+    }
+
     private fun applyStyle(m: MapLibreMap, wanted: MapTheme) {
+        loadedTiles = files.pmtiles()?.path
         val json = files.styleJson(wanted)
         m.setStyle(Style.Builder().fromJson(json)) { style ->
             loadedTheme = wanted

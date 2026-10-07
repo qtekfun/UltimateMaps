@@ -19,10 +19,12 @@ import com.qtekfun.mapas.core.map.CameraState
 import com.qtekfun.mapas.core.map.MapTheme
 import com.qtekfun.mapas.link.LinkHandler
 import com.qtekfun.mapas.link.LinkOutcome
+import com.qtekfun.mapas.link.pinPoint
 import com.qtekfun.mapas.location.AndroidLocationSource
 import com.qtekfun.mapas.map.MapFiles
 import com.qtekfun.mapas.map.MapLibreEngine
 import com.qtekfun.mapas.map.PrefsCameraStateStore
+import com.qtekfun.mapas.regions.RegionsActivity
 import com.qtekfun.mapas.ui.MapScreen
 import com.qtekfun.mapas.ui.MapScreenState
 import com.qtekfun.mapas.ui.Notice
@@ -56,6 +58,7 @@ class MainActivity : ComponentActivity() {
         )
         lifecycle.addObserver(engine)
         panel = PanelHost(this, engine, state)
+        state.onOpenMaps = { startActivity(Intent(this, RegionsActivity::class.java)) }
         state.bearing = engine.cameraState().bearing.toFloat()
 
         setContent {
@@ -80,6 +83,7 @@ class MainActivity : ComponentActivity() {
         super.onStart()
         state.hasTiles = files.pmtiles() != null
         panel.onStart()
+        engine.refreshTilesIfChanged() // back from "Maps" with a region downloaded or deleted
         if (state.locating && hasLocationPermission()) startLocation()
     }
 
@@ -97,9 +101,10 @@ class MainActivity : ComponentActivity() {
 
     private fun handleLink(intent: Intent?) {
         if (intent?.action != Intent.ACTION_VIEW) return
-        when (val outcome = LinkHandler.handle(intent.dataString)) {
+        val result = LinkHandler.handle(intent.dataString)
+        engine.showPin(result.pinPoint()) // always replaces (or clears) the pin of the previous link
+        when (val outcome = result) {
             is LinkOutcome.ShowPlace -> {
-                engine.showPin(outcome.point)
                 engine.animateTo(CameraState(outcome.point, (outcome.zoom ?: DEFAULT_LINK_ZOOM).coerceIn(0.0, 22.0)))
                 state.notice = Notice.Place(outcome.label)
             }
