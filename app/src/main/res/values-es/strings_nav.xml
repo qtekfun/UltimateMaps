@@ -31,4 +31,16 @@
     <string name="nav_turn_arrive">Llegas a tu destino</string>
     <string name="nav_turn_arrive_left">Tu destino está a la izquierda</string>
     <string name="nav_turn_arrive_right">Tu destino está a la derecha</string>
+    <!-- Rutas fallidas (política en RouteFailurePolicy) -->
+    <string name="nav_route_err_no_regions">No hay regiones instaladas. Descarga una región para calcular rutas sin conexión.</string>
+    <string name="nav_route_err_need_maps">Faltan mapas para esta ruta. Descárgalos en Mapas y vuelve a intentarlo.</string>
+    <string name="nav_route_err_need_maps_named">Faltan mapas para esta ruta: %1$s. Descárgalos en Mapas y vuelve a intentarlo.</string>
+    <string name="nav_route_err_start">El origen no está en una carretera de los mapas descargados. Elige otro punto de partida.</string>
+    <string name="nav_route_err_end">El destino no está en una carretera de los mapas descargados.</string>
+    <string name="nav_route_err_stop">Una de las paradas no está en una carretera de los mapas descargados. Muévela o quítala.</string>
+    <string name="nav_route_err_not_found">No hay ruta con estas opciones. Prueba otro perfil, otras opciones de evitar u otros puntos.</string>
+    <string name="nav_route_err_timeout">La ruta tardó demasiado en calcularse. Inténtalo de nuevo o elige un punto más cercano.</string>
+    <string name="nav_route_err_core">El motor de rutas tuvo un problema y se reinició. Inténtalo de nuevo.</string>
+    <string name="nav_route_err_core_unavailable">El motor de rutas sigue fallando. Inténtalo de nuevo en un momento.</string>
+    <string name="nav_route_err_internal">No se pudo calcular la ruta.</string>
 </resources>

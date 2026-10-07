@@ -31,4 +31,16 @@
     <string name="nav_turn_arrive">Arrive at your destination</string>
     <string name="nav_turn_arrive_left">Your destination is on the left</string>
     <string name="nav_turn_arrive_right">Your destination is on the right</string>
+    <!-- Failed routes (policy in RouteFailurePolicy) -->
+    <string name="nav_route_err_no_regions">No regions installed. Download a region to calculate routes offline.</string>
+    <string name="nav_route_err_need_maps">Maps are missing for this route. Download them in Maps, then try again.</string>
+    <string name="nav_route_err_need_maps_named">Maps are missing for this route: %1$s. Download them in Maps, then try again.</string>
+    <string name="nav_route_err_start">The start is not on a road in the downloaded maps. Choose another starting point.</string>
+    <string name="nav_route_err_end">The destination is not on a road in the downloaded maps.</string>
+    <string name="nav_route_err_stop">One of the stops is not on a road in the downloaded maps. Move or remove it.</string>
+    <string name="nav_route_err_not_found">No route found with these options. Try another profile, other avoid options or other points.</string>
+    <string name="nav_route_err_timeout">The route took too long to calculate. Try again or choose a closer point.</string>
+    <string name="nav_route_err_core">The route engine had a problem and was restarted. Try again.</string>
+    <string name="nav_route_err_core_unavailable">The route engine keeps failing. Try again in a moment.</string>
+    <string name="nav_route_err_internal">The route could not be calculated.</string>
 </resources>
