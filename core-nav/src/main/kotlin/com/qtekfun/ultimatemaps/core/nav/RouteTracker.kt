@@ -263,7 +263,9 @@ class RouteTracker(
 
         val limit = limitBySegment[geometry.segmentAt(progress)]
         if (limit > 0) {
-            val kmh = speed * 3.6
+            // Whole km/h, as the speedometer shows it: a float round trip of 50 km/h (13.888889 m/s) is 50.0000004
+            // and must not count as "over" a 50 km/h limit. Over means strictly above limit + tolerance.
+            val kmh = Math.round(speed * 3.6).toDouble()
             val allowed = limit + config.speedToleranceKmh
             overSpeed = if (overSpeed) kmh > allowed - config.speedHysteresisKmh else kmh > allowed
         } else {
