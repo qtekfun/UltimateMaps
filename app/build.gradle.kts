@@ -81,6 +81,8 @@ android {
 
     testOptions {
         unitTests.isIncludeAndroidResources = true
+        // Robolectric's Android 16 (SDK 36) environment reaches into java.base internals (FileDescriptor, shared memory).
+        unitTests.all { it.jvmArgs("--add-exports=java.base/jdk.internal.access=ALL-UNNAMED") }
     }
 
     lint {
