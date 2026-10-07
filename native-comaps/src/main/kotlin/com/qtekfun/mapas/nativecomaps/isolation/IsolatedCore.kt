@@ -9,7 +9,6 @@ import com.qtekfun.mapas.nativecomaps.CoreHandle
 import com.qtekfun.mapas.nativecomaps.DetailedRoutingEngine
 import com.qtekfun.mapas.nativecomaps.RouteCode
 import com.qtekfun.mapas.nativecomaps.RouteOutcome
-import com.qtekfun.mapas.nativecomaps.toFlags
 import com.qtekfun.mapas.nativecomaps.toNative
 import java.io.IOException
 import java.util.concurrent.ExecutionException

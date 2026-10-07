@@ -86,6 +86,7 @@ fun RoutePanel(
             ResultAndStart(s, navStart)
             Spacer(Modifier.height(4.dp))
             RouteOptionsSection(route)
+            if (s.profile == RoutingProfile.BIKE) BikeCyclewaysRow(route)
         }
     }
 }
@@ -432,7 +433,7 @@ private fun RouteOptionsSection(route: RoutePreviewController) {
 
 /** A filter chip: outlined when off, tinted with a check mark when on; a checkbox for accessibility. */
 @Composable
-private fun OptionChip(text: String, checked: Boolean, enabled: Boolean, tag: String, modifier: Modifier, onToggle: () -> Unit) {
+internal fun OptionChip(text: String, checked: Boolean, enabled: Boolean, tag: String, modifier: Modifier, onToggle: () -> Unit) {
     val colors = Mapas.colors
     val fg = when {
         !enabled -> colors.separator
@@ -492,6 +493,7 @@ private fun errorText(e: RouteError?): Int = when (e) {
     RouteError.END_NOT_FOUND -> R.string.route_err_end
     RouteError.STOP_NOT_FOUND -> R.string.route_err_stop
     RouteError.ROUTE_NOT_FOUND -> R.string.route_err_not_found
+    RouteError.NO_CYCLE_ROUTE -> R.string.bike_err_no_cycle_route
     RouteError.TIMEOUT -> R.string.route_err_timeout
     RouteError.INTERNAL, null -> R.string.route_err_internal
 }

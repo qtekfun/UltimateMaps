@@ -1,5 +1,6 @@
 package com.qtekfun.mapas.core.voice
 
+import com.qtekfun.mapas.core.routing.BikeCycleways
 import com.qtekfun.mapas.core.routing.RouteOptions
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -57,6 +58,8 @@ data class NavSettings(
     val avoidTolls: Boolean = false,
     val avoidFerries: Boolean = false,
     val avoidUnpaved: Boolean = false,
+    /** Default cycle-infrastructure level for bike routes (the route screen can change it for one trip). */
+    val bikeCycleways: BikeCycleways = BikeCycleways.OFF,
     /** The navigation screen follows the user with a tilted 3D camera (false: flat 2D, north or course up). */
     val view3d: Boolean = true,
     /** Extruded 3D buildings in the 3D view. Its cost on mid-range phones has not been measured. */
@@ -65,7 +68,7 @@ data class NavSettings(
     fun normalized(): NavSettings = copy(volumePercent = volumePercent.coerceIn(MIN_VOLUME, 100))
 
     /** The "avoid by default" settings as the options the routing engine understands. */
-    fun routeOptions(): RouteOptions = RouteOptions(avoidMotorways, avoidTolls, avoidFerries, avoidUnpaved)
+    fun routeOptions(): RouteOptions = RouteOptions(avoidMotorways, avoidTolls, avoidFerries, avoidUnpaved, bikeCycleways)
 
     companion object {
         const val MIN_VOLUME = 10
