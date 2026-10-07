@@ -12,6 +12,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import java.util.Locale
@@ -46,7 +47,7 @@ class VoiceNavigationController(
     private val problemGapMillis: Long = 20_000L,
 ) : AutoCloseable {
     private var jobs: List<Job> = emptyList()
-    private var lastProblemAt = Long.MIN_VALUE
+    private var lastProblemAt: Long? = null
     private var arrivalAnnounced = false
     private var lastStatus: NavStatus? = null
 
@@ -55,6 +56,7 @@ class VoiceNavigationController(
         if (jobs.isNotEmpty()) return
         arrivalAnnounced = false
         recalculatingDue = false
+        lastProblemAt = null
         lastStatus = null
         if (settings.value.voiceEnabled) guide.prepare(language())
         guide.setVolume(settings.value.volumePercent)
@@ -63,7 +65,7 @@ class VoiceNavigationController(
             scope.launch { events.collect(::onEvent) },
             scope.launch { state.map { it?.status }.distinctUntilChanged().collect(::onStatus) },
             scope.launch {
-                settings.distinctUntilChanged { a, b -> a.voiceEnabled == b.voiceEnabled && a.volumePercent == b.volumePercent }.collect {
+                settings.distinctUntilChanged { a, b -> a.voiceEnabled == b.voiceEnabled && a.volumePercent == b.volumePercent }.drop(1).collect {
                     guide.setVolume(it.volumePercent)
                     if (!it.voiceEnabled) guide.stop() else guide.prepare(language())
                 }
@@ -117,7 +119,7 @@ class VoiceNavigationController(
     /** "Left the route" then, right after, "Recalculating"; nothing again until [problemGapMillis] has passed. */
     private fun sayProblem(m: VoiceMessage) {
         val now = clock()
-        val inCycle = now - lastProblemAt < problemGapMillis
+        val inCycle = lastProblemAt?.let { now - it < problemGapMillis } ?: false
         if (m == VoiceMessage.OFF_ROUTE) {
             if (inCycle) return
             lastProblemAt = now
