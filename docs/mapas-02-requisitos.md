@@ -6,7 +6,7 @@ Los umbrales marcados como «objetivo» son propuestas que el spike debe validar
 
 **Dentro:** mapa offline, búsqueda offline, routing y navegación offline (coche, moto, bici, a pie), moto (evitar autopistas/peajes, curvas, modo guantes, grabación), sitios y listas, import/export, sync opcional con Nextcloud/WebDAV, abrir enlaces de mapas, ajustes de privacidad.
 
-**Fuera (v1):** tráfico en cualquier forma, Google/Waze/Apple como proveedores de datos, iOS, reseñas y fotos de sitios, transporte público, cuentas y cualquier backend propio. Android Auto, en una fase posterior.
+**Fuera (v1):** tráfico en cualquier forma (el transporte público en tiempo real de F7 no es «tráfico» de carretera: es opcional y posterior a la v1), Google/Waze/Apple como proveedores de datos, iOS, reseñas y fotos de sitios, transporte público, cuentas y cualquier backend propio. Android Auto, en una fase posterior.
 
 ## Requisitos funcionales
 
@@ -26,6 +26,9 @@ Los umbrales marcados como «objetivo» son propuestas que el spike debe validar
 | RF-12 | Privacidad: sin telemetría, modo «sin red», lista visible de conexiones posibles, fuente de teselas online opcional y desactivada por defecto | Con el modo «sin red», cero conexiones salientes |
 | RF-13 | Atribución de OpenStreetMap visible | Siempre presente en el mapa o en «Acerca de» según ODbL |
 | RF-14 | Android Auto | Fase posterior |
+| RF-15 | Precios de combustible (F7): ver en el mapa y en la ficha las gasolineras con su precio para el combustible elegido (GLP, gasolina 95/98, diésel, GNC…), ordenadas por precio o distancia. Datos de una fuente abierta, descargados enteros y filtrados en local | Con el ajuste activado se ven precios del combustible elegido; con él apagado no hay ninguna conexión; la ubicación nunca sale del dispositivo. Muestra la fecha de los datos |
+| RF-16 | Transporte público en tiempo real (F7): próximas salidas y avisos de una estación de Cercanías o Metro, por operador | Cada operador es opcional y está apagado por defecto; si falla uno, el resto y la app siguen igual; muestra la hora de la última actualización |
+| RF-17 | Ajustes: pantalla con privacidad (modo sin red, catálogo de regiones, lista de conexiones posibles con el estado de cada una), preferencias de navegación (voz, unidades, evitar por defecto) y **fuentes de datos opcionales**: activar o apagar cada una, elegir combustible(s), radio, frecuencia de actualización, operadores y la URL de la fuente. Persisten y se pueden exportar con la copia de seguridad | Cada interruptor se obtiene y se respeta sin reiniciar; al activar una fuente se avisa de qué se envía y a quién; con el modo sin red, ninguna fuente se conecta |
 
 ### Enlaces de mapas (detalle RF-11)
 
