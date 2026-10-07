@@ -109,6 +109,7 @@ class PanelHost(
         clock = ::elapsedMillis,
         log = LogcatRouteLog,
         mutex = coreLock,
+        defaultBikeCycleways = { com.qtekfun.mapas.voice.VoiceModule.settings(activity).settings.value.bikeCycleways },
     )
 
     /** "Start" / "Simulate" on the route card: the guided route goes through the same shared core and lock. */

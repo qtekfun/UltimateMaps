@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Bici: preferir o exigir infraestructura ciclista -->
+    <string name="bike_cycleways_title">Infraestructura ciclista</string>
+    <string name="bike_cycleways_settings_body">Valor por defecto de las rutas en bici: cuánto se prefieren los carriles bici y las vías ciclistas. Depende de las etiquetas de OpenStreetMap, más completas en unas zonas que en otras.</string>
+    <string name="bike_cycleways_off">No</string>
+    <string name="bike_cycleways_prefer">Preferir</string>
+    <string name="bike_cycleways_strong">Preferir mucho</string>
+    <string name="bike_cycleways_only">Solo</string>
+    <string name="bike_cycleways_full_off">Desactivado (estándar)</string>
+    <string name="bike_cycleways_full_prefer">Preferir</string>
+    <string name="bike_cycleways_full_strong">Preferir mucho</string>
+    <string name="bike_cycleways_full_only">Solo infraestructura ciclista</string>
+    <string name="bike_cycleways_caption_off">Ruta en bici estándar, que ya favorece las vías ciclistas y los carriles bici etiquetados.</string>
+    <string name="bike_cycleways_caption_prefer">Prefiere vías ciclistas y carriles bici, con algún rodeo.</string>
+    <string name="bike_cycleways_caption_strong">Prefiere mucho las vías ciclistas y los carriles bici, aunque el rodeo sea largo.</string>
+    <string name="bike_cycleways_caption_only">Usa solo vías ciclistas y calles etiquetadas para bicis. A menudo no encuentra ruta.</string>
+    <string name="bike_err_no_cycle_route">No se encontró ruta usando solo infraestructura ciclista. Prueba «Preferir».</string>
+</resources>
