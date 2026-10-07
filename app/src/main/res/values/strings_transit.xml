@@ -5,7 +5,6 @@
     <string name="transit_group_departure">Departure</string>
     <string name="transit_depart_now">Leave now</string>
     <string name="transit_depart_later">Leave at</string>
-    <string name="transit_depart_value">%1$s, %2$s</string>
     <string name="transit_time_earlier">Earlier by 15 minutes</string>
     <string name="transit_time_later">Later by 15 minutes</string>
     <string name="transit_day_earlier">Previous day</string>
@@ -22,7 +21,6 @@
     <string name="transit_err_internal">The timetable file could not be read. Delete it and download it again in Maps.</string>
 
     <!-- Itinerary list -->
-    <string name="transit_options_title">Options</string>
     <string name="transit_direct">Direct</string>
     <plurals name="transit_transfers">
         <item quantity="one">%d transfer</item>
@@ -37,7 +35,6 @@
     <!-- Itinerary card -->
     <string name="transit_back">Back to options</string>
     <string name="transit_card_summary">%1$s, leaving %2$s, arriving %3$s</string>
-    <string name="transit_place_start">your starting point</string>
     <string name="transit_place_destination">your destination</string>
     <string name="transit_leg_walk">Walk %1$s to %2$s</string>
     <string name="transit_leg_towards">Towards %1$s</string>
@@ -47,7 +44,6 @@
         <item quantity="one">%d stop</item>
         <item quantity="other">%d stops</item>
     </plurals>
-    <string name="transit_leg_line">Line %1$s</string>
 
     <!-- Honesty and data -->
     <string name="transit_theoretical_note">Times are theoretical, taken from the published timetables. They do not include delays, cancellations or real-time information.</string>
@@ -69,7 +65,6 @@
     <string name="transit_maps_update">Update</string>
     <string name="transit_maps_delete">Delete</string>
     <string name="transit_maps_downloading">Downloading…</string>
-    <string name="transit_maps_row_description">%1$s, %2$s</string>
     <string name="transit_fail_offline">Offline mode is on: nothing was downloaded.</string>
     <string name="transit_fail_not_allowed">This server is not allowed by the connection list.</string>
     <string name="transit_fail_network">The download failed. Try again later.</string>
