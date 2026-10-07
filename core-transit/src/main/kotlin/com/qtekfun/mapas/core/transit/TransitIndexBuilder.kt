@@ -17,9 +17,10 @@ class FeedOptions(
  *
  * - Only stops that have at least one trip are kept.
  * - Trips are grouped into patterns (same line, same ordered stop list) and sorted by first departure.
- * - `frequencies.txt` entries are expanded into explicit trips (a RAPTOR scan needs concrete departures):
- *   for each window, one trip every `headway_secs` from `start_time` while `< end_time`, with the template trip's
- *   relative stop offsets. `exact_times` is not distinguished (treated as 1).
+ * - `frequencies.txt` windows are kept as frequency trips (not expanded): the template trip's stop offsets are
+ *   anchored at `start_time` and repeat every `headway_secs` while the departure is `< end_time`.
+ *   `exact_times` is not distinguished (treated as 1). Expanding them instead was measured to turn the EMT feed
+ *   into millions of explicit trips (see docs/phase2/transit.md).
  */
 class TransitIndexBuilder {
     private val stopKeys = HashMap<String, Int>()
@@ -64,6 +65,15 @@ class TransitIndexBuilder {
         val arr = IntList(64)
         val dep = IntList(64)
         val tripCount get() = svc.size
+
+        // frequency-based trips
+        val fSvc = IntList()
+        val fHead = IntList()
+        val fHeadway = IntList()
+        val fRuns = IntList()
+        val fArr = IntList()
+        val fDep = IntList()
+        val freqCount get() = fSvc.size
     }
 
     private fun headsign(s: String): Int = headsignIdx.getOrPut(s) {
@@ -136,18 +146,18 @@ class TransitIndexBuilder {
             } else {
                 val first = feed.stTimeDep[a]
                 for (w in windows) {
+                    val start = feed.freqStart[w]
                     val end = feed.freqEnd[w]
                     val step = feed.freqHeadway[w]
-                    var t = feed.freqStart[w]
-                    while (t < end) {
-                        val shift = t - first
-                        acc.svc.add(svc)
-                        acc.head.add(head)
-                        for (k in a until b) {
-                            acc.arr.add(feed.stTimeArr[k] + shift)
-                            acc.dep.add(feed.stTimeDep[k] + shift)
-                        }
-                        t += step
+                    if (start < 0 || end <= start) continue
+                    val shift = start - first
+                    acc.fSvc.add(svc)
+                    acc.fHead.add(head)
+                    acc.fHeadway.add(step)
+                    acc.fRuns.add((end - start + step - 1) / step)
+                    for (k in a until b) {
+                        acc.fArr.add(feed.stTimeArr[k] + shift)
+                        acc.fDep.add(feed.stTimeDep[k] + shift)
                     }
                 }
             }
@@ -185,14 +195,17 @@ class TransitIndexBuilder {
             patTripOff[p] = totalTrips
             patTimeBase[p] = totalTimes
             totalStops += acc.stops.size
-            totalTrips += acc.tripCount
-            totalTimes += acc.tripCount * acc.stops.size
+            totalTrips += acc.tripCount + acc.freqCount
+            totalTimes += (acc.tripCount + acc.freqCount) * acc.stops.size
         }
         patStopOff[nP] = totalStops
         patTripOff[nP] = totalTrips
         val pStops = IntArray(totalStops)
         val tSvc = IntArray(totalTrips)
         val tHead = IntArray(totalTrips)
+        val tHeadway = IntArray(totalTrips)
+        val tRuns = IntArray(totalTrips) { 1 }
+        val patFreqStart = IntArray(nP)
         val arrivals = IntArray(totalTimes)
         val departures = IntArray(totalTimes)
         for ((p, acc) in pats.withIndex()) {
@@ -208,6 +221,19 @@ class TransitIndexBuilder {
                 val dst = patTimeBase[p] + newT * n
                 System.arraycopy(acc.arr.data, oldT * n, arrivals, dst, n)
                 System.arraycopy(acc.dep.data, oldT * n, departures, dst, n)
+            }
+            patFreqStart[p] = patTripOff[p] + nt
+            val nf = acc.freqCount
+            val forder = (0 until nf).sortedBy { acc.fDep[it * n] }
+            for ((newT, oldT) in forder.withIndex()) {
+                val ti = patTripOff[p] + nt + newT
+                tSvc[ti] = acc.fSvc[oldT]
+                tHead[ti] = acc.fHead[oldT]
+                tHeadway[ti] = acc.fHeadway[oldT]
+                tRuns[ti] = acc.fRuns[oldT]
+                val dst = patTimeBase[p] + (nt + newT) * n
+                System.arraycopy(acc.fArr.data, oldT * n, arrivals, dst, n)
+                System.arraycopy(acc.fDep.data, oldT * n, departures, dst, n)
             }
         }
         val groupIds = HashMap<String, Int>()
@@ -236,7 +262,10 @@ class TransitIndexBuilder {
             patternStops = pStops,
             patternTripOffset = patTripOff,
             patternTimeBase = patTimeBase,
+            patternFreqStart = patFreqStart,
             tripService = tSvc,
+            tripHeadway = tHeadway,
+            tripRuns = tRuns,
             tripHeadsign = tHead,
             headsigns = headsigns.toTypedArray(),
             arrivals = arrivals,

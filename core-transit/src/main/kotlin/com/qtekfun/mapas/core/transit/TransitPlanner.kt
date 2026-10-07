@@ -169,6 +169,8 @@ class TransitPlanner(val index: TransitIndex, val config: PlannerConfig = Planne
     private val arr = Array(rounds + 1) { IntArray(nStops) }
     private val pPat = Array(rounds + 1) { IntArray(nStops) }
     private val pInst = Array(rounds + 1) { IntArray(nStops) }
+    private val pRun = Array(rounds + 1) { IntArray(nStops) }
+    private val tArr = Array(rounds + 1) { IntArray(nStops) }
     private val pBoard = Array(rounds + 1) { IntArray(nStops) }
     private val pAlight = Array(rounds + 1) { IntArray(nStops) }
     private val pFrom = Array(rounds + 1) { IntArray(nStops) }
@@ -183,6 +185,7 @@ class TransitPlanner(val index: TransitIndex, val config: PlannerConfig = Planne
 
     // result of findTrip
     private var foundTime = 0
+    private var foundRun = 0
 
     /** Number of footpath edges (for diagnostics). */
     val footpathCount: Int get() = fpTo.size
@@ -198,6 +201,7 @@ class TransitPlanner(val index: TransitIndex, val config: PlannerConfig = Planne
         for (k in 0..rounds) {
             arr[k].fill(INF)
             pPat[k].fill(NONE)
+            pFrom[k].fill(-1)
         }
         best.fill(INF)
         marked.fill(false)
@@ -263,19 +267,22 @@ class TransitPlanner(val index: TransitIndex, val config: PlannerConfig = Planne
                 val stopsOff = index.patternStopOffset[p]
                 val base = index.patternTimeBase[p]
                 var curInst = -1
+                var curRun = 0
                 var curDep = INF
                 var curBoard = 0
                 for (i in pos0 until n) {
                     val s = index.patternStops[stopsOff + i]
                     if (curInst >= 0) {
                         val tl = curInst / 3
-                        val shift = (curInst % 3 - 1) * DAY
+                        val shift = (curInst % 3 - 1) * DAY + curRun * index.tripHeadway[index.patternTripOffset[p] + tl]
                         val a = index.arrivals[base + tl * n + i] + shift
                         if (a < best[s] && a < bestDest) {
                             curArr[s] = a
+                            tArr[k][s] = a
                             best[s] = a
                             pPat[k][s] = p
                             pInst[k][s] = curInst
+                            pRun[k][s] = curRun
                             pBoard[k][s] = curBoard
                             pAlight[k][s] = i
                             if (!marked[s]) {
@@ -292,6 +299,7 @@ class TransitPlanner(val index: TransitIndex, val config: PlannerConfig = Planne
                                 val cand = findTrip(p, i, ready)
                                 if (cand >= 0 && foundTime < curDep) {
                                     curInst = cand
+                                    curRun = foundRun
                                     curDep = foundTime
                                     curBoard = i
                                 }
@@ -304,14 +312,13 @@ class TransitPlanner(val index: TransitIndex, val config: PlannerConfig = Planne
             val transitCount = newMarked.size
             for (m in 0 until transitCount) {
                 val s = newMarked[m]
-                val base = curArr[s]
+                val base = tArr[k][s]
                 for (e in fpStart[s] until fpStart[s + 1]) {
                     val q = fpTo[e]
                     val t = base + fpSec[e]
                     if (t < best[q] && t < bestDest) {
                         curArr[q] = t
                         best[q] = t
-                        pPat[k][q] = WALK
                         pFrom[k][q] = s
                         if (!marked[q]) {
                             marked[q] = true
@@ -378,11 +385,11 @@ class TransitPlanner(val index: TransitIndex, val config: PlannerConfig = Planne
             ),
         )
         while (k >= 1) {
-            if (pPat[k][s] == WALK) {
+            if (pFrom[k][s] >= 0) {
                 val f = pFrom[k][s]
                 legs.add(
                     Leg.Walk(
-                        f, s, arr[k][f], arr[k][s],
+                        f, s, tArr[k][f], arr[k][s],
                         (distanceM(index.stopLat[f], index.stopLon[f], index.stopLat[s], index.stopLon[s]) * config.detourFactor).toInt(),
                     ),
                 )
@@ -392,7 +399,7 @@ class TransitPlanner(val index: TransitIndex, val config: PlannerConfig = Planne
             check(p >= 0) { "broken parent chain" }
             val inst = pInst[k][s]
             val tl = inst / 3
-            val shift = (inst % 3 - 1) * DAY
+            val shift = (inst % 3 - 1) * DAY + pRun[k][s] * index.tripHeadway[index.patternTripOffset[p] + tl]
             val n = index.patternStopCount(p)
             val off = index.patternStopOffset[p]
             val boardPos = pBoard[k][s]
@@ -429,41 +436,62 @@ class TransitPlanner(val index: TransitIndex, val config: PlannerConfig = Planne
 
     /**
      * Earliest trip instance of pattern [p] departing stop position [pos] at or after [ready]. Returns
-     * `tripLocalIndex * 3 + dayIdx` (dayIdx 0 = previous service day, 1 = today, 2 = tomorrow) or -1;
-     * the departure time (seconds from today's midnight) is left in [foundTime].
+     * `tripLocalIndex * 3 + dayIdx` (dayIdx 0 = previous service day, 1 = today, 2 = tomorrow) or -1.
+     * The departure time (seconds from today's midnight) is left in [foundTime] and, for frequency trips, the run
+     * number in [foundRun].
      */
     private fun findTrip(p: Int, pos: Int, ready: Int): Int {
         val n = index.patternStopCount(p)
+        val tOff = index.patternTripOffset[p]
+        val nSched = index.patternFreqStart[p] - tOff
         val nt = index.patternTrips(p)
         val base = index.patternTimeBase[p]
-        val tOff = index.patternTripOffset[p]
         var bestInst = -1
         var bestTime = INF
+        var bestRun = 0
         for (d in DAY_ORDER) {
             // order is today, yesterday, tomorrow: tomorrow's trips can only win when nothing else was found
             if (d == 2 && bestInst >= 0) break
             val shift = (d - 1) * DAY
+            val act = active[d]
+            // scheduled trips: sorted by first departure, binary search then first active one
             var lo = 0
-            var hi = nt
+            var hi = nSched
             while (lo < hi) {
                 val mid = (lo + hi) ushr 1
                 if (index.departures[base + mid * n + pos] + shift < ready) lo = mid + 1 else hi = mid
             }
-            val act = active[d]
             var tl = lo
-            while (tl < nt) {
+            while (tl < nSched) {
                 if (act[index.tripService[tOff + tl]]) {
                     val t = index.departures[base + tl * n + pos] + shift
                     if (t < bestTime) {
                         bestTime = t
                         bestInst = tl * 3 + d
+                        bestRun = 0
                     }
                     break
                 }
                 tl++
             }
+            // frequency trips: closed-form next run of every active window
+            for (f in nSched until nt) {
+                if (!act[index.tripService[tOff + f]]) continue
+                val h = index.tripHeadway[tOff + f]
+                val first = index.departures[base + f * n + pos] + shift
+                val runs = index.tripRuns[tOff + f]
+                val k = if (ready <= first) 0 else (ready - first + h - 1) / h
+                if (k >= runs) continue
+                val t = first + k * h
+                if (t < bestTime) {
+                    bestTime = t
+                    bestInst = f * 3 + d
+                    bestRun = k
+                }
+            }
         }
         foundTime = bestTime
+        foundRun = bestRun
         return bestInst
     }
 
