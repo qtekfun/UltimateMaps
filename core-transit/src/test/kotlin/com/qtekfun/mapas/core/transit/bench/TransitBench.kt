@@ -35,7 +35,8 @@ private val FEEDS = listOf(
 
 private class Place(val name: String, val lat: Double, val lon: Double)
 
-// Approximate coordinates of well-known places (from general knowledge, not from a surveyed source).
+// Coordinates of well-known places: approximate (general knowledge) except Alcala, Colmenar, Vallecas and Rivas, which are the
+// Renfe / Metro station coordinates read from the downloaded feeds.
 private val PLACES = mapOf(
     "Sol" to Place("Puerta del Sol", 40.4169, -3.7035),
     "Atocha" to Place("Atocha station", 40.4066, -3.6892),
@@ -45,12 +46,12 @@ private val PLACES = mapOf(
     "PlazaCastilla" to Place("Plaza de Castilla", 40.4658, -3.6890),
     "Moncloa" to Place("Moncloa", 40.4348, -3.7189),
     "T4" to Place("Airport T4", 40.4913, -3.5930),
-    "Alcala" to Place("Alcala de Henares", 40.4818, -3.3643),
+    "Alcala" to Place("Alcala de Henares (Renfe station)", 40.4891, -3.3662),
     "Getafe" to Place("Getafe centro", 40.3057, -3.7320),
     "Alcobendas" to Place("Alcobendas", 40.5475, -3.6420),
     "Leganes" to Place("Leganes", 40.3279, -3.7635),
     "LasRozas" to Place("Las Rozas", 40.4929, -3.8738),
-    "Vallecas" to Place("Puente de Vallecas", 40.3894, -3.6623),
+    "Vallecas" to Place("Puente de Vallecas (Metro)", 40.3982, -3.6691),
     "Elliptica" to Place("Plaza Eliptica", 40.3852, -3.7184),
     "Bernabeu" to Place("Santiago Bernabeu", 40.4530, -3.6883),
     "Retiro" to Place("Puerta de Alcala", 40.4200, -3.6888),
@@ -58,8 +59,8 @@ private val PLACES = mapOf(
     "Alcorcon" to Place("Alcorcon", 40.3499, -3.8244),
     "Fuenlabrada" to Place("Fuenlabrada", 40.2842, -3.7942),
     "Mostoles" to Place("Mostoles", 40.3224, -3.8650),
-    "Rivas" to Place("Rivas-Vaciamadrid", 40.3594, -3.5170),
-    "Colmenar" to Place("Colmenar Viejo", 40.6599, -3.7679),
+    "Rivas" to Place("Rivas Futura (Metro)", 40.34134, -3.52479),
+    "Colmenar" to Place("Colmenar Viejo (Renfe station)", 40.6452, -3.7766),
     "Aranjuez" to Place("Aranjuez", 40.0330, -3.6020),
 )
 
@@ -150,11 +151,33 @@ fun main(args: Array<String>) {
 
     println("== sanity trips")
     for ((a, b) in listOf("Sol" to "Atocha", "Chamartin" to "NuevosMin", "Atocha" to "T4", "Sol" to "PrincipePio", "Alcala" to "Chamartin")) {
+        val tq = System.nanoTime()
         val js = plan(a, b, 9 * 3600)
-        println("--- ${PLACES.getValue(a).name} -> ${PLACES.getValue(b).name}: ${js.size} pareto itineraries")
+        println("--- ${PLACES.getValue(a).name} -> ${PLACES.getValue(b).name}: ${js.size} pareto itineraries (%.1f ms, cold JIT)".format((System.nanoTime() - tq) / 1e6))
         js.forEach { println(it.format(loaded)) }
     }
 
+    System.getProperty("transit.debug")?.let { spec ->
+        println("== debug $spec")
+        // spec: lat,lon;lat,lon;HH:MM[;stopNameSubstring]
+        val parts = spec.split(";")
+        val (la, lo) = parts[0].split(",").map { it.toDouble() }
+        val (lb, lob) = parts[1].split(",").map { it.toDouble() }
+        val (hh, mm) = parts[2].split(":").map { it.toInt() }
+        planner.plan(LatLon(la, lo), LatLon(lb, lob), day, hh * 3600 + mm * 60).forEach { println(it.format(loaded)) }
+        parts.getOrNull(3)?.let { sub ->
+            for (st in 0 until loaded.stopCount) if (loaded.stopName[st].contains(sub, ignoreCase = true)) {
+                val lines = HashSet<String>()
+                for (pt in 0 until loaded.patternCount) {
+                    val off = loaded.patternStopOffset[pt]
+                    if ((0 until loaded.patternStopCount(pt)).any { loaded.patternStops[off + it] == st }) {
+                        lines.add(loaded.lineShortName[loaded.patternLine[pt]] + "(" + loaded.patternTrips(pt) + ")")
+                    }
+                }
+                println("stop #$st '${loaded.stopName[st]}' ${loaded.stopLat[st] / 1e6},${loaded.stopLon[st] / 1e6} lines: $lines")
+            }
+        }
+    }
     println("== timing (20 pairs, 08:30, warm-up pass then 5 measured passes)")
     for ((a, b) in PAIRS) plan(a, b, 8 * 3600 + 1800) // warm-up (JIT)
     val first = ArrayList<Double>()
