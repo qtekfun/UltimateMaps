@@ -53,6 +53,26 @@ class CameraDataRepository {
     fun camera(id: String): SpeedCamera? = dataset.fixed.firstOrNull { it.id == id } ?: dataset.sections.firstOrNull { it.id == id }
 
     fun zone(id: String): MobileZone? = dataset.zones.firstOrNull { it.id == id }
+
+    /**
+     * The announceable targets of the current data for the categories [settings] enables, rebuilt only when the data or
+     * those switches change. Meant to be called from one thread (the warner's).
+     */
+    fun alertSource(settings: () -> CameraSettings): AlertSource = object : AlertSource {
+        private var builtFor: Triple<CameraDataset, Boolean, Boolean>? = null
+        private var grid = TargetGrid(emptyList())
+
+        override fun forEachNear(lat: Double, lon: Double, radiusMeters: Double, visitor: AlertSource.Visitor) {
+            val d = dataset
+            val s = settings()
+            val key = builtFor
+            if (key == null || key.first !== d || key.second != s.fixedEnabled || key.third != s.mobileZonesEnabled) {
+                grid = TargetGrid(CameraTargets.of(d, s))
+                builtFor = Triple(d, s.fixedEnabled, s.mobileZonesEnabled)
+            }
+            grid.forEachNear(lat, lon, radiusMeters, visitor)
+        }
+    }
 }
 
 /** Why a refresh ran. Only [ENABLED], [USER] and [FOREGROUND] ever touch the network. */
