@@ -38,7 +38,7 @@ Sin esas variables, `./gradlew :app:assembleFossRelease` genera un APK **sin fir
 
 ## Pendiente antes del primer release real
 
-- **Núcleo nativo en el APK de release (M2):** hoy `:native-comaps` es solo `debugImplementation`. Cuando pase a producción, el workflow necesita `submodules: recursive`, ejecutar `scripts/comaps-prepare.sh` (descarga ~2 GB y usa PyPI) y probablemente más tiempo y RAM; hay que medirlo.
+- **Núcleo nativo en el APK de release (M2, ya integrado):** el workflow ejecuta `git submodule update --init third_party/comaps` y `scripts/comaps-prepare.sh` (descarga ~2 GB y usa PyPI). En local, `assembleFossRelease` con el núcleo tarda 2 min 51 s (APK sin firmar de 42,3 MB); **no verificado en el runner de GitHub** (NDK 28.2, CMake 3.31.6, tiempo y RAM).
 - **Minificado:** desactivado a propósito hasta probar JNI y MapLibre minificados en un dispositivo.
 - **F-Droid:** metadatos y `fastlane/` (Fase 5).
 - **Secretos, protección de `master` y tag:** los configura el usuario.
