@@ -1,0 +1,1 @@
+Release candidate: new application id (UltimateMaps), public-transport routes with step-by-step following, long routes now found, redesigned Settings, alert sounds, place details and names in your language, status-bar distance chip. Spain only.
