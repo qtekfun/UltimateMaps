@@ -96,7 +96,9 @@ dependencies {
     implementation(project(":core-map"))
     implementation(project(":core-search"))
     implementation(project(":core-routing"))
-    debugImplementation(project(":native-comaps")) // banco de pruebas del núcleo (solo debug)
+    implementation(project(":native-comaps")) // núcleo de CoMaps (búsqueda), arranque diferido; M2
+    implementation(project(":core-data")) // sitios y listas (M3)
+    implementation(libs.androidx.sqlite.framework) // driver SQLite de Android para :core-data (M3)
 
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.compose.ui)
