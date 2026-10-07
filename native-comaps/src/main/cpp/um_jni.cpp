@@ -37,7 +37,10 @@ JNIEXPORT jint JNICALL Java_com_qtekfun_mapas_nativecomaps_NativeCore_nativeRefr
   return um::Core::Instance().RefreshMaps();
 }
 
-// Returns 5 strings per result: name, address, category, lat, lon.
+// Returns kSearchStride strings per result: name, address, category, lat, lon, phone, website, wheelchair, opening hours.
+// Keep in sync with SearchWire in CoMapsCore.kt (version 2; version 1 was the first five only).
+constexpr jsize kSearchStride = 9;
+
 JNIEXPORT jobjectArray JNICALL Java_com_qtekfun_mapas_nativecomaps_NativeCore_nativeSearch(
     JNIEnv * env, jobject, jstring query, jboolean hasPos, jdouble lat, jdouble lon, jint limit, jint timeoutMs,
     jstring locale, jboolean categorial)
@@ -45,11 +48,12 @@ JNIEXPORT jobjectArray JNICALL Java_com_qtekfun_mapas_nativecomaps_NativeCore_na
   auto const hits = um::Core::Instance().Search(ToStd(env, query), hasPos, lat, lon, limit, timeoutMs, ToStd(env, locale),
                                                 categorial == JNI_TRUE);
   jclass strCls = env->FindClass("java/lang/String");
-  jobjectArray arr = env->NewObjectArray(static_cast<jsize>(hits.size() * 5), strCls, nullptr);
+  jobjectArray arr = env->NewObjectArray(static_cast<jsize>(hits.size() * kSearchStride), strCls, nullptr);
   jsize i = 0;
   for (auto const & h : hits)
   {
-    for (std::string const & s : {h.name, h.address, h.category, std::to_string(h.lat), std::to_string(h.lon)})
+    for (std::string const & s : {h.name, h.address, h.category, std::to_string(h.lat), std::to_string(h.lon), h.phone, h.website,
+                                 h.wheelchair, h.openingHours})
     {
       jstring js = env->NewStringUTF(s.c_str());
       env->SetObjectArrayElement(arr, i++, js);

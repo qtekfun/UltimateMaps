@@ -29,6 +29,10 @@
 #include "indexer/classificator_loader.hpp"
 #include "indexer/map_style_reader.hpp"
 #include "indexer/data_source.hpp"
+#include "indexer/feature.hpp"
+#include "indexer/feature_data.hpp"
+#include "indexer/feature_meta.hpp"
+#include "indexer/feature_utils.hpp"
 
 #include "platform/local_country_file.hpp"
 #include "platform/local_country_file_utils.hpp"
@@ -380,10 +384,48 @@ int Core::RefreshMaps()
   return static_cast<int>(m_impl->localFiles.size());
 }
 
+namespace
+{
+// Fills phone, website, wheelchair and opening hours of |hit| from the feature |id|. Never throws: a map that went away
+// or an unreadable feature just leaves the fields empty. Nothing here is logged (no user data).
+void ReadPlaceTags(DataSource const & dataSource, FeatureID const & id, SearchHit & hit)
+{
+  if (!id.IsValid())
+    return;
+  try
+  {
+    dataSource.ReadFeature(
+        [&hit](FeatureType & ft)
+        {
+          using feature::Metadata;
+          hit.phone = std::string(ft.GetMetadata(Metadata::FMD_PHONE_NUMBER));
+          hit.website = std::string(ft.GetMetadata(Metadata::FMD_WEBSITE));
+          hit.openingHours = std::string(ft.GetMetadata(Metadata::FMD_OPEN_HOURS));
+          // Wheelchair is not stored as metadata: it comes from the feature's classificator types.
+          auto const wc = feature::GetWheelchairType(feature::TypesHolder(ft));
+          if (wc)
+          {
+            switch (*wc)
+            {
+            case ftraits::WheelchairAvailability::Yes: hit.wheelchair = "yes"; break;
+            case ftraits::WheelchairAvailability::Limited: hit.wheelchair = "limited"; break;
+            case ftraits::WheelchairAvailability::No: hit.wheelchair = "no"; break;
+            }
+          }
+        },
+        id);
+  }
+  catch (RootException const &)
+  {
+  }
+}
+}  // namespace
+
 std::vector<SearchHit> Core::Search(std::string const & query, bool hasPos, double lat, double lon, int limit,
                                     int timeoutMs, std::string const & locale, bool categorial)
 {
   std::vector<SearchHit> out;
+  std::vector<FeatureID> ids;
   if (!m_impl->initialized)
     return out;
 
@@ -393,6 +435,7 @@ std::vector<SearchHit> Core::Search(std::string const & query, bool hasPos, doub
     std::condition_variable cv;
     bool done = false;
     std::vector<SearchHit> hits;
+    std::vector<FeatureID> ids;  // parallel to hits; metadata is read from these after the search ends
   };
   auto state = std::make_shared<State>();
 
@@ -422,6 +465,7 @@ std::vector<SearchHit> Core::Search(std::string const & query, bool hasPos, doub
   {
     std::lock_guard<std::mutex> lk(state->mu);
     std::vector<SearchHit> hits;
+    std::vector<FeatureID> ids;
     for (auto const & r : results)
     {
       if (r.GetResultType() != search::Result::Type::Feature)
@@ -434,8 +478,10 @@ std::vector<SearchHit> Core::Search(std::string const & query, bool hasPos, doub
       h.lat = ll.m_lat;
       h.lon = ll.m_lon;
       hits.push_back(std::move(h));
+      ids.push_back(r.GetFeatureID());
     }
     state->hits = std::move(hits);
+    state->ids = std::move(ids);
     if (results.IsEndMarker())
       state->done = true;
     state->cv.notify_all();
@@ -448,9 +494,13 @@ std::vector<SearchHit> Core::Search(std::string const & query, bool hasPos, doub
     state->cv.wait_for(lk, std::chrono::milliseconds((timeoutMs > 0 ? timeoutMs : 8000) + 2000),
                        [&] { return state->done; });
     out = state->hits;
+    ids = state->ids;
   }
   if (auto h = handle.lock())
     h->Cancel();
+  // Metadata only for the hits being returned (at most `limit`), never for the candidates the engine ranked.
+  for (size_t i = 0; i < out.size() && i < ids.size(); ++i)
+    ReadPlaceTags(m_impl->dataSource, ids[i], out[i]);
   return out;
 }
 

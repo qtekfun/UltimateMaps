@@ -15,6 +15,11 @@ struct SearchHit
   std::string category;
   double lat = 0;
   double lon = 0;
+  // Raw OSM metadata of the feature, read only for the results actually returned; empty when absent.
+  std::string phone;
+  std::string website;
+  std::string wheelchair;    // "yes", "limited" or "no"; empty when untagged
+  std::string openingHours;  // the opening_hours text as stored in the map
 };
 
 enum Profile : int32_t { kCar = 0, kFoot = 1, kBike = 2 };
