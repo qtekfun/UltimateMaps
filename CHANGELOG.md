@@ -4,13 +4,9 @@ Los cambios relevantes se listan aquí. El formato sigue [Keep a Changelog](http
 
 ## [Unreleased]
 
-### Añadido
+## [0.1.0-rc.3] - pendiente
 
-- Voz de navegación (texto es/en, km/mi, cola con prioridades, enfoque de audio con atenuación, guía para instalar un motor TTS libre sin GMS) y sección «Navegación» en Ajustes (voz, volumen, unidades, idioma, evitar por defecto). Sin probar en dispositivo.
-
-## [0.1.0-rc.2] - pendiente
-
-Primera versión candidata publicada (la `rc.1` solo existió como pre-release de prueba): un MVP en desarrollo (ver `docs/mvp-plan.md`), no una app terminada. Solo España.
+Primera versión candidata publicada (las `rc.1` y `rc.2` solo existieron como pre-releases de prueba): un MVP en desarrollo (ver `docs/mvp-plan.md`), no una app terminada. Solo España.
 
 ### Añadido
 
@@ -24,6 +20,8 @@ Primera versión candidata publicada (la `rc.1` solo existió como pre-release d
 - **Pantalla de Ajustes** (engranaje en el mapa): privacidad (modo sin red, catálogo, lista de conexiones posibles) y gasolineras.
 - **Gasolineras y precios** (opcional, apagado por defecto): descarga solo los combustibles que marques (GLP, gasolinas, gasóleos, GNC…), muestra el precio del combustible elegido sobre cada gasolinera, ficha al tocarla con **Ir** y **Añadir parada** (hasta 5), y atribución al Ministerio. La ubicación nunca sale del dispositivo.
 - Ruta con paradas intermedias.
+- **Pantalla de navegación** (sin probar aún en un dispositivo): botones *Empezar* y *Simular* en el panel de ruta; banner con el giro, la calle y los carriles, límite de velocidad con aviso, hora de llegada, modo noche y modo guantes, pantalla siempre encendida, reanudar tras un cierre inesperado.
+- Voz de navegación (sin probar aún en un dispositivo) (texto es/en, km/mi, cola con prioridades, enfoque de audio con atenuación, guía para instalar un motor TTS libre sin GMS) y sección «Navegación» en Ajustes (voz, volumen, unidades, idioma, evitar por defecto). Sin probar en dispositivo.
 - Buscador en la lista de mapas y panel inferior más fácil de arrastrar.
 - El motor de búsqueda y rutas corre en un proceso aparte: si falla, la app sigue.
 - Cadenas en español e inglés.
