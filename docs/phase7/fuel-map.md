@@ -1,40 +1,40 @@
-# Gasolineras en el mapa y ruta con paradas (RF-15) — rama `feat/fuel-map-route`
+# Gas stations on the map and route with stops (RF-15) — branch `feat/fuel-map-route`
 
-Fecha: 2026-10-07. Solo consume las interfaces de `:core-fuel` (`FuelRepository`, `FuelSettingsStore`); los datos y los Ajustes son del agente E.
+Date: 2026-10-07. It only consumes the `:core-fuel` interfaces (`FuelRepository`, `FuelSettingsStore`); the data and Settings belong to agent E.
 
-## Qué hay
+## What is there
 
-**Capa del mapa** (`app/.../map/FuelMapLayer.kt`, `FuelIcons.kt`, `MapLibreEngine`)
-- `FuelMapLayer` (Kotlin puro, probado en JVM) decide qué se dibuja: el motor avisa al terminar un gesto de cámara (`MapEngine.setViewportListener`, nunca por fotograma); tras 250 ms sin cambios consulta `stationsIn(bounds, mapFuel, limit)` en un hilo de fondo y llama a `render` solo si el resultado difiere de lo ya dibujado.
-- Zoom mínimo 11; límite por vista según zoom (80/150/250/400); por debajo de zoom 14 se queda la más barata de cada celda de 48 dp (agrupar). Apagado, sin combustible elegido o por debajo del zoom: no se dibuja nada y, si no hay nada dibujado, ni siquiera se consulta.
-- Un cambio de `mapFuel`, de `enabled` o de `lastUpdateMillis` del repositorio recalcula. Los cambios de otros ajustes (p. ej. minutos de refresco) no.
-- MapLibre: `GeoJsonSource` + `SymbolLayer` (icono de surtidor dibujado con Canvas una vez por carga de estilo + etiqueta «1,154 €»). La etiqueta cede ante colisiones (`text-optional`), el icono siempre se ve. Orden de colisión por precio (`symbol-sort-key`).
-- Más baratas (10 % de la vista, entre 1 y 5, nunca todas): icono más grande (38 dp frente a 28), doble anillo y triángulo «hacia abajo», etiqueta mayor. No dependen solo del color. Tema claro/oscuro: colores de icono, texto y halo según el tema al cargar el estilo.
-- Toque: `queryRenderedFeatures` en un cuadrado de 48 dp; gana el más cercano; si hay un marcador guardado/pin/usuario justo bajo el dedo (14 dp) y ninguna gasolinera, el toque no es de gasolinera. Mientras se elige el origen de ruta, tocar una gasolinera la elige como origen.
+**Map layer** (`app/.../map/FuelMapLayer.kt`, `FuelIcons.kt`, `MapLibreEngine`)
+- `FuelMapLayer` (pure Kotlin, tested on the JVM) decides what is drawn: the engine notifies when a camera gesture ends (`MapEngine.setViewportListener`, never per frame); after 250 ms without changes it queries `stationsIn(bounds, mapFuel, limit)` on a background thread and calls `render` only if the result differs from what is already drawn.
+- Minimum zoom 11; per-view limit by zoom (80/150/250/400); below zoom 14 the cheapest of each 48 dp cell is kept (clustering). Off, with no fuel chosen, or below the zoom: nothing is drawn and, if nothing is drawn, it is not even queried.
+- A change of `mapFuel`, of `enabled` or of the repository's `lastUpdateMillis` recomputes. Changes to other settings (e.g. refresh minutes) do not.
+- MapLibre: `GeoJsonSource` + `SymbolLayer` (pump icon drawn with Canvas once per style load + label "1,154 €"). The label yields to collisions (`text-optional`), the icon is always visible. Collision order by price (`symbol-sort-key`).
+- Cheapest (10 % of the view, between 1 and 5, never all): larger icon (38 dp versus 28), double ring and a "pointing down" triangle, larger label. They do not depend on colour alone. Light/dark theme: icon, text and halo colours according to the theme when the style loads.
+- Tap: `queryRenderedFeatures` in a 48 dp square; the nearest wins; if a saved marker/pin/user marker is right under the finger (14 dp) and no gas station, the tap is not a gas-station tap. While choosing the route origin, tapping a gas station picks it as the origin.
 
-**Ficha** (`app/.../fuel/FuelStationCard.kt`, `FuelCardController.kt`): marca, dirección, municipio, horario, precios de todos los combustibles descargados (el elegido, primero y en negrita, «(en el mapa)»), y bajo ellos siempre la atribución «Fuente: Ministerio para la Transición Ecológica y el Reto Demográfico · actualizado hace…» y «Precio publicado por el Ministerio; no oficial. Compruébalo en el surtidor.». La atribución vive en **una sola función** (`fuelAttributionText`) y en `strings_fuel_map.xml`: sustituir por `FuelAttribution.text(lastUpdateMillis)` de `:core-fuel` cuando E lo integre. Botones (≥ 48 dp): **Ir** (ruta nueva, sin paradas), **Añadir parada** (solo con ruta activa; si se rechaza, la ficha dice por qué), **Guardar** (reutiliza `PlacesService` mediante `PlacesController.toggleSaved(info)`). La ficha se muestra también sobre el panel de ruta.
+**Card** (`app/.../fuel/FuelStationCard.kt`, `FuelCardController.kt`): brand, address, municipality, opening hours, prices of all downloaded fuels (the chosen one first and in bold, "(en el mapa)" (on the map)), and under them always the attribution "Fuente: Ministerio para la Transición Ecológica y el Reto Demográfico · actualizado hace…" (Source: Ministry for the Ecological Transition and the Demographic Challenge · updated … ago) and "Precio publicado por el Ministerio; no oficial. Compruébalo en el surtidor." (Price published by the Ministry; unofficial. Check it at the pump.). The attribution lives in **a single function** (`fuelAttributionText`) and in `strings_fuel_map.xml`: replace with `FuelAttribution.text(lastUpdateMillis)` from `:core-fuel` when E integrates it. Buttons (≥ 48 dp): **Go** ("Ir"; new route, no stops), **Add stop** (only with an active route; if rejected, the card says why), **Save** (reuses `PlacesService` through `PlacesController.toggleSaved(info)`). The card is also shown over the route panel.
 
-**Ruta con paradas** (`RoutePreviewController`, `RoutePanel`): lista [salida, paradas…, destino]; `addStop` (antes del destino), `removeStop`, `moveStop(i, ±1)`; recalcula cada vez; máximo 5 (`MAX_STOPS`). `StopResult`: `ADDED`, `DUPLICATE`, `SAME_AS_DESTINATION` (a ≤ 30 m), `LIMIT`, `NO_ROUTE`. Distancia y tiempo mostrados son los totales de toda la ruta. `INTERMEDIATE_NOT_FOUND` del núcleo ahora es `RouteError.STOP_NOT_FOUND` con mensaje propio (antes «ruta no encontrada»; se actualizó ese caso de `RoutePreviewControllerTest`). UMROUTE: `route profile=car stops=2 ms=… result=ok` (`stops=` solo si hay paradas; solo un número).
+**Route with stops** (`RoutePreviewController`, `RoutePanel`): list [departure, stops…, destination]; `addStop` (before the destination), `removeStop`, `moveStop(i, ±1)`; recomputes each time; maximum 5 (`MAX_STOPS`). `StopResult`: `ADDED`, `DUPLICATE`, `SAME_AS_DESTINATION` (within ≤ 30 m), `LIMIT`, `NO_ROUTE`. The distance and time shown are the totals for the whole route. The core's `INTERMEDIATE_NOT_FOUND` is now `RouteError.STOP_NOT_FOUND` with its own message (before it was "route not found"; that case in `RoutePreviewControllerTest` was updated). UMROUTE: `route profile=car stops=2 ms=… result=ok` (`stops=` only if there are stops; just a number).
 
-## ¿`CoMapsCore.route` pasa `via` al núcleo nativo?
+## Does `CoMapsCore.route` pass `via` to the native core?
 
-Sí. `CoMapsCore.route` construye `[from] + via + [to]` en un `DoubleArray`; `um_jni.cpp` lo pasa tal cual a `Core::Route`, que exige ≥ 2 puntos y crea `routing::Checkpoints(todos los puntos)` para `IndexRouter::CalculateRoute`, que enruta por tramos entre checkpoints. **No hace falta encadenar tramos.** No verificado en un dispositivo (sin móvil): el tiempo de una ruta con paradas largas puede crecer con cada tramo (un tramo Madrid–Barcelona ya era el riesgo R12).
+Yes. `CoMapsCore.route` builds `[from] + via + [to]` in a `DoubleArray`; `um_jni.cpp` passes it as is to `Core::Route`, which requires ≥ 2 points and creates `routing::Checkpoints(all the points)` for `IndexRouter::CalculateRoute`, which routes leg by leg between checkpoints. **There is no need to chain legs.** Not verified on a device (no phone): the time of a route with long stops may grow with each leg (a Madrid–Barcelona leg was already risk R12).
 
-## Interfaces añadidas (fuera de mi propiedad estricta, mínimas)
+## Interfaces added (outside my strict ownership, minimal)
 
-- `:core-map` `MapEngine`: `showFuel(List<FuelPin>)`, `setFuelTapListener`, `setViewportListener`, más `FuelPin` y `GeoBounds` (todo con implementación vacía por defecto).
-- `app/build.gradle.kts`: una línea, `implementation(project(":core-fuel"))` (E probablemente añade la misma: conflicto trivial).
-- `PanelHost`: parámetros `fuelRepository` (por defecto `NoFuelData`), `fuelSettings` (por defecto `StaticFuelSettings`, apagado) y `fuelName` (id -> nombre). **E debe pasar sus implementaciones reales y el nombre del combustible** (`FuelType.displayName`). `FuelType(id, displayName)` se construye aquí con `displayName = id` porque solo hay id en los ajustes; el repositorio debe buscar por `id`.
+- `:core-map` `MapEngine`: `showFuel(List<FuelPin>)`, `setFuelTapListener`, `setViewportListener`, plus `FuelPin` and `GeoBounds` (all with an empty default implementation).
+- `app/build.gradle.kts`: one line, `implementation(project(":core-fuel"))` (E probably adds the same one: trivial conflict).
+- `PanelHost`: parameters `fuelRepository` (default `NoFuelData`), `fuelSettings` (default `StaticFuelSettings`, off) and `fuelName` (id -> name). **E must pass their real implementations and the fuel name** (`FuelType.displayName`). `FuelType(id, displayName)` is built here with `displayName = id` because the settings only hold the id; the repository must look up by `id`.
 - `PlacesController.isSaved/toggleSaved(info)`; `SheetPanel(fuel = FuelCardHost?)`.
-- No se cambió ninguna firma de `:core-fuel`.
+- No `:core-fuel` signature was changed.
 
-## Tests (JVM y Robolectric; 174 en `:app` + `:core-map` + `:core-fuel`, 0 fallos)
+## Tests (JVM and Robolectric; 174 in `:app` + `:core-map` + `:core-fuel`, 0 failures)
 
-`FuelMapLayerTest` (11: etiqueta y orden, más baratas, apagado/sin datos sin consulta, zoom mínimo, límite por zoom, cambio de combustible, apagado limpia, sin redibujar si no cambia, antirrebote, datos nuevos, agrupar), `FuelStationCardTest` (10: toque → ficha con todos los precios y atribución, orden, ≥ 48 dp, Ir, Añadir parada, duplicada, igual al destino, Guardar, origen por toque, ficha desconocida), `RouteStopsTest` (8: sin ruta, `via`, duplicada, destino, límite, quitar/reordenar, nuevo destino, parada inalcanzable, log) y `RoutePanelTest` (lista, totales, subir/bajar/quitar).
+`FuelMapLayerTest` (11: label and order, cheapest, off/no data without a query, minimum zoom, limit by zoom, fuel change, switching off clears, no redraw if unchanged, debounce, new data, clustering), `FuelStationCardTest` (10: tap → card with all prices and attribution, order, ≥ 48 dp, Go, Add stop, duplicate, same as destination, Save, origin by tap, unknown card), `RouteStopsTest` (8: no route, `via`, duplicate, destination, limit, remove/reorder, new destination, unreachable stop, log) and `RoutePanelTest` (list, totals, up/down/remove).
 
-## No medido / no verificado
+## Not measured / not verified
 
-- Apariencia real (iconos, tamaños, colisiones de etiquetas, contraste en claro/oscuro), fluidez al hacer zoom y pan, y el coste de `setGeoJson` con 400 estaciones: **no medidos** (sin Pixel 8 ni adb). La capa MapLibre (`SymbolLayer`, expresión `switchCase`, `queryRenderedFeatures`, `addImage` con `bitmap.density`) solo está **compilada**, no ejecutada; el pixelRatio del icono depende de `bitmap.density` y podría salir al doble o a la mitad de tamaño.
-- Los 48 dp táctiles del mapa se comprueban por construcción (cuadrado de 48 dp), no con un dedo.
-- La fuente «Noto Sans Medium» del `textFont` existe en los assets; que el `€` (U+20AC, rango 8192-8447) se dibuje no se ha visto.
-- El texto «no oficial» y la atribución siguen las instrucciones del coordinador; revisar la redacción legal.
+- Real appearance (icons, sizes, label collisions, contrast in light/dark), smoothness when zooming and panning, and the cost of `setGeoJson` with 400 stations: **not measured** (no Pixel 8 or adb). The MapLibre layer (`SymbolLayer`, `switchCase` expression, `queryRenderedFeatures`, `addImage` with `bitmap.density`) is only **compiled**, not run; the icon's pixelRatio depends on `bitmap.density` and could come out at double or half the size.
+- The 48 dp touch targets on the map are checked by construction (48 dp square), not with a finger.
+- The "Noto Sans Medium" font of `textFont` exists in the assets; that the `€` (U+20AC, range 8192-8447) is drawn has not been seen.
+- The "unofficial" text and the attribution follow the coordinator's instructions; review the legal wording.

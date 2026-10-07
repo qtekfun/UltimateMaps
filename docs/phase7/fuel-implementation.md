@@ -1,66 +1,66 @@
-# Gasolineras: datos y Ajustes (rama `feat/fuel-data-settings`)
+# Gas stations: data and Settings (branch `feat/fuel-data-settings`)
 
-Cubre RF-15 (datos) y RF-17 (pantalla de Ajustes). La capa del mapa y la ficha de gasolinera (agente F) solo consumen las interfaces de `:core-fuel`; **no se ha cambiado ninguna firma de `FuelRepository`, `FuelSettings`, `FuelSettingsStore`, `FuelType` ni `FuelStation`** (solo se añadieron tipos y funciones).
+Covers RF-15 (data) and RF-17 (Settings screen). The map layer and the gas-station card (agent F) only consume the `:core-fuel` interfaces; **no signature of `FuelRepository`, `FuelSettings`, `FuelSettingsStore`, `FuelType` or `FuelStation` was changed** (only types and functions were added).
 
-## Aviso: texto literal de la licencia NO encontrado (riesgo bajo, cubierto con atribución)
+## Warning: literal text of the licence NOT found (low risk, covered with attribution)
 
-> **Actualización 2026-10-07:** tras esta nota, el usuario pidió revisar el uso real y se reunió evidencia (finalidad de transparencia pública, app oficial del Ministerio, apps listadas en datos.gob.es y en Play Store, marco de la Ley 37/2007): ver `docs/decisions.md`, «Licencia de combustible». **Ya no se considera un bloqueo**; sigue sin haber texto literal de la licencia, y las tres condiciones de abajo se aplican como práctica prudente.
+> **Update 2026-10-07:** after this note, the user asked for a review of the real usage and evidence was gathered (public-transparency purpose, the Ministry's official app, apps listed on datos.gob.es and in the Play Store, the framework of Law 37/2007): see `docs/decisions.md`, "Fuel licence". **It is no longer considered a blocker**; there is still no literal licence text, and the three conditions below are applied as prudent practice.
 
-El estudio (`verificacion-fuentes.md`, sección 1) no encontró el texto de las condiciones de reutilización del servicio REST del Ministerio (las fichas de datos.gob.es ya no existen; la cita de la Ley 37/2007 solo aparece en una ficha de terceros). **No se ha leído ninguna licencia ni norma que la fije.** Por prudencia se siguen las condiciones habituales en las apps que lo reutilizan, pero eso no sustituye a verificarlo:
+The study (`verificacion-fuentes.md`, section 1) did not find the text of the reuse conditions of the Ministry's REST service (the datos.gob.es listings no longer exist; the citation of Law 37/2007 only appears in a third-party listing). **No licence or regulation that sets it has been read.** As a precaution the usual conditions of the apps that reuse it are followed, but that does not replace verifying it:
 
-1. Citar la fuente: «Datos: Ministerio para la Transición Ecológica y el Reto Demográfico (Geoportal de Hidrocarburos), reutilizados conforme a la Ley 37/2007. Información no oficial; comprueba el precio en el surtidor.» (en Ajustes, es/en, y para la ficha con `FuelAttribution.text(lastUpdateMillis)`).
-2. Mostrar la fecha de la última descarga (junto al texto, en Ajustes; la ficha debe pasarla a `FuelAttribution.text`).
-3. No alterar el sentido de los datos (los precios se muestran tal cual; se usa «precio publicado por el Ministerio», nunca «oficial»).
+1. Cite the source: "Datos: Ministerio para la Transición Ecológica y el Reto Demográfico (Geoportal de Hidrocarburos), reutilizados conforme a la Ley 37/2007. Información no oficial; comprueba el precio en el surtidor." (Data: Ministry for the Ecological Transition and the Demographic Challenge (Hydrocarbons Geoportal), reused under Law 37/2007. Unofficial information; check the price at the pump.) (in Settings, es/en, and for the card with `FuelAttribution.text(lastUpdateMillis)`).
+2. Show the date of the last download (next to the text, in Settings; the card must pass it to `FuelAttribution.text`).
+3. Do not alter the meaning of the data (prices are shown as they are; "price published by the Ministry" is used, never "official").
 
-**Antes de anunciar o publicar la función hay que aclarar la licencia por escrito con el Ministerio** (o localizar su política de reutilización). Mientras tanto la función viene apagada por defecto.
+**Before announcing or publishing the feature the licence must be clarified in writing with the Ministry** (or its reuse policy located). Meanwhile the feature ships off by default.
 
-## Qué se verificó con peticiones reales (2026-10-07)
+## What was verified with real requests (2026-10-07)
 
-Dos peticiones, mínimas, a `sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/`:
+Two minimal requests to `sedeaplicaciones.minetur.gob.es/ServiciosRESTCarburantes/PreciosCarburantes/`:
 
-- `Listados/ProductosPetroliferos/` (2,7 KB, 200, JSON, UTF-8 sin BOM): 30 productos con `IDProducto`, `NombreProducto`, `NombreProductoAbreviatura`. De ahí salen los ids del catálogo (`FuelTypes`): 1 G95 E5, 23 G95 E10, 24 E25, 25 E85, 20 E5 Premium, 3 G98 E5, 21 G98 E10, 4 «Gasóleo A habitual», 5 Premium, 6 B, 16 Bioetanol, 8 Biodiésel, 17 GLP, 18 GNC, 19 GNL, 22 Hidrógeno, 26 AdBlue, 27 Diésel renovable, 28 Gasolina renovable, 29 Metanol, 30 Amoniaco, 31 y 32 Biogás. Se dejan fuera lo que un conductor no puede repostar: gasóleo C (calefacción, 7), fuelóleos (9, 10), gasóleo marino (11), aviación (12-14).
-- `EstacionesTerrestres/FiltroProducto/22` (hidrógeno, 1 KB, 2 estaciones): confirma la forma de la respuesta por producto: `Fecha`, `ListaEESSPrecio[]` con un único campo `PrecioProducto` (cadena, coma decimal) más `Rótulo`, `Dirección`, `Municipio`, `Provincia`, `Latitud`, `Longitud (WGS84)`, `Horario`, `IDEESS`…, `Nota`, `ResultadoConsulta: "OK"`.
+- `Listados/ProductosPetroliferos/` (2.7 KB, 200, JSON, UTF-8 without BOM): 30 products with `IDProducto`, `NombreProducto`, `NombreProductoAbreviatura`. The catalogue ids (`FuelTypes`) come from there: 1 G95 E5, 23 G95 E10, 24 E25, 25 E85, 20 E5 Premium, 3 G98 E5, 21 G98 E10, 4 "Gasóleo A habitual", 5 Premium, 6 B, 16 Bioetanol, 8 Biodiésel, 17 GLP, 18 GNC, 19 GNL, 22 Hidrógeno, 26 AdBlue, 27 Diésel renovable, 28 Gasolina renovable, 29 Metanol, 30 Amoniaco, 31 and 32 Biogás. Left out is what a driver cannot refuel with: gasóleo C (heating oil, 7), fuel oils (9, 10), marine gas oil (11), aviation (12-14).
+- `EstacionesTerrestres/FiltroProducto/22` (hydrogen, 1 KB, 2 stations): confirms the shape of the per-product response: `Fecha`, `ListaEESSPrecio[]` with a single `PrecioProducto` field (string, decimal comma) plus `Rótulo`, `Dirección`, `Municipio`, `Provincia`, `Latitud`, `Longitud (WGS84)`, `Horario`, `IDEESS`…, `Nota`, `ResultadoConsulta: "OK"`.
 
-**No verificado:** el tamaño real del fichero por producto de gasolina 95 E5 y gasóleo A (estimado 3-10 MB, el tope de 20 MB lo cubre); el comportamiento ante muchas peticiones seguidas; la estabilidad de `IDEESS`; que el servicio siga con esta forma. El parser también acepta la forma nacional (23 campos `Precio …`, tabla `FuelTypes.nationalField`) por si cambia.
+**Not verified:** the real file size for the gasoline 95 E5 and gasóleo A products (estimated 3-10 MB, the 20 MB cap covers it); behaviour under many consecutive requests; the stability of `IDEESS`; that the service keeps this shape. The parser also accepts the national shape (23 `Precio …` fields, table `FuelTypes.nationalField`) in case it changes.
 
-## Privacidad de la petición
+## Request privacy
 
-Cada petición es `<URL>/EstacionesTerrestres/FiltroProducto/{IDProducto}`: nombra un combustible, nunca provincia, municipio ni coordenadas (hay un test que lo comprueba). El servidor ve la IP y qué combustibles se descargan. HTTPS siempre (`FuelClient` rechaza `http` salvo en tests con `allowInsecure`).
+Each request is `<URL>/EstacionesTerrestres/FiltroProducto/{IDProducto}`: it names a fuel, never a province, municipality or coordinates (a test checks this). The server sees the IP and which fuels are downloaded. HTTPS always (`FuelClient` rejects `http` except in tests with `allowInsecure`).
 
-## Diseño (`:core-fuel`, JVM puro)
+## Design (`:core-fuel`, pure JVM)
 
-| Pieza | Qué hace |
+| Component | What it does |
 | --- | --- |
-| `FuelTypes` | Catálogo con ids reales y nombres en español (los nombres de producto no se traducen). |
-| `FuelFeedParser` | Lector JSON en streaming propio (sin dependencias nuevas): un objeto de estación en memoria cada vez. Tolera BOM, coma decimal, precios vacíos, números en vez de cadenas, campos nuevos o ausentes y otro orden; rechaza truncados, `ResultadoConsulta` distinto de OK y ficheros sin ninguna estación utilizable. |
-| `FuelClient` | Una petición por combustible. Cada salto (incluidas redirecciones) pasa por `NetworkPolicy.authorize`; tope de 20 MB (cabecera y flujo), conexión 15 s, lectura 20 s, total 120 s. Errores tipados (`FuelFailure`). |
-| `FuelCache` | Un fichero binario compacto por combustible (tabla de cadenas, sello de tiempo, CRC32), escritura en `.tmp`, `fsync` y movimiento atómico. Un fichero dañado cuenta como «sin datos». |
-| `FuelSnapshot` / `FuelDataRepository` | Une por `IDEESS` los precios de varios combustibles en `FuelStation.prices`; rejilla de 0,1° por combustible; `stationsIn(bounds, fuel, limit)` devuelve las `limit` más baratas con un montículo. Instantánea inmutable en un campo `@Volatile`: sin cerrojos, barata desde el hilo de UI. `lastUpdateMillis` = la fecha MÁS ANTIGUA entre los combustibles servidos. |
-| `FuelDataManager` | Ajustes + política + descargas + caché. Un combustible que falla no frena a los demás y conserva su último dato bueno; los reintentos al pasar a primer plano esperan 5 min tras un fallo. TTL = frecuencia elegida, mínimo 30 min (el servicio se actualiza cada 30). |
-| `FuelAttribution` | `text(lastUpdateMillis, english=false)` para la ficha. |
+| `FuelTypes` | Catalogue with real ids and names in Spanish (product names are not translated). |
+| `FuelFeedParser` | Own streaming JSON reader (no new dependencies): one station object in memory at a time. Tolerates BOM, decimal comma, empty prices, numbers instead of strings, new or missing fields and a different order; rejects truncated input, `ResultadoConsulta` other than OK and files with no usable station. |
+| `FuelClient` | One request per fuel. Every hop (including redirects) goes through `NetworkPolicy.authorize`; 20 MB cap (header and stream), connection 15 s, read 20 s, total 120 s. Typed errors (`FuelFailure`). |
+| `FuelCache` | One compact binary file per fuel (string table, timestamp, CRC32), written to `.tmp`, `fsync` and atomic move. A damaged file counts as "no data". |
+| `FuelSnapshot` / `FuelDataRepository` | Joins by `IDEESS` the prices of several fuels into `FuelStation.prices`; 0.1° grid per fuel; `stationsIn(bounds, fuel, limit)` returns the `limit` cheapest with a heap. Immutable snapshot in a `@Volatile` field: no locks, cheap from the UI thread. `lastUpdateMillis` = the OLDEST date among the fuels served. |
+| `FuelDataManager` | Settings + policy + downloads + cache. A fuel that fails does not hold back the others and keeps its last good data; retries on moving to the foreground wait 5 min after a failure. TTL = chosen frequency, minimum 30 min (the service updates every 30). |
+| `FuelAttribution` | `text(lastUpdateMillis, english=false)` for the card. |
 
-`:core-net`: se añadió `DefaultNetworkPolicy.removeEndpoint(host)` (no hay propósito propio en `ConnectionPurpose`: el host se lista como `OTHER`, mostrado como «Otra (precios de combustible)»).
+`:core-net`: `DefaultNetworkPolicy.removeEndpoint(host)` was added (there is no purpose of its own in `ConnectionPurpose`: the host is listed as `OTHER`, shown as "Otra (precios de combustible)" (Other (fuel prices))).
 
-### Cuándo se conecta (y cuándo no)
+### When it connects (and when it does not)
 
-- Al arrancar la app: **nunca**. `FuelDataManager.start()` solo lee la caché local y, si la función está activa, registra el host en la lista blanca.
-- Descarga: al **activar** (tras confirmar), al pulsar **Actualizar ahora**, al **marcar un combustible nuevo** (solo ese), y con la función activa al **pasar la app a primer plano** si los datos superan el TTL (`MapasApp` cuenta actividades iniciadas; sin modo sin red y sin repetir tras un fallo reciente).
-- Al activar el host entra en la lista blanca y en «Conexiones posibles»; al apagar sale de ambas y los datos dejan de servirse (la caché queda en disco y se relee al reactivar). Modo sin red: cero conexiones (el test lo comprueba contando peticiones al servidor local).
+- On app start: **never**. `FuelDataManager.start()` only reads the local cache and, if the feature is on, registers the host in the allow-list.
+- Download: on **enabling** (after confirming), on pressing **Update now**, on **ticking a new fuel** (only that one), and with the feature on when **the app moves to the foreground** if the data exceeds the TTL (`MapasApp` counts started activities; not in offline mode and not repeated after a recent failure).
+- On enabling, the host enters the allow-list and "Possible connections"; on switching off it leaves both and the data stops being served (the cache stays on disk and is re-read on re-enabling). Offline mode: zero connections (the test checks it by counting requests to the local server).
 
-## Ajustes (`app/.../settings`, `app/.../fuel`)
+## Settings (`app/.../settings`, `app/.../fuel`)
 
-`SettingsActivity` + `SettingsScreen` (Compose con el sistema de diseño propio). Primera pantalla de Ajustes de la app; el interruptor de modo sin red de «Mapas» es el mismo ajuste (usa `RegionsController.setOfflineMode`).
+`SettingsActivity` + `SettingsScreen` (Compose with the own design system). First Settings screen of the app; the offline-mode switch in "Maps" is the same setting (it uses `RegionsController.setOfflineMode`).
 
-- **Privacidad:** modo sin red, catálogo de regiones (dirección y botón a «Mapas») y lista de conexiones posibles con su estado (permitida, desactivada, bloqueada por modo sin red).
-- **Gasolineras:** interruptor (apagado) con diálogo de confirmación (qué se pide, a qué servidor, qué ve, que la ubicación no se envía); combustibles (multiselección); combustible del mapa (uno de los descargados; si se desmarca, pasa a otro); frecuencia (30 min, 1, 3, 6, 24 h); URL de la fuente (solo https, restablecer); fecha de la última actualización, texto de atribución y «Actualizar ahora» con progreso («Descargando 2 de 3 (…)») y errores por combustible.
-- Punto de entrada: engranaje discreto arriba a la izquierda del mapa, bajo la atribución (`SettingsGear`, `MapScreenState.onOpenSettings`); no hay cuarto botón en la fila Buscar/Listas/Mapas.
-- `PrefsFuelSettingsStore` (SharedPreferences `mapas_fuel`), con `FuelSettings.normalized()` (combustibles desconocidos fuera, combustible del mapa dentro de los descargados, mínimo 30 min, URL no https → la de por defecto).
+- **Privacy:** offline mode, region catalogue (address and button to "Maps") and list of possible connections with their status (allowed, disabled, blocked by offline mode).
+- **Gas stations:** switch (off) with a confirmation dialog (what is requested, from which server, what it sees, that the location is not sent); fuels (multi-select); map fuel (one of the downloaded ones; if unticked, it moves to another); frequency (30 min, 1, 3, 6, 24 h); source URL (https only, reset); date of the last update, attribution text and "Update now" with progress ("Descargando 2 de 3 (…)" (Downloading 2 of 3 (…))) and per-fuel errors.
+- Entry point: a discreet gear at the top left of the map, under the attribution (`SettingsGear`, `MapScreenState.onOpenSettings`); there is no fourth button in the Search/Lists/Maps row.
+- `PrefsFuelSettingsStore` (SharedPreferences `mapas_fuel`), with `FuelSettings.normalized()` (unknown fuels out, map fuel within the downloaded ones, minimum 30 min, non-https URL → the default one).
 
-**Cableado para el agente F:** `(application as MapasApp).fuel.repository` (`FuelRepository`) y `.fuelSettings` (`FuelSettingsStore`); `FuelTypes.byId(settings.mapFuel)` da el `FuelType` del mapa. Con la función apagada el repositorio devuelve vacío.
+**Wiring for agent F:** `(application as MapasApp).fuel.repository` (`FuelRepository`) and `.fuelSettings` (`FuelSettingsStore`); `FuelTypes.byId(settings.mapFuel)` gives the map's `FuelType`. With the feature off the repository returns empty.
 
-**Copia de seguridad:** la app tiene `allowBackup=false` y aún no existe exportación de preferencias, así que las preferencias de gasolineras **no** entran en ninguna copia. Queda anotado: cuando exista la exportación de ajustes (RF-17), añadir el fichero `mapas_fuel`.
+**Backup:** the app has `allowBackup=false` and there is no preferences export yet, so the gas-station preferences are **not** part of any backup. Noted: when the settings export exists (RF-17), add the `mapas_fuel` file.
 
-## Verificado y no verificado
+## Verified and not verified
 
-Verificado: `./gradlew test` completo en verde (381 tests; 12 de datos con servidor HTTP local: 500, truncado, conexión cortada, lento, demasiado grande, redirección a host no autorizado, modo sin red, https obligatorio, host retirado; 5 de la pantalla con Robolectric: confirmación al activar, multiselección, validación de URL, lista de conexiones, atribución es/en).
-No verificado: nada de esto se ha probado en un dispositivo (sin Pixel 8); el tiempo de construcción del índice y el consumo de memoria con el fichero real de gasolina 95 E5 (≈ 11 000 estaciones) no se han medido; la rejilla se probó con datos sintéticos; no hay descarga real de la app (solo las dos peticiones manuales de arriba).
+Verified: full `./gradlew test` green (381 tests; 12 of data with a local HTTP server: 500, truncated, connection cut, slow, too large, redirect to an unauthorised host, offline mode, https required, host removed; 5 of the screen with Robolectric: confirmation on enabling, multi-select, URL validation, list of connections, es/en attribution).
+Not verified: none of this has been tested on a device (no Pixel 8); the index build time and memory consumption with the real gasoline 95 E5 file (≈ 11,000 stations) have not been measured; the grid was tested with synthetic data; there is no real download from the app (only the two manual requests above).
