@@ -90,6 +90,39 @@ class SpeechDirectorTest {
         assertEquals(listOf("lejos", "cerca", "otro lejos"), engine.texts)
     }
 
+    @Test fun anAdvisoryNeverDiscardsOrInterruptsAnInstructionAndSpeaksAfterIt() {
+        speak(u("actual"))
+        speak(u("lejos", VoicePriority.LOW), u("radar", VoicePriority.ADVISORY, key = "alert:a"))
+        engine.finish(); sched.idle()
+        assertEquals(listOf("actual", "lejos"), engine.texts, "the far instruction (queued before) is not discarded and goes first")
+        engine.finish(); sched.idle()
+        assertEquals(listOf("actual", "lejos", "radar"), engine.texts, "the advisory waits until nothing else is queued")
+    }
+
+    @Test fun anAdvisoryBeingSaidIsInterruptedByANormalInstructionButNotTheOtherWayRound() {
+        speak(u("radar", VoicePriority.ADVISORY))
+        speak(u("gira"))
+        assertEquals(listOf("radar", "gira"), engine.texts, "an instruction cuts an advisory short")
+        speak(u("otro radar", VoicePriority.ADVISORY))
+        assertEquals(listOf("radar", "gira"), engine.texts, "an advisory never interrupts")
+        engine.finish(); sched.idle()
+        assertEquals(listOf("radar", "gira", "otro radar"), engine.texts)
+    }
+
+    @Test fun anUrgentPromptClearsAWaitingAdvisoryAndAFullQueueDropsAdvisoriesFirst() {
+        speak(u("actual"))
+        speak(u("radar", VoicePriority.ADVISORY, key = "alert:a"))
+        speak(u("ahora", VoicePriority.URGENT))
+        engine.finish(); sched.idle()
+        assertEquals(listOf("actual", "ahora"), engine.texts, "stale advisory is gone after an urgent prompt")
+        speak(u("ocupado", key = "busy"))
+        speak(u("radar 2", VoicePriority.ADVISORY, key = "alert:b"))
+        repeat(config.maxPending) { speak(u("n$it", key = "k$it")) }
+        repeat(config.maxPending + 1) { engine.finish(); sched.idle() }
+        assertFalse("radar 2" in engine.texts, "the advisory was the first to go when the queue overflowed")
+        assertEquals("n${config.maxPending - 1}", engine.texts.last())
+    }
+
     @Test fun aKeyReplacesThePendingOneWithTheSameKey() {
         speak(u("actual"))
         speak(u("recalculando", key = "r"), u("otra cosa"), u("recalculando de nuevo", key = "r"))
