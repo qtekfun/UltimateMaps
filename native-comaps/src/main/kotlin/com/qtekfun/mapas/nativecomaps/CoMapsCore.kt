@@ -104,9 +104,16 @@ class CoMapsCore internal constructor(private val bridge: NativeBridge) : CoreHa
     override fun routingEngine(timeoutSec: Int, withGuidance: Boolean): DetailedRoutingEngine =
         CoMapsRoutingEngine(this, timeoutSec, withGuidance)
 
-    internal fun search(query: String, near: LatLon?, limit: Int, locale: String, timeoutMs: Int): List<SearchResult> {
+    internal fun search(
+        query: String, near: LatLon?, limit: Int, locale: String, timeoutMs: Int, categorial: Boolean = false,
+    ): List<SearchResult> {
         check(initialized) { "CoMapsCore.init() not called" }
-        val raw = bridge.search(query, near != null, near?.lat ?: 0.0, near?.lon ?: 0.0, limit, timeoutMs, locale)
+        val args = Triple(near != null, near?.lat ?: 0.0, near?.lon ?: 0.0)
+        val raw = if (categorial) {
+            bridge.searchCategory(query, args.first, args.second, args.third, limit, timeoutMs, locale)
+        } else {
+            bridge.search(query, args.first, args.second, args.third, limit, timeoutMs, locale)
+        }
         return decodeSearch(raw)
     }
 
@@ -133,6 +140,9 @@ internal class CoMapsSearchEngine(
 ) : SearchEngine {
     override fun search(query: String, near: LatLon?, limit: Int): List<SearchResult> =
         if (query.isBlank()) emptyList() else core.search(query.trim(), near, limit, locale, timeoutMs)
+
+    override fun searchCategory(query: String, near: LatLon?, limit: Int): List<SearchResult> =
+        if (query.isBlank()) emptyList() else core.search(query.trim(), near, limit, locale, timeoutMs, categorial = true)
 
     override fun close() = Unit
 }
