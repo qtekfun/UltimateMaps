@@ -47,4 +47,12 @@ python3 tools/kothic/src/libkomwm.py --txt \
   -p data/styles/vehicle/include/
 python3 tools/python/transit/transit_colors_export.py data/colors.txt > /dev/null
 
+# El nucleo carga al arrancar el fichero de reglas del estilo por defecto de la plataforma (walking/light);
+# sin el, CoMaps init falla con "File not found drules_proto_walking_light.bin" (comprobado en el Pixel 8).
+echo "== drules walking/light (lo pide el arranque del nucleo)"
+python3 tools/kothic/src/libkomwm.py --txt \
+  -s data/styles/walking/light/style.mapcss \
+  -o data/drules_proto_walking_light \
+  -p data/styles/walking/include/
+
 echo "Listo. Comprueba: ls data/classificator.txt data/categories.txt libs/platform/localized_types_map.cpp"
