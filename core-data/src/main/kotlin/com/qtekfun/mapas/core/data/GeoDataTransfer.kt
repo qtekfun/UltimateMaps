@@ -61,6 +61,6 @@ class GeoDataTransfer(private val repo: PlacesRepository) {
         exporter.write(toDocument(listId, includeTracks), out)
 
     private companion object {
-        const val DEFAULT_NAME = "(sin nombre)"
+        const val DEFAULT_NAME = "(unnamed)"
     }
 }

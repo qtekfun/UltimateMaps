@@ -41,13 +41,13 @@ jobs:
       - name: Check that the tag matches appVersion
         run: |
           version=$(grep '^appVersion=' gradle.properties | cut -d= -f2)
-          test "v$version" = "$GITHUB_REF_NAME" || { echo "El tag $GITHUB_REF_NAME no coincide con appVersion $version"; exit 1; }
+          test "v$version" = "$GITHUB_REF_NAME" || { echo "Tag $GITHUB_REF_NAME does not match appVersion $version"; exit 1; }
 
       - name: Check that CHANGELOG.md has notes for this version
         run: |
           version="${GITHUB_REF_NAME#v}"
           awk -v v="$version" '$0 ~ "^## \\[" v "\\]" {found=1; next} found && /^## \[/ {exit} found {print}' CHANGELOG.md > notes.md
-          test -s notes.md || { echo "CHANGELOG.md no tiene notas para $version"; exit 1; }
+          test -s notes.md || { echo "CHANGELOG.md has no notes for $version"; exit 1; }
 
       - name: Check, build and sign the release APK
         env:
@@ -57,7 +57,7 @@ jobs:
           UM_KEY_PASSWORD: ${{ secrets.UM_KEY_PASSWORD }}
         run: |
           # Without a key nothing is published: an unsigned APK cannot be installed as an update over a signed one.
-          test -n "$UM_KEYSTORE_BASE64" || { echo "Falta el secreto UM_KEYSTORE_BASE64"; exit 1; }
+          test -n "$UM_KEYSTORE_BASE64" || { echo "Missing the UM_KEYSTORE_BASE64 secret"; exit 1; }
           export UM_KEYSTORE_FILE="$RUNNER_TEMP/release.jks"
           echo "$UM_KEYSTORE_BASE64" | base64 -d > "$UM_KEYSTORE_FILE"
           ./gradlew test :app:lintFossRelease :app:assembleFossRelease
