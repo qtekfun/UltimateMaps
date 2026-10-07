@@ -4,6 +4,10 @@ Los cambios relevantes se listan aquí. El formato sigue [Keep a Changelog](http
 
 ## [Unreleased]
 
+### Añadido
+
+- Voz de navegación (texto es/en, km/mi, cola con prioridades, enfoque de audio con atenuación, guía para instalar un motor TTS libre sin GMS) y sección «Navegación» en Ajustes (voz, volumen, unidades, idioma, evitar por defecto). Sin probar en dispositivo.
+
 ## [0.1.0-rc.2] - pendiente
 
 Primera versión candidata publicada (la `rc.1` solo existió como pre-release de prueba): un MVP en desarrollo (ver `docs/mvp-plan.md`), no una app terminada. Solo España.
