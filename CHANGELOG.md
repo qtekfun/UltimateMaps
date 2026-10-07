@@ -4,6 +4,11 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 
 ## [Unreleased]
 
+### Changed
+
+- **Settings redesigned as a hub.** Settings now opens on a short list of categories (Navigation and voice, Alerts, Petrol stations, Maps and network, Data, About), each with an icon and a one-line summary of its current state, plus a search field. Each category has its own screen with a back arrow; rarely changed items (source addresses, refresh intervals) are under a closed "Advanced" group and delete actions are set apart. No setting was removed or renamed. See `docs/phase2/settings-hub.md`.
+- **Settings button moved** to the right-hand map button column, under my location (and the compass when it shows). The OpenStreetMap mark stays top-left.
+
 ### Added
 
 - **Distance to the next turn in the status bar (Android 16 and later).** The navigation notification now asks to be a promoted ongoing "Live Update": the system can show the distance to the next maneuver (for example "160 m" or "1,2 km") as a chip in the status bar next to the camera, plus a progress bar of the trip in the expanded notification. While off route, recalculating or without a GPS signal the chip shows a short word instead, and the final "You have arrived" notification is a normal one. New switch Settings, Navigation, "Show distance in the status bar" (on by default, only shown on Android 16+, included in the settings backup). You can also turn promoted notifications off for the app in the system settings. Below Android 16 nothing changes. Verified by tests only (JVM and Robolectric); not seen on a device. See `docs/phase2/live-update.md`.
