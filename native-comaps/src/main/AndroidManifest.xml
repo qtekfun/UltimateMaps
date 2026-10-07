@@ -1,3 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Sin permisos: la red y la ubicacion viven fuera de este modulo. -->
-<manifest />
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <application>
+        <!--
+            Process of the native core (CoMaps search, routing, guidance). A native abort (SIGABRT from a CHECK)
+            kills only this process; the main process restarts it. Not exported: only the app binds to it.
+            Memory: this process loads libumcomaps.so and the .mwm maps; the main one no longer does.
+        -->
+        <service
+            android:name=".isolation.CoreService"
+            android:exported="false"
+            android:process=":core" />
+    </application>
+</manifest>
