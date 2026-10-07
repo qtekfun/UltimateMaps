@@ -14,3 +14,4 @@ captures/
 
 __pycache__/
 *.pyc
+native-comaps/src/main/cpp/generated/
