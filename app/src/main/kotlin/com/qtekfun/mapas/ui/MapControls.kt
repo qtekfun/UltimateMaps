@@ -146,16 +146,19 @@ fun DrawScope.drawGearIcon(tint: Color) {
 
 @Composable
 fun SettingsGear(description: String, onClick: () -> Unit, modifier: Modifier = Modifier) {
-    val tint = Mapas.colors.secondaryLabel
+    // Same chip as the other map buttons (background, border, accent icon) so it stays visible over any map colour.
+    val tint = Mapas.colors.accent
     Box(
         modifier = modifier
             .size(Mapas.dimens.touchTarget)
-            .clip(CircleShape)
+            .clip(Mapas.shapes.control)
+            .background(Mapas.colors.control)
+            .border(0.5.dp, Mapas.colors.separator, Mapas.shapes.control)
             .clickable(role = Role.Button, onClick = onClick)
             .semantics { contentDescription = description }
             .testTag("btn_settings"),
         contentAlignment = Alignment.Center,
     ) {
-        Canvas(Modifier.size(20.dp)) { drawGearIcon(tint) }
+        Canvas(Modifier.size(22.dp)) { drawGearIcon(tint) }
     }
 }
