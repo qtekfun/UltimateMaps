@@ -4,6 +4,14 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 
 ## [Unreleased]
 
+### Added
+
+- **Search by coordinates and Plus Codes**, offline: type `40.4168, -3.7038`, `40.4168N 3.7038W`, `40°26'46"N 3°42'14"W` or a Plus Code such as `8FVC2222+22` (a short code such as `9QCJ+2VX` is completed near the map centre) and the first result jumps to that point. These searches are never stored in the recent searches.
+- Every place card shows its **Plus Code** (computed on the device, Open Location Code, Apache-2.0 reference algorithm re-implemented and checked against the published test vectors).
+- Place card extras from OpenStreetMap tags: phone (tap opens the dialer, nothing is dialled and no permission is needed), website (opens the browser; only `http`/`https`), wheelchair access and the raw opening hours text with an "open now" line from a small parser of the common simple patterns (`Mo-Fr 08:00-20:00; Sa 09:00-14:00; Su off`, `24/7`, spans past midnight; anything else says "unknown"). **The map core does not return these tags yet**, so the rows stay hidden until the native wrapper is extended (see `docs/decisions.md`).
+- Share a place as its name, a `geo:` link and an OpenStreetMap link; share the trip ETA as plain text ("I will arrive at about 18:40 (12 km, 15 min to go).") from the navigation screen. Both go through the system share sheet: no server, no live tracking, the ETA text holds no place and no position.
+- A scale bar on the map (metric, 1-2-5 steps) and the compass now also appears when the map is only tilted, so it can bring the view back to flat; near 360 degrees it no longer shows as if the map were rotated. Not seen on a device yet.
+
 ## [0.1.0-rc.6] - pending
 
 ### Added
