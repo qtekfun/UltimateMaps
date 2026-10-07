@@ -39,6 +39,19 @@ class CameraFileTest {
         assertEquals("Zaragoza", withLine.single().province)
     }
 
+    /**
+     * Optional: point `UM_REAL_CAMERAS_FILE` at a `speedcams-es.bin` built by `scripts/build-cameras.py` from the real DGT and
+     * OSM data. Does nothing when it is not set, so the suite never depends on a file.
+     */
+    @Test fun readsTheRealConverterOutputWhenGiven() {
+        val path = System.getenv("UM_REAL_CAMERAS_FILE") ?: return
+        val d = CameraFile.parse(java.io.File(path).readBytes())
+        println("REAL_CAMERAS fixed=${d.fixed.size} sections=${d.sections.size} zones=${d.zones.size} drawable=${d.zones.count { it.hasGeometry }} " +
+            "withLimit=${d.fixed.count { it.maxSpeedKmh != null }} withAxis=${d.fixed.count { it.axisDeg != null }} flags=${d.sourceFlags}")
+        assertTrue(d.fixed.isNotEmpty())
+        assertTrue(d.fixed.all { it.location.lat in 27.0..44.5 && it.location.lon in -19.0..5.0 }, "inside Spain's bounding box")
+    }
+
     @Test fun anyDamageIsRejectedAsAWhole() {
         val good = sample()
         val flipped = good.copyOf().also { it[20] = (it[20] + 1).toByte() }
