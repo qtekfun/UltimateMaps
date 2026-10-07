@@ -97,7 +97,7 @@ class SettingsAndPhrasesTest {
         val voice = AlertVoice(guide, settings.settings) { Locale.forLanguageTag("es-ES") }
         voice.onAlert(event(AlertCategory.ACCIDENT, 800))
         assertEquals("In 800 meters, accident", guide.spoken.single().text)
-        assertEquals(VoicePriority.NORMAL, guide.spoken.single().priority)
+        assertEquals(VoicePriority.ADVISORY, guide.spoken.single().priority)
         assertEquals("alert:t", guide.spoken.single().key)
         settings.update { it.copy(voiceEnabled = false) }
         voice.onAlert(event(AlertCategory.ACCIDENT, 800))
