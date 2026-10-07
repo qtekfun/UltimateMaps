@@ -158,6 +158,14 @@ class VoiceNavigationControllerTest {
         assertTrue(stops >= 1)
     }
 
+    @Test fun closingAfterArrivalDoesNotCutTheArrivalMessage() {
+        controller.start(); scope.runCurrent()
+        status(NavStatus.ARRIVED)
+        val stops = guide.stops
+        controller.close()
+        assertEquals(stops, guide.stops)
+    }
+
     @Test fun startTwiceDoesNotSpeakEverythingTwice() {
         controller.start(); controller.start(); scope.runCurrent()
         emit(ann(TurnType.LEFT, AnnouncementKind.NOW, 10))
