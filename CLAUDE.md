@@ -1,4 +1,4 @@
-# Mapas project (working name)
+# UltimateMaps
 
 100 % offline, private Android maps and navigation app with an Apple Maps–style UI that stays very smooth. GPLv3, for F-Droid and GitHub. Full documentation in `docs/` (start with `docs/mapas-README.md`).
 

@@ -4,7 +4,7 @@
 
 ## English
 
-Mapas is a map and navigation app that works on your device. It has no servers of its own, no accounts, no ads, no analytics, no crash reporting and no telemetry. Search and routes are computed on the phone.
+UltimateMaps is a map and navigation app that works on your device. It has no servers of its own, no accounts, no ads, no analytics, no crash reporting and no telemetry. Search and routes are computed on the phone.
 
 ### What data goes where
 
@@ -44,7 +44,7 @@ Questions or concerns: open an issue in the project repository.
 
 ## Español
 
-Mapas es una app de mapas y navegación que funciona en tu dispositivo. No tiene servidores propios, cuentas, anuncios, analítica, informes de fallos ni telemetría. La búsqueda y las rutas se calculan en el teléfono.
+UltimateMaps es una app de mapas y navegación que funciona en tu dispositivo. No tiene servidores propios, cuentas, anuncios, analítica, informes de fallos ni telemetría. La búsqueda y las rutas se calculan en el teléfono.
 
 ### Qué datos van adónde
 
