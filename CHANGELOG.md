@@ -11,7 +11,6 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 ### Added
 
 - The route stays visible over the lock screen while navigating, without unlocking the phone (it does not unlock anything: other apps and actions still need the PIN).
-
 - A **Mute** button on the navigation screen (the same switch as Settings, Navigation, Voice guidance): it silences the voice at once and shows "Unmute" while muted.
 - Parked-car marker: "Park here" marks your current position on the map (a distinct marker) and the same chip routes back to it; it can be marked again or cleared. Stored on the device only.
 - Home and Work shortcuts: set from a place card ("Set as Home" / "Set as Work"), one tap routes there. Home and Work are included in full backups; the parked car is not.
@@ -23,6 +22,9 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 ### Changed
 
 - The places database moves to schema version 2 (new tables for Home/Work/parked car and recent searches, created through `PRAGMA user_version`; existing data is kept).
+
+- Google Takeout import (offline): in Saved places, "Import" now also accepts a Takeout ZIP or one of its CSV / GeoJSON files and creates one list per file. Places without coordinates are skipped and counted in the result summary. The Takeout layouts are assumptions, not verified against a current real export; see `docs/decisions.md`.
+- Imported GPX tracks and routes can be drawn on the map as coloured lines (a MapLibre layer under the route line): Saved places, lists overview, "Tracks on the map", with Show/Hide and "Zoom to track" per track. Works offline. Not seen on a device yet.
 
 ## [0.1.0-rc.5] - pending
 

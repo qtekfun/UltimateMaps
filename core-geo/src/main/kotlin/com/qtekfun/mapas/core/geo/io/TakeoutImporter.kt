@@ -44,14 +44,14 @@ object TakeoutImporter {
     }
 
     private fun featureToPlace(feature: JsonObject): ImportedPlace? {
-        val props = feature["properties"] as? JsonObject
-        val location = props?.get("Location") as? JsonObject
-        val url = props?.str("google_maps_url") ?: props?.str("Google Maps URL")
-        val name = props?.str("Title") ?: location?.str("business_name")
+        val props = feature.field("properties") as? JsonObject
+        val location = props?.field("location") as? JsonObject
+        val url = props?.str("google_maps_url")
+        val name = props?.str("title") ?: props?.str("name") ?: location?.str("business_name") ?: location?.str("name")
         val address = location?.str("address")
 
         var point: LatLon? = null
-        val geometry = feature["geometry"] as? JsonObject
+        val geometry = feature.field("geometry") as? JsonObject
         val geometryType = geometry?.str("type")
         if (geometry != null && geometryType != null && geometryType != "Point") return null
         val coords = geometry?.get("coordinates") as? JsonArray
@@ -62,9 +62,9 @@ object TakeoutImporter {
             if (lat != null && lon != null && !(lat == 0.0 && lon == 0.0)) point = LatLon.ofOrNull(lat, lon)
         }
         if (point == null) {
-            val gc = location?.get("geo_coordinates") as? JsonObject
-            val lat = gc?.get("latitude")?.number()
-            val lon = gc?.get("longitude")?.number()
+            val gc = location?.field("geo_coordinates") as? JsonObject
+            val lat = gc?.field("latitude")?.number()
+            val lon = gc?.field("longitude")?.number()
             if (lat != null && lon != null && !(lat == 0.0 && lon == 0.0)) point = LatLon.ofOrNull(lat, lon)
         }
         if (point == null && url != null) {
@@ -74,7 +74,13 @@ object TakeoutImporter {
         return ImportedPlace(point = point, name = name, description = address, url = url)
     }
 
-    private fun JsonObject.str(key: String): String? = (this[key] as? JsonPrimitive)?.contentOrNull.cleanText()
+    /** Takeout has changed its key spelling over time ("Title" / "title", "Geo Coordinates" / "geo_coordinates"). */
+    private fun normKey(key: String) = key.trim().lowercase().replace(' ', '_')
+
+    private fun JsonObject.field(key: String): JsonElement? =
+        this[key] ?: entries.firstOrNull { normKey(it.key) == key }?.value
+
+    private fun JsonObject.str(key: String): String? = (field(key) as? JsonPrimitive)?.contentOrNull.cleanText()
 
     private fun JsonElement.number(): Double? = (this as? JsonPrimitive)?.let { it.doubleOrNull ?: it.contentOrNull?.trim()?.toDoubleOrNull() }
 
