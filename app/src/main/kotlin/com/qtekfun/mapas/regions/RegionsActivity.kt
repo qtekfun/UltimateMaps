@@ -13,6 +13,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.qtekfun.mapas.MapasApp
+import com.qtekfun.mapas.search.PrefsPlaceLanguageStore
 import com.qtekfun.mapas.settings.backup.PrefsPendingRestore
 import com.qtekfun.mapas.ui.theme.MapasTheme
 
@@ -49,9 +50,11 @@ class RegionsActivity : ComponentActivity() {
             onTransitDownload = { id -> (application as MapasApp).transit.download(id) },
             onTransitDelete = { id -> (application as MapasApp).transit.delete(id) },
         )
+        // Region names follow the language of place information (Settings); the catalog falls back to English.
+        val nameLanguage = PrefsPlaceLanguageStore(this).preference.textLanguage(java.util.Locale.getDefault())
         setContent {
             MapasTheme(darkTheme = isSystemInDarkTheme()) {
-                RegionsScreen(controller.uiState().copy(restoredRegionIds = restoredRegions, transit = (application as MapasApp).transit.rows()), actions)
+                RegionsScreen(controller.uiState().copy(restoredRegionIds = restoredRegions, transit = (application as MapasApp).transit.rows()), actions, nameLanguage = nameLanguage)
             }
         }
     }
