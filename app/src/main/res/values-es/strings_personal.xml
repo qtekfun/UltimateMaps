@@ -3,7 +3,7 @@
     <!-- Casa, trabajo y coche aparcado -->
     <string name="quick_home">Casa</string>
     <string name="quick_work">Trabajo</string>
-    <string name="quick_park">Aparcar aquí</string>
+    <string name="quick_park">Aparcar</string>
     <string name="quick_parked">Mi coche</string>
     <string name="quick_sos">SOS</string>
     <string name="quick_park_again">Marcar aquí de nuevo</string>

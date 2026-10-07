@@ -26,19 +26,19 @@ fun QuickPlacesRow(quick: QuickPlacesController, onGo: (PlaceInfo) -> Unit, onEm
             PanelButton(
                 stringResource(R.string.quick_home),
                 { quick.dismissMessage(); quick.destination(SpecialSlot.HOME)?.let(onGo) ?: quick.hintUnset(SpecialSlot.HOME) },
-                Modifier.weight(1f), primary = state.home != null, tag = "quick_home",
+                Modifier.weight(1f), primary = state.home != null, tag = "quick_home", horizontalPadding = 6.dp, singleLine = true,
             )
             PanelButton(
                 stringResource(R.string.quick_work),
                 { quick.dismissMessage(); quick.destination(SpecialSlot.WORK)?.let(onGo) ?: quick.hintUnset(SpecialSlot.WORK) },
-                Modifier.weight(1f), primary = state.work != null, tag = "quick_work",
+                Modifier.weight(1f), primary = state.work != null, tag = "quick_work", horizontalPadding = 6.dp, singleLine = true,
             )
             PanelButton(
                 stringResource(if (state.parking != null) R.string.quick_parked else R.string.quick_park),
                 { quick.dismissMessage(); quick.destination(SpecialSlot.PARKING)?.let(onGo) ?: quick.parkHere() },
-                Modifier.weight(1f), primary = state.parking != null, tag = "quick_parking",
+                Modifier.weight(1f), primary = state.parking != null, tag = "quick_parking", horizontalPadding = 6.dp, singleLine = true,
             )
-            PanelButton(stringResource(R.string.quick_sos), onEmergency, Modifier.weight(0.6f), tag = "quick_sos")
+            PanelButton(stringResource(R.string.quick_sos), onEmergency, Modifier.weight(0.7f), tag = "quick_sos", horizontalPadding = 6.dp, singleLine = true)
         }
         if (state.parking != null) {
             Spacer(Modifier.height(6.dp))
