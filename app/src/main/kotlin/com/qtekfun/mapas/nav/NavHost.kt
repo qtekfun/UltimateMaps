@@ -135,6 +135,7 @@ class NavHost(
     fun Overlay(dark: Boolean) {
         val ui by screen.ui.collectAsState()
         KeepScreenOn(ui.active && ui.phase != NavPhase.ARRIVED)
+        ShowOverLockScreen(ui.active)
         NavScreen(
             ui = ui,
             actions = NavActions(
@@ -170,6 +171,32 @@ fun KeepScreenOn(on: Boolean) {
         val window = context.findActivity()?.window
         if (on) window?.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         onDispose { if (on) window?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON) }
+    }
+}
+
+/**
+ * Lets the activity be seen over the lock screen while [on] (a trip is running), like other navigation apps: the route
+ * and the next turn stay visible with the phone locked, without unlocking it. It does not unlock anything: the keyguard
+ * stays and any other app or action still needs the PIN. Off again when the trip ends.
+ */
+@Composable
+fun ShowOverLockScreen(on: Boolean) {
+    val context = LocalContext.current
+    DisposableEffect(on, context) {
+        val activity = context.findActivity()
+        if (on && activity != null) setShowWhenLocked(activity, true)
+        onDispose { if (on && activity != null) setShowWhenLocked(activity, false) }
+    }
+}
+
+@Suppress("DEPRECATION")
+private fun setShowWhenLocked(activity: android.app.Activity, show: Boolean) {
+    if (android.os.Build.VERSION.SDK_INT >= 27) {
+        activity.setShowWhenLocked(show)
+    } else if (show) {
+        activity.window.addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED)
+    } else {
+        activity.window.clearFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED)
     }
 }
 

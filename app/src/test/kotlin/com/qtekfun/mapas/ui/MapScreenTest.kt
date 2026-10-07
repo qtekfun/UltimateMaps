@@ -114,4 +114,23 @@ class MapScreenTest {
     private fun androidx.compose.ui.test.junit4.ComposeContentTestRule.onAllNodesWithTagCount(tag: String, expected: Int) {
         assertEquals(expected, onAllNodes(hasTestTag(tag)).fetchSemanticsNodes().size)
     }
+
+    @Test
+    fun theSheetStaysHiddenWhileNavigatingUnlessAStationCardAsksForIt() {
+        val state = MapScreenState()
+        var navSheet by mutableStateOf(false)
+        rule.setContent {
+            MapasTheme(darkTheme = false) {
+                MapScreen(
+                    state, onLocate = {}, onResetNorth = {}, sheetPanel = { androidx.compose.foundation.text.BasicText("card") },
+                    navigating = true, navSheet = navSheet,
+                ) {}
+            }
+        }
+        rule.waitForIdle()
+        rule.onNodeWithTag("sheet").assertDoesNotExist()
+        navSheet = true
+        rule.waitForIdle()
+        rule.onNodeWithTag("sheet").assertIsDisplayed()
+    }
 }

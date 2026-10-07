@@ -52,6 +52,8 @@ class FuelCardHost(
     val onGo: (FuelStation) -> Unit,
     val onAddStop: (FuelStation) -> Unit,
     val onSave: (FuelStation) -> Unit,
+    /** True while a navigation is running: "Add stop" is not offered (it edits a route preview, not the trip in progress). */
+    val navigating: () -> Boolean = { false },
 )
 
 /** Callbacks of the panel that need the activity or the map. */
@@ -93,7 +95,7 @@ fun SheetPanel(
             FuelStationCard(
                 state = fuel.state, mapFuelId = fuel.mapFuelId(), fuelName = fuel.fuelName,
                 updatedMillis = fuel.updatedMillis(), nowMillis = fuel.now(),
-                routeActive = route?.state?.active == true,
+                routeActive = route?.state?.active == true && !fuel.navigating(),
                 onGo = fuel.onGo, onAddStop = fuel.onAddStop, onSave = fuel.onSave,
             )
         } else if (route != null && route.state.active) {

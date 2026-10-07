@@ -108,11 +108,12 @@ class FuelStationCardTest {
         onPickResult = {}, onShowSaved = {}, onRoute = {}, onShare = {}, onImport = {}, onExport = {}, onFocusField = {},
     )
 
-    private fun show(mapFuel: String? = "diesel") = rule.setContent {
+    private fun show(mapFuel: String? = "diesel", navigating: Boolean = false) = rule.setContent {
         val host = FuelCardHost(
             state = controller.card, mapFuelId = { mapFuel }, fuelName = { names[it] ?: it },
             updatedMillis = { repo.lastUpdateMillis.value }, now = { now },
             onGo = controller::go, onAddStop = controller::addStop, onSave = controller::save,
+            navigating = { navigating },
         )
         MapasTheme(darkTheme = false) { com.qtekfun.mapas.search.SheetPanel(search, places, actions, route = route, fuel = host) }
     }
@@ -149,6 +150,25 @@ class FuelStationCardTest {
         // attribution under the prices, with the age of the data, and the "not official" note
         rule.onNodeWithText("Source: Ministry for the Ecological Transition and the Demographic Challenge · updated 5 min ago").assertIsDisplayed()
         rule.onNodeWithText("Price published by the Ministry; unofficial. Check it at the pump.").assertIsDisplayed()
+    }
+
+    @Test
+    fun whileNavigatingTheCardOffersGoAndSaveButNotAddStop() {
+        controller.onStationTap("1")
+        startRoute() // the route preview behind the trip is still active
+        show(navigating = true)
+        rule.onNodeWithTag("fuel_go").assertIsDisplayed()
+        rule.onNodeWithTag("fuel_save").assertIsDisplayed()
+        rule.onNodeWithTag("fuel_add_stop").assertDoesNotExist()
+    }
+
+    @Test
+    fun goEndsTheRunningNavigationBeforeStartingTheRoute() {
+        var ended = 0
+        val navAware = FuelCardController(repo, route, places, FuelCardState(), beforeGo = { ended++ })
+        navAware.onStationTap("1")
+        navAware.go(repsol)
+        assertEquals(1, ended)
     }
 
     @Test

@@ -85,7 +85,7 @@ class MainActivity : ComponentActivity() {
             MapasTheme(darkTheme = dark) {
                 MapScreen(
                     state = state, onLocate = ::onLocate, onResetNorth = engine::resetNorth, sheetPanel = { panel.Content() },
-                    navigating = navUi.active, overlay = { navHost.Overlay(dark) },
+                    navigating = navUi.active, navSheet = panel.fuelCardOpen, overlay = { navHost.Overlay(dark) },
                 ) {
                     AndroidView(factory = { engine.view }, modifier = Modifier.fillMaxSize())
                 }

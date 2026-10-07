@@ -4,7 +4,13 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 
 ## [Unreleased]
 
+### Fixed
+
+- Tapping a petrol station while navigating now shows its card above the navigation screen (it used to stay hidden behind it until the trip was stopped). During a trip the card offers Go (ends the trip and previews the route) and Save; Add stop is not offered because it edits a route preview, not the trip in progress.
+
 ### Added
+
+- The route stays visible over the lock screen while navigating, without unlocking the phone (it does not unlock anything: other apps and actions still need the PIN).
 
 - A **Mute** button on the navigation screen (the same switch as Settings, Navigation, Voice guidance): it silences the voice at once and shows "Unmute" while muted.
 - Parked-car marker: "Park here" marks your current position on the map (a distinct marker) and the same chip routes back to it; it can be marked again or cleared. Stored on the device only.
