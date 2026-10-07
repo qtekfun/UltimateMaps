@@ -227,3 +227,8 @@ Formato: fecha · decisión · motivo · alternativas descartadas · cómo rever
 - **Desmentido:** «Metro de Madrid sin clave» del roadmap anterior.
 - **Bloqueo antes de publicar la función:** la **licencia de reutilización** del servicio de combustible no está verificada (las fichas de datos.gob.es devuelven 404). Hay que aclararlo con el Ministerio. Es decisión/acción del usuario.
 - **Sigue sin verificar:** límites de uso (ninguno publicado), texto de atribución de Renfe, licencia de la librería protobuf.
+## 2026-10-07 · Guiado (maniobras, carriles, límites) desde el núcleo, sin ejecutar
+- **Decisión:** `Route(..., withGuidance)` + `nativeRouteGuidance` (JNI nuevo; `nativeRoute` intacto) + `GuidanceWire` en Kotlin; `routingEngine(withGuidance = false)` por defecto, así la vista previa no cambia. Detalle, formato y lo no verificado en `docs/phase2/maneuvers.md`.
+- **Hallazgos:** bici usa `CarDirectionsEngine` (no `PedestrianDirection`); límite por segmento sí existe pero solo se rellena en coche; no hay MERGE, ARRIVE_LEFT/RIGHT ni salida (DEPART) en el núcleo.
+- **Estado:** compila y enlaza; no ejecutado (sin dispositivo). `Guidance.kt` no se tocó.
+- **Alternativa descartada:** codificar el guiado dentro de `nativeRoute` (rompe el formato y obliga a pagar el coste siempre).
