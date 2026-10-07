@@ -58,7 +58,7 @@ data class IncidentBannerState(
  *    not marked as seen and may come back when the driver gets closer.
  */
 class IncidentBannerMachine(
-    private val incidents: IncidentRepository,
+    private val incidents: () -> IncidentRepository,
     private val settings: () -> CameraSettings,
     private val clock: () -> Long,
 ) {
@@ -105,7 +105,7 @@ class IncidentBannerMachine(
         val dLat = radius / TargetGrid.METERS_PER_DEGREE
         val dLon = radius / (TargetGrid.METERS_PER_DEGREE * cos(Math.toRadians(lat)).coerceAtLeast(0.01))
         val bounds = LatLonBounds(lat - dLat, lon - dLon, lat + dLat, lon + dLon)
-        for (i in incidents.incidentsIn(bounds, kinds)) {
+        for (i in incidents().incidentsIn(bounds, kinds)) {
             if (i.id in seen || current?.incident?.id == i.id || queue.any { it.incident.id == i.id }) continue
             consider(g, i, lookahead)
         }

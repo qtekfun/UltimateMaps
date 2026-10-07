@@ -25,5 +25,23 @@ are needed: pick a road in Spain with a fixed DGT or OSM camera (the map shows t
 | 13 | Turn the camera switches off. | No chip, no voice, and no location listener of the alerts (battery: nothing extra). |
 | 14 | Offline mode on, then turn the camera switch on with no cached data. | The data card shows the offline error; no connection is made. |
 
+## Incident banner and hazard cards (branch `feat/incident-banner`)
+
+Turn on "Traffic incidents" in Settings (and V16 / roadworks if wanted) and wait for the data card to show a download. Plan a
+route along a road that currently has an incident of the DGT feed (check the red or orange markers on the map first).
+
+| # | Step | Expected result |
+|---|---|---|
+| 15 | Start a real navigation along that road and drive towards the incident (or use a simulated trip). | At about 400 to 1000 m, a banner appears under the maneuver banner and under the camera chip (if any): triangle icon, "Slow traffic ahead" (or the kind), the distance and a circular clock with 5 counting down to 1. |
+| 16 | Watch it without touching anything. | After 5 seconds it disappears by itself and does not come back for that incident on the same trip. Note whether the clock was readable at speed. |
+| 17 | Tap the banner before the 5 seconds. | It disappears at once. |
+| 18 | Two incidents close together on the route. | One at a time, 5 seconds each, the nearest first; the second starts when the first goes. |
+| 19 | Press Mute (voice off) and repeat 15. | The banner still appears (visual). The spoken incident alert, if the voice is on, is unchanged. |
+| 20 | Make the app recalculate (leave the route and rejoin). | A banner that was showing disappears; an incident already shown is not shown again, a different one still can be. |
+| 21 | Glove mode on. | The banner is taller with a larger clock. With TalkBack it is read once as "Slow traffic ahead, in 400 m" and offers "Dismiss", without announcing every second. |
+| 22 | Turn "Traffic incidents" off in Settings during a trip. | No banner appears. |
+| 23 | While navigating, tap an incident or a camera marker on the map. | Its card opens above the navigation screen; "Close" closes it and the navigation screen is as before. |
+| 24 | Does the banner cover the Mute / "Mute alerts" buttons or the maneuver banner? | It must not (it sits in the top column only). |
+
 Notes to bring back: the build, the road used, the distance at which the chip and the voice appeared (the 30 s look-ahead and the
 35 degree cone are design values, not measured), false or missing alerts, and whether the chip covers anything important.
