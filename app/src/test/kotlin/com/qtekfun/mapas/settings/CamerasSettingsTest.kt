@@ -80,7 +80,7 @@ class CamerasSettingsTest {
         )
         cameras.start()
         incidents.start()
-        rule.setContent { MapasTheme(darkTheme = false) { SettingsScreen(env, onBack = {}) } }
+        rule.setContent { MapasTheme(darkTheme = false) { SettingsScreen(env, onBack = {}, initialCategory = "alerts") } }
     }
 
     private fun count(tag: String) = rule.onAllNodesWithTagCount(tag)
