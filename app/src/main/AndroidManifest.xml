@@ -12,7 +12,19 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
+    <!-- Turn-by-turn navigation keeps reading the location with the screen off: foreground service of type location. -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <!--
+        Package visibility (Android 11+): without this the app cannot see any text-to-speech engine and
+        TextToSpeech fails to start even when one is installed. Only the TTS service action is declared.
+    -->
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.TTS_SERVICE" />
+        </intent>
+    </queries>
 
     <uses-feature android:name="android.hardware.location" android:required="false" />
     <uses-feature android:name="android.hardware.location.gps" android:required="false" />
@@ -35,6 +47,8 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <!-- Launcher app shortcuts (search, saved places, maps, emergency) -->
+            <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts" />
 
             <!-- RF-11: geo: URIs -->
             <intent-filter>
@@ -89,10 +103,29 @@
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
 
+        <!-- Settings: privacy and petrol stations -->
+        <activity
+            android:name=".settings.SettingsActivity"
+            android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize|keyboard|keyboardHidden|uiMode|density"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+
+        <!-- Emergency screen: coordinates on screen, a dial button for 112 (ACTION_DIAL, no call permission) and a share button -->
+        <activity
+            android:name=".emergency.EmergencyActivity"
+            android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize|keyboard|keyboardHidden|uiMode|density"
+            android:exported="false" />
+
         <!-- Region downloads keep running with the screen off: foreground service of type dataSync (Android 14+) -->
         <service
             android:name=".regions.RegionDownloadService"
             android:exported="false"
             android:foregroundServiceType="dataSync" />
+
+        <!-- Navigation in the background: a foreground service of type location (Android 14+: needs the permission above). -->
+        <service
+            android:name=".nav.NavigationService"
+            android:exported="false"
+            android:foregroundServiceType="location" />
     </application>
 </manifest>

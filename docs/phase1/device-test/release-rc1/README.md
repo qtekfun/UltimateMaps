@@ -1,29 +1,29 @@
-# Prueba del APK de release 0.1.0-rc.1 en el Pixel 8 (2026-10-07, con permiso del usuario)
+# Test of the 0.1.0-rc.1 release APK on the Pixel 8 (2026-10-07, with the user's permission)
 
-APK: `app-foss-release`, firmado con la clave de **depuración** solo para poder instalarlo sobre la app existente (no es la clave del proyecto). Datos en el móvil: `World.mwm`, `WorldCoasts.mwm` y 7 regiones `.mwm` (Madrid, Castilla-La Mancha, Aragón, Castilla y León Este, Lleida, Barcelona, Tarragona) y el PMTiles de Madrid; copiados antes con `run-as`. **No se probó la descarga desde la app.**
+APK: `app-foss-release`, signed with the **debug** key only so it could be installed over the existing app (it is not the project key). Data on the phone: `World.mwm`, `WorldCoasts.mwm` and 7 `.mwm` regions (Madrid, Castilla-La Mancha, Aragón, Castilla y León Este, Lleida, Barcelona, Tarragona) and the Madrid PMTiles; copied beforehand with `run-as`. **Downloading from within the app was not tested.**
 
-## Resultados (medidos en el dispositivo, logs `UMSEARCH`, `UMROUTE`, `UMCORE`)
+## Results (measured on the device, `UMSEARCH`, `UMROUTE`, `UMCORE` logs)
 
-| Prueba | Resultado |
+| Test | Result |
 | --- | --- |
-| Arranque en frío (`am start -W`) | 474-617 ms |
-| Mapa con etiquetas e iconos (sprites y glyphs empaquetados) | Funciona (se vieron calles, comercios y POI con icono) |
-| Arranque del núcleo nativo | **Falló 2 veces antes de funcionar** (ver abajo); después `engine_ready_ms=215` con 7 regiones |
-| Búsqueda «calle mayor» (primera, en frío) | 20 resultados reales, 1801 ms |
-| Búsquedas en caliente (consulta completa tecleada de una vez) | 484, 779, 1045, 3967, 4201 y 3898 ms (n=6). Umbral: 100 ms → **no cumple** |
-| Búsqueda entre regiones («placa catalunya barcelona» desde Madrid) | Resultados de Barcelona correctos |
-| Ficha, botones Guardar / Ruta / Compartir, panel de ruta | Se muestran; el panel pide ubicación o salida |
-| Ruta Madrid (Atocha) → Barcelona (Plaça Catalunya), coche | `route_not_found` en 549 ms. **No se pudo medir el umbral de 2 s**; sin caída |
+| Cold start (`am start -W`) | 474-617 ms |
+| Map with labels and icons (sprites and glyphs bundled) | Works (streets, shops and POIs with icons were seen) |
+| Native core startup | **Failed 2 times before working** (see below); afterwards `engine_ready_ms=215` with 7 regions |
+| Search "calle mayor" (first, cold) | 20 real results, 1801 ms |
+| Warm searches (full query typed at once) | 484, 779, 1045, 3967, 4201 and 3898 ms (n=6). Threshold: 100 ms → **not met** |
+| Cross-region search ("placa catalunya barcelona" from Madrid) | Correct Barcelona results |
+| Place card, Save / Route / Share buttons, route panel | Shown; the route panel asks for a location or a departure point |
+| Route Madrid (Atocha) → Barcelona (Plaça Catalunya), car | `route_not_found` in 549 ms. **The 2 s threshold could not be measured**; no crash |
 
-## Fallos encontrados y corregidos (en `master`)
+## Failures found and fixed (in `master`)
 
-1. `CoMaps init: File not found drules_proto_walking_light.bin` (primer intento, banco de pruebas debug).
-2. `SIGABRT` en `NativeCore.init` con la release: el núcleo no escribía ningún log ni mensaje de `CHECK`. Se enlazaron el log y los `CHECK` de CoMaps a logcat (etiqueta `UMCORE`) y apareció: «Invalid type» para **todas** las categorías, y luego `CHECK((groups.empty() || !types.empty()))`.
-3. **Causa:** `classificator::Load()` llena el clasificador del *estilo de carga* (sin inicializar, `WalkingLight`), pero `classif()` consulta el del *estilo actual* (`DefaultLight` en Android): todos los tipos salían inválidos. Corrección: `GetStyleReader().SetCurrentStyle(kDefaultMapStyle)` y generar `drules_proto_default_light.bin` (antes del estilo `vehicle`, que debe ir último).
+1. `CoMaps init: File not found drules_proto_walking_light.bin` (first attempt, debug test bench).
+2. `SIGABRT` in `NativeCore.init` with the release build: the core wrote no log or `CHECK` message. CoMaps' log and `CHECK`s were linked to logcat (tag `UMCORE`) and this showed up: "Invalid type" for **all** categories, and then `CHECK((groups.empty() || !types.empty()))`.
+3. **Cause:** `classificator::Load()` fills the classificator of the *loading style* (uninitialized, `WalkingLight`), but `classif()` queries the one of the *current style* (`DefaultLight` on Android): every type came out invalid. Fix: `GetStyleReader().SetCurrentStyle(kDefaultMapStyle)` and generate `drules_proto_default_light.bin` (before the `vehicle` style, which must go last).
 
-## Sin resolver
+## Unresolved
 
-- **Búsqueda 5-40 veces por encima del umbral de 100 ms** (R12), con 7 regiones y consultas largas.
-- **`route_not_found` Madrid–Barcelona**: hipótesis (no comprobada) de que el router necesita regiones vecinas que no están instaladas; en el spike, con las 25 regiones, esa ruta se calculó en ≈ 18 s.
-- Sin probar: descarga de regiones desde la app, guardar sitios, importar GPX/KML, ruta corta, fluidez (fps) con etiquetas, memoria, el modo oscuro/claro, otras ROM.
-- Una intervención mía quedó mal en la primera captura: tras un cierre de la app, Android devolvió el primer plano a la app de vídeo de la otra sesión. Mis toques posteriores iban dirigidos a mi app, pero un `input text` pudo llegar a la suya. Desde entonces cada paso comprueba que mi app está delante antes de enviar toques o texto.
+- **Search 5-40 times above the 100 ms threshold** (R12), with 7 regions and long queries.
+- **`route_not_found` Madrid–Barcelona**: hypothesis (unverified) that the router needs neighboring regions that are not installed; in the spike, with all 25 regions, that route was computed in ≈ 18 s.
+- Not tested: downloading regions from the app, saving places, importing GPX/KML, short route, smoothness (fps) with labels, memory, dark/light mode, other ROMs.
+- One of my interventions went wrong in the first capture: after the app closed, Android returned the foreground to the other session's video app. My later taps were aimed at my app, but an `input text` may have reached theirs. Since then every step checks that my app is in front before sending taps or text.

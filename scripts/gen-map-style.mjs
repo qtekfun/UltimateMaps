@@ -1,8 +1,8 @@
-// Genera los estilos light/dark de @protomaps/basemaps (BSD-3) como plantillas para la app.
-// Marcadores que sustituye la app en ejecución: @MAPDIR@ (directorio interno con sprites y glyphs)
-// y @PMTILES@ (ruta del archivo .pmtiles). Idioma de las etiquetas: segundo argumento (por defecto `es`; si
-// falta name:es se usa el nombre local). OJO: sin `lang` basemaps NO genera capas de etiquetas (symbol).
-// Uso: node gen-map-style.mjs <dir_salida> [lang]   (con @protomaps/basemaps instalado en node_modules)
+// Generates the light/dark styles from @protomaps/basemaps (BSD-3) as templates for the app.
+// Placeholders the app substitutes at runtime: @MAPDIR@ (internal directory with sprites and glyphs)
+// and @PMTILES@ (path of the .pmtiles file). Label language: second argument (default `es`; if
+// name:es is missing the local name is used). NOTE: without `lang` basemaps does NOT generate label layers (symbol).
+// Usage: node gen-map-style.mjs <output_dir> [lang]   (with @protomaps/basemaps installed in node_modules)
 import {layers, namedFlavor} from '@protomaps/basemaps';
 import fs from 'fs';
 const out = process.argv[2];

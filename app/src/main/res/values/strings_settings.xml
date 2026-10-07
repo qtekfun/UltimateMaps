@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_title">Settings</string>
+    <string name="settings_open">Settings</string>
+    <string name="settings_back">Back</string>
+
+    <string name="settings_privacy_title">Privacy</string>
+    <string name="settings_offline_title">Offline mode</string>
+    <string name="settings_offline_body">The app makes no connections at all, not even for downloads. Same setting as in Maps.</string>
+    <string name="settings_regions_title">Region catalog</string>
+    <string name="settings_regions_body">Catalog address: %1$s</string>
+    <string name="settings_regions_none">No catalog address is set.</string>
+    <string name="settings_regions_open">Open Maps</string>
+    <string name="settings_connections_title">Possible connections</string>
+    <string name="settings_connections_none">No connection is possible right now.</string>
+    <string name="conn_status_active">Allowed</string>
+    <string name="conn_status_disabled">Off</string>
+    <string name="conn_status_blocked_offline">Blocked by offline mode</string>
+    <string name="conn_purpose_tiles">Online tiles</string>
+    <string name="conn_purpose_short_link">Short links</string>
+    <string name="conn_purpose_map_download">Map download</string>
+    <string name="conn_purpose_sync">Sync</string>
+    <string name="conn_purpose_other">Other (fuel prices)</string>
+
+    <string name="fuel_title">Petrol stations</string>
+    <string name="fuel_switch_title">Show petrol stations and prices</string>
+    <string name="fuel_switch_body">Off by default. Nothing is downloaded while it is off.</string>
+    <string name="fuel_fuels_title">Fuels to download</string>
+    <string name="fuel_fuels_body">One file is requested per fuel you tick.</string>
+    <string name="fuel_fuels_none">Tick at least one fuel to download its prices.</string>
+    <string name="fuel_map_title">Fuel shown on the map</string>
+    <string name="fuel_map_none">Tick a fuel above to choose it here.</string>
+    <string name="fuel_refresh_title">Update frequency</string>
+    <string name="fuel_refresh_minutes">Every %1$d min</string>
+    <string name="fuel_refresh_hours">Every %1$d h</string>
+    <string name="fuel_refresh_days">Once a day</string>
+    <string name="fuel_url_title">Source address</string>
+    <string name="fuel_url_save">Save</string>
+    <string name="fuel_url_reset">Reset</string>
+    <string name="fuel_url_invalid">Not a valid https address.</string>
+    <string name="fuel_url_saved">Saved.</string>
+    <string name="fuel_last_update">Last update: %1$s</string>
+    <string name="fuel_last_update_never">Not downloaded yet.</string>
+    <string name="fuel_update_now">Update now</string>
+    <string name="fuel_update_running">Downloading %1$d of %2$d (%3$s)…</string>
+    <string name="fuel_update_ok">Prices updated.</string>
+    <string name="fuel_update_error">%1$s: %2$s</string>
+    <string name="fuel_update_kept">The last good data is kept.</string>
+    <string name="fuel_attribution">Data: Ministerio para la Transición Ecológica y el Reto Demográfico (Geoportal de Hidrocarburos), reused under Law 37/2007. Unofficial information; check the price at the pump.</string>
+
+    <string name="fuel_err_offline">Offline mode is on: no connection was made.</string>
+    <string name="fuel_err_not_allowed">Connection not allowed (address not authorized, or redirected to another server).</string>
+    <string name="fuel_err_network">Could not connect.</string>
+    <string name="fuel_err_timeout">Timed out.</string>
+    <string name="fuel_err_server">The server returned an error.</string>
+    <string name="fuel_err_too_large">The answer is too large.</string>
+    <string name="fuel_err_invalid">Invalid or incomplete data.</string>
+
+    <string name="fuel_confirm_title">Turn on petrol stations?</string>
+    <string name="fuel_confirm_body">What is requested: one price file for each fuel you choose (nothing until you choose some).\n\nTo which server: %1$s.\n\nWhat that server sees: your IP address and which fuels you download. Your location is never sent: the files are national and are filtered on your phone.\n\nIt connects only when you turn this on, press Update now, or open the app with data older than the update frequency.</string>
+    <string name="fuel_confirm_offline">Offline mode is on, so nothing will connect until you turn it off.</string>
+    <string name="fuel_confirm_yes">Turn on</string>
+    <string name="fuel_confirm_no">Cancel</string>
+</resources>

@@ -4,6 +4,6 @@
 
 namespace um
 {
-// Inicializa la Platform headless (sin Context Java): dirs, hilos y "hilo Gui" propio.
+// Initializes the headless Platform (no Java Context): dirs, threads and own "Gui thread".
 void InitAndroidPlatform(std::string const & apkPath, std::string const & writableDir, std::string const & tmpDir);
 }  // namespace um

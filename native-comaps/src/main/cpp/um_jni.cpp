@@ -1,4 +1,4 @@
-// JNI de com.qtekfun.mapas.nativecomaps.NativeCore. Solo traduce tipos; la logica esta en um_core.cpp.
+// JNI of com.qtekfun.mapas.nativecomaps.NativeCore. It only translates types; the logic is in um_core.cpp.
 #include "um_core.hpp"
 
 #include <jni.h>
@@ -37,7 +37,7 @@ JNIEXPORT jint JNICALL Java_com_qtekfun_mapas_nativecomaps_NativeCore_nativeRefr
   return um::Core::Instance().RefreshMaps();
 }
 
-// Devuelve 5 cadenas por resultado: nombre, direccion, categoria, lat, lon.
+// Returns 5 strings per result: name, address, category, lat, lon.
 JNIEXPORT jobjectArray JNICALL Java_com_qtekfun_mapas_nativecomaps_NativeCore_nativeSearch(
     JNIEnv * env, jobject, jstring query, jboolean hasPos, jdouble lat, jdouble lon, jint limit, jint timeoutMs,
     jstring locale)
@@ -59,23 +59,76 @@ JNIEXPORT jobjectArray JNICALL Java_com_qtekfun_mapas_nativecomaps_NativeCore_na
   return arr;
 }
 
-// Devuelve [code, distanciaM, duracionS, lat0, lon0, lat1, lon1, ...].
-JNIEXPORT jdoubleArray JNICALL Java_com_qtekfun_mapas_nativecomaps_NativeCore_nativeRoute(
-    JNIEnv * env, jobject, jint profile, jdoubleArray points, jint avoidFlags, jint timeoutSec)
-{
-  jsize const n = env->GetArrayLength(points);
-  std::vector<double> pts(n);
-  env->GetDoubleArrayRegion(points, 0, n, pts.data());
-  auto const r = um::Core::Instance().Route(static_cast<um::Profile>(profile), pts, avoidFlags, timeoutSec);
+}
 
+namespace
+{
+jdoubleArray ToJDoubles(JNIEnv * env, std::vector<double> const & v)
+{
+  jdoubleArray out = env->NewDoubleArray(static_cast<jsize>(v.size()));
+  env->SetDoubleArrayRegion(out, 0, static_cast<jsize>(v.size()), v.data());
+  return out;
+}
+
+std::vector<double> RouteFlat(um::RouteOut const & r)
+{
   std::vector<double> flat;
   flat.reserve(3 + r.latLon.size());
   flat.push_back(r.code);
   flat.push_back(r.distanceMeters);
   flat.push_back(r.durationSeconds);
   flat.insert(flat.end(), r.latLon.begin(), r.latLon.end());
-  jdoubleArray out = env->NewDoubleArray(static_cast<jsize>(flat.size()));
-  env->SetDoubleArrayRegion(out, 0, static_cast<jsize>(flat.size()), flat.data());
+  return flat;
+}
+
+std::vector<double> ReadDoubles(JNIEnv * env, jdoubleArray a)
+{
+  jsize const n = env->GetArrayLength(a);
+  std::vector<double> v(n);
+  env->GetDoubleArrayRegion(a, 0, n, v.data());
+  return v;
+}
+}  // namespace
+
+extern "C"
+{
+// Returns [code, distanceM, durationS, lat0, lon0, lat1, lon1, ...].
+JNIEXPORT jdoubleArray JNICALL Java_com_qtekfun_mapas_nativecomaps_NativeCore_nativeRoute(
+    JNIEnv * env, jobject, jint profile, jdoubleArray points, jint avoidFlags, jint timeoutSec)
+{
+  auto const r =
+      um::Core::Instance().Route(static_cast<um::Profile>(profile), ReadDoubles(env, points), avoidFlags, timeoutSec);
+  return ToJDoubles(env, RouteFlat(r));
+}
+
+// Like nativeRoute but with guidance. Returns Object[3]: { double[] route (same format as nativeRoute),
+// double[] guidance (see um_core.hpp; empty if none), String[] street names }.
+JNIEXPORT jobjectArray JNICALL Java_com_qtekfun_mapas_nativecomaps_NativeCore_nativeRouteGuidance(
+    JNIEnv * env, jobject, jint profile, jdoubleArray points, jint avoidFlags, jint timeoutSec)
+{
+  auto const r = um::Core::Instance().Route(static_cast<um::Profile>(profile), ReadDoubles(env, points), avoidFlags,
+                                            timeoutSec, true /* withGuidance */);
+  jclass objCls = env->FindClass("java/lang/Object");
+  jclass strCls = env->FindClass("java/lang/String");
+  jobjectArray out = env->NewObjectArray(3, objCls, nullptr);
+
+  jdoubleArray route = ToJDoubles(env, RouteFlat(r));
+  env->SetObjectArrayElement(out, 0, route);
+  env->DeleteLocalRef(route);
+
+  jdoubleArray guidance = ToJDoubles(env, r.guidance);
+  env->SetObjectArrayElement(out, 1, guidance);
+  env->DeleteLocalRef(guidance);
+
+  jobjectArray names = env->NewObjectArray(static_cast<jsize>(r.guidanceNames.size()), strCls, nullptr);
+  for (size_t i = 0; i < r.guidanceNames.size(); ++i)
+  {
+    jstring js = env->NewStringUTF(r.guidanceNames[i].c_str());
+    env->SetObjectArrayElement(names, static_cast<jsize>(i), js);
+    env->DeleteLocalRef(js);
+  }
+  env->SetObjectArrayElement(out, 2, names);
+  env->DeleteLocalRef(names);
   return out;
 }
 }

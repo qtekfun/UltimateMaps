@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.runtime.Composable
@@ -129,4 +130,35 @@ fun AttributionLabel(text: String, onClick: () -> Unit, modifier: Modifier = Mod
             .padding(horizontal = 10.dp, vertical = 5.dp)
             .testTag("attribution"),
     )
+}
+
+/** Gear icon: small and discreet (smaller than the map buttons), top-left under the attribution. */
+fun DrawScope.drawGearIcon(tint: Color) {
+    val c = Offset(size.width / 2, size.height / 2)
+    val r = size.minDimension * 0.30f
+    drawCircle(tint, radius = r, center = c, style = Stroke(width = 2.2f * density))
+    for (i in 0 until 8) {
+        rotate(i * 45f, pivot = c) {
+            drawLine(tint, Offset(c.x, c.y - r), Offset(c.x, c.y - size.minDimension * 0.46f), strokeWidth = 3.2f * density)
+        }
+    }
+}
+
+@Composable
+fun SettingsGear(description: String, onClick: () -> Unit, modifier: Modifier = Modifier) {
+    // Same chip as the other map buttons (background, border, accent icon) so it stays visible over any map colour.
+    val tint = Mapas.colors.accent
+    Box(
+        modifier = modifier
+            .size(Mapas.dimens.touchTarget)
+            .clip(Mapas.shapes.control)
+            .background(Mapas.colors.control)
+            .border(0.5.dp, Mapas.colors.separator, Mapas.shapes.control)
+            .clickable(role = Role.Button, onClick = onClick)
+            .semantics { contentDescription = description }
+            .testTag("btn_settings"),
+        contentAlignment = Alignment.Center,
+    ) {
+        Canvas(Modifier.size(22.dp)) { drawGearIcon(tint) }
+    }
 }

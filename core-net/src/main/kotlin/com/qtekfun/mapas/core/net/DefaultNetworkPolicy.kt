@@ -52,6 +52,14 @@ class DefaultNetworkPolicy(
         }
     }
 
+    /** Removes every entry for [host] (any purpose): it no longer is allowed nor listed. Unknown hosts are ignored. */
+    fun removeEndpoint(host: String) {
+        synchronized(lock) {
+            val key = host.trim().lowercase()
+            endpoints.removeAll { it.host.lowercase() == key }
+        }
+    }
+
     override fun setEndpointEnabled(host: String, purpose: ConnectionPurpose, enabled: Boolean) {
         synchronized(lock) {
             val key = host.trim().lowercase()

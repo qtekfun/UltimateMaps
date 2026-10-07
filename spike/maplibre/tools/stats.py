@@ -1,6 +1,6 @@
 #!/usr/bin/env python3 -I
-"""p50/p95/p99 de frame time (FrameCompleted - IntendedVsync, ultimos 120 frames de cada dump; mas el resumen de gfxinfo (todo el intervalo)) desde trazas gfxinfo framestats.
-Uso: stats.py traza1 [traza2 ...]  (las agrupa y muestra tambien cada una)"""
+"""p50/p95/p99 of frame time (FrameCompleted - IntendedVsync, last 120 frames of each dump; plus the gfxinfo summary (whole interval)) from gfxinfo framestats traces.
+Usage: stats.py trace1 [trace2 ...]  (groups them and also shows each one)"""
 import sys, statistics
 
 def frames(path):
@@ -24,7 +24,7 @@ def pct(v, p):
     return s[f] + (s[c] - s[f]) * (k - f)
 
 def row(name, v):
-    if not v: return f"{name}: sin frames"
+    if not v: return f"{name}: no frames"
     return (f"{name}: n={len(v)} p50={pct(v,50):.1f} p95={pct(v,95):.1f} p99={pct(v,99):.1f} "
             f"max={max(v):.1f} ms; >16.6ms={sum(x>16.6 for x in v)} >8.3ms={sum(x>8.33 for x in v)}")
 

@@ -1,4 +1,4 @@
-"""Pruebas de gen-region-catalog.py: python3 -I -m unittest discover -s scripts -p 'test_*.py'"""
+"""Tests for gen-region-catalog.py: python3 -I -m unittest discover -s scripts -p 'test_*.py'"""
 import hashlib
 import importlib.util
 import os
@@ -47,7 +47,7 @@ class GenCatalogTest(unittest.TestCase):
             os.makedirs(pm)
             put(os.path.join(mwm, "Spain_Community of Madrid.mwm"), b"abc")
             put(os.path.join(pm, "spain_community-of-madrid.pmtiles"), b"0123456789")
-            put(os.path.join(mwm, "Andorra.mwm"), b"12345")  # sin pmtiles: no descargable
+            put(os.path.join(mwm, "Andorra.mwm"), b"12345")  # no pmtiles: not downloadable
             c = gen.build(COUNTRIES, mwm, pm, "https://m.example/mwm", "https://m.example/pm", "t")
         by = {r["id"]: r for r in c["regions"]}
         a = by["spain_community-of-madrid"]["assets"]
@@ -84,6 +84,18 @@ class GenCatalogTest(unittest.TestCase):
             self.assertEqual("WorldCoasts.mwm", b["worldCoasts"]["file"])
         self.assertNotIn("base", gen.build(COUNTRIES, catalog_version="t"))
 
+    def test_optional_cameras_block(self):
+        with tempfile.TemporaryDirectory() as t:
+            f = os.path.join(t, "speedcams-es.bin")
+            put(f, b"c" * 11)
+            c = gen.build(COUNTRIES, catalog_version="t", cameras_file=f, cameras_base="https://x/rel")["cameras"]
+            self.assertEqual("https://x/rel/speedcams-es.bin", c["url"])
+            self.assertEqual(11, c["size"])
+            self.assertEqual(hashlib.sha256(b"c" * 11).hexdigest(), c["sha256"])
+            self.assertEqual("speedcams-es.bin", c["file"])
+            self.assertNotIn("cameras", gen.build(COUNTRIES, catalog_version="t", cameras_file=os.path.join(t, "nope.bin"), cameras_base="https://x"))
+        self.assertNotIn("cameras", gen.build(COUNTRIES, catalog_version="t"))
+
     def test_size_mismatch_with_countries_txt_is_skipped(self):
         with tempfile.TemporaryDirectory() as t:
             os.makedirs(os.path.join(t, "pm"))
@@ -102,7 +114,7 @@ class GenCatalogTest(unittest.TestCase):
         p = os.environ.get("COUNTRIES_TXT") or os.path.join(
             os.path.dirname(__file__), "..", "third_party", "comaps", "data", "countries.txt")
         if not os.path.isfile(p):
-            self.skipTest("submódulo sin inicializar")
+            self.skipTest("submodule not initialized")
         import json
         with open(p, encoding="utf-8") as f:
             c = gen.build(json.load(f), catalog_version="t")

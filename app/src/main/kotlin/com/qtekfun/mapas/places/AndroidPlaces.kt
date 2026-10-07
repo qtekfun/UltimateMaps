@@ -61,6 +61,8 @@ class DocumentLaunchers(
     private companion object {
         val IMPORT_MIME_TYPES = arrayOf(
             GeoFormat.GPX.mime, GeoFormat.KML.mime, GeoFormat.KMZ.mime, "application/xml", "text/xml", "application/octet-stream",
+            // Google Takeout exports: a ZIP, or one CSV / JSON file of it.
+            "application/zip", "application/x-zip-compressed", "text/csv", "text/comma-separated-values", "application/json",
         )
     }
 }

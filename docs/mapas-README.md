@@ -1,50 +1,50 @@
-# Proyecto Mapas (nombre provisional) — Paquete de viabilidad y especificación
+# Mapas project (provisional name) — Feasibility and specification package
 
-Fecha: 2026-10-06 · Estado: viabilidad y entrevista cerradas, spike pendiente
+Date: 2026-10-06 · Status: feasibility study and interview closed, spike pending
 
-## En una frase
+## In one sentence
 
-App Android de mapas y navegación que funciona 100 % en el dispositivo (mapa, búsqueda y rutas), sin tráfico ni telemetría, con una interfaz muy cuidada estilo Apple Maps y muy fluida. Es GPLv3, se distribuye por F-Droid/GitHub, funciona sin Google Play Services y aprovecha GMS cuando existe.
+An Android maps and navigation app that works 100% on the device (map, search and routes), with no traffic data and no telemetry, with a carefully designed, very fluid Apple Maps-style interface. It is GPLv3, distributed through F-Droid/GitHub, works without Google Play Services and takes advantage of GMS when it is present.
 
-## Contenido del paquete
+## Package contents
 
-| Archivo | Para qué sirve |
+| File | Purpose |
 | --- | --- |
-| `mapas-README.md` | Este índice, decisiones cerradas y preguntas abiertas |
-| `mapas-01-viabilidad.md` | Estudio de viabilidad: qué es factible, riesgos, fuentes de datos y licencias |
-| `mapas-02-requisitos.md` | Requisitos funcionales y no funcionales con criterios medibles |
-| `mapas-03-arquitectura.md` | Arquitectura, opciones A/B/C, diseño sin GMS y diseño de rendimiento |
-| `mapas-04-spike.md` | Plan del spike (fase 0): qué se mide, con qué umbrales y cómo se decide |
-| `mapas-05-roadmap.md` | Fases, estimaciones orientativas y registro de riesgos |
-| `mapas-ci.yml` | Copiar al repo como `.github/workflows/ci.yml` (la puerta del merge automático) |
+| `mapas-README.md` | This index, closed decisions and open questions |
+| `mapas-01-viabilidad.md` | Feasibility study: what is feasible, risks, data sources and licenses |
+| `mapas-02-requisitos.md` | Functional and non-functional requirements with measurable criteria |
+| `mapas-03-arquitectura.md` | Architecture, options A/B/C, design without GMS and performance design |
+| `mapas-04-spike.md` | Spike plan (phase 0): what is measured, with which thresholds and how the decision is made |
+| `mapas-05-roadmap.md` | Phases, rough estimates and risk register |
+| `mapas-ci.yml` | Copy to the repo as `.github/workflows/ci.yml` (the gate for automatic merging) |
 
-## Decisiones cerradas
+## Closed decisions
 
-- **Plataforma:** solo Android (Kotlin + Compose para la UI, C++ vía NDK para el núcleo). Android Auto, más adelante.
-- **Todo en el dispositivo:** mapa, búsqueda y routing sin servidor. Sin tráfico ni proveedores de Google, Waze o Apple.
-- **Fluidez:** mapa a 60/120 fps y arranque instantáneo.
-- **Uso:** coche, moto y a pie/bici.
-- **Imprescindibles para dejar Google Maps:** indicaciones de carril, límites de velocidad, y guardar sitios y listas.
-- **Moto:** evitar autopistas y peajes, pantalla siempre visible y usable con guantes, grabar y exportar el recorrido, rutas con curvas.
-- **Estética:** estilo Apple Maps.
-- **Licencia y distribución:** GPLv3, F-Droid y GitHub.
-- **Datos:** OpenStreetMap, mundo entero con regiones descargables y configurables. El origen concreto de los datos es indiferente.
-- **Sitios y listas:** locales, con importación/exportación GPX y KML, sync opcional Nextcloud/WebDAV e importación desde Google Takeout.
-- **Enlaces:** abrir enlaces de Google Maps, Apple Maps, Waze y `geo:`.
-- **GMS:** nunca obligatorio; si el dispositivo lo tiene, se aprovecha sin depender de él.
-- **Spike:** empezar por lo menos costoso (CoMaps sin modificar) y reemplazar si no convence.
-- **Git:** El agente hace push de ramas, abre las PR y las mergea (squash) cuando los checks de CI pasan. La protección de rama de GitHub es la garantía real de que solo se mergea en verde.
+- **Platform:** Android only (Kotlin + Compose for the UI, C++ via the NDK for the core). Android Auto, later.
+- **Everything on the device:** map, search and routing without a server. No traffic data and no Google, Waze or Apple providers.
+- **Fluidity:** map at 60/120 fps and instant startup.
+- **Use:** car, motorcycle and on foot/bike.
+- **Must-haves to leave Google Maps:** lane guidance, speed limits, and saving places and lists.
+- **Motorcycle:** avoid motorways and tolls, an always-on screen that is usable with gloves, recording and exporting the track, twisty routes.
+- **Aesthetics:** Apple Maps style.
+- **License and distribution:** GPLv3, F-Droid and GitHub.
+- **Data:** OpenStreetMap, the whole world with downloadable, configurable regions. The specific origin of the data does not matter.
+- **Places and lists:** local, with GPX and KML import/export, optional Nextcloud/WebDAV sync and import from Google Takeout.
+- **Links:** open Google Maps, Apple Maps, Waze and `geo:` links.
+- **GMS:** never mandatory; if the device has it, it is used without depending on it.
+- **Spike:** start with the cheapest option (unmodified CoMaps) and replace it if it is not convincing.
+- **Git:** The agent pushes branches, opens the PRs and merges them (squash) when the CI checks pass. GitHub branch protection is the real guarantee that only green builds get merged.
 
-## Preguntas abiertas
+## Open questions
 
-1. Nombre de la app e identificador de paquete (por ejemplo `com.qtekfun.<nombre>`).
-2. `minSdk`: se propone 26 (Android 8.0) hasta tener datos de los dispositivos de prueba.
-3. Diseño de la sincronización con Nextcloud: archivos GPX/JSON en WebDAV (propuesto) o la API de Nextcloud Maps.
-4. Cómo implementar las rutas con curvas, que no vienen de serie en ningún motor candidato (se evalúa en el spike).
-5. Alternativa de voz cuando el dispositivo no tiene motor TTS (frecuente sin GMS).
-6. Alojamiento de los datos de mapas tras el spike (CDN de terceros o espejo propio).
-7. Cuándo abordar Android Auto y con qué política de dependencias para F-Droid.
+1. App name and package identifier (for example `com.qtekfun.<name>`).
+2. `minSdk`: 26 (Android 8.0) is proposed until there is data from the test devices.
+3. Design of the Nextcloud sync: GPX/JSON files over WebDAV (proposed) or the Nextcloud Maps API.
+4. How to implement twisty routes, which none of the candidate engines provides out of the box (evaluated in the spike).
+5. Voice alternative when the device has no TTS engine (common without GMS).
+6. Hosting of the map data after the spike (third-party CDN or own mirror).
+7. When to tackle Android Auto and with what dependency policy for F-Droid.
 
-## Cómo usar el paquete
+## How to use the package
 
-1. Crea el repositorio y copia estos archivos a `docs/` (los `mapas-0x-*.md`).
+1. Create the repository and copy these files to `docs/` (the `mapas-0x-*.md` files).

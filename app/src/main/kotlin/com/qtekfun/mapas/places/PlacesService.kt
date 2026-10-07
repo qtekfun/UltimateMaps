@@ -5,6 +5,11 @@ import com.qtekfun.mapas.core.data.ImportResult
 import com.qtekfun.mapas.core.data.Place
 import com.qtekfun.mapas.core.data.PlaceList
 import com.qtekfun.mapas.core.data.PlacesRepository
+import com.qtekfun.mapas.core.data.SpecialPlace
+import com.qtekfun.mapas.core.data.SpecialSlot
+import com.qtekfun.mapas.core.data.TakeoutImport
+import com.qtekfun.mapas.core.data.TrackInfo
+import com.qtekfun.mapas.core.data.TakeoutSummary
 import com.qtekfun.mapas.core.geo.LatLon
 import com.qtekfun.mapas.core.geo.distanceTo
 import com.qtekfun.mapas.core.geo.io.GpxExporter
@@ -80,6 +85,12 @@ class DefaultList(private val repo: PlacesRepository, private val setting: LongS
     }
 }
 
+/** Result of [PlacesService.importAny]: a GPX/KML/KMZ import, or a Google Takeout export (it makes its own lists). */
+sealed interface ImportOutcome {
+    data class Geo(val result: ImportResult) : ImportOutcome
+    data class Takeout(val summary: TakeoutSummary) : ImportOutcome
+}
+
 sealed interface SaveOutcome {
     data class Saved(val placeId: Long, val listName: String, val created: Boolean) : SaveOutcome
 }
@@ -114,7 +125,45 @@ class PlacesService(private val repo: PlacesRepository, private val defaultList:
 
     fun deleteList(id: Long): Boolean = repo.deleteList(id)
 
+    /**
+     * Applies the editor of a list: [name] blank keeps the old one; [emoji] must be a symbol (else it is cleared);
+     * [notes] are trimmed and capped. Returns false when the list no longer exists.
+     */
+    fun customiseList(id: Long, name: String?, emoji: String?, color: Int?, notes: String?): Boolean {
+        val current = repo.getList(id) ?: return false
+        return repo.updateList(
+            current.copy(
+                name = ListStyle.normalizeName(name) ?: current.name,
+                icon = ListStyle.normalizeEmoji(emoji),
+                color = color,
+                notes = ListStyle.normalizeNotes(notes),
+            ),
+        )
+    }
+
+    // --- Home, Work and the parked car (outside the lists) ---
+
+    fun special(slot: SpecialSlot): SpecialPlace? = repo.special(slot)
+    fun setSpecial(slot: SpecialSlot, name: String, point: LatLon) = repo.setSpecial(slot, name, point)
+    fun clearSpecial(slot: SpecialSlot): Boolean = repo.clearSpecial(slot)
+
+    // --- Recent searches (text only) ---
+
+    fun recentSearches(limit: Int = RECENT_SHOWN): List<String> = repo.recentSearches(limit)
+    fun addSearch(query: String) = repo.addSearch(query)
+    fun clearSearches() = repo.clearSearches()
+
+    /** Releases the database; only for short-lived services (the Settings screen). */
+    fun close() = repo.close()
+
     fun removeFromList(listId: Long, placeId: Long) = repo.removeFromList(listId, placeId)
+
+    /** Imported GPX tracks and routes (without geometry), newest first. */
+    fun tracks(): List<TrackInfo> = repo.tracks().sortedByDescending { it.createdAt }
+
+    /** The geometry of track [id] as plain points, or null when it no longer exists. */
+    fun trackSegments(id: Long): List<List<LatLon>>? =
+        repo.track(id)?.segments?.map { seg -> seg.map { it.point } }
 
     /** Places of [listId] (all when null) matching [query]; by distance from [near] or by name. */
     fun rows(listId: Long?, query: String?, near: LatLon?, byDistance: Boolean): List<PlaceRow> =
@@ -135,11 +184,48 @@ class PlacesService(private val repo: PlacesRepository, private val defaultList:
         }
     }
 
+    /**
+     * Imports whatever the user picked: GPX/KML/KMZ as before, or a Google Takeout export (a `.csv`, a `.json` or a
+     * ZIP without KML inside). Null when the file is too big, unreadable or of no known format.
+     */
+    fun importAny(input: InputStream, fileName: String?, intoList: Long?): ImportOutcome? {
+        val bytes = input.use { readBounded(it, MAX_IMPORT_BYTES + 1) }
+        if (bytes.size > MAX_IMPORT_BYTES) return null
+        if (isTakeoutFile(fileName, bytes)) {
+            val summary = try {
+                val takeout = TakeoutImport(repo)
+                if (bytes.looksLikeZip()) takeout.importZip(bytes.inputStream()) else takeout.importFile(bytes.inputStream(), fileName)
+            } catch (e: com.qtekfun.mapas.core.geo.io.GeoImportException) {
+                return null
+            }
+            return ImportOutcome.Takeout(summary)
+        }
+        return import(bytes.inputStream(), fileName, intoList)?.let { ImportOutcome.Geo(it) }
+    }
+
     /** Writes [listId] (or every place and track when null) in [format] and returns the number of places written. */
     fun export(format: GeoFormat, listId: Long?, out: OutputStream): Int {
         val exporter = if (format == GeoFormat.GPX) GpxExporter else KmlExporter
         transfer.export(exporter, out, listId)
         return repo.places(listId = listId).size
+    }
+
+    private fun ByteArray.looksLikeZip() = size >= 2 && this[0] == 'P'.code.toByte() && this[1] == 'K'.code.toByte()
+
+    private fun isTakeoutFile(fileName: String?, bytes: ByteArray): Boolean =
+        when (fileName?.substringAfterLast('.', "")?.lowercase()) {
+            "csv", "json", "geojson" -> true
+            "kmz", "gpx", "kml" -> false
+            else -> bytes.looksLikeZip() && !zipHasKml(bytes)
+        }
+
+    /** A KMZ holds a `.kml`; a Takeout archive holds CSV/JSON files instead. */
+    private fun zipHasKml(bytes: ByteArray): Boolean = try {
+        java.util.zip.ZipInputStream(bytes.inputStream()).use { zip ->
+            generateSequence { zip.nextEntry }.any { it.name.endsWith(".kml", ignoreCase = true) }
+        }
+    } catch (e: java.io.IOException) {
+        false
     }
 
     private fun readBounded(input: InputStream, max: Int): ByteArray {
@@ -155,6 +241,7 @@ class PlacesService(private val repo: PlacesRepository, private val defaultList:
 
     private companion object {
         const val SAME_PLACE_METERS = 5.0
+        const val RECENT_SHOWN = 8
         const val MAX_IMPORT_BYTES = 32 * 1024 * 1024
     }
 }

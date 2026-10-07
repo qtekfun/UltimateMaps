@@ -1,12 +1,46 @@
 package com.qtekfun.mapas
 
+import android.app.Activity
 import android.app.Application
+import android.os.Bundle
+import java.io.File
+import com.qtekfun.mapas.core.nav.NavStateStore
+import com.qtekfun.mapas.core.nav.NavigationController
 import com.qtekfun.mapas.core.net.AllowedEndpoint
 import com.qtekfun.mapas.core.net.ConnectionPurpose
 import com.qtekfun.mapas.core.net.DefaultNetworkPolicy
 import com.qtekfun.mapas.core.net.NetworkPolicy
+import com.qtekfun.mapas.core.fuel.FuelCache
+import com.qtekfun.mapas.core.fuel.FuelClient
+import com.qtekfun.mapas.core.fuel.FuelDataManager
+import com.qtekfun.mapas.core.fuel.FuelSettingsStore
+import com.qtekfun.mapas.fuel.PrefsFuelSettingsStore
+import com.qtekfun.mapas.cameras.AlertNavSink
+import com.qtekfun.mapas.cameras.CameraAlerts
+import com.qtekfun.mapas.cameras.PrefsCameraSettingsStore
+import com.qtekfun.mapas.core.cameras.AlertVoice
+import com.qtekfun.mapas.core.cameras.CameraAsset
+import com.qtekfun.mapas.core.cameras.CameraDataManager
+import com.qtekfun.mapas.core.cameras.CameraSettingsStore
+import com.qtekfun.mapas.core.cameras.IncidentCache
+import com.qtekfun.mapas.core.cameras.IncidentDataManager
+import com.qtekfun.mapas.regions.CatalogState
+import com.qtekfun.mapas.voice.VoiceModule
+import com.qtekfun.mapas.location.AndroidLocationSource
+import com.qtekfun.mapas.nav.AndroidNavEnvironment
+import com.qtekfun.mapas.nav.AndroidNavServiceControl
+import com.qtekfun.mapas.nav.CoreRouteProvider
+import com.qtekfun.mapas.nav.NavScreenController
+import com.qtekfun.mapas.nav.NavSimulation
+import com.qtekfun.mapas.nav.SharedNavUiPrefs
+import com.qtekfun.mapas.nav.SimulationAwareEnvironment
+import com.qtekfun.mapas.nav.SwitchableLocationSource
 import com.qtekfun.mapas.regions.CoreLinks
 import com.qtekfun.mapas.regions.RegionsController
+import com.qtekfun.mapas.voice.VoiceNavSink
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 
 class MapasApp : Application() {
     private val policy = DefaultNetworkPolicy(
@@ -29,11 +63,143 @@ class MapasApp : Application() {
         RegionsController(this, policy, addEndpoint = policy::addEndpoint).also { it.restore() }
     }
 
+    /** Petrol-station preferences (off by default). The map layer and the station card read these and [fuel]. */
+    val fuelSettings: FuelSettingsStore by lazy { PrefsFuelSettingsStore(this) }
+
+    /**
+     * Petrol-station data: downloads (one file per configured fuel, through [networkPolicy]), local cache and in-memory
+     * index ([FuelDataManager.repository]). Created lazily; nothing is downloaded when it is created or started.
+     */
+    val fuel: FuelDataManager by lazy {
+        FuelDataManager(fuelSettings, policy, policy::addEndpoint, policy::removeEndpoint, FuelCache(File(filesDir, "fuel")), FuelClient(policy))
+    }
+
+    /** Speed-camera and traffic switches (all off by default). The map layer, the warner and Settings read these. */
+    val cameraSettings: CameraSettingsStore by lazy { PrefsCameraSettingsStore(this) }
+
+    /**
+     * The static camera file (fixed cameras, average-speed sections, mobile-radar zones): fetched from the catalog's
+     * `cameras` entry through [networkPolicy], cached, and absent-tolerant. Nothing is downloaded when it is created.
+     */
+    val cameraData: CameraDataManager by lazy {
+        CameraDataManager(cameraSettings, policy, ::cameraAsset, File(filesDir, "cameras"))
+    }
+
+    private fun cameraAsset(): CameraAsset? =
+        (regions.catalogState as? CatalogState.Loaded)?.catalog?.cameras?.let { CameraAsset(it.url, it.sizeBytes, it.sha256) }
+
+    /** Live traffic incidents and V16 beacons: explicit opt-in, one national file through [networkPolicy], cached with a TTL. */
+    val incidents: IncidentDataManager by lazy {
+        IncidentDataManager(cameraSettings, policy, policy::addEndpoint, policy::removeEndpoint, IncidentCache(File(filesDir, "incidents")))
+    }
+
+    /** Alerts ahead (cameras, zones, incidents): route-based while navigating, free-driving while the app is on screen. */
+    val cameraAlerts: CameraAlerts by lazy {
+        val voice by lazy { AlertVoice(VoiceModule.guide(this), VoiceModule.settings(this).settings) }
+        CameraAlerts(
+            scope = CoroutineScope(SupervisorJob() + Dispatchers.Default),
+            settings = cameraSettings,
+            cameras = cameraData.repository,
+            incidents = incidents.repository,
+            navigation = navigation,
+            location = { AndroidLocationSource(this) },
+            hasLocationPermission = {
+                checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION) == android.content.pm.PackageManager.PERMISSION_GRANTED ||
+                    checkSelfPermission(android.Manifest.permission.ACCESS_COARSE_LOCATION) == android.content.pm.PackageManager.PERMISSION_GRANTED
+            },
+            onAlert = { voice.onAlert(it) },
+        )
+    }
+
+    private var startedActivities = 0
+    private var alertsStarted = false
+
+    /**
+     * Starts the camera/incident alerts the first time a switch is on (idempotent). Kept lazy so the cold start does not
+     * build the navigation controller for users who never turn these features on. Call from the main thread.
+     */
+    fun ensureCameraAlerts() {
+        if (alertsStarted || !cameraSettings.settings.value.anything) return
+        alertsStarted = true
+        cameraAlerts.start()
+        cameraAlerts.onForeground(startedActivities > 0)
+    }
+
+    /**
+     * The one navigation in progress (see `docs/phase2/robustness.md`). It lives in the main process, outlives the
+     * activity, and is kept running by [com.qtekfun.mapas.nav.NavigationService]. Its saved state is private and
+     * expires on its own, so a process killed by the system can resume.
+     */
+    val navigation: NavigationController by lazy {
+        NavigationController(
+            scope = CoroutineScope(SupervisorJob() + Dispatchers.Default),
+            location = navLocation,
+            store = NavStateStore(File(noBackupFilesDir, "navigation/state.bin")),
+            environment = SimulationAwareEnvironment(AndroidNavEnvironment(this), navLocation),
+            routes = CoreRouteProvider(this),
+        )
+    }
+
+    /** The navigation's location: the real one, or the simulated walk while a route simulation runs (RF-05). */
+    private val navLocation: SwitchableLocationSource by lazy { SwitchableLocationSource(AndroidLocationSource(this)) }
+
+    /**
+     * The model of the navigation screen (start, stop, simulate, resume, arrival summary). Lives with the application
+     * so the screen survives the activity. The voice plugs in with [NavScreenController.addSink] ([VoiceNavSink]).
+     */
+    val navScreen: NavScreenController by lazy {
+        val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+        NavScreenController(
+            scope = scope,
+            controller = navigation,
+            simulation = NavSimulation(scope, navLocation),
+            location = navLocation,
+            service = AndroidNavServiceControl(this),
+            prefs = SharedNavUiPrefs(this),
+            settings = com.qtekfun.mapas.voice.VoiceModule.settings(this), // the 2D/3D choice lives with the navigation settings
+        ).also {
+            it.addSink(VoiceNavSink(this))
+            it.addSink(AlertNavSink { if (alertsStarted) cameraAlerts else null })
+        }
+    }
+
     override fun onCreate() {
         super.onCreate()
+        // The native core runs in its own process (`:core`), which also creates an Application: it must not start
+        // the main process's housekeeping.
+        if (!isMainProcess()) return
         // Offline mode is a persisted privacy setting: it must hold before anything can connect.
         policy.offlineMode = getSharedPreferences(RegionsController.PREFS, MODE_PRIVATE).getBoolean(RegionsController.KEY_OFFLINE, false)
         // Rebuild maps-core/<version>/ (links to the installed .mwm) for the search core; files only, off the main thread.
         Thread({ runCatching { CoreLinks.sync(this) } }, "mapas-core-links").start()
+        // Petrol stations: only registers the host (when enabled) and reads the local cache; no connection here.
+        fuel.start()
+        // Cameras and incidents: only read local caches and follow the switches; nothing connects here.
+        cameraData.start()
+        incidents.start()
+        ensureCameraAlerts()
+        registerActivityLifecycleCallbacks(object : ActivityLifecycleCallbacks {
+            override fun onActivityStarted(activity: Activity) {
+                // The app came to the foreground (first started activity): refresh only if enabled and data older than the TTL.
+                if (startedActivities++ == 0) {
+                    fuel.onForeground()
+                    cameraData.onForeground()
+                    incidents.onForeground()
+                    ensureCameraAlerts()
+                    if (alertsStarted) cameraAlerts.onForeground(true)
+                }
+            }
+            override fun onActivityStopped(activity: Activity) {
+                if (--startedActivities == 0 && alertsStarted) cameraAlerts.onForeground(false)
+            }
+            override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) = Unit
+            override fun onActivityResumed(activity: Activity) = Unit
+            override fun onActivityPaused(activity: Activity) = Unit
+            override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) = Unit
+            override fun onActivityDestroyed(activity: Activity) = Unit
+        })
     }
+
+    private fun isMainProcess(): Boolean =
+        if (android.os.Build.VERSION.SDK_INT >= 28) getProcessName() == packageName else true
 }

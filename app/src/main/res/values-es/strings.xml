@@ -35,6 +35,11 @@
 
     <!-- Pantalla Mapas (regiones) -->
     <string name="regions_title">Mapas</string>
+    <string name="regions_search_hint">Buscar mapas (p. ej. Cataluña)</string>
+    <string name="regions_search_clear">Borrar la búsqueda</string>
+    <string name="regions_search_empty">Ningún mapa coincide con «%1$s».</string>
+    <string name="sheet_action_expand">Ampliar el panel</string>
+    <string name="sheet_action_collapse">Reducir el panel</string>
     <string name="maps_entry_title">Mapas</string>
     <string name="maps_entry_body">Descargar y gestionar regiones</string>
     <string name="offline_title">Modo sin red</string>

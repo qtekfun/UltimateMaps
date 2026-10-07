@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Ajustes: sección Navegación -->
+    <string name="nav_settings_title">Navegación</string>
+    <string name="nav_voice_title">Guía por voz</string>
+    <string name="nav_voice_body">Dice las indicaciones de giro mientras navegas.</string>
+    <string name="nav_important_title">Solo avisos importantes</string>
+    <string name="nav_important_body">Omite «sigue recto», curvas suaves y avisos lejanos.</string>
+    <string name="nav_volume_title">Volumen de la voz</string>
+    <string name="nav_language_title">Idioma de la voz</string>
+    <string name="nav_language_auto">El de la app</string>
+    <string name="nav_language_es">Español</string>
+    <string name="nav_language_en">Inglés</string>
+    <string name="nav_units_title">Unidades</string>
+    <string name="nav_units_auto">Automáticas (según la región)</string>
+    <string name="nav_units_metric">Kilómetros y metros</string>
+    <string name="nav_units_imperial">Millas y pies</string>
+    <string name="nav_test_voice">Probar voz</string>
+    <string name="nav_voice_ready">El motor de voz está listo.</string>
+    <string name="nav_voice_starting">Iniciando el motor de voz…</string>
+    <string name="nav_view3d_title">Vista 3D</string>
+    <string name="nav_view3d_body">Al navegar, inclina el mapa y mira hacia delante por la carretera, como la mayoría de apps de navegación. Desactivada: mapa plano.</string>
+    <string name="nav_buildings3d_title">Edificios en 3D</string>
+    <string name="nav_buildings3d_body">Dibuja los edificios con altura en la vista 3D desde el zoom 15. Necesita más potencia gráfica; desactívalo si el mapa va a tirones.</string>
+    <string name="nav_avoid_title">Evitar por defecto</string>
+    <string name="nav_avoid_body">Se usa al planificar una ruta. Puedes cambiarlo en cada viaje.</string>
+    <string name="nav_avoid_motorways">Autopistas</string>
+    <string name="nav_avoid_tolls">Peajes</string>
+    <string name="nav_avoid_ferries">Ferris</string>
+    <string name="nav_avoid_unpaved">Caminos sin asfaltar</string>
+
+    <!-- Problemas de voz -->
+    <string name="voice_lang_es">español</string>
+    <string name="voice_lang_en">inglés</string>
+    <string name="voice_problem_no_engine_title">No hay motor de voz instalado</string>
+    <string name="voice_problem_no_engine_body">La navegación funciona, pero sin voz. Este dispositivo no tiene un motor de síntesis de voz (TTS), algo habitual sin los servicios de Google.</string>
+    <string name="voice_problem_lang_title">Falta la voz en %1$s</string>
+    <string name="voice_problem_lang_body">Los motores instalados no tienen datos de voz en %1$s. Instálalos desde los ajustes del motor o instala otro motor. La navegación sigue sin voz.</string>
+    <string name="voice_problem_failed_title">El motor de voz no responde</string>
+    <string name="voice_problem_failed_body">El motor dejó de responder varias veces. La navegación sigue sin voz. Inténtalo de nuevo o instala otro motor.</string>
+    <string name="voice_problem_init_body">El motor no pudo arrancar. La navegación sigue sin voz. Inténtalo de nuevo o instala otro motor.</string>
+    <string name="voice_install_intro">Motores libres en F-Droid:</string>
+    <string name="voice_install_engine">Conseguir %1$s en F-Droid</string>
+    <string name="voice_install_then">Después de instalar uno, elígelo en los ajustes de Android, en «Salida de texto a voz», vuelve aquí y pulsa «Reintentar».</string>
+    <string name="voice_install_data">Instalar datos de voz</string>
+    <string name="voice_open_tts_settings">Abrir ajustes de texto a voz</string>
+    <string name="voice_retry">Reintentar</string>
+    <string name="voice_banner_no_engine">Navegación sin voz: no hay motor de voz instalado. Toca para ver cómo arreglarlo.</string>
+    <string name="voice_banner_lang">Navegación sin voz: falta la voz en %1$s. Toca para ver cómo arreglarlo.</string>
+    <string name="voice_banner_failed">Navegación sin voz: el motor de voz no responde. Toca para ver cómo arreglarlo.</string>
+</resources>

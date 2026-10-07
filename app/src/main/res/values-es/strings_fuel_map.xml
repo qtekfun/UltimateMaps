@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Paradas de la ruta y ficha de gasolinera (RF-15) -->
+    <string name="route_stops_title">Paradas (%1$d de %2$d)</string>
+    <string name="route_stop_up">Subir %1$s</string>
+    <string name="route_stop_down">Bajar %1$s</string>
+    <string name="route_stop_remove">Quitar %1$s de la ruta</string>
+    <string name="route_stops_limit">Máximo %1$d paradas. Quita una para añadir otra.</string>
+    <string name="route_err_stop">Una parada no está en una vía de los mapas descargados. Quítala o elige otra.</string>
+    <string name="fuel_category">Gasolinera</string>
+    <string name="fuel_card_close">Cerrar</string>
+    <string name="fuel_go">Ir</string>
+    <string name="fuel_add_stop">Añadir parada</string>
+    <string name="fuel_save">Guardar</string>
+    <string name="fuel_saved">Guardada</string>
+    <string name="fuel_schedule">Horario: %1$s</string>
+    <string name="fuel_prices_title">Precios</string>
+    <string name="fuel_price_on_map">%1$s (en el mapa)</string>
+    <string name="fuel_updated_now">actualizado ahora mismo</string>
+    <string name="fuel_updated_min">actualizado hace %1$d min</string>
+    <string name="fuel_updated_h">actualizado hace %1$d h</string>
+    <string name="fuel_updated_d">actualizado hace %1$d d</string>
+    <string name="fuel_updated_unknown">hora de actualización desconocida</string>
+    <string name="fuel_stop_duplicate">Esta gasolinera ya es una parada de la ruta.</string>
+    <string name="fuel_stop_is_destination">Esta gasolinera es el destino de la ruta.</string>
+    <string name="fuel_stop_limit">La ruta ya tiene %1$d paradas. Quita una primero.</string>
+    <string name="fuel_stop_no_route">Primero inicia una ruta para añadir una parada.</string>
+    <string name="fuel_source">Fuente: Ministerio para la Transición Ecológica y el Reto Demográfico</string>
+    <string name="fuel_source_with_date">%1$s · %2$s</string>
+    <string name="fuel_price_note">Precio publicado por el Ministerio; no oficial. Compruébalo en el surtidor.</string>
+</resources>

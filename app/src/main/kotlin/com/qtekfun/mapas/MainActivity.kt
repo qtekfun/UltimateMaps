@@ -12,6 +12,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
 import com.qtekfun.mapas.core.geo.LatLon
@@ -24,12 +25,17 @@ import com.qtekfun.mapas.location.AndroidLocationSource
 import com.qtekfun.mapas.map.MapFiles
 import com.qtekfun.mapas.map.MapLibreEngine
 import com.qtekfun.mapas.map.PrefsCameraStateStore
+import com.qtekfun.mapas.nav.NavHost
 import com.qtekfun.mapas.regions.RegionsActivity
+import com.qtekfun.mapas.settings.SettingsActivity
 import com.qtekfun.mapas.ui.MapScreen
 import com.qtekfun.mapas.ui.MapScreenState
 import com.qtekfun.mapas.ui.Notice
 import com.qtekfun.mapas.search.PanelHost
 import com.qtekfun.mapas.ui.theme.MapasTheme
+import com.qtekfun.mapas.cameras.HazardDescriber
+import com.qtekfun.mapas.cameras.HazardsEnv
+import com.qtekfun.mapas.core.fuel.FuelTypes
 
 class MainActivity : ComponentActivity() {
     private val state = MapScreenState()
@@ -38,6 +44,7 @@ class MainActivity : ComponentActivity() {
     private lateinit var location: AndroidLocationSource
     private var centerOnNextFix = false
     private lateinit var panel: PanelHost
+    private lateinit var navHost: NavHost
 
     private val permissionLauncher = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { grants ->
         if (grants.values.any { it }) startLocation() else state.notice = Notice.LocationDenied
@@ -57,27 +64,50 @@ class MainActivity : ComponentActivity() {
             onCameraIdle = { state.bearing = it.bearing.toFloat() },
         )
         lifecycle.addObserver(engine)
-        panel = PanelHost(this, engine, state)
+        // The navigation voice prompts use the media volume: the volume keys must control it.
+        volumeControlStream = android.media.AudioManager.STREAM_MUSIC
+        val app = application as MapasApp
+        panel = PanelHost(
+            this, engine, state,
+            fuelRepository = app.fuel.repository,
+            fuelSettings = app.fuelSettings,
+            fuelName = { id -> FuelTypes.byId(id)?.displayName ?: id },
+            hazards = HazardsEnv(
+                app.cameraSettings.settings, app.cameraData.repository, app.incidents.repository,
+                HazardDescriber(this, app.cameraData.repository, app.incidents.repository),
+            ),
+            navScreen = app.navScreen,
+        )
+        navHost = NavHost(this, engine, app.navScreen)
         panel.onRequestLocation = ::onLocate
         state.onOpenMaps = { startActivity(Intent(this, RegionsActivity::class.java)) }
+        state.onOpenSettings = { startActivity(Intent(this, SettingsActivity::class.java)) }
         state.bearing = engine.cameraState().bearing.toFloat()
 
         setContent {
             val dark = isSystemInDarkTheme()
             LaunchedEffect(dark) { engine.setTheme(if (dark) MapTheme.DARK else MapTheme.LIGHT) }
+            val navUi by navHost.uiState()
             MapasTheme(darkTheme = dark) {
-                MapScreen(state = state, onLocate = ::onLocate, onResetNorth = engine::resetNorth, sheetPanel = { panel.Content() }) {
+                MapScreen(
+                    state = state, onLocate = ::onLocate, onResetNorth = engine::resetNorth, sheetPanel = { panel.Content() },
+                    navigating = navUi.active, navSheet = panel.fuelCardOpen, overlay = { navHost.Overlay(dark) },
+                ) {
                     AndroidView(factory = { engine.view }, modifier = Modifier.fillMaxSize())
                 }
             }
         }
-        if (savedInstanceState == null) handleLink(intent)
+        if (savedInstanceState == null) {
+            handleLink(intent)
+            panel.handleShortcut(intent?.action)
+        }
     }
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         setIntent(intent)
         handleLink(intent)
+        panel.handleShortcut(intent.action)
     }
 
     override fun onStart() {
@@ -85,6 +115,7 @@ class MainActivity : ComponentActivity() {
         state.hasTiles = files.pmtilesList().isNotEmpty()
         panel.onStart()
         engine.refreshTilesIfChanged() // back from "Maps" with a region downloaded or deleted
+        (application as MapasApp).navScreen.refreshResumable() // a trip interrupted by the process dying
         if (state.locating && hasLocationPermission()) startLocation()
     }
 
@@ -142,6 +173,7 @@ class MainActivity : ComponentActivity() {
 
     private fun onFix(point: LatLon) {
         panel.userLocation = point
+        if (navHost.active) return // while navigating the map shows the follower's position and camera
         engine.showUserLocation(point)
         if (centerOnNextFix) {
             centerOnNextFix = false
