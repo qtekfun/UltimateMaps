@@ -1,4 +1,4 @@
-# Mapas
+# UltimateMaps
 
 An Android maps and navigation app that is **offline and private**: map, search and routes are computed on the device, with no real-time traffic, no accounts and no telemetry. It works without Google Play Services. Free software (GPLv3).
 

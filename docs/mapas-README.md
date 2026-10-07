@@ -1,4 +1,4 @@
-# Mapas project (provisional name) — Feasibility and specification package
+# UltimateMaps (formerly the provisional name "Mapas") — Feasibility and specification package
 
 Date: 2026-10-06 · Status: feasibility study and interview closed, spike pending
 
