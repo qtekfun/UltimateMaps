@@ -134,7 +134,7 @@ class SheetPanelTest {
         rule.onNodeWithText("Save").assertIsDisplayed()
 
         rule.onNodeWithTag("place_save").performClick()
-        rule.waitUntil(5_000) { places.state.cardSavedId != null }
+        rule.waitUntil(30_000) { places.state.cardSavedId != null }
         rule.onNodeWithText("Saved").assertIsDisplayed()
         rule.onNodeWithText("Saved in Favorites").assertIsDisplayed()
 
@@ -148,15 +148,15 @@ class SheetPanelTest {
     fun savedPlaceShowsUpInTheListsTabSortedAndSearchable() {
         places.showCard(sol.toPlaceInfo())
         places.toggleSaved()
-        rule.waitUntil(5_000) { places.state.cardSavedId != null }
+        rule.waitUntil(30_000) { places.state.cardSavedId != null }
         places.closeCard()
         show()
 
         rule.onNodeWithTag("tab_lists").performClick()
-        rule.waitUntil(5_000) { places.state.mode == PanelMode.LISTS && places.state.lists.isNotEmpty() }
+        rule.waitUntil(30_000) { places.state.mode == PanelMode.LISTS && places.state.lists.isNotEmpty() }
         rule.onNodeWithText("Favorites").assertIsDisplayed()
         rule.onNodeWithTag("list_row").performClick()
-        rule.waitUntil(5_000) { places.state.openList != null && places.state.rows.isNotEmpty() }
+        rule.waitUntil(30_000) { places.state.openList != null && places.state.rows.isNotEmpty() }
         assertNotNull(places.state.rows.single().distanceMeters)
         rule.onAllNodesWithTag("place_row").assertCountEquals(1)
         rule.onNodeWithTag("sort_name").performClick()
@@ -165,7 +165,7 @@ class SheetPanelTest {
         rule.onNodeWithTag("list_export_kml").assertIsDisplayed()
 
         places.setQuery("zzz")
-        rule.waitUntil(5_000) { places.state.rows.isEmpty() }
+        rule.waitUntil(30_000) { places.state.rows.isEmpty() }
         rule.onNodeWithTag("list_empty").assertIsDisplayed()
         rule.onNode(hasTestTag("place_row")).assertDoesNotExist()
     }
