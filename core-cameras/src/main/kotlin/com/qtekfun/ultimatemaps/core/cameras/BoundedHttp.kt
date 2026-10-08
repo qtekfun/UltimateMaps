@@ -33,6 +33,8 @@ class BoundedHttp(
     private val readTimeoutMs: Int = 20_000,
     private val totalTimeoutMs: Long = 120_000,
     private val clock: () -> Long = System::currentTimeMillis,
+    /** Sent as `User-Agent` when set; null leaves the platform's default. Never carries an app or user identifier. */
+    private val userAgent: String? = null,
 ) {
     fun <T> get(url: String, accept: String, reader: (InputStream) -> T): T {
         val deadline = clock() + totalTimeoutMs
@@ -61,6 +63,7 @@ class BoundedHttp(
                 c.connectTimeout = connectTimeoutMs
                 c.readTimeout = readTimeoutMs
                 c.setRequestProperty("Accept", accept)
+                userAgent?.let { c.setRequestProperty("User-Agent", it) }
                 c.setRequestProperty("Accept-Encoding", "gzip")
                 val code = c.responseCode
                 when {

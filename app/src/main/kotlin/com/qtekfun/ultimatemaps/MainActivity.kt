@@ -92,6 +92,7 @@ class MainActivity : ComponentActivity() {
             ),
             chargers = com.qtekfun.ultimatemaps.chargers.ChargersEnv(app.chargerSettings.settings, app.chargerData.repository),
             trails = com.qtekfun.ultimatemaps.trails.TrailsEnv(app.routeSettings.settings, app.routeData.repository),
+            bikeShare = com.qtekfun.ultimatemaps.bikeshare.BikeShareEnv(app.bikeShareSettings.settings, app.bikeShareData.repository, live = app.bikeAvailability::availability),
             navScreen = app.navScreen,
         )
         navHost = NavHost(this, engine, app.navScreen)
