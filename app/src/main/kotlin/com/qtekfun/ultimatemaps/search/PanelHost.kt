@@ -52,10 +52,14 @@ import com.qtekfun.ultimatemaps.nav.NavStartHost
 import com.qtekfun.ultimatemaps.nav.RouteRunner
 import com.qtekfun.ultimatemaps.route.CoMapsRouteBackend
 import com.qtekfun.ultimatemaps.route.LogcatRouteLog
+import com.qtekfun.ultimatemaps.route.RouteFraming
+import com.qtekfun.ultimatemaps.route.RoutePadding
 import com.qtekfun.ultimatemaps.route.RoutePreviewController
 import com.qtekfun.ultimatemaps.ui.MapScreenState
 import com.qtekfun.ultimatemaps.ui.sheet.SheetDetent
 import kotlinx.coroutines.Dispatchers
+import androidx.compose.runtime.snapshotFlow
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import java.io.File
@@ -117,6 +121,34 @@ class PanelHost(
         },
     )
 
+    /**
+     * Frames the whole route (origin and destination included) above the sheet whenever a route or itinerary is drawn,
+     * and again when the sheet changes height unless the user moved the map. Silent during a navigation.
+     */
+    private val routeFraming = RouteFraming(
+        navigating = { navScreen?.ui?.value?.active == true },
+        detent = { screen.detent },
+        frame = { points, detent ->
+            val dm = activity.resources.displayMetrics
+            val status = androidx.core.view.ViewCompat.getRootWindowInsets(activity.window.decorView)
+                ?.getInsets(androidx.core.view.WindowInsetsCompat.Type.statusBars())?.top ?: 0
+            engine.frameRoute(points, RoutePadding.compute(detent, dm.heightPixels, dm.density, status))
+        },
+    ).also { framing ->
+        engine.addCameraGestureListener { framing.onUserMovedMap() }
+        activity.lifecycleScope.launch {
+            snapshotFlow { screen.detent }.drop(1).collect { framing.onDetentChanged() }
+        }
+    }
+
+    /** Draws a transit itinerary with its origin marker and frames all of it, walking legs included. */
+    private fun showItinerary(legs: List<com.qtekfun.ultimatemaps.core.map.TransitMapLeg>) {
+        val points = legs.flatMap { it.points }
+        engine.showTransitItinerary(legs, fit = false)
+        engine.showRouteOrigin(points.firstOrNull())
+        if (points.isEmpty()) routeFraming.clear() else routeFraming.show(points)
+    }
+
     /** Public-transport mode of the route panel; null when the application object is not the real one (tests). */
     private val transitController: com.qtekfun.ultimatemaps.transit.TransitController? =
         (activity.application as? MapasApp)?.transit?.let { repo ->
@@ -124,7 +156,7 @@ class PanelHost(
                 scope = activity.lifecycleScope,
                 io = Dispatchers.IO,
                 source = repo,
-                showItinerary = { engine.showTransitItinerary(it) },
+                showItinerary = ::showItinerary,
                 onStartTrip = { itinerary, zone -> (activity.application as MapasApp).transitTrip.start(itinerary, zone) },
             )
         }
@@ -135,8 +167,12 @@ class PanelHost(
         regions = regions,
         backend = CoMapsRouteBackend(activity),
         userLocation = { userLocation },
-        showRoute = { engine.showRoute(it) },
-        clearRoute = engine::clearRoute,
+        showRoute = { points ->
+            engine.showRoute(points, fit = false)
+            engine.showRouteOrigin(points.firstOrNull())
+            routeFraming.show(points)
+        },
+        clearRoute = { engine.clearRoute(); routeFraming.clear() },
         clock = ::elapsedMillis,
         log = LogcatRouteLog,
         mutex = coreLock,

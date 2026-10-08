@@ -126,11 +126,15 @@ interface MapEngine : AutoCloseable {
 
     /**
      * Animates the camera (flat, north up) so that all [points] fit inside the screen minus [padding]; the route line
-     * is not touched. For the "route overview" of the navigation.
+     * is not touched. For the "route overview" of the navigation and the route preview. A single point is framed too
+     * (at the maximum fit zoom). Honours the system "remove animations" setting.
      */
     fun frameRoute(points: List<LatLon>, padding: CameraPadding) {}
 
-    /** Removes the route line. */
+    /** Shows (or with null hides) the origin marker of the route preview, also when it is the user's own position. */
+    fun showRouteOrigin(point: LatLon?) {}
+
+    /** Removes the route line (and the origin marker). */
     fun clearRoute() {}
 
     /**
@@ -193,6 +197,9 @@ interface MapEngine : AutoCloseable {
      * the navigation screen can stop following and offer "recenter". Called once per gesture start; null removes it.
      */
     fun setCameraGestureListener(listener: (() -> Unit)?) {}
+
+    /** Like [setCameraGestureListener] but additive (the route preview watches for the user moving the map); never removed. */
+    fun addCameraGestureListener(listener: () -> Unit) {}
 
     /**
      * Draws (true) or removes (false) the 3D buildings (extruded footprints) of the navigation's 3D view. They are
