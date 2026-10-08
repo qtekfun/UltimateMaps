@@ -160,7 +160,7 @@ Priority legend as in the gap analysis: **now** / **next** / **later** / **no**.
 | Malaga, TITSA | later | 3-4 each | CC BY / CC BY 4.0 (S), data may be stale |
 | Bike-share GBFS | later | 4-6 | Per system (S) |
 | OSM extras block (B1, B2, B4, C2, B22) | now | 6-10 | Yes, ODbL |
-| OSM hiking/cycling routes | next | 6-10 | Yes, ODbL |
+| OSM hiking/cycling routes | built (see `osm-routes.md`; data PR pending) | 6-10 | Yes, ODbL |
 | Elevation (Copernicus, IGN) | next | 8-12 | Yes with attribution and notices (S) |
 | ZBE | next | 5-8 | OSM polygons yes; official data none found |
 | AEMET alerts | later | 5-7 | Likely yes with attribution (S) |
