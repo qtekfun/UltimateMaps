@@ -40,6 +40,12 @@ sealed interface TransitLookup {
     /** The catalog offers a city that covers the trip but it is not installed. */
     data class NotDownloaded(val city: String) : TransitLookup
 
+    /**
+     * The two ends are served by two different indexes (for example Barcelona and Valencia) and none serves both.
+     * Trips across indexes are not planned.
+     */
+    data class AcrossIndexes(val originCity: String, val destinationCity: String) : TransitLookup
+
     /** Data exists somewhere but not for this trip. */
     data object OutsideCoverage : TransitLookup
 
@@ -57,7 +63,7 @@ fun interface TransitSource {
 
 enum class TransitPhase { IDLE, NEEDS_ORIGIN, COMPUTING, DONE, ERROR }
 
-enum class TransitError { NO_DATA, NOT_DOWNLOADED, OUTSIDE_COVERAGE, EXPIRED, NOT_YET_VALID, NO_ROUTE, INTERNAL }
+enum class TransitError { NO_DATA, NOT_DOWNLOADED, ACROSS_INDEXES, OUTSIDE_COVERAGE, EXPIRED, NOT_YET_VALID, NO_ROUTE, INTERNAL }
 
 /** Observable state of the transit mode of the route panel. Written from the main thread only. */
 class TransitState {
@@ -66,6 +72,9 @@ class TransitState {
 
     /** City named by [TransitError.NOT_DOWNLOADED]. */
     var errorCity by mutableStateOf<String?>(null)
+
+    /** Second city named by [TransitError.ACROSS_INDEXES] ([errorCity] is the origin's). */
+    var errorCity2 by mutableStateOf<String?>(null)
 
     /** Last / first valid day named by [TransitError.EXPIRED] / [TransitError.NOT_YET_VALID]. */
     var errorDate by mutableStateOf<LocalDate?>(null)
@@ -152,7 +161,7 @@ class TransitController(
 
     private sealed interface Outcome {
         data class Found(val itineraries: List<Itinerary>, val service: TransitService, val city: String) : Outcome
-        data class Failed(val error: TransitError, val city: String? = null, val date: LocalDate? = null, val zone: ZoneId? = null) : Outcome
+        data class Failed(val error: TransitError, val city: String? = null, val date: LocalDate? = null, val zone: ZoneId? = null, val city2: String? = null) : Outcome
     }
 
     private fun compute(from: LatLon, to: LatLon, chosen: LocalDateTime?, zone: ZoneId): Outcome {
@@ -160,6 +169,7 @@ class TransitController(
             TransitLookup.NoData -> Outcome.Failed(TransitError.NO_DATA)
             TransitLookup.OutsideCoverage -> Outcome.Failed(TransitError.OUTSIDE_COVERAGE)
             TransitLookup.Unreadable -> Outcome.Failed(TransitError.INTERNAL)
+            is TransitLookup.AcrossIndexes -> Outcome.Failed(TransitError.ACROSS_INDEXES, city = lookup.originCity, city2 = lookup.destinationCity)
             is TransitLookup.NotDownloaded -> Outcome.Failed(TransitError.NOT_DOWNLOADED, city = lookup.city)
             is TransitLookup.Ready -> {
                 val service = lookup.service
@@ -193,6 +203,7 @@ class TransitController(
                 outcome.zone?.let { state.zone = it }
                 state.error = outcome.error
                 state.errorCity = outcome.city
+                state.errorCity2 = outcome.city2
                 state.errorDate = outcome.date
                 state.phase = TransitPhase.ERROR
                 showItinerary(emptyList())
@@ -203,6 +214,7 @@ class TransitController(
     private fun clearResult() {
         state.error = null
         state.errorCity = null
+        state.errorCity2 = null
         state.errorDate = null
         state.itineraries = emptyList()
         state.selected = 0

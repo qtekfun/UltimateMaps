@@ -14,6 +14,7 @@
     <string name="transit_needs_origin">Esperando tu ubicación. Elige un punto de partida o activa la ubicación.</string>
     <string name="transit_err_no_data">No hay datos de transporte público instalados y el servidor de mapas no ofrece ninguno. Abre Mapas para buscarlos.</string>
     <string name="transit_err_not_downloaded">Los horarios de %1$s aún no están descargados. Descárgalos en Mapas, en Transporte público.</string>
+    <string name="transit_err_across">Este viaje va de %1$s a %2$s, que tienen horarios separados. No se planifican viajes entre ambos; planifica cada tramo por separado.</string>
     <string name="transit_err_outside">Los horarios de transporte público no cubren este trayecto.</string>
     <string name="transit_err_expired">Los horarios caducaron el %1$s, por eso no se planifican viajes posteriores. Elige una fecha anterior o actualiza los datos en Mapas.</string>
     <string name="transit_err_not_yet">Los horarios empiezan el %1$s. Elige una fecha posterior.</string>
@@ -56,7 +57,8 @@
 
     <!-- Pantalla Mapas: sección -->
     <string name="transit_maps_title">Transporte público</string>
-    <string name="transit_maps_intro">Horarios para rutas teóricas. Una ciudad se descarga solo al pulsar Descargar; todo se calcula en tu teléfono y no se envía ninguna posición.</string>
+    <string name="transit_maps_intro">Horarios para rutas teóricas. Cada ciudad o región se descarga por separado y solo al pulsar Descargar; todo se calcula en tu teléfono y no se envía ninguna posición.</string>
+    <string name="transit_maps_size">Tamaño de la descarga: %1$s</string>
     <string name="transit_maps_valid">Válido del %1$s al %2$s</string>
     <string name="transit_maps_expired">Caducó el %1$s: los datos publicados están desactualizados</string>
     <string name="transit_maps_update_available">Hay un archivo más reciente</string>

@@ -14,6 +14,7 @@
     <string name="transit_needs_origin">Waiting for your location. Choose a starting point or turn on location.</string>
     <string name="transit_err_no_data">No public transport data is installed and the map server lists none. Open Maps to look for it.</string>
     <string name="transit_err_not_downloaded">The %1$s timetables are not downloaded yet. Download them in Maps, under Public transport.</string>
+    <string name="transit_err_across">This trip goes from %1$s to %2$s, which have separate timetables. Trips between them are not planned; plan each part on its own.</string>
     <string name="transit_err_outside">The public transport timetables do not cover this trip.</string>
     <string name="transit_err_expired">The timetables expired on %1$s, so trips after that date are not planned. Choose an earlier date or update the data in Maps.</string>
     <string name="transit_err_not_yet">The timetables start on %1$s. Choose a later date.</string>
@@ -56,7 +57,8 @@
 
     <!-- Maps screen: section -->
     <string name="transit_maps_title">Public transport</string>
-    <string name="transit_maps_intro">Timetables for theoretical routes. A city is downloaded only when you press Download; all planning happens on your phone and no position is sent.</string>
+    <string name="transit_maps_intro">Timetables for theoretical routes. Each city or region is a separate download, made only when you press Download; all planning happens on your phone and no position is sent.</string>
+    <string name="transit_maps_size">Download size: %1$s</string>
     <string name="transit_maps_valid">Valid %1$s to %2$s</string>
     <string name="transit_maps_expired">Expired on %1$s: the published data is out of date</string>
     <string name="transit_maps_update_available">A newer file is available</string>

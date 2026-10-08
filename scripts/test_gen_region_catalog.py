@@ -139,6 +139,21 @@ class GenCatalogTest(unittest.TestCase):
                 gen.build(COUNTRIES, catalog_version="t", transit_files=[f], transit_base="https://x")
         self.assertNotIn("transit", gen.build(COUNTRIES, catalog_version="t"))
 
+    def test_several_transit_cities_keep_one_entry_each_in_order(self):
+        import json
+        with tempfile.TemporaryDirectory() as t:
+            files = []
+            for cid, city in (("madrid", "Madrid"), ("valencia", "Valencia")):
+                f = os.path.join(t, f"transit-{cid}.umti")
+                put(f, cid.encode())
+                with open(os.path.join(t, f"transit-{cid}.json"), "w") as m:
+                    json.dump({"id": cid, "city": city, "timezone": "Europe/Madrid", "validFrom": "2026-10-07", "validTo": "2026-11-05",
+                               "bounds": [39.0, -1.0, 39.9, -0.2], "attribution": ["Powered by MITRAMS"]}, m)
+                files.append(f)
+            tr = gen.build(COUNTRIES, catalog_version="t", transit_files=files, transit_base="https://x")["transit"]
+            self.assertEqual(["madrid", "valencia"], [e["id"] for e in tr])
+            self.assertEqual("https://x/transit-valencia.umti", tr[1]["url"])
+
     def test_size_mismatch_with_countries_txt_is_skipped(self):
         with tempfile.TemporaryDirectory() as t:
             os.makedirs(os.path.join(t, "pm"))
