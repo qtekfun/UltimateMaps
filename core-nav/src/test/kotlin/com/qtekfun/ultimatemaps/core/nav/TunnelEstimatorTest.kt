@@ -182,6 +182,30 @@ class TunnelEstimatorTest {
         assertTrue(sensed < blind / 5)
     }
 
+    @Test fun theSignalIsQueriedOnlyDuringALossAndReleasedWhenAFixReturns() {
+        class Counting : StopGoSignal {
+            var queries = 0
+            var releases = 0
+            override fun motionState(nowMillis: Long): MotionState {
+                queries++
+                return MotionState.MOVING
+            }
+            override fun release() {
+                releases++
+            }
+        }
+        val c = Counting()
+        val d = Drive(straight(5.0), constant(25.0), loss = 59..79, spans = tunnel, stopGo = c)
+        d.run(58)
+        assertEquals(0, c.queries, "not queried while fixes arrive")
+        assertEquals(0, c.releases)
+        d.run(78)
+        assertTrue(c.queries > 0)
+        assertEquals(0, c.releases, "still lost")
+        d.run(82)
+        assertEquals(1, c.releases, "released as soon as the fix returned, once")
+    }
+
     @Test fun movingAgainAfterAStopResumesGraduallyAndNeverFasterThanBefore() {
         val speed: (Int) -> Double = { if (it in 80..110) 0.0 else 25.0 }
         val d = Drive(straight(5.0), speed, loss = 59..160, spans = tunnel, stopGo = FakeStopGo(listOf(80..110), Drive.T0))
