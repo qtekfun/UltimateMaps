@@ -2,6 +2,7 @@ package com.qtekfun.ultimatemaps.core.nav
 
 import com.qtekfun.ultimatemaps.core.map.LocationFix
 import com.qtekfun.ultimatemaps.core.routing.RoutePlan
+import com.qtekfun.ultimatemaps.core.routing.TunnelRange
 import com.qtekfun.ultimatemaps.core.routing.TurnType
 import kotlin.math.abs
 import kotlin.test.Test
@@ -382,5 +383,28 @@ class TunnelEstimatorTest {
             return out
         }
         assertEquals(run(), run())
+    }
+
+    @Test fun engineReportedTunnelRangesDriveTheEstimateWithoutAnyOtherSource() {
+        // Points are 20 m apart: indices 75..175 are metres 1500..3500.
+        val base = straight(5.0)
+        val plan = base.copy(guidance = base.guidance.copy(tunnels = listOf(TunnelRange(75, 175))))
+        val d = Drive(plan, constant(25.0), loss = 59..139, source = null)
+        var sawTunnel = false
+        d.run(139) { _, st -> if (st.estimated) { sawTunnel = sawTunnel || st.inTunnel; assertTrue(st.traveledMeters <= 3500.0) } }
+        assertTrue(sawTunnel)
+        assertTrue(d.tracker.snapshot().traveledMeters - d.truth(58) > 1500.0)
+    }
+
+    @Test fun learnedSpansAreIgnoredWhereTheEngineAlreadyKnowsTheTunnel() {
+        val geometry = RouteGeometry(straight(5.0).geometry)
+        val route = RouteTunnelSpanSource(listOf(TunnelRange(75, 175)))
+        val learned = TunnelSpanSource { listOf(TunnelSpan(1400.0, 3600.0, TunnelSource.LEARNED, 0.5f), TunnelSpan(4000.0, 4400.0, TunnelSource.LEARNED, 0.5f)) }
+        val spans = PreferredTunnelSpanSource(route, learned).spansFor(geometry)
+        assertEquals(2, spans.size)
+        assertEquals(TunnelSource.ROUTE_FLAG, spans[0].source)
+        assertEquals(1500.0, spans[0].startMeters, 1.0)
+        assertEquals(3500.0, spans[0].endMeters, 1.0)
+        assertEquals(TunnelSource.LEARNED, spans[1].source)
     }
 }

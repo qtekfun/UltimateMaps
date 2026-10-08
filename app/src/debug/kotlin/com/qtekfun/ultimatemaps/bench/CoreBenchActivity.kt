@@ -6,6 +6,8 @@ import android.os.SystemClock
 import android.util.Log
 import android.widget.TextView
 import com.qtekfun.ultimatemaps.core.geo.LatLon
+import com.qtekfun.ultimatemaps.core.nav.RouteGeometry
+import com.qtekfun.ultimatemaps.core.nav.RouteTunnelSpanSource
 import com.qtekfun.ultimatemaps.core.routing.RouteRequest
 import com.qtekfun.ultimatemaps.core.routing.RoutingProfile
 import com.qtekfun.ultimatemaps.nativecomaps.CoMapsCore
@@ -33,8 +35,11 @@ class CoreBenchActivity : Activity() {
         // `--ez reroute true`: simulates a long drive Madrid to Barcelona with a recalculation every 10% of the route
         // (the position nudged about 300 m off the line, as when the driver leaves it), with `--es perf <tokens>`.
         val reroute = intent?.getBooleanExtra("reroute", false) == true
+        // `--ez tunnels true`: routes by car through the Madrid tunnels (Calle 30 / M-30, Paseo del Prado) and logs the
+        // tunnel ranges the native core reports (CoMaps patch 0004), as point indices and metres along the route.
+        val tunnels = intent?.getBooleanExtra("tunnels", false) == true
         thread(name = "umbench") {
-            runCatching { if (reroute) dumpReroute() else if (matrix) dumpMatrix() else if (guidanceOnly) dumpGuidance() else run() }.onFailure { Log.e(tag, "FAILED: $it", it) }
+            runCatching { if (tunnels) dumpTunnels() else if (reroute) dumpReroute() else if (matrix) dumpMatrix() else if (guidanceOnly) dumpGuidance() else run() }.onFailure { Log.e(tag, "FAILED: $it", it) }
         }
     }
 
@@ -151,6 +156,38 @@ class CoreBenchActivity : Activity() {
             plan?.guidance?.speedLimits?.forEach { s -> Log.i(tag, "  limit ${s.startIndex}..${s.endIndex} kmh=${s.kmh}") }
         }
         Log.i(tag, "FIN guidance")
+    }
+
+    /**
+     * Logs the tunnel ranges of car routes that should cross tunnels (Madrid Calle 30 south and east stretches, the
+     * Paseo del Prado / Atocha underpasses). Not run yet: the expectation is at least one range per route and exits that
+     * are close to the real portals; compare with the map. Only counts, indices and metres are logged, no coordinates.
+     */
+    private fun dumpTunnels() {
+        val core = CoMapsCore()
+        core.init(applicationInfo.sourceDir, File(filesDir, "maps-core").absolutePath, cacheDir.absolutePath, "es")
+        Log.i(tag, "tunnels init maps=${core.refreshMaps()}")
+        val guided = core.routingEngine(withGuidance = true)
+        val routes = listOf(
+            "sol-atocha" to (LatLon(40.4170, -3.7036) to LatLon(40.4065, -3.6890)),
+            "nuevos-ministerios-atocha" to (LatLon(40.4460, -3.6920) to LatLon(40.4065, -3.6890)),
+            "puente-toledo-avenida-america" to (LatLon(40.4010, -3.7220) to LatLon(40.4400, -3.6760)),
+        )
+        for ((name, ends) in routes) {
+            val out = guided.routeDetailed(RouteRequest(ends.first, ends.second, profile = RoutingProfile.CAR))
+            val plan = out.plan
+            if (plan == null) {
+                Log.i(tag, "tunnels route=$name code=${out.code} (no plan)")
+                continue
+            }
+            val ranges = plan.guidance.tunnels
+            Log.i(tag, "tunnels route=$name code=${out.code} points=${plan.geometry.size} km=${plan.distanceMeters / 1000} ranges=${ranges.size} err=${out.guidanceError}")
+            val spans = RouteTunnelSpanSource(ranges).spansFor(RouteGeometry(plan.geometry))
+            ranges.zip(spans).forEach { (r, sp) ->
+                Log.i(tag, "  tunnel idx=${r.startIndex}..${r.endIndex} along=${sp.startMeters.toInt()}..${sp.endMeters.toInt()} length_m=${sp.lengthMeters.toInt()}")
+            }
+        }
+        Log.i(tag, "FIN tunnels")
     }
 
     private fun ms(block: () -> Unit): Long {
