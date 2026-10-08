@@ -1,0 +1,10 @@
+{
+  "id": "valencia",
+  "city": "Valencia",
+  "timezone": "Europe/Madrid",
+  "bounds": [39.0, -1.0, 39.9, -0.2],
+  "feeds": [
+    {"label": "FGV Metrovalencia", "file": "nap_fgv_metrovalencia.zip", "namespace": "fgv", "nap": 1168,
+     "attribution": "Powered by MITRAMS (https://www.transportes.gob.es/). Data from the Spanish National Access Point (https://nap.transportes.gob.es/), operator: FGV - Generalitat Valenciana. Processed data: timetables converted to a compact index."}
+  ]
+}

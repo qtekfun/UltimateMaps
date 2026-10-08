@@ -1,0 +1,10 @@
+{
+  "id": "barcelona",
+  "city": "Barcelona and Catalonia",
+  "timezone": "Europe/Madrid",
+  "bounds": [40.5, 0.15, 42.9, 3.35],
+  "feeds": [
+    {"label": "ATM Catalonia buses and trains (simplified)", "file": "nap_atm_simplified.zip", "namespace": "atm", "nap": 2059,
+     "attribution": "Powered by MITRAMS (https://www.transportes.gob.es/). Data from the Spanish National Access Point (https://nap.transportes.gob.es/), operator: Autoritat del Transport Metropolita (ATM). Processed data: timetables converted to a compact index."}
+  ]
+}
