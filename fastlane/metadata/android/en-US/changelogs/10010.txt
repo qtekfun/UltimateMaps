@@ -1,0 +1,1 @@
+Release candidate: tunnel-aware guidance, elevation profile on routes, hiking and cycling routes, low-emission zones, EV chargers and bike-share stations (all optional and off by default), Cercanias real time (opt-in), transit in Barcelona, Valencia, Seville and Bilbao, walking and mode options in the planner, the whole route framed on the map, and a new icon. Spain only.
