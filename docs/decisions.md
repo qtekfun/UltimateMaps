@@ -596,3 +596,10 @@ Format: date · decision · reason · discarded alternatives · how to revert it
 - **Test-environment note:** `/tmp` is a tmpfs with a 12.6 GB user quota shared by every Claude session; when it filled up, 37 unrelated app tests failed and Bash output was lost (EDQUOT). Sessions were asked to keep big files on `/home` (or set `CLAUDE_CODE_TMPDIR`).
 - **Not verified:** nothing from the chargers or the NOTICE screen was tried on a phone; the chargers data file is not published by the data workflow yet. The long-route A/B (`docs/phase2/long-routes-perf.md`, section 5) still needs the Pixel 8 and the owner's permission.
 - **Owner to decide:** whether to allow the long-route A/B run on the Pixel 8; whether the data repository should publish the chargers file.
+
+## 2026-10-08 · Long-route A/B on the Pixel 8: `quiet` and `prune` are safe, `cache` crashes (owner's permission)
+- **Measured** (`docs/phase2/device-test/route-perf-ab-2026-10-08.md`, one matrix of 12 pairs x 2 runs per mode): `quiet` and `prune` return exactly the same routes as the default on all 12 pairs; `prune` cuts Madrid to Lleida from 24 s to 7.8 s and is otherwise neutral or slightly slower; `quiet` is a small gain. The default Madrid to Barcelona took 15 s and Barcelona to Madrid 32 s on this run. The 2 s target is still not met.
+- **Finding:** `cache` (kept graph loader) crashes the native core with a null dereference in `IndexGraph::GetEdgeListImpl` when the next pair of maps starts (reproduced twice, alone and inside `safe`/`fast`). It stays off; the production app never enables it.
+- **Decision:** production behaviour unchanged. Not turning `quiet` or `prune` on by default on one matrix per mode: repeat with `--ei runs 3` first. `cache` is not to be used until diagnosed.
+- **Process:** an `adb` server started inside a `flock` command keeps the lock descriptor forever; start `adb` outside the lock and use the USB serial when the Wi-Fi entry is also listed.
+- **Owner to decide:** whether to turn on `quiet,prune` by default after a repeat; whether to relax the 2 s target for 600 km trips or look for another approach (fewer leaps, a progress indicator).
