@@ -6,11 +6,13 @@ SourceCode: https://github.com/qtekfun/UltimateMaps
 IssueTracker: https://github.com/qtekfun/UltimateMaps/issues
 Changelog: https://github.com/qtekfun/UltimateMaps/blob/HEAD/CHANGELOG.md
 
-AutoName: Mapas
+AutoName: UltimateMaps
 
 RepoType: git
 Repo: https://github.com/qtekfun/UltimateMaps.git
-Binaries: 
+AllowedAPKSigningKeys: 3d6fcda74644ca3d45635f4082ee56ecc386c3cf3d69a3ec081e9821ec48bdf8
+
+Binaries:
   https://github.com/qtekfun/UltimateMaps/releases/download/v%v/UltimateMaps-%v.apk
 
 AutoUpdateMode: Version
