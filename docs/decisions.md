@@ -603,3 +603,9 @@ Format: date · decision · reason · discarded alternatives · how to revert it
 - **Decision:** production behaviour unchanged. Not turning `quiet` or `prune` on by default on one matrix per mode: repeat with `--ei runs 3` first. `cache` is not to be used until diagnosed.
 - **Process:** an `adb` server started inside a `flock` command keeps the lock descriptor forever; start `adb` outside the lock and use the USB serial when the Wi-Fi entry is also listed.
 - **Owner to decide:** whether to turn on `quiet,prune` by default after a repeat; whether to relax the 2 s target for 600 km trips or look for another approach (fewer leaps, a progress indicator).
+
+## 2026-10-08 · `cache` crash fixed (patch 0003); the switches stay off by default
+- **Cause and fix:** see `docs/phase2/device-test/route-perf-ab-2026-10-08.md` (update section). `IndexRouter::ClearState()` freed the mwm handles that the persistent graph loader still pointed to; patch 0003 skips `FreeHandles()` while a persistent loader exists.
+- **Verified on the Pixel 8:** `cache` and `safe` run all 12 pairs with identical routes and no crash (Madrid to Lleida 24.1 s to 6.6 s with `safe`; most other pairs 5 to 30% faster).
+- **Decision:** production still never calls `setPerfMode`; `quiet,prune,cache` is NOT turned on by default yet. Reasons: one matrix per mode on a shared phone, no test of rerouting during navigation, and pinned handles keep the regions' graphs in memory for up to 10 minutes. Next step before turning it on: a `--ei runs 3` repeat plus a navigation reroute test.
+- **Owner to decide:** turn on `quiet,prune,cache` by default after those checks; relax the 2 s target for 600 km trips.
