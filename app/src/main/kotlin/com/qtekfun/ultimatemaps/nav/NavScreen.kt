@@ -1,3 +1,5 @@
+@file:OptIn(androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
+
 package com.qtekfun.ultimatemaps.nav
 
 import android.content.res.Resources
@@ -20,6 +22,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.statusBarsIgnoringVisibility
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.windowInsetsPadding
@@ -169,7 +172,7 @@ private fun BoxScope.Driving(ui: NavUi, nav: NavState, actions: NavActions) {
 private fun StartingBanner() {
     val c = NavTheme.colors
     Box(
-        Modifier.fillMaxWidth().windowInsetsPadding(WindowInsets.statusBars).padding(12.dp).clip(RoundedCornerShape(16.dp)).background(c.banner).padding(16.dp).testTag("nav_starting"),
+        Modifier.fillMaxWidth().windowInsetsPadding(WindowInsets.statusBarsIgnoringVisibility).padding(12.dp).clip(RoundedCornerShape(16.dp)).background(c.banner).padding(16.dp).testTag("nav_starting"),
     ) {
         BasicText(stringResource(R.string.nav_ui_follow_route), style = Mapas.typography.title.copy(color = c.onBanner))
     }
@@ -190,7 +193,7 @@ private fun Banner(ui: NavUi, nav: NavState) {
             .fillMaxWidth()
             .clip(RoundedCornerShape(bottomStart = 20.dp, bottomEnd = 20.dp))
             .background(c.banner)
-            .windowInsetsPadding(WindowInsets.statusBars)
+            .windowInsetsPadding(WindowInsets.statusBarsIgnoringVisibility)
             .padding(horizontal = 16.dp, vertical = 12.dp)
             .testTag("nav_banner"),
     ) {
@@ -508,7 +511,7 @@ private fun BoxScope.ResumeCard(actions: NavActions) {
     Column(
         Modifier
             .align(Alignment.TopCenter)
-            .windowInsetsPadding(WindowInsets.statusBars)
+            .windowInsetsPadding(WindowInsets.statusBarsIgnoringVisibility)
             .padding(12.dp)
             .clip(RoundedCornerShape(16.dp))
             .background(c.banner)
