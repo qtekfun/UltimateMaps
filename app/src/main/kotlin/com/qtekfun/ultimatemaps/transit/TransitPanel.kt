@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.rememberScrollState
@@ -31,6 +32,7 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Dp
@@ -41,6 +43,7 @@ import com.qtekfun.ultimatemaps.core.transit.ItineraryLeg
 import com.qtekfun.ultimatemaps.core.transit.JourneyNote
 import com.qtekfun.ultimatemaps.core.transit.LineInfo
 import com.qtekfun.ultimatemaps.core.transit.TransitMode
+import com.qtekfun.ultimatemaps.route.Icon
 import com.qtekfun.ultimatemaps.places.PanelNote
 import com.qtekfun.ultimatemaps.route.RouteFormat
 import com.qtekfun.ultimatemaps.ui.theme.Mapas
@@ -257,7 +260,7 @@ private fun ItineraryRow(index: Int, it: Itinerary, selected: Boolean, zone: jav
     else if (it.transfers == 0) stringResource(R.string.transit_direct)
     else context.resources.getQuantityString(R.plurals.transit_transfers, it.transfers, it.transfers)
     val walking = stringResource(R.string.transit_walking, RouteFormat.distance(it.walkMeters.toDouble(), locale))
-    val lines = it.rides.joinToString(", ") { r -> r.line.shortName }
+    val lines = it.rides.map { r -> stringResource(TransitModeIcons.description(lineMode(r.line)), r.line.shortName) }.joinToString(", ")
     val description = stringResource(R.string.transit_option_description, index + 1, duration, arrive, changes, walking)
     Column(
         Modifier
@@ -322,18 +325,32 @@ internal fun rideRealTime(realTime: TransitRealTime?, ride: ItineraryLeg.Ride): 
     return if (realTime.enabled && realTime.supports(ride)) realTime.forRide(ride) else null
 }
 
-/** The line as a rounded chip: its short name in the line colour (GTFS route_color, or a per-mode default). */
+/** The mode of [line], from its GTFS route type. */
+internal fun lineMode(line: LineInfo): TransitMode = TransitMode.ofRouteType(line.routeType)
+
+/**
+ * The line as a rounded chip: a small icon of its mode, then its short name, in the line colour (GTFS route_color, or a
+ * per-mode default). The icon matters because short names are shared between modes (a bus "C2" and a train "C2"); the
+ * chip also reads as "Bus line C2" to a screen reader.
+ */
 @Composable
 internal fun LineChip(line: LineInfo, modifier: Modifier = Modifier) {
-    Box(
+    val mode = lineMode(line)
+    val spoken = stringResource(TransitModeIcons.description(mode), line.shortName)
+    val fg = Color(line.textColor)
+    Row(
         modifier
             .clip(Mapas.shapes.pill)
             .background(Color(line.color))
-            .padding(horizontal = 10.dp, vertical = 3.dp)
-            .widthIn(min = 28.dp),
-        contentAlignment = Alignment.Center,
+            .padding(horizontal = 8.dp, vertical = 3.dp)
+            .widthIn(min = 28.dp)
+            .semantics { contentDescription = spoken },
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically,
     ) {
-        BasicText(line.shortName, style = Mapas.typography.callout.copy(color = Color(line.textColor)), maxLines = 1)
+        Icon(TransitModeIcons.of(mode), fg, 14.dp, Modifier.clearAndSetSemantics { })
+        Spacer(Modifier.width(4.dp))
+        BasicText(line.shortName, style = Mapas.typography.callout.copy(color = fg), maxLines = 1)
     }
 }
 
