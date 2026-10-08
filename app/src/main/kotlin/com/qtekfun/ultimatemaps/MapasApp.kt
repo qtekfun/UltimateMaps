@@ -23,6 +23,11 @@ import com.qtekfun.ultimatemaps.chargers.PrefsChargerSettingsStore
 import com.qtekfun.ultimatemaps.core.chargers.ChargerAsset
 import com.qtekfun.ultimatemaps.core.chargers.ChargerDataManager
 import com.qtekfun.ultimatemaps.core.chargers.ChargerSettingsStore
+import com.qtekfun.ultimatemaps.bikeshare.PrefsBikeShareSettingsStore
+import com.qtekfun.ultimatemaps.core.bikeshare.BikeAvailabilityRepository
+import com.qtekfun.ultimatemaps.core.bikeshare.BikeShareAsset
+import com.qtekfun.ultimatemaps.core.bikeshare.BikeShareDataManager
+import com.qtekfun.ultimatemaps.core.bikeshare.BikeShareSettingsStore
 import com.qtekfun.ultimatemaps.core.zbe.ZbeAheadSpeaker
 import com.qtekfun.ultimatemaps.core.zbe.ZbeAsset
 import com.qtekfun.ultimatemaps.core.zbe.ZbeDataManager
@@ -140,6 +145,28 @@ class MapasApp : Application() {
 
     private fun chargerAsset(): ChargerAsset? =
         (regions.catalogState as? CatalogState.Loaded)?.catalog?.chargers?.let { ChargerAsset(it.url, it.sizeBytes, it.sha256) }
+
+    /** Bike-share switches (the stations and, separately, live availability; both off by default). */
+    val bikeShareSettings: BikeShareSettingsStore by lazy { PrefsBikeShareSettingsStore(this) }
+
+    /**
+     * The static bike-share station file: fetched from the catalog's `bikeshare` entry through [networkPolicy] (the same
+     * server and purpose as the camera file), cached, and absent-tolerant. Nothing is downloaded when it is created.
+     */
+    val bikeShareData: BikeShareDataManager by lazy {
+        BikeShareDataManager(bikeShareSettings, policy, ::bikeShareAsset, File(filesDir, "bikeshare"), syncCatalog = { force -> regions.syncCatalog(force) })
+    }
+
+    /**
+     * Optional live bike and dock counts of a station: only while its card is open and only when both bike-share switches
+     * are on; the host is listed in the policy only then. Nothing connects when it is created or started.
+     */
+    val bikeAvailability: BikeAvailabilityRepository by lazy {
+        BikeAvailabilityRepository(bikeShareSettings.settings, policy, policy::addEndpoint, policy::removeEndpoint)
+    }
+
+    private fun bikeShareAsset(): BikeShareAsset? =
+        (regions.catalogState as? CatalogState.Loaded)?.catalog?.bikeshare?.let { BikeShareAsset(it.url, it.sizeBytes, it.sha256) }
 
     /** Low-emission-zone switch and options (off by default). The map layer, the route warning, the prompt and Settings read these. */
     val zbeSettings: ZbeSettingsStore by lazy { PrefsZbeSettingsStore(this) }
@@ -398,6 +425,8 @@ class MapasApp : Application() {
         cameraData.start()
         chargerData.start()
         zbeData.start()
+        bikeShareData.start()
+        bikeAvailability.start()
         routeData.start()
         incidents.start()
         ensureCameraAlerts()
@@ -412,6 +441,7 @@ class MapasApp : Application() {
                     cameraData.onForeground()
                     chargerData.onForeground()
                     zbeData.onForeground()
+                    bikeShareData.onForeground()
                     routeData.onForeground()
                     incidents.onForeground()
                     ensureCameraAlerts()
