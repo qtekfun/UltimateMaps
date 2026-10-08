@@ -14,8 +14,12 @@ import java.io.IOException
  * [IOException], so a corrupt or truncated file or message can never cause an out-of-memory or an endless loop.
  */
 object RoutePlanCodec {
-    /** 2 adds the tunnel ranges after the stops; version 1 (older saved states) is still read, with no tunnels. */
-    const val VERSION = 2
+    /**
+     * 2 adds the tunnel ranges after the stops; 3 adds the altitudes (whole metres in a short, unknown = min value).
+     * Versions 1 and 2 (older saved states) are still read, with no tunnels / no altitudes.
+     */
+    const val VERSION = 3
+    private const val UNKNOWN_ALTITUDE = Short.MIN_VALUE.toInt()
     const val MAX_POINTS = 4_000_000
     private const val MAX_ITEMS = 1_000_000
     private const val MAX_LANES = 64
@@ -57,12 +61,14 @@ object RoutePlanCodec {
             out.writeInt(t.startIndex)
             out.writeInt(t.endIndex)
         }
+        out.writeInt(plan.altitudes.size)
+        for (a in plan.altitudes) out.writeShort(if (a.isNaN()) UNKNOWN_ALTITUDE else Math.round(a).toInt().coerceIn(-32767, 32767))
     }
 
     @Throws(IOException::class)
     fun read(input: DataInput): RoutePlan {
         val version = input.readUnsignedByte()
-        if (version != 1 && version != VERSION) throw IOException("unsupported route version $version")
+        if (version !in 1..VERSION) throw IOException("unsupported route version $version")
         val distance = input.readDouble()
         val duration = input.readDouble()
         val count = bounded(input.readInt(), MAX_POINTS)
@@ -97,7 +103,13 @@ object RoutePlanCodec {
         repeat(bounded(input.readInt(), MAX_ITEMS)) { stops += input.readInt() }
         val tunnels = ArrayList<TunnelRange>()
         if (version >= 2) repeat(bounded(input.readInt(), MAX_ITEMS)) { tunnels += TunnelRange(input.readInt(), input.readInt()) }
-        return RoutePlan(geometry, distance, duration, RouteGuidance(maneuvers, limits, stops, tunnels))
+        val altitudes = ArrayList<Double>()
+        if (version >= 3) {
+            val n = bounded(input.readInt(), MAX_POINTS)
+            if (n != 0 && n != geometry.size) throw IOException("altitude count $n does not match the geometry")
+            repeat(n) { input.readShort().toInt().let { a -> altitudes += if (a == UNKNOWN_ALTITUDE) Double.NaN else a.toDouble() } }
+        }
+        return RoutePlan(geometry, distance, duration, RouteGuidance(maneuvers, limits, stops, tunnels), altitudes)
     }
 
     private fun bounded(n: Int, max: Int): Int {

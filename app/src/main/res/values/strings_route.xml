@@ -19,6 +19,11 @@
     <string name="route_avoid_unpaved">No unpaved</string>
     <string name="route_computing">Calculating route…</string>
     <string name="route_summary">%1$s · %2$s</string>
+    <string name="route_elevation_summary">↑ %1$d m\u2002↓ %2$d m</string>
+    <string name="route_elevation_toggle_cd">Climb %1$d metres, descent %2$d metres. Show or hide the elevation profile.</string>
+    <string name="route_elevation_chart_cd">Elevation profile: lowest %1$d metres, highest %2$d metres, steepest climb %3$d percent.</string>
+    <string name="route_elevation_range">%1$d m – %2$d m</string>
+    <string name="route_elevation_grade">Steepest: ↑ %1$d %%  ↓ %2$d %%</string>
     <string name="route_needs_origin">Your location is not available. Allow location, or choose another starting point by search or by tapping the map.</string>
     <string name="route_err_no_regions">No regions installed. Download a region to calculate routes offline.</string>
     <string name="route_err_need_more_maps">Maps are missing for this route. Download the regions it crosses.</string>

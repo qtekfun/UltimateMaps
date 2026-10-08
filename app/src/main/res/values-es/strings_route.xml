@@ -19,6 +19,11 @@
     <string name="route_avoid_unpaved">Sin caminos sin asfaltar</string>
     <string name="route_computing">Calculando la ruta…</string>
     <string name="route_summary">%1$s · %2$s</string>
+    <string name="route_elevation_summary">↑ %1$d m\u2002↓ %2$d m</string>
+    <string name="route_elevation_toggle_cd">Subida de %1$d metros, bajada de %2$d metros. Muestra u oculta el perfil de elevación.</string>
+    <string name="route_elevation_chart_cd">Perfil de elevación: mínimo %1$d metros, máximo %2$d metros, pendiente máxima de subida %3$d por ciento.</string>
+    <string name="route_elevation_range">%1$d m – %2$d m</string>
+    <string name="route_elevation_grade">Máxima: ↑ %1$d %%  ↓ %2$d %%</string>
     <string name="route_needs_origin">No hay ubicación disponible. Permite la ubicación o elige otro punto de salida con la búsqueda o tocando el mapa.</string>
     <string name="route_err_no_regions">No hay regiones instaladas. Descarga una región para calcular rutas sin conexión.</string>
     <string name="route_err_need_more_maps">Faltan mapas para esta ruta. Descarga las regiones que atraviesa.</string>

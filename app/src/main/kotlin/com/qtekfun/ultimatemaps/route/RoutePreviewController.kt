@@ -7,6 +7,7 @@ import com.qtekfun.ultimatemaps.core.geo.LatLon
 import com.qtekfun.ultimatemaps.core.geo.distanceTo
 import com.qtekfun.ultimatemaps.core.routing.BikeCycleways
 import com.qtekfun.ultimatemaps.core.routing.RouteOptions
+import com.qtekfun.ultimatemaps.core.routing.ElevationProfile
 import com.qtekfun.ultimatemaps.core.routing.RoutePlan
 import com.qtekfun.ultimatemaps.core.routing.RouteRequest
 import com.qtekfun.ultimatemaps.core.routing.RoutingProfile
@@ -56,6 +57,8 @@ data class RouteAlternative(
     val geometry: List<LatLon>,
     val distanceMeters: Double,
     val durationSeconds: Double,
+    /** Raw heights of [geometry] (see `RoutePlan.altitudes`); empty when the maps gave none. */
+    val altitudes: List<Double> = emptyList(),
 )
 
 enum class AlternativesStatus { NONE, FINDING, DONE }
@@ -77,6 +80,9 @@ class RouteState {
     var error by mutableStateOf<RouteError?>(null)
     var distanceMeters by mutableStateOf(0.0)
     var durationSeconds by mutableStateOf(0.0)
+
+    /** Climb and chart of the shown route; null when the maps have no heights for it (the UI then shows nothing). */
+    var elevation by mutableStateOf<ElevationProfile?>(null)
 
     /** The next search result or map tap becomes the origin. */
     var pickingOrigin by mutableStateOf(false)
@@ -221,7 +227,7 @@ class RoutePreviewController(
                 val plan = (native as? Native.Done)?.outcome?.plan ?: continue
                 if (plan.geometry.size < 2) continue
                 if (plan.geometry == main.geometry || found.any { it.geometry == plan.geometry }) continue
-                found += RouteAlternative(kind, options, plan.geometry, plan.distanceMeters, plan.durationSeconds)
+                found += RouteAlternative(kind, options, plan.geometry, plan.distanceMeters, plan.durationSeconds, plan.altitudes)
                 state.alternatives = found.toList()
                 redrawAlternatives()
             }
@@ -238,6 +244,7 @@ class RoutePreviewController(
         state.selectedAlternative = index
         state.distanceMeters = alt?.distanceMeters ?: main.distanceMeters
         state.durationSeconds = alt?.durationSeconds ?: main.durationSeconds
+        state.elevation = if (alt != null) ElevationProfile.of(alt.geometry, alt.altitudes) else ElevationProfile.of(main.geometry, main.altitudes)
         showRoute(alt?.geometry ?: main.geometry)
         redrawAlternatives()
     }
@@ -255,6 +262,7 @@ class RoutePreviewController(
         altJob?.cancel()
         mainPlan = null
         mainRequest = null
+        state.elevation = null
         state.alternatives = emptyList()
         state.alternativesStatus = AlternativesStatus.NONE
         state.selectedAlternative = null
@@ -409,6 +417,7 @@ class RoutePreviewController(
             state.baseDurationSeconds = plan.durationSeconds
             mainPlan = plan
             mainRequest = request
+            state.elevation = ElevationProfile.of(plan.geometry, plan.altitudes)
             state.status = RouteStatus.DONE
             showRoute(plan.geometry)
         } else {

@@ -25,6 +25,7 @@ import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.atomic.AtomicLong
 import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
@@ -108,6 +109,24 @@ class RoutePreviewControllerTest {
         assertEquals(listOf(line), drawn.toList())
         assertEquals(RouteRequest(home, dest.point), engine.requests.single())
         assertEquals(listOf("car ms=7 ok"), log.events.toList())
+    }
+
+    @Test
+    fun theElevationProfileFollowsThePlanAndIsAbsentWithoutHeights() {
+        val hilly = List(line.size) { 100.0 + it * 50.0 }
+        val withHeights = controller(FakeEngine { RouteOutcome(RouteCode.NO_ERROR, RoutePlan(line, 620_000.0, 21_600.0, altitudes = hilly)) })
+        withHeights.start(dest)
+        await("route") { withHeights.state.status == RouteStatus.DONE }
+        val e = assertNotNull(withHeights.state.elevation)
+        assertTrue(e.ascentMeters > 90.0 && e.descentMeters == 0.0)
+
+        val without = controller(FakeEngine { ok() })
+        without.start(dest)
+        await("route") { without.state.status == RouteStatus.DONE }
+        assertNull(without.state.elevation)
+
+        withHeights.close()
+        assertNull(withHeights.state.elevation)
     }
 
     @Test

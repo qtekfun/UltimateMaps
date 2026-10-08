@@ -121,6 +121,27 @@ class CoMapsCoreTest {
         assertFailsWith<IllegalArgumentException> { decodeRoute(doubleArrayOf(0.0, 1.0)) }
     }
 
+    @Test fun `the altitude trailer is read, unknown heights become NaN and a plain route has none`() {
+        val m = RouteWire.ALTITUDE_MARKER
+        val plain = decodeRoute(doubleArrayOf(0.0, 1000.0, 60.0, 40.0, -3.0, 40.001, -3.0))
+        assertTrue(plain.plan!!.altitudes.isEmpty())
+        assertEquals(2, plain.plan!!.geometry.size)
+
+        val withAlt = decodeRoute(doubleArrayOf(0.0, 1000.0, 60.0, 40.0, -3.0, 40.001, -3.0, 650.0, -32768.0, 2.0, m)).plan!!
+        assertEquals(2, withAlt.geometry.size)
+        assertEquals(650.0, withAlt.altitudes[0])
+        assertTrue(withAlt.altitudes[1].isNaN())
+    }
+
+    @Test fun `a trailer that does not match the geometry drops the heights and a lying one is rejected`() {
+        val m = RouteWire.ALTITUDE_MARKER
+        // One height for two points: no profile rather than a misaligned one.
+        val short = decodeRoute(doubleArrayOf(0.0, 1.0, 1.0, 40.0, -3.0, 40.001, -3.0, 650.0, 1.0, m)).plan!!
+        assertTrue(short.altitudes.isEmpty())
+        assertEquals(2, short.geometry.size)
+        assertFailsWith<IllegalArgumentException> { decodeRoute(doubleArrayOf(0.0, 1.0, 1.0, 40.0, -3.0, 99.0, 650.0, 9.0, m)) }
+    }
+
     @Test fun `the cycle level lives in bits 4 and 5 and round trips`() {
         val expected = mapOf(BikeCycleways.OFF to 0, BikeCycleways.PREFER to 16, BikeCycleways.STRONGLY_PREFER to 32, BikeCycleways.ONLY to 48)
         for ((level, bits) in expected) {

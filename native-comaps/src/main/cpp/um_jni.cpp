@@ -131,6 +131,8 @@ jdoubleArray ToJDoubles(JNIEnv * env, std::vector<double> const & v)
   return out;
 }
 
+constexpr double kAltitudeMarker = -7777777.0;  // same value as RouteWire.ALTITUDE_MARKER in Kotlin
+
 std::vector<double> RouteFlat(um::RouteOut const & r)
 {
   std::vector<double> flat;
@@ -139,6 +141,14 @@ std::vector<double> RouteFlat(um::RouteOut const & r)
   flat.push_back(r.distanceMeters);
   flat.push_back(r.durationSeconds);
   flat.insert(flat.end(), r.latLon.begin(), r.latLon.end());
+  // Optional trailer (only when the route has heights): n altitudes (metres, -32768 = unknown), n, then the marker.
+  // A latitude or longitude can never be the marker, so a reader finds the trailer from the end of the array.
+  if (!r.altitudes.empty())
+  {
+    flat.insert(flat.end(), r.altitudes.begin(), r.altitudes.end());
+    flat.push_back(static_cast<double>(r.altitudes.size()));
+    flat.push_back(kAltitudeMarker);
+  }
   return flat;
 }
 
@@ -153,7 +163,7 @@ std::vector<double> ReadDoubles(JNIEnv * env, jdoubleArray a)
 
 extern "C"
 {
-// Returns [code, distanceM, durationS, lat0, lon0, lat1, lon1, ...].
+// Returns [code, distanceM, durationS, lat0, lon0, lat1, lon1, ..., (alt0..altN-1, N, marker)?].
 JNIEXPORT jdoubleArray JNICALL Java_com_qtekfun_ultimatemaps_nativecomaps_NativeCore_nativeRoute(
     JNIEnv * env, jobject, jint profile, jdoubleArray points, jint avoidFlags, jint timeoutSec)
 {

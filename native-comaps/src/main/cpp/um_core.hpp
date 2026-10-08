@@ -43,6 +43,9 @@ constexpr int32_t kCycleLevelOnly = 3;
 // RouteCode.NO_CYCLE_ROUTE in Kotlin.
 constexpr int32_t kRouteNoCycleRoute = 1004;
 
+// Wire value for "no altitude known" (geometry::kInvalidAltitude, int16 min).
+constexpr double kNoAltitude = -32768.0;
+
 struct RouteOut
 {
   // routing::RouterResultCode as an integer (0 = NoError, 8 = RouteNotFound, 9 = NeedMoreMaps, ...).
@@ -50,6 +53,11 @@ struct RouteOut
   std::vector<double> latLon;  // lat0, lon0, lat1, lon1, ...
   double distanceMeters = 0;
   double durationSeconds = 0;
+
+  // Altitude in whole metres of every point of `latLon` (same count and order), from the altitude section of the mwm
+  // files (SRTM, baked by the CoMaps generator). A point the maps have no height for is kNoAltitude. Empty when the
+  // route has none at all. Independent of `guidance`: it rides on the plain route array (see RouteFlat in um_jni.cpp).
+  std::vector<double> altitudes;
 
   // Guidance (only if requested): empty = not requested. Format in docs/phase2/maneuvers.md and in `GuidanceWire` (Kotlin):
   //   [version, nManeuvers, nLimits,

@@ -102,7 +102,7 @@ fun RoutePanel(
 private val target: Dp @Composable get() = maxOf(MIN_TARGET, Mapas.dimens.touchTarget)
 
 @Composable
-private fun Icon(icon: ImageVector, tint: Color, size: Dp = 20.dp, modifier: Modifier = Modifier) {
+internal fun Icon(icon: ImageVector, tint: Color, size: Dp = 20.dp, modifier: Modifier = Modifier) {
     Image(icon, null, colorFilter = ColorFilter.tint(tint), modifier = modifier.size(size))
 }
 
@@ -492,6 +492,7 @@ private fun Status(s: RouteState) {
                 BasicText(time, style = Mapas.typography.largeTitle.copy(color = Mapas.colors.label))
                 BasicText(distance, style = Mapas.typography.callout.copy(color = Mapas.colors.secondaryLabel))
             }
+            ElevationSummary(s.elevation)
         }
         RouteStatus.IDLE -> Unit
     }
