@@ -12,6 +12,9 @@ sealed interface TransitPlan {
     /** Valid data exists but nothing connects the two points at that time. */
     data object NoRoute : TransitPlan
 
+    /** A route exists, but not with the allowed modes (the mode filter excluded it). */
+    data object NoRouteWithModes : TransitPlan
+
     /** The requested day is after the last day the data covers. */
     data class Expired(val lastDay: LocalDate) : TransitPlan
 
@@ -38,27 +41,56 @@ class TransitService(val index: TransitIndex, val zone: ZoneId, config: PlannerC
 
     fun isExpiredOn(date: LocalDate): Boolean = validTo?.let { date.isAfter(it) } == true
 
-    fun plan(origin: LatLon, destination: LatLon, departAt: Instant, maxItineraries: Int = MAX_ITINERARIES): TransitPlan {
+    /** Modes of the vehicles this city's index has (what a mode filter can act on). */
+    val availableModes: Set<TransitMode> get() = index.availableModes
+
+    /**
+     * Plans from [origin] to [destination]. The options choose the allowed modes and override the walking limits of the
+     * config. The walk-only itinerary is among the results whenever walking is short enough (see [TransitPlanner.plan]); when
+     * nothing at all is left and the allowed modes are the reason, the answer is [TransitPlan.NoRouteWithModes].
+     */
+    fun plan(
+        origin: LatLon,
+        destination: LatLon,
+        departAt: Instant,
+        maxItineraries: Int = MAX_ITINERARIES,
+        options: PlanOptions = PlanOptions(),
+    ): TransitPlan {
         val localDate = departAt.atZone(zone).toLocalDate()
         validTo?.let { if (localDate.isAfter(it)) return TransitPlan.Expired(it) }
         validFrom?.let { if (localDate.isBefore(it)) return TransitPlan.NotYetValid(it) }
         val epochDay = localDate.toEpochDay().toInt()
         val dayStart = dayStartSeconds(localDate)
         val departSec = (departAt.epochSecond - dayStart).toInt()
-        val first = planner.plan(origin, destination, epochDay, departSec)
+        val first = planner.plan(origin, destination, epochDay, departSec, options)
+        val walk = first.firstOrNull { it.rideCount == 0 }
         val journeys = ArrayList<Journey>(first.filter { it.rideCount > 0 })
-        // Fewer than the wanted number of distinct options: add the next departures of the best one.
+        // Fewer than the wanted number of distinct options: add the next departures of the best one (same filters).
         if (journeys.size < maxItineraries) {
             val seen = journeys.map { signature(it) }.toHashSet()
-            for (j in planner.planNextDepartures(origin, destination, epochDay, departSec, maxItineraries)) {
+            for (j in planner.planNextDepartures(origin, destination, epochDay, departSec, maxItineraries, options = options)) {
                 if (j.rideCount > 0 && seen.add(signature(j))) journeys.add(j)
             }
         }
-        // Nothing on a vehicle: a short walk is still an answer.
-        if (journeys.isEmpty()) first.firstOrNull()?.let { journeys.add(it) }
-        if (journeys.isEmpty()) return TransitPlan.NoRoute
-        val sorted = journeys.sortedWith(compareBy({ it.arriveSec }, { it.transfers }, { it.departSec })).take(maxItineraries)
-        return TransitPlan.Found(sorted.map { toItinerary(it, dayStart, origin, destination) })
+        if (journeys.isEmpty() && walk == null) {
+            val excludedSomething = options.modes != TransitMode.ALL &&
+                planner.plan(origin, destination, epochDay, departSec, options.copy(modes = TransitMode.ALL)).isNotEmpty()
+            return if (excludedSomething) TransitPlan.NoRouteWithModes else TransitPlan.NoRoute
+        }
+        val sorted = journeys.sortedWith(compareBy({ it.arriveSec }, { it.transfers }, { it.departSec }))
+        // Walking is always one of the options: first when it explains why no vehicle is offered, else by arrival time.
+        val ordered = if (walk == null) {
+            sorted.take(maxItineraries)
+        } else if (walk.note != null) {
+            (listOf(walk) + sorted).take(maxItineraries)
+        } else {
+            val pos = sorted.indexOfFirst { it.arriveSec > walk.arriveSec }.let { if (it < 0) sorted.size else it }
+            val all = sorted.toMutableList().also { it.add(pos, walk) }
+            // too many: drop the slowest vehicle journeys, never the walk
+            while (all.size > maxItineraries) all.removeAt(all.indexOfLast { it !== walk })
+            all
+        }
+        return TransitPlan.Found(ordered.map { toItinerary(it, dayStart, origin, destination) })
     }
 
     /** Epoch second that GTFS time 00:00:00 of [date] stands for: noon local minus 12 h (the GTFS definition, DST-safe). */
@@ -92,7 +124,7 @@ class TransitService(val index: TransitIndex, val zone: ZoneId, config: PlannerC
                 )
             }
         }
-        return Itinerary(legs)
+        return Itinerary(legs, j.note)
     }
 
     companion object {

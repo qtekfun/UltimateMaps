@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Mode chips of the public-transport route panel -->
+    <string name="transit_mode_bus">Autobús</string>
+    <string name="transit_mode_metro">Metro</string>
+    <string name="transit_mode_tram">Tranvía</string>
+    <string name="transit_mode_train">Tren</string>
+    <string name="transit_mode_ferry">Ferri</string>
+    <string name="transit_mode_other">Otros</string>
+    <string name="transit_modes_reset">Restablecer</string>
+    <string name="transit_err_no_route_modes">No hay ruta con el transporte seleccionado</string>
+    <string name="transit_note_walk_as_fast">Ir a pie es casi igual de rápido</string>
+
+    <!-- Settings: public-transport planning -->
+    <string name="transit_plan_title">Planificación de transporte público</string>
+    <string name="transit_plan_minutes">%1$d min</string>
+    <string name="transit_plan_walk_title">Mostrar la opción a pie si dura menos de</string>
+    <string name="transit_plan_walk_body">La opción a pie aparece siempre junto a las de transporte cuando el paseo dura menos que esto.</string>
+    <string name="transit_plan_saving_title">Preferir ir a pie si el transporte ahorra menos de</string>
+    <string name="transit_plan_saving_body">Una opción de transporte que ahorra menos tiempo que esto (o menos del 20 % del paseo) se omite cuando se ofrece ir a pie.</string>
+    <string name="transit_plan_maxwalk_title">Máximo a pie por viaje</string>
+    <string name="transit_plan_maxwalk_body">Se omiten las opciones de transporte que obligan a caminar más que esto en total.</string>
+    <string name="transit_plan_maxwalk_none">Sin límite</string>
+</resources>

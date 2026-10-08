@@ -13,7 +13,10 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.runtime.Composable
@@ -35,7 +38,9 @@ import androidx.compose.ui.unit.dp
 import com.qtekfun.ultimatemaps.R
 import com.qtekfun.ultimatemaps.core.transit.Itinerary
 import com.qtekfun.ultimatemaps.core.transit.ItineraryLeg
+import com.qtekfun.ultimatemaps.core.transit.JourneyNote
 import com.qtekfun.ultimatemaps.core.transit.LineInfo
+import com.qtekfun.ultimatemaps.core.transit.TransitMode
 import com.qtekfun.ultimatemaps.places.PanelNote
 import com.qtekfun.ultimatemaps.route.RouteFormat
 import com.qtekfun.ultimatemaps.ui.theme.Mapas
@@ -60,6 +65,10 @@ fun TransitSection(controller: TransitController, modifier: Modifier = Modifier)
     Column(modifier.fillMaxWidth().testTag("transit_section")) {
         DepartureRow(controller)
         Spacer(Modifier.height(8.dp))
+        if (s.showModeChips && s.phase != TransitPhase.IDLE && s.phase != TransitPhase.NEEDS_ORIGIN) {
+            ModeChips(controller)
+            Spacer(Modifier.height(8.dp))
+        }
         when (s.phase) {
             TransitPhase.IDLE -> Unit
             TransitPhase.NEEDS_ORIGIN -> PanelNote(stringResource(R.string.transit_needs_origin), "transit_status")
@@ -86,6 +95,7 @@ private fun errorText(s: TransitState): String {
         TransitError.EXPIRED -> stringResource(R.string.transit_err_expired, s.errorDate?.let { TransitFormat.date(it, locale) }.orEmpty())
         TransitError.NOT_YET_VALID -> stringResource(R.string.transit_err_not_yet, s.errorDate?.let { TransitFormat.date(it, locale) }.orEmpty())
         TransitError.NO_ROUTE -> stringResource(R.string.transit_err_no_route)
+        TransitError.NO_ROUTE_MODES -> stringResource(R.string.transit_err_no_route_modes)
         TransitError.INTERNAL, null -> stringResource(R.string.transit_err_internal)
     }
 }
@@ -166,6 +176,63 @@ private fun Stepper(description: String, glyph: String, tag: String, onClick: ()
     }
 }
 
+// ---------------------------------------------------------------------------------------------------- modes
+
+@androidx.annotation.StringRes
+internal fun modeLabel(mode: TransitMode): Int = when (mode) {
+    TransitMode.BUS -> R.string.transit_mode_bus
+    TransitMode.METRO -> R.string.transit_mode_metro
+    TransitMode.TRAM -> R.string.transit_mode_tram
+    TransitMode.TRAIN -> R.string.transit_mode_train
+    TransitMode.FERRY -> R.string.transit_mode_ferry
+    TransitMode.OTHER -> R.string.transit_mode_other
+}
+
+/** One chip per transport mode the city has, all on by default, plus Reset when one is off. Tags `transit_mode_<name>`. */
+@Composable
+private fun ModeChips(controller: TransitController) {
+    val s = controller.state
+    val colors = Mapas.colors
+    val allOn = s.chipModes.all { it in s.modes }
+    Row(
+        Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()).testTag("transit_modes"),
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        s.chipModes.forEach { mode ->
+            val on = mode in s.modes
+            Box(
+                Modifier
+                    .heightIn(min = target)
+                    .clip(Mapas.shapes.pill)
+                    .background(if (on) colors.accent.copy(alpha = 0.16f) else colors.field)
+                    .toggleable(value = on, role = Role.Checkbox, onValueChange = { controller.setMode(mode, it) })
+                    .padding(horizontal = 14.dp)
+                    .testTag("transit_mode_${mode.name.lowercase()}"),
+                contentAlignment = Alignment.Center,
+            ) {
+                BasicText(
+                    stringResource(modeLabel(mode)),
+                    style = Mapas.typography.callout.copy(color = if (on) colors.accent else colors.secondaryLabel),
+                    maxLines = 1,
+                )
+            }
+        }
+        if (!allOn) {
+            Box(
+                Modifier
+                    .heightIn(min = target)
+                    .clickable(role = Role.Button, onClick = controller::resetModes)
+                    .padding(horizontal = 10.dp)
+                    .testTag("transit_modes_reset"),
+                contentAlignment = Alignment.Center,
+            ) {
+                BasicText(stringResource(R.string.transit_modes_reset), style = Mapas.typography.callout.copy(color = colors.accent), maxLines = 1)
+            }
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------------------------------- list
 
 @Composable
@@ -228,6 +295,13 @@ private fun ItineraryRow(index: Int, it: Itinerary, selected: Boolean, zone: jav
             style = Mapas.typography.callout.copy(color = colors.secondaryLabel),
             modifier = Modifier.testTag("transit_option_${index}_facts"),
         )
+        if (it.note == JourneyNote.WALK_ABOUT_AS_FAST) {
+            BasicText(
+                stringResource(R.string.transit_note_walk_as_fast),
+                style = Mapas.typography.callout.copy(color = colors.accent),
+                modifier = Modifier.testTag("transit_option_${index}_note"),
+            )
+        }
         // Real time (Renfe): one short line per train that is in the feed, e.g. "C4 · Delayed 4 min".
         it.rides.forEachIndexed { k, ride ->
             val status = RealTimeTexts.status(context.resources, rideRealTime(realTime, ride)) ?: return@forEachIndexed

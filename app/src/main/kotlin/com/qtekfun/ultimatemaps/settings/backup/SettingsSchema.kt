@@ -23,7 +23,9 @@ import com.qtekfun.ultimatemaps.regions.RegionsController
 import com.qtekfun.ultimatemaps.search.PrefsHistorySettings
 import com.qtekfun.ultimatemaps.search.PrefsPlaceLanguageStore
 import com.qtekfun.ultimatemaps.settings.PrefsNavSettingsStore
+import com.qtekfun.ultimatemaps.core.transit.TransitMode
 import com.qtekfun.ultimatemaps.transit.follow.PrefsTransitTripSettings
+import com.qtekfun.ultimatemaps.transit.follow.TransitPlanningDefaults
 
 /** The value types a settings file can carry. [json] is the explicit type name written next to every value. */
 enum class SettingType(val json: String) {
@@ -145,6 +147,18 @@ object SettingsSchema {
         enum(GROUP_NAVIGATION, PrefsTransitTripSettings.PREFS, PrefsTransitTripSettings.KEY_PROMPTS, PrefsTransitTripSettings.DEFAULT, AlertSoundMode.entries.map { it.name }),
         // Cercanias real time: the switch makes the app contact Renfe's server, so it needs consent like the other online switches.
         bool(GROUP_NAVIGATION, PrefsTransitTripSettings.PREFS, PrefsTransitTripSettings.KEY_REAL_TIME, false, RestorePolicy.NEEDS_CONSENT),
+        // Public-transport planner: allowed modes (the chips of the route panel) and the walking limits.
+        SettingSpec(
+            GROUP_NAVIGATION, PrefsTransitTripSettings.PREFS, PrefsTransitTripSettings.KEY_MODES, SettingType.STRING_SET,
+            TransitMode.FILTERABLE.map { it.name }.toSet(),
+            sanitize = { v ->
+                val offered = TransitMode.FILTERABLE.map { it.name }.toSet()
+                (v as Set<*>).filterIsInstance<String>().filter { it in offered }.toSet()
+            },
+        ),
+        int(GROUP_NAVIGATION, PrefsTransitTripSettings.PREFS, PrefsTransitTripSettings.KEY_WALK_ALT, TransitPlanningDefaults.WALK_ALTERNATIVE_MIN) { it in 0..TransitPlanningDefaults.MAX_MINUTES },
+        int(GROUP_NAVIGATION, PrefsTransitTripSettings.PREFS, PrefsTransitTripSettings.KEY_MIN_SAVING, TransitPlanningDefaults.MIN_SAVING_MIN) { it in 0..TransitPlanningDefaults.MAX_MINUTES },
+        int(GROUP_NAVIGATION, PrefsTransitTripSettings.PREFS, PrefsTransitTripSettings.KEY_MAX_WALK, TransitPlanningDefaults.MAX_WALK_MIN) { it in 0..TransitPlanningDefaults.MAX_MINUTES },
 
         // Petrol stations: the switch needs consent (it starts downloads); the rest is plain preference.
         bool(GROUP_FUEL, fuelPrefs, PrefsFuelSettingsStore.KEY_ENABLED, fuel.enabled, RestorePolicy.NEEDS_CONSENT),

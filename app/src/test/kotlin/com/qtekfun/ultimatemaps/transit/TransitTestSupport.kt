@@ -25,7 +25,7 @@ object TransitTestSupport {
     private fun t(sec: Int) = "%02d:%02d:%02d".format(sec / 3600, sec / 60 % 60, sec % 60)
 
     /** [keepIds]: the index keeps the feed's stop and trip ids (T0..T5, A..C), as a Renfe city's index does. */
-    fun service(keepIds: Boolean = false): TransitService {
+    fun service(keepIds: Boolean = false, withBus: Boolean = false): TransitService {
         val stopTimes = StringBuilder("trip_id,arrival_time,departure_time,stop_id,stop_sequence\n")
         val trips = StringBuilder("route_id,service_id,trip_id,trip_headsign\n")
         for (n in 0 until 6) {
@@ -33,9 +33,16 @@ object TransitTestSupport {
             trips.append("R1,WK,T$n,Charlie Town\n")
             listOf("A", "B", "C").forEachIndexed { k, s -> stopTimes.append("T$n,${t(first + k * 300)},${t(first + k * 300)},$s,$k\n") }
         }
+        if (withBus) {
+            // a slow bus B1 over the same three stops (12 minutes per hop), leaving at 08:00 and 08:10
+            for (n in 0 until 2) {
+                trips.append("R2,WK,B$n,Charlie Town\n")
+                listOf("A", "B", "C").forEachIndexed { k, s -> stopTimes.append("B$n,${t(8 * 3600 + n * 600 + k * 720)},${t(8 * 3600 + n * 600 + k * 720)},$s,$k\n") }
+            }
+        }
         val files = mapOf(
             "stops.txt" to "stop_id,stop_name,stop_lat,stop_lon\nA,Alpha Square,40.0000,-3.0000\nB,Bravo Street,40.0100,-3.0000\nC,Charlie Town,40.0200,-3.0000\n",
-            "routes.txt" to "route_id,route_short_name,route_long_name,route_type,route_color,route_text_color\nR1,M1,Metro one,1,0000FF,FFFFFF\n",
+            "routes.txt" to "route_id,route_short_name,route_long_name,route_type,route_color,route_text_color\nR1,M1,Metro one,1,0000FF,FFFFFF\n" + if (withBus) "R2,B1,Bus one,3,FF8800,000000\n" else "",
             "calendar.txt" to "service_id,monday,tuesday,wednesday,thursday,friday,saturday,sunday,start_date,end_date\nWK,1,1,1,1,1,0,0,20261001,20261031\n",
             "trips.txt" to trips.toString(),
             "stop_times.txt" to stopTimes.toString(),
