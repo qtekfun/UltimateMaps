@@ -74,4 +74,10 @@
     <string name="transit_fail_invalid">El archivo no es un índice de horarios válido.</string>
     <string name="transit_fail_expired">Los horarios publicados ya han caducado.</string>
     <string name="transit_fail_cancelled">La descarga se canceló.</string>
+    <string name="transit_line_bus">Línea de autobús %1$s</string>
+    <string name="transit_line_tram">Línea de tranvía %1$s</string>
+    <string name="transit_line_train">Línea de tren %1$s</string>
+    <string name="transit_line_metro">Línea de metro %1$s</string>
+    <string name="transit_line_ferry">Línea de ferri %1$s</string>
+    <string name="transit_line_other">Línea %1$s</string>
 </resources>

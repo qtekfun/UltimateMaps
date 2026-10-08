@@ -74,4 +74,11 @@
     <string name="transit_fail_invalid">The file is not a valid timetable index.</string>
     <string name="transit_fail_expired">The published timetables have already expired.</string>
     <string name="transit_fail_cancelled">The download was cancelled.</string>
+    <!-- Spoken form of a line badge: the mode comes first because short names are shared between modes -->
+    <string name="transit_line_bus">Bus line %1$s</string>
+    <string name="transit_line_tram">Tram line %1$s</string>
+    <string name="transit_line_train">Train line %1$s</string>
+    <string name="transit_line_metro">Metro line %1$s</string>
+    <string name="transit_line_ferry">Ferry line %1$s</string>
+    <string name="transit_line_other">Line %1$s</string>
 </resources>
