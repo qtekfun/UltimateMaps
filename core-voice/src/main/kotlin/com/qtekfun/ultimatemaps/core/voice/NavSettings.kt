@@ -68,6 +68,8 @@ data class NavSettings(
     val liveUpdateChip: Boolean = true,
     /** While the GPS is lost in a known tunnel, read the accelerometer to tell a stopped car from a moving one. Nothing is stored. */
     val motionSensorsInTunnels: Boolean = true,
+    /** Hide the system status bar (other apps' notification icons) while a navigation is active; a swipe from the top shows it briefly. */
+    val hideStatusBar: Boolean = false,
 ) {
     fun normalized(): NavSettings = copy(volumePercent = volumePercent.coerceIn(MIN_VOLUME, 100))
 

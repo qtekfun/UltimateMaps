@@ -44,6 +44,7 @@ class PrefsNavSettingsStore(private val prefs: SharedPreferences) : NavSettingsS
             .putBoolean(KEY_BUILDINGS_3D, next.buildings3d)
             .putBoolean(KEY_LIVE_UPDATE_CHIP, next.liveUpdateChip)
             .putBoolean(KEY_MOTION_TUNNELS, next.motionSensorsInTunnels)
+            .putBoolean(KEY_HIDE_STATUS_BAR, next.hideStatusBar)
             .apply()
         state.value = next
     }
@@ -65,6 +66,7 @@ class PrefsNavSettingsStore(private val prefs: SharedPreferences) : NavSettingsS
             buildings3d = bool(KEY_BUILDINGS_3D, d.buildings3d),
             liveUpdateChip = bool(KEY_LIVE_UPDATE_CHIP, d.liveUpdateChip),
             motionSensorsInTunnels = bool(KEY_MOTION_TUNNELS, d.motionSensorsInTunnels),
+            hideStatusBar = bool(KEY_HIDE_STATUS_BAR, d.hideStatusBar),
         ).normalized()
     }
 
@@ -89,5 +91,6 @@ class PrefsNavSettingsStore(private val prefs: SharedPreferences) : NavSettingsS
         const val KEY_BUILDINGS_3D = "buildings_3d"
         const val KEY_LIVE_UPDATE_CHIP = "live_update_chip"
         const val KEY_MOTION_TUNNELS = "motion_sensors_tunnels"
+        const val KEY_HIDE_STATUS_BAR = "hide_status_bar"
     }
 }

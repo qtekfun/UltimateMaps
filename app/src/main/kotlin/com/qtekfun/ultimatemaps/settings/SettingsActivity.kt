@@ -42,6 +42,12 @@ class SettingsActivity : ComponentActivity() {
         if (uri != null) coordinator?.load { openIn(uri) }
     }
 
+    /** The system Do Not Disturb screens need no permission; falls back to the sound settings, then does nothing. */
+    private fun openDoNotDisturbSettings() {
+        val intents = listOf(Intent("android.settings.ZEN_MODE_PRIORITY_SETTINGS"), Intent(android.provider.Settings.ACTION_SOUND_SETTINGS))
+        for (i in intents) if (runCatching { startActivity(i) }.isSuccess) return
+    }
+
     private fun openOut(uri: Uri) = checkNotNull(contentResolver.openOutputStream(uri, "wt")) { "cannot open the file" }
     private fun openIn(uri: Uri) = checkNotNull(contentResolver.openInputStream(uri)) { "cannot open the file" }
     /** Opens a page in the user's own browser (the app itself makes no connection for it); a phone without a browser does nothing. */
@@ -66,7 +72,7 @@ class SettingsActivity : ComponentActivity() {
             setOffline = regions::setOfflineMode,
             catalogUrl = { regions.serverUrl },
             openMaps = { startActivity(Intent(this, RegionsActivity::class.java)) },
-            navigation = NavigationSettingsEnv(VoiceModule.settings(this), VoiceModule.guide(this), transitTrip = app.transitTripSettings),
+            navigation = NavigationSettingsEnv(VoiceModule.settings(this), VoiceModule.guide(this), transitTrip = app.transitTripSettings, openDoNotDisturb = ::openDoNotDisturbSettings),
             history = HistorySettingsEnv(PrefsHistorySettings(this), clear = ::clearSearchHistory),
             cameras = CamerasSettingsEnv(
                 app.cameraSettings, app.cameraData, app.incidents, offline = { regions.offline }, onChanged = app::ensureCameraAlerts,
