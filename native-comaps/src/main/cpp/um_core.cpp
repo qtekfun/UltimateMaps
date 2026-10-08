@@ -214,6 +214,18 @@ void FillGuidance(routing::Route const & route, RouteOut & out)
   std::vector<double> maneuvers;
   size_t nMan = 0;
   std::unordered_map<std::string, int32_t> nameIdx;
+  auto intern = [&](std::string const & text) -> int32_t
+  {
+    if (text.empty())
+      return -1;
+    auto const ins = nameIdx.emplace(text, static_cast<int32_t>(out.guidanceNames.size()));
+    if (ins.second)
+      out.guidanceNames.push_back(text);
+    return ins.first->second;
+  };
+  // Motorway exit data (junction:ref, destination:ref, destination of the ramp) per maneuver ordinal; see the wire.
+  std::vector<double> exits;
+  size_t nExits = 0;
   for (auto const & s : segs)
   {
     auto const & t = s.GetTurn();
@@ -222,21 +234,30 @@ void FillGuidance(routing::Route const & route, RouteOut & out)
       continue;
 
     int32_t nameId = -1;
+    int32_t exitRefId = -1, towardRefId = -1, towardNameId = -1;
     if (t.m_index < segs.size())
     {
       routing::RouteSegment::RoadNameInfo rni;
       route.GetClosestStreetNameAfterIdx(t.m_index, rni);
-      std::string const & name = !rni.m_name.empty() ? rni.m_name : !rni.m_ref.empty() ? rni.m_ref : rni.m_destination;
-      if (!name.empty())
+      nameId = intern(!rni.m_name.empty() ? rni.m_name : !rni.m_ref.empty() ? rni.m_ref : rni.m_destination);
+      // Only real tags (or the ref of the road the ramp joins, which the core fills in): nothing is invented.
+      if (rni.HasExitInfo())
       {
-        auto const ins = nameIdx.emplace(name, static_cast<int32_t>(out.guidanceNames.size()));
-        if (ins.second)
-          out.guidanceNames.push_back(name);
-        nameId = ins.first->second;
+        exitRefId = intern(rni.m_junction_ref);
+        towardRefId = intern(rni.m_destination_ref);
+        towardNameId = intern(rni.m_destination);
       }
     }
 
     bool const roundabout = wire == kTurnRoundaboutEnter || wire == kTurnRoundaboutLeave;
+    if (!roundabout && (exitRefId >= 0 || towardRefId >= 0 || towardNameId >= 0))
+    {
+      exits.push_back(static_cast<double>(nMan));  // ordinal of this maneuver in the order written
+      exits.push_back(exitRefId);
+      exits.push_back(towardRefId);
+      exits.push_back(towardNameId);
+      ++nExits;
+    }
     maneuvers.push_back(t.m_index);
     maneuvers.push_back(wire);
     // NOTE: `m_exitNum` is uint32_t; in a ternary with `-1` C++ promotes everything to uint32_t and the -1 arrived as
@@ -306,16 +327,24 @@ void FillGuidance(routing::Route const & route, RouteOut & out)
     i = j + 1;
   }
 
-  out.guidance.reserve(3 + maneuvers.size() + limits.size() + (nTun ? 1 + tunnels.size() : 0));
+  // The exit section follows the tunnel section, which is then always written (with 0 tunnels if there are none).
+  bool const writeTunnels = nTun > 0 || nExits > 0;
+  out.guidance.reserve(3 + maneuvers.size() + limits.size() + (writeTunnels ? 1 + tunnels.size() : 0) +
+                       (nExits ? 1 + exits.size() : 0));
   out.guidance.push_back(kGuidanceWireVersion);
   out.guidance.push_back(static_cast<double>(nMan));
   out.guidance.push_back(static_cast<double>(nLim));
   out.guidance.insert(out.guidance.end(), maneuvers.begin(), maneuvers.end());
   out.guidance.insert(out.guidance.end(), limits.begin(), limits.end());
-  if (nTun > 0)
+  if (writeTunnels)
   {
     out.guidance.push_back(static_cast<double>(nTun));
     out.guidance.insert(out.guidance.end(), tunnels.begin(), tunnels.end());
+  }
+  if (nExits > 0)
+  {
+    out.guidance.push_back(static_cast<double>(nExits));
+    out.guidance.insert(out.guidance.end(), exits.begin(), exits.end());
   }
 }
 }  // namespace

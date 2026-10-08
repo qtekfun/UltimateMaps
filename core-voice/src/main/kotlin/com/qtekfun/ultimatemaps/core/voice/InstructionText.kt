@@ -2,6 +2,7 @@ package com.qtekfun.ultimatemaps.core.voice
 
 import com.qtekfun.ultimatemaps.core.nav.Announcement
 import com.qtekfun.ultimatemaps.core.nav.AnnouncementKind
+import com.qtekfun.ultimatemaps.core.routing.ExitSign
 import com.qtekfun.ultimatemaps.core.routing.Lane
 import com.qtekfun.ultimatemaps.core.routing.Maneuver
 import com.qtekfun.ultimatemaps.core.routing.TurnType
@@ -20,6 +21,9 @@ enum class VoiceMessage { RECALCULATING, OFF_ROUTE, ARRIVED, STOP_REACHED }
  *   [AnnouncementKind.NOW] with "Ahora, ...". A FAR/NEAR prompt for a maneuver under 20 m away says "Ahora" too.
  * - Roundabouts read "En la rotonda, toma la segunda salida hacia ..." (no "Ahora": the roundabout is the
  *   cue); past the tenth exit it says "la salida número 11".
+ * - Motorway exits read "En 800 metros, toma la salida 23 a la derecha hacia A 2, Alcalá de Henares" when the map has
+ *   the exit number and what is signposted (from [ExitSign]); each missing piece is left out and with none of them
+ *   the old sentence ("toma la salida de la derecha hacia <calle>") stays.
  * - Lane advice ("Mantente en el carril de la izquierda") is added to NEAR prompts only: far away it is too early
  *   to act on and at NOW there is no time left.
  */
@@ -63,6 +67,22 @@ object InstructionText {
     internal fun cleanStreet(raw: String?): String? {
         val s = raw?.trim().orEmpty()
         return if (s.isEmpty() || s.equals("null", ignoreCase = true) || s.equals("none", ignoreCase = true)) null else s
+    }
+
+    /** Which side an exit is on; null when [m] is not spoken as an exit. */
+    internal enum class ExitSide { LEFT, RIGHT, NONE }
+
+    /**
+     * A real exit type is always an exit. Other plain turns and bends are spoken as an exit only when the map gives an
+     * exit number for them (a ramp the core classified as a slight turn or a straight); merges and U-turns never.
+     */
+    internal fun exitSide(m: Maneuver): ExitSide? = when (m.type) {
+        TurnType.EXIT_LEFT -> ExitSide.LEFT
+        TurnType.EXIT_RIGHT -> ExitSide.RIGHT
+        TurnType.SLIGHT_LEFT, TurnType.LEFT -> if (ExitSign.ref(m) != null) ExitSide.LEFT else null
+        TurnType.SLIGHT_RIGHT, TurnType.RIGHT -> if (ExitSign.ref(m) != null) ExitSide.RIGHT else null
+        TurnType.STRAIGHT -> if (ExitSign.ref(m) != null) ExitSide.NONE else null
+        else -> null
     }
 
     private fun TurnType.isArrival() = this == TurnType.ARRIVE || this == TurnType.ARRIVE_LEFT || this == TurnType.ARRIVE_RIGHT
@@ -137,6 +157,21 @@ object InstructionText {
         override fun action(m: Maneuver, street: String?): String {
             val onto = street?.let { " en $it" }.orEmpty()
             val toward = street?.let { " hacia $it" }.orEmpty()
+            return exitSide(m)?.let { exit(m, it, street) } ?: ordinary(m, street, onto, toward)
+        }
+
+        private fun exit(m: Maneuver, side: ExitSide, street: String?): String {
+            val ref = ExitSign.spokenExitRef(m)
+            val where = when (side) {
+                ExitSide.LEFT -> if (ref != null) " a la izquierda" else " de la izquierda"
+                ExitSide.RIGHT -> if (ref != null) " a la derecha" else " de la derecha"
+                ExitSide.NONE -> ""
+            }
+            val toward = (ExitSign.spokenLabel(m, "y") ?: street)?.let { " hacia $it" }.orEmpty()
+            return if (ref != null) "toma la salida $ref$where$toward" else "toma la salida$where$toward"
+        }
+
+        private fun ordinary(m: Maneuver, street: String?, onto: String, toward: String): String {
             return when (m.type) {
                 TurnType.DEPART -> depart(street)
                 TurnType.STRAIGHT -> "sigue recto" + street?.let { " por $it" }.orEmpty()
@@ -153,8 +188,7 @@ object InstructionText {
                     if (exit != null && exit > 0) "en la rotonda, toma ${exitOrdinal(exit)}$toward" else "entra en la rotonda"
                 }
                 TurnType.ROUNDABOUT_LEAVE -> "sal de la rotonda$toward"
-                TurnType.EXIT_LEFT -> "toma la salida de la izquierda$toward"
-                TurnType.EXIT_RIGHT -> "toma la salida de la derecha$toward"
+                TurnType.EXIT_LEFT, TurnType.EXIT_RIGHT -> exit(m, if (m.type == TurnType.EXIT_LEFT) ExitSide.LEFT else ExitSide.RIGHT, street)
                 TurnType.MERGE -> if (street == null) "incorpórate a la vía" else "incorpórate a $street"
                 TurnType.ARRIVE, TurnType.ARRIVE_LEFT, TurnType.ARRIVE_RIGHT -> arrive(m.type, true, null)
             }
@@ -213,6 +247,21 @@ object InstructionText {
         override fun action(m: Maneuver, street: String?): String {
             val onto = street?.let { " onto $it" }.orEmpty()
             val toward = street?.let { " toward $it" }.orEmpty()
+            return exitSide(m)?.let { exit(m, it, street) } ?: ordinary(m, street, onto, toward)
+        }
+
+        private fun exit(m: Maneuver, side: ExitSide, street: String?): String {
+            val ref = ExitSign.spokenExitRef(m)
+            val where = when (side) {
+                ExitSide.LEFT -> " on the left"
+                ExitSide.RIGHT -> " on the right"
+                ExitSide.NONE -> ""
+            }
+            val toward = (ExitSign.spokenLabel(m, "and") ?: street)?.let { " toward $it" }.orEmpty()
+            return if (ref != null) "take exit $ref$where$toward" else "take the exit$where$toward"
+        }
+
+        private fun ordinary(m: Maneuver, street: String?, onto: String, toward: String): String {
             return when (m.type) {
                 TurnType.DEPART -> depart(street)
                 TurnType.STRAIGHT -> "continue straight" + street?.let { " on $it" }.orEmpty()
@@ -229,8 +278,7 @@ object InstructionText {
                     if (exit != null && exit > 0) "at the roundabout, take ${exitOrdinal(exit)}$toward" else "enter the roundabout"
                 }
                 TurnType.ROUNDABOUT_LEAVE -> "exit the roundabout$onto"
-                TurnType.EXIT_LEFT -> "take the exit on the left$toward"
-                TurnType.EXIT_RIGHT -> "take the exit on the right$toward"
+                TurnType.EXIT_LEFT, TurnType.EXIT_RIGHT -> exit(m, if (m.type == TurnType.EXIT_LEFT) ExitSide.LEFT else ExitSide.RIGHT, street)
                 TurnType.MERGE -> if (street == null) "merge" else "merge onto $street"
                 TurnType.ARRIVE, TurnType.ARRIVE_LEFT, TurnType.ARRIVE_RIGHT -> arrive(m.type, true, null)
             }
@@ -276,8 +324,11 @@ object InstructionText {
  */
 fun Announcement.isImportant(): Boolean {
     val t = maneuver.type
-    val farToo = t == TurnType.EXIT_LEFT || t == TurnType.EXIT_RIGHT || t == TurnType.ROUNDABOUT_ENTER
+    // A slight bend or a straight that the map gives an exit number to is a real exit: it keeps its prompt.
+    val isExit = t == TurnType.EXIT_LEFT || t == TurnType.EXIT_RIGHT || (t != TurnType.MERGE && ExitSign.ref(maneuver) != null)
+    val farToo = isExit || t == TurnType.ROUNDABOUT_ENTER
     if (kind == AnnouncementKind.FAR && !farToo) return false
+    if (isExit) return true
     return when (t) {
         TurnType.STRAIGHT, TurnType.SLIGHT_LEFT, TurnType.SLIGHT_RIGHT, TurnType.MERGE, TurnType.ROUNDABOUT_LEAVE, TurnType.DEPART -> false
         else -> true

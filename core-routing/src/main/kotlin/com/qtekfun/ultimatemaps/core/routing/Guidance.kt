@@ -16,6 +16,10 @@ data class Lane(val directions: Set<LaneDirection>, val recommended: Boolean)
 /**
  * An instruction anchored on the route geometry: it applies at `geometry[geometryIndex]` of the [RoutePlan].
  * [roundaboutExit] is the exit number for roundabout maneuvers; [streetName] is the road to turn onto (may be empty).
+ * The three exit fields come from the OSM tags of the ramp (`junction:ref`, `destination:ref`, `destination`) and are
+ * null when the map does not have them (never invented): [exitRef] is the junction/exit number ("23", "12A"),
+ * [towardRef] the road(s) the ramp leads to ("A-2", "M-40;A-2") and [towardName] the signposted place(s)
+ * ("Alcalá de Henares; Torrejón"). See [ExitSign] for how they are shown and spoken.
  */
 data class Maneuver(
     val geometryIndex: Int,
@@ -23,6 +27,9 @@ data class Maneuver(
     val streetName: String? = null,
     val roundaboutExit: Int? = null,
     val lanes: List<Lane> = emptyList(),
+    val exitRef: String? = null,
+    val towardRef: String? = null,
+    val towardName: String? = null,
 )
 
 /** Speed limit in km/h for the geometry range `[startIndex, endIndex]`; `null` when the data has none. */

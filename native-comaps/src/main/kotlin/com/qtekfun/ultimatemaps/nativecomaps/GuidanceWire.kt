@@ -14,7 +14,10 @@ import com.qtekfun.ultimatemaps.core.routing.TurnType
  * `[version, nManeuvers, nLimits, maneuvers..., limits...]`
  * - maneuver: `geometryIndex, turn, roundaboutExit(-1), nameIndex(-1), nLanes, (laneWayMask, recommended)*`
  * - limit: `from, to, kmh(-1 = no data)`
- * - optional trailing tunnel section (only when the route has tunnels): `nTunnels, (from, to)*` as point indices
+ * - optional trailing tunnel section (only when the route has tunnels or exit data): `nTunnels, (from, to)*` as point indices
+ * - optional trailing exit section (only when some maneuver has motorway exit data; then the tunnel section is always
+ *   present, possibly with 0 tunnels): `nExits, (maneuverOrdinal, exitRefIdx(-1), towardRefIdx(-1), towardNameIdx(-1))*`,
+ *   the ordinal counting the maneuvers in the order they were written and the indices pointing into [names]
  * An empty array means "no guidance". Any inconsistency throws [IllegalArgumentException] (it never reads out of bounds).
  */
 internal object GuidanceWire {
@@ -67,6 +70,7 @@ internal object GuidanceWire {
             limits += SpeedLimit(start, end, if (kmh == -1) null else kmh)
         }
         val tunnels = ArrayList<TunnelRange>()
+        var hasExitSection = false
         if (!r.exhausted()) {
             repeat(r.count("nTunnels", raw.size)) {
                 val start = r.int("tunnelFrom")
@@ -75,6 +79,19 @@ internal object GuidanceWire {
                     "invalid tunnel stretch: $start..$end (points: $geometrySize)"
                 }
                 tunnels += TunnelRange(start, end)
+            }
+            hasExitSection = !r.exhausted()
+        }
+        if (hasExitSection) {
+            repeat(r.count("nExits", raw.size)) {
+                val ordinal = r.int("exitManeuver")
+                require(ordinal in 0 until nMan) { "exit data for maneuver $ordinal of $nMan" }
+                fun text(what: String): String? {
+                    val idx = r.int(what)
+                    require(idx in -1 until names.size) { "$what out of range: $idx (names: ${names.size})" }
+                    return if (idx >= 0) names[idx].trim().ifEmpty { null } else null
+                }
+                maneuvers[ordinal] = maneuvers[ordinal].copy(exitRef = text("exitRef"), towardRef = text("towardRef"), towardName = text("towardName"))
             }
         }
         require(r.exhausted()) { "guidance with leftover data: ${raw.size - r.pos}" }

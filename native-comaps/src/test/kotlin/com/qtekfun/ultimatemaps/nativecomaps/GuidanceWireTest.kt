@@ -202,4 +202,59 @@ class GuidanceWireTest {
         assertTrue(out.plan!!.guidance.tunnels.isEmpty())
         assertNotNull(out.guidanceError)
     }
+
+    // ---- Motorway exit section (after the tunnel section; the tunnel section is then always present)
+
+    private val exitNames = arrayOf("Autovía del Este", "23", "A-2", "Alcalá de Henares")
+    private val twoManeuvers = arrayOf<Number>(1, 2, 0, /* exit right, name 0 */ 4, 13, -1, 0, 0, /* arrive */ 9, 15, -1, -1, 0)
+
+    @Test fun `exit section sets the exit fields of the right maneuver`() {
+        val g = decode(d(*twoManeuvers, /* 0 tunnels */ 0, /* 1 exit */ 1, /* maneuver 0 */ 0, 1, 2, 3), exitNames)
+        assertEquals(Maneuver(4, TurnType.EXIT_RIGHT, "Autovía del Este", exitRef = "23", towardRef = "A-2", towardName = "Alcalá de Henares"), g.maneuvers[0])
+        assertNull(g.maneuvers[1].exitRef)
+        assertTrue(g.tunnels.isEmpty())
+    }
+
+    @Test fun `exit section targets the ordinal of the maneuver and leaves the others alone`() {
+        val g = decode(d(*twoManeuvers, 0, 1, /* maneuver 1 */ 1, -1, 2, -1), exitNames)
+        assertNull(g.maneuvers[0].towardRef)
+        assertEquals("A-2", g.maneuvers[1].towardRef)
+        assertNull(g.maneuvers[1].exitRef)
+    }
+
+    @Test fun `exit section after tunnels and limits`() {
+        val g = decode(d(1, 1, 1, 4, 13, -1, 0, 0, /* limit */ 0, 9, 120, /* 1 tunnel */ 1, 2, 4, /* exits */ 1, 0, 1, -1, -1), exitNames)
+        assertEquals(listOf(SpeedLimit(0, 9, 120)), g.speedLimits)
+        assertEquals(listOf(TunnelRange(2, 4)), g.tunnels)
+        assertEquals("23", g.maneuvers.single().exitRef)
+    }
+
+    @Test fun `files without the exit section still read and have no exit data`() {
+        val g = decode(d(*twoManeuvers), exitNames)
+        assertTrue(g.maneuvers.all { it.exitRef == null && it.towardRef == null && it.towardName == null })
+        val withTunnels = decode(d(*twoManeuvers, 1, 1, 3), exitNames)
+        assertEquals(listOf(TunnelRange(1, 3)), withTunnels.tunnels)
+        assertNull(withTunnels.maneuvers[0].exitRef)
+    }
+
+    @Test fun `blank exit texts become null`() {
+        val g = decode(d(1, 1, 0, 4, 13, -1, -1, 0, 0, 1, 0, 0, 0, 0), arrayOf("  "))
+        assertNull(g.maneuvers.single().exitRef)
+    }
+
+    @Test fun `bad exit sections are rejected`() {
+        assertFailsWith<IllegalArgumentException> { decode(d(*twoManeuvers, 0, 1, 2, 1, 2, 3), exitNames) }  // maneuver 2 of 2
+        assertFailsWith<IllegalArgumentException> { decode(d(*twoManeuvers, 0, 1, -1, 1, 2, 3), exitNames) }
+        assertFailsWith<IllegalArgumentException> { decode(d(*twoManeuvers, 0, 1, 0, 1, 2, 4), exitNames) }  // text 4 of 4
+        assertFailsWith<IllegalArgumentException> { decode(d(*twoManeuvers, 0, 1, 0, 1, 2, -2), exitNames) }
+        assertFailsWith<IllegalArgumentException> { decode(d(*twoManeuvers, 0, 2, 0, 1, 2, 3), exitNames) }  // truncated
+        assertFailsWith<IllegalArgumentException> { decode(d(*twoManeuvers, 0, 1, 0, 1, 2, 3, 9), exitNames) }  // leftover
+        assertFailsWith<IllegalArgumentException> { decode(d(*twoManeuvers, 0, -1), exitNames) }
+    }
+
+    @Test fun `a malformed exit section only drops the guidance`() {
+        val route = d(0, 1500, 120, 40.0, -3.0, 40.1, -3.1)
+        val out = decodeGuidedRoute(RawGuidedRoute(route, d(*twoManeuvers, 0, 1, 5, 1, 2, 3), exitNames))
+        assertNotNull(out.guidanceError)
+    }
 }

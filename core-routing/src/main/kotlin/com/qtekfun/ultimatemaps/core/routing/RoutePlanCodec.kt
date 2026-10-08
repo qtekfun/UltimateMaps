@@ -16,9 +16,10 @@ import java.io.IOException
 object RoutePlanCodec {
     /**
      * 2 adds the tunnel ranges after the stops; 3 adds the altitudes (whole metres in a short, unknown = min value).
-     * Versions 1 and 2 (older saved states) are still read, with no tunnels / no altitudes.
+     * 4 adds, after the altitudes, the motorway exit fields of the maneuvers (exit ref, toward ref, toward name), only
+     * for the maneuvers that have some. Versions 1 to 3 (older saved states) are still read, without what they lack.
      */
-    const val VERSION = 3
+    const val VERSION = 4
     private const val UNKNOWN_ALTITUDE = Short.MIN_VALUE.toInt()
     const val MAX_POINTS = 4_000_000
     private const val MAX_ITEMS = 1_000_000
@@ -63,6 +64,14 @@ object RoutePlanCodec {
         }
         out.writeInt(plan.altitudes.size)
         for (a in plan.altitudes) out.writeShort(if (a.isNaN()) UNKNOWN_ALTITUDE else Math.round(a).toInt().coerceIn(-32767, 32767))
+        val withExit = g.maneuvers.withIndex().filter { (_, m) -> m.exitRef != null || m.towardRef != null || m.towardName != null }
+        out.writeInt(withExit.size)
+        for ((i, m) in withExit) {
+            out.writeInt(i)
+            writeText(out, m.exitRef)
+            writeText(out, m.towardRef)
+            writeText(out, m.towardName)
+        }
     }
 
     @Throws(IOException::class)
@@ -108,6 +117,13 @@ object RoutePlanCodec {
             val n = bounded(input.readInt(), MAX_POINTS)
             if (n != 0 && n != geometry.size) throw IOException("altitude count $n does not match the geometry")
             repeat(n) { input.readShort().toInt().let { a -> altitudes += if (a == UNKNOWN_ALTITUDE) Double.NaN else a.toDouble() } }
+        }
+        if (version >= 4) {
+            repeat(bounded(input.readInt(), MAX_ITEMS)) {
+                val i = input.readInt()
+                if (i !in maneuvers.indices) throw IOException("exit data for maneuver $i of ${maneuvers.size}")
+                maneuvers[i] = maneuvers[i].copy(exitRef = readText(input), towardRef = readText(input), towardName = readText(input))
+            }
         }
         return RoutePlan(geometry, distance, duration, RouteGuidance(maneuvers, limits, stops, tunnels), altitudes)
     }
