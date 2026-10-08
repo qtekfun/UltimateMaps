@@ -245,3 +245,74 @@ Needs the owner:
   truncated, so several details are from secondary summaries (Xataka, Hipertextual, 9to5Google, TechRadar).
 - Whether the CoMaps JNI layer exposes tunnel information for route segments (not in `RoutePlan` today).
 - Any battery, throttling or behaviour claims on real devices; the Android pages are documentation only.
+
+## 8. Open alternatives (second research pass)
+
+Written 2026-10-08. Question from the owner: is there anything more open or free for tunnel positioning than what sections 1-7 found?
+Method: web search plus fetches of the primary pages that were reachable. Nothing here was tested on a device. "Not verified" means I
+could not open or find a primary source; absence of results is weak evidence, not proof.
+
+**Verdict:** no open dataset or open specification for tunnel beacon positions exists that I could find. The only genuinely open and
+usable pieces are the generic ones: OSM tunnel geometry, GNSS-fade detection from the standard Android API, and route-constrained dead
+reckoning. Stage 1 of section 3 stands; stage 2 (beacons) stays blocked by missing id-to-position data.
+
+### 8.1 Madrid Calle 30 / city tunnel beacons: data and "open source"
+
+- **Beacon id / coordinate dataset: none found.** Searches for a datos.madrid.es dataset, a GitHub repository, or an OSM tagging scheme found nothing.
+  The only primary description of the mapping is the installer's page: each beacon "has been associated to its position in the tunnel", with no
+  statement that the table is published ([Imesapi](https://www.imesapi.es/suministro-e-instalacion-de-balizas-para-la-navegacion-en-los-tuneles-de-la-m-30)).
+  Not verified: whether Madrid Calle 30 holds the table and would share it on request (a question for the owner, see section 6).
+- **"Open source" claim:** reported via press that the city calls the devices open source and privacy-respecting
+  ([OKDiario](https://okdiario.com/madrid/adios-perderse-tuneles-madrid-novedad-que-llega-lo-cambia-todo-15596918), city note at
+  [diario.madrid.es](https://diario.madrid.es/blog/notas-de-prensa/madrid-pone-en-marcha-el-sistema-de-balizas-que-permite-la-navegacion-asistida-por-los-tuneles-de-la-m-30-en-colaboracion-con-waze-y-google/);
+  I could not open the note itself). No hardware design, firmware or id list was found, so it is not usable. Marked unverified.
+- **Waze primary statement:** the technology is "open and free to use by any other navigation app, including Google Maps", but the page gives no
+  spec, API, dataset, licence or beacon locations; it points to a FAQ and a contact address (waze-beacons-support@google.com) for technical
+  requirements ([Waze program overview](https://www.waze.com/discuss/t/waze-beacons-program-overview-all-you-need-to-know/411647)).
+  Fields broadcast: Eddystone UID and TLM; the app also records RSSI, TX power and timestamp
+  ([How Waze Beacons work](https://support.google.com/waze/partners/answer/9416071?hl=en)). The Waze beacon FAQ
+  (`support.google.com/waze/partners/answer/9416294`) was named by the overview but I did not fetch it: **not verified, worth reading before contacting Waze.**
+- **Reverse engineering of the instance id:** none found (Wikipedia and Scapy only document generic Eddystone framing:
+  [Eddystone](https://en.wikipedia.org/wiki/Eddystone_(Google)), [Scapy eddystone](https://scapy.readthedocs.io/en/latest/api/scapy.contrib.eddystone.html)).
+- **OpenStreetMap:** no tagging scheme or discussion for road-tunnel beacons found. Nearest precedents are `indoormark=beacon`
+  ([proposal, indoor beacons](https://wiki.openstreetmap.org/wiki/Proposal:Indoormark=beacon)) and an acoustic beacon proposal
+  ([Proposal:Acoustic beacon](https://wiki.openstreetmap.org/wiki/Proposal:Acoustic_beacon)); neither covers this. Only a template for a future community effort.
+
+### 8.2 Other tunnels (Spain / Europe)
+
+- Waze lists New York, Chicago, Paris, Rio, Brussels, Oslo, Sydney, Boston, Mexico City "and more"
+  ([Waze partners, about the program](https://support.google.com/waze/partners/answer/7298984?hl=en)). Which tunnels, and whether ids or coordinates
+  are public: **no source found.**
+- Switzerland, Germany, Netherlands: no beacon rollout found in search results (one German article says the real spread is unknown). Not verified either way.
+- Programme eligibility is road authorities and private road operators; joining is free (same Waze page). So every deployment has the same closed id table.
+
+### 8.3 Open technical alternatives (offline, private)
+
+| Technique | What I found | Usable for us? |
+|---|---|---|
+| **OSM `tunnel=yes`** | Ways split at portals, `layer<0` ([Key:tunnel](https://wiki.openstreetmap.org/wiki/Key:tunnel)); gives span and length. Our data is CoMaps/OMIM, tunnel flag in the JNI layer still unchecked (section 3.1). | Yes, as spans for stage 1. |
+| **Smartphone INS + non-holonomic constraint (NHC)** | Li et al., ISPRS Archives XLVI-3/W1-2022: 3.1 %/D horizontal error in a tunnel with INS/NHC (I read "/D" as percent of distance, so about 31 m per km; the abstract does not spell this out). With BLE added, about 1 m in an underground car park. Source: [paper page](https://isprs-archives.copernicus.org/articles/XLVI-3-W1-2022/81/2022/) (DOI 10.5194/isprs-archives-XLVI-3-W1-2022-81-2022; I read only the abstract via search, full text not opened). | Yes as an order of magnitude; their phone was fixed and calibrated, ours may be handheld. |
+| **Route as 1-D constraint (map matching)** | A UGV preprint reports RMSE dropping from 186.8 m to 1.7 m in long tunnels with HD-map matching ([arXiv 2606.19687](https://arxiv.org/pdf/2606.19687)); HD map and UGV sensors, not a phone. | Supports our design, numbers not transferable. |
+| **Pure MEMS IMU drift** | Vendor claim: thousands of metres over 20 min for a MEMS INS ([Inertial Labs](https://inertiallabs.com/tunnel-guide-feature-for-gps-aided-ins-improves-performance-during-gnss-outage/)); a forum post sees a u-blox UDR module stable for 60-120 s then degrading ([SparkFun forum](https://community.sparkfun.com/t/neo-m8u-udr-performance-issues-significant-drift-and-velocity-lag-during-gnss-outages/68450)). Vendor/anecdote, not independent. | Confirms: do not integrate raw acceleration; use constraints, last speed and stop/go. |
+| **GNSS fade at the entrance** | No Android app paper found. Patents describe entry detection from signal strength / satellite-count drops plus map data, and exit from a sharp rise ([US 10306559](https://patents.google.com/patent/US10306559); [US 11402514](https://image-ppubs.uspto.gov/dirsearch-public/print/downloadPdf/11402514)). `GnssMeasurement` (API 24+) exposes C/N0 per satellite ([GPS World](https://www.gpsworld.com/google-updates-progress-on-android-gnss-measurements/)). Patents: do not copy their claims; the idea (several satellites drop together, confirmed by map) is generic, but get a licence review before shipping. Thresholds untested. | Yes, with OSM span as confirmation. Needs only fine location. |
+| **Barometer** | Relative altitude works, absolute does not; drifts over tens of minutes with weather; 0.65 m (indoor) and 1.39 m (outdoor) RMSE only after calibration against a terrain model and weather stations ([PolyU](https://research.polyu.edu.hk/en/publications/barometer-assisted-smartphone-localization-for-vehicle-navigation/)). No work found on tunnel entrance detection by pressure. A tunnel in a car is not sealed, so pressure effects are unverified. | Weak; at most an optional grade hint. Not recommended. |
+| **Magnetometer** | No tunnel-specific accuracy numbers found. Section 1.4 already says it is poor in steel and concrete. | No. |
+| **Wheel speed via OBD-II Bluetooth** | I did not find an accuracy study in this pass; exact vehicle speed is what OBD provides but it needs a dongle and extra Bluetooth permission. Not verified. | Optional later, off the critical path. |
+| **Cellular / TLE** | Not researched beyond section 1.4 (needs network or a cell database, conflicts with offline and privacy rules). | No. |
+
+### 8.4 What this changes in the plan
+
+1. Nothing changes the stage 1 recommendation. The 3.1 %/D figure gives a planning number: a 2 km tunnel could drift about 60 m even with a
+   constraint model; our route clamp and portal snap should keep us better than that (untested).
+2. Add to stage 1: GNSS fade detection (several satellites losing C/N0 together) as a second trigger for `IN_TUNNEL`, confirmed by an OSM span;
+   cheap, no new permission. Needs a patent check before implementation.
+3. Stage 2 stays blocked by data, not by technology. The cheapest next step is non-technical: read the Waze beacon FAQ and ask Waze or Madrid
+   Calle 30 whether beacon id positions can be shared with an open-source offline app (owner decision, third-party contact).
+4. An OSM tagging scheme would be a community project; nothing exists.
+
+### 8.5 Not verified in this pass
+
+- Madrid open data portal contents (the catalogue was not browsed directly, only searched); GitHub search was by web search only.
+- The primary Madrid press note, the Waze beacon FAQ, and the full text of the ISPRS paper.
+- Any OBD, magnetometer, cellular or pressure-in-tunnel accuracy figure.
+- Per-country beacon coverage in Europe.
