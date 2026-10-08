@@ -36,9 +36,9 @@ Without those variables, `./gradlew :app:assembleFossRelease` produces an **unsi
    ```
 4. The workflow checks that the tag matches `appVersion` and that there are notes, runs `test` and `lintFossRelease`, builds the signed APK and publishes the Release with `UltimateMaps-X.Y.Z.apk` and its `.sha256`. Release candidates (`-rc.N`) are published as pre-releases.
 
-## Test pre-releases (what has been published so far)
+## Releases are signed with the project key only (owner decision, 2026-10-08)
 
-Test builds are published by hand as **pre-releases signed with the debug key**, tagged `test-v0.1.0-rc.N` (never `v*`: that would trigger the release workflow without the signing secrets). Each one points at the exact commit it was built from and says in its notes what was and was not tested on a device. They cannot be updated to an official build signed with the project key: users must uninstall first.
+From `0.1.0-rc.10` on, only APKs signed with the project key are published: a `vX.Y.Z-rc.N` tag (published as a pre-release) or `vX.Y.Z`. The earlier test builds (`test-v0.1.0-rc.1` to `rc.9`) were pre-releases signed with the debug key; they cannot be updated to a build signed with the project key, so those users must uninstall first. No more debug-signed test builds are published.
 
 ## Status (2026-10-07)
 

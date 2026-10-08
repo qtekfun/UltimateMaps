@@ -2,9 +2,16 @@
 
 All notable changes are listed here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and versions follow [Semantic Versioning](https://semver.org).
 
-## [Unreleased]
+## [0.1.0-rc.10] - 2026-10-08
 
 ### Added
+
+- **Tunnels.** When the GPS is lost the route estimate now knows where the tunnels are (taken from the map data of the route, and learned from earlier losses): it keeps guiding to the tunnel exit with a better speed model, shows how far off it may be, never says you arrived inside a tunnel, and the status strip says "GPS lost in tunnel". A new switch, Settings, Navigation, *Use motion sensors in tunnels* (on by default), lets the phone's acceleration sensor tell "stopped" from "moving" while the GPS is lost; the sensor is used only then and nothing is stored or sent.
+- **Elevation on routes.** Car, walking and bike routes show the total ascent and descent ("↑ 120 m ↓ 95 m") and, on tap, an elevation profile chart with the lowest and highest point and the steepest grades. It uses the heights already inside the downloaded maps, so it needs no new data.
+- **Hiking and cycling routes (optional, off by default).** Settings, Navigation, *Hiking and cycling routes*: turning it on downloads one file with about 8,700 signed trails of Spain from OpenStreetMap, draws them under the route (dashes for walking, dots for cycling, colour by reach) and, tapping a trail, shows its name, operator and length with *Route to the start*.
+- **EV chargers (optional, off by default).** Settings, Petrol stations, *Show EV chargers*: about 5,000 charging points from OpenStreetMap on the map, with plug and power filters and *Route to the charger*.
+- **Public transport planner options.** The walk-only option is always offered when the walk takes less than 20 minutes (adjustable) and a bus for two stops that saves a couple of minutes is no longer suggested; a limit on the total walking per trip; chips to leave out Bus, Tram, Train or other modes (remembered, with *Reset*); line badges show a small bus, tram or train icon so two lines with the same name are told apart.
+- **A new launcher icon** (adaptive and themed) and a single-colour notification icon.
 
 - **Bike-share stations (optional, off by default).** Settings, Navigation, *Bike-share stations*: turning it on downloads one small file of docking stations (Bicing in Barcelona and BiciMAD in Madrid; no position sent) and draws them on the map as a small bicycle badge, thinned by zoom. Tapping one opens a card with the name, the system, the number of docks, the credit of the open data (CC BY 4.0) and *Route to the station* (and *Add stop* while a route is previewed or navigated). A second, separate switch, *Show live bike availability* (off by default), asks that system's public data feed for "N bikes, M free docks (updated HH:MM)" only while a card is open, at most once every 30 seconds, with no station id or position in the request; failures are silent. Both switches are part of the settings backup (they need consent on restore). Data side: `scripts/build-bikeshare.py`, a `bikeshare` catalog block and an optional weekly step. Verified by JVM and Robolectric tests only; not seen on a device.
 - **Low-emission zones (optional, off by default).** Settings, Alerts, *Low-emission zones*: turning it on downloads one small file of zone polygons from OpenStreetMap (no position sent) and then (1) draws the zones on the map as a translucent amber area with a dashed outline under the route line (own toggle), (2) adds "This route enters a low-emission zone: check the access rules of the city" to the summary of a car route, with the zone names and the restriction text when OpenStreetMap carries one, and (3) shows a banner and, by your choice (chime, voice or silent, like the camera alerts), prompts once before a car navigation enters a zone. The data is based on OpenStreetMap, may be incomplete or out of date, and the app never says whether a vehicle is allowed or banned (no labels or stickers): the city's official rules apply. The switch is part of the settings backup (as a switch that needs consent). Data side: `scripts/build-zbe.py`, a `zbe` catalog block and an optional weekly step. Verified by JVM and Robolectric tests only; not seen on a device.
@@ -13,8 +20,14 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 - **Public transport for more cities (data side).** The Public transport list in Maps can hold several cities, each downloaded only when you choose it (with its download size); a trip between two cities that have separate timetables now says so. Build configs for Barcelona/Catalonia, Valencia, Sevilla and Bilbao from the Spanish National Access Point ("Powered by MITRAMS"); the data files appear once the weekly data release builds them.
 - **Third-party notices in About.** Settings, About now has a collapsed *Third-party notices* section with the `NOTICE` text: the licence texts and copyright lines that the libraries inside the app (the CoMaps core and its third-party code, the Artistic License 2.0 of `libkdtree++`, and others) ask to be shipped with the app.
 
+### Changed
+
+- **The route is framed whole.** When a route or itinerary is computed the map zooms so the whole route, origin and destination included, is visible above the sheet (unless you have moved the map yourself, and never during navigation); the origin is drawn as a dot even when it is "my location".
+- **Android Auto is not planned**: it depends on Google's proprietary host app. The analysis is kept in `docs/phase2/android-auto.md`.
+
 ### Fixed
 
+- **The travel-mode selector** no longer cuts the "Transporte" label on narrow screens or with a large font.
 - **Quick chips (Home, Work, Park, SOS)** stay on one line each with less padding and an ellipsis if a label is too long (the label is now "Park" / "Aparcar"), so the row is even in English, Spanish and with a large font.
 - **The bottom sheet is opaque** in the light and dark themes: map labels and the navigation buttons no longer show through the card text.
 - **`geo:` links with `?q=text`** now run the offline search for the text (the Search tab opens with the results, like typing it); the old "offline search is not available yet" message is gone, replaced by a neutral note only when no map is installed.
