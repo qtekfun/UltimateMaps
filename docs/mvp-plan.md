@@ -48,7 +48,7 @@ To avoid collisions: A touches `app/**/regions/**` and the service; B touches `a
 ## Gates involving the phone (not used without explicit permission)
 
 1. **R12 search:** ≤ 100 ms per keystroke (the spike gave 631 ms with the full engine).
-2. **R12 long route:** ≤ 2 s for Madrid–Barcelona (the spike gave ≈ 18 s).
+2. **R12 long route:** relaxed on 2026-10-08 to tiers (≤ 2 s up to 150 km, ≤ 10 s up to 350 km, ≤ 20 s up to 650 km); see `docs/mapas-02-requisitos.md` RF-04. Measured: 12 to 15 s Madrid to Barcelona.
 3. Fluidity with labels and icons, and memory consumption with Spain loaded.
 
 **If R12 does not improve** with the decoupled core, we decide with data: relax the threshold for long routes, limit the loaded regions or evaluate Valhalla. Until then M2/M4 move forward with the engine as is.
