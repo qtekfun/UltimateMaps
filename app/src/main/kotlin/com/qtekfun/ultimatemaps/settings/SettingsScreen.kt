@@ -82,6 +82,8 @@ class SettingsEnv(
     val trails: TrailsSettingsEnv? = null,
     /** "Bike-share stations" group of the Navigation category (switch, live availability switch, data); null hides it. */
     val bikeShare: BikeShareSettingsEnv? = null,
+    /** "Weather alerts (AEMET)" group of the Alerts category (switch, API key, yellow switch, check now); null hides it. */
+    val weather: WeatherSettingsEnv? = null,
     /** Track recording part of the Data category (switch and delete); null hides it. */
     val recording: RecordingSettingsEnv? = null,
     /** Language of place information section (search results and place card); null hides it. */
@@ -201,6 +203,7 @@ private fun purposeLabel(p: ConnectionPurpose) = stringResource(
         ConnectionPurpose.TRAFFIC_INCIDENTS -> R.string.conn_purpose_traffic
         ConnectionPurpose.TRANSIT_REALTIME -> R.string.conn_purpose_transit_rt
         ConnectionPurpose.BIKE_AVAILABILITY -> R.string.conn_purpose_bike
+        ConnectionPurpose.WEATHER_ALERTS -> R.string.conn_purpose_weather
         ConnectionPurpose.OTHER -> R.string.conn_purpose_other
     },
 )

@@ -6,6 +6,9 @@ import com.qtekfun.ultimatemaps.core.cameras.CameraSettings
 import com.qtekfun.ultimatemaps.core.cameras.MIN_INCIDENT_REFRESH_MINUTES
 import com.qtekfun.ultimatemaps.chargers.PrefsChargerSettingsStore
 import com.qtekfun.ultimatemaps.zbe.PrefsZbeSettingsStore
+import com.qtekfun.ultimatemaps.weather.KeystoreApiKeyStore
+import com.qtekfun.ultimatemaps.weather.PrefsWeatherAlertSettings
+import com.qtekfun.ultimatemaps.core.weather.WeatherAlertSettings
 import com.qtekfun.ultimatemaps.bikeshare.PrefsBikeShareSettingsStore
 import com.qtekfun.ultimatemaps.core.bikeshare.BikeShareSettings
 import com.qtekfun.ultimatemaps.core.zbe.ZbeSettings
@@ -98,6 +101,7 @@ object SettingsSchema {
     const val GROUP_CHARGERS = "chargers"
     const val GROUP_ZBE = "zbe"
     const val GROUP_BIKESHARE = "bikeshare"
+    const val GROUP_WEATHER = "weather"
     const val GROUP_TRAILS = "trails"
     const val GROUP_HISTORY = "history"
     const val GROUP_RECORDING = "recording"
@@ -131,6 +135,7 @@ object SettingsSchema {
     private val zbe = ZbeSettings()
     private val bikeShare = BikeShareSettings()
     private val trails = RouteSettings()
+    private val weather = WeatherAlertSettings()
 
     private val navPrefs = PrefsNavSettingsStore.PREFS
     private val fuelPrefs = PrefsFuelSettingsStore.PREFS
@@ -217,6 +222,9 @@ object SettingsSchema {
         // Bike-share stations: the switch starts a download and the live switch contacts a third-party host, so both need consent.
         bool(GROUP_BIKESHARE, bikePrefs, PrefsBikeShareSettingsStore.KEY_ENABLED, bikeShare.enabled, RestorePolicy.NEEDS_CONSENT),
         bool(GROUP_BIKESHARE, bikePrefs, PrefsBikeShareSettingsStore.KEY_LIVE_AVAILABILITY, bikeShare.liveAvailability, RestorePolicy.NEEDS_CONSENT),
+        // Weather alerts (AEMET): the switch contacts a third-party server, so it needs consent. The API key is NEVER exported (see [excluded]).
+        bool(GROUP_WEATHER, PrefsWeatherAlertSettings.PREFS, PrefsWeatherAlertSettings.KEY_ENABLED, weather.enabled, RestorePolicy.NEEDS_CONSENT),
+        bool(GROUP_WEATHER, PrefsWeatherAlertSettings.PREFS, PrefsWeatherAlertSettings.KEY_SHOW_YELLOW, weather.showYellow),
         // Hiking and cycling routes: the switch starts a download of several MB, so it needs consent; the kinds are plain preferences.
         bool(GROUP_TRAILS, trailPrefs, PrefsRouteSettingsStore.KEY_ENABLED, trails.enabled, RestorePolicy.NEEDS_CONSENT),
         bool(GROUP_TRAILS, trailPrefs, PrefsRouteSettingsStore.KEY_HIKING, trails.hiking),
@@ -268,6 +276,8 @@ object SettingsSchema {
         "camera/tilt" to "tied to the last map camera position",
         "places/default_list_id" to "row id of the local database; the places backup carries the lists themselves",
         "core/isolated" to "debug valve of the native core, not a user setting",
+        "${KeystoreApiKeyStore.PREFS}/${KeystoreApiKeyStore.KEY_API_KEY}" to
+            "the user's AEMET API key (a credential that identifies them to AEMET): encrypted with a Keystore key that cannot leave the phone, never exported, logged or backed up",
         "${PrefsPendingRestore.PREFS}/${PrefsPendingRestore.KEY_CONSENT}" to "derived by an import, never exported",
         "${PrefsPendingRestore.PREFS}/${PrefsPendingRestore.KEY_REGIONS}" to "derived by an import, never exported",
     )

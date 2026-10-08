@@ -199,6 +199,7 @@ class PanelHost(
             val app = activity.application as MapasApp
             if (app.zbeSettings.settings.value.enabled) app.zbeData.repository.index.crossings(geometry) else emptyList()
         },
+        weatherWarnings = { geometry -> (activity.application as MapasApp).weatherAlerts.forRoute(geometry) },
     )
 
     /** "Start" / "Simulate" on the route card: the guided route goes through the same shared core and lock. */

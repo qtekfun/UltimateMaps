@@ -93,6 +93,7 @@ fun RoutePanel(
             } else {
                 ResultAndStart(s, navStart)
                 if (s.status == RouteStatus.DONE) LowEmissionWarning(s.lowEmission) // full width: below the figures and Start
+                if (s.status == RouteStatus.DONE) com.qtekfun.ultimatemaps.weather.WeatherRouteWarning(s.weather)
                 AlternativesSection(route)
                 Spacer(Modifier.height(4.dp))
                 RouteOptionsSection(route)

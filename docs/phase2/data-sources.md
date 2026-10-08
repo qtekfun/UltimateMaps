@@ -36,7 +36,7 @@ Tooling note: the search tool returns summaries, so several licence texts could 
 | 5 | Renfe long/medium distance GTFS + national Cercanias + Rodalies | Intercity trips; needed for Spain-wide transit | **Not stated** on data.renfe.com (R); ask Renfe | 5-8 once the planner is multi-feed | next (after licence answer) |
 | 6 | ZBE polygons and a "low-emission zone ahead" notice | Practical for drivers; legal risk of wrong data | OSM polygons (ODbL); no national dataset found (S) | 5-8 | next |
 | 7 | Bike-share stations (GBFS static) and optional live availability | Urban cycling; uses the same feed standard everywhere | Per system; Bilbao CC BY 4.0 (S); Bicing via Open Data BCN CC BY 4.0 (S) | 4-6 static; +4-6 live | later |
-| 8 | AEMET weather alerts (CAP), on demand | Safety for hikers/drivers | AEMET attribution, free API key (S) | 5-7 | later |
+| 8 | AEMET weather alerts (CAP), on demand | Safety for hikers/drivers | AEMET attribution, free API key (S) | 5-7 | **built (PR feat/aemet-alerts, unverified on a phone)**: see `docs/phase2/weather-alerts.md` |
 | 9 | Wikidata descriptions (CC0) and optional Wikipedia lead text (CC BY-SA 4.0) for place cards | Rich place cards offline | CC0 / CC BY-SA 4.0 one-way to GPLv3 (S) | 6-10 (Wikidata only) ; +8-12 (Wikipedia leads) | later |
 | 10 | Spanish address gap-filling (CNIG CartoCiudad, Catastro INSPIRE) | Better house-number search where OSM lacks them | CNIG/Catastro licence text not confirmed (S) | 15-25 (needs core work) | later |
 

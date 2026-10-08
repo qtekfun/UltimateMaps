@@ -79,6 +79,7 @@ fun settingsCategories(env: SettingsEnv): List<SettingsCategory> = buildList {
                 content = {
                     CamerasSection(cam)
                     env.zbe?.let { ZbeSection(it) }
+                    env.weather?.let { WeatherSection(it) }
                 },
             ),
         )

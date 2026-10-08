@@ -44,6 +44,13 @@ class SettingsActivity : ComponentActivity() {
 
     private fun openOut(uri: Uri) = checkNotNull(contentResolver.openOutputStream(uri, "wt")) { "cannot open the file" }
     private fun openIn(uri: Uri) = checkNotNull(contentResolver.openInputStream(uri)) { "cannot open the file" }
+    /** Opens a page in the user's own browser (the app itself makes no connection for it); a phone without a browser does nothing. */
+    private fun openInBrowser(url: String) {
+        try {
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+        } catch (_: android.content.ActivityNotFoundException) {
+        }
+    }
     private fun today() = SimpleDateFormat("yyyyMMdd", Locale.US).format(Date())
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -68,6 +75,7 @@ class SettingsActivity : ComponentActivity() {
             zbe = ZbeSettingsEnv(app.zbeSettings, app.zbeData, onChanged = app::ensureZbePrompter),
             trails = TrailsSettingsEnv(app.routeSettings, app.routeData),
             bikeShare = BikeShareSettingsEnv(app.bikeShareSettings, app.bikeShareData),
+            weather = WeatherSettingsEnv(app.weatherAlerts, openUrl = ::openInBrowser),
             recording = RecordingSettingsEnv(app.recording),
             placeLanguage = PlaceLanguageSettingsEnv(PrefsPlaceLanguageStore(this)),
             backup = backupEnv(app),
@@ -97,7 +105,7 @@ class SettingsActivity : ComponentActivity() {
                 "recording/enabled" to { v: Any -> app.recording.setEnabled(v as Boolean) },
             ),
             onFinish = {
-                listOf(app.fuelSettings, app.cameraSettings, app.chargerSettings, app.zbeSettings, app.bikeShareSettings, app.routeSettings, VoiceModule.settings(this), app.transitTripSettings).forEach { (it as? SettingsReloadable)?.reload() }
+                listOf(app.fuelSettings, app.cameraSettings, app.chargerSettings, app.zbeSettings, app.bikeShareSettings, app.weatherSettings, app.routeSettings, VoiceModule.settings(this), app.transitTripSettings).forEach { (it as? SettingsReloadable)?.reload() }
                 app.ensureCameraAlerts()
                 app.ensureZbePrompter()
             },

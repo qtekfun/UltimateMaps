@@ -16,7 +16,13 @@ import java.util.zip.GZIPInputStream
 enum class DownloadFailure { OFFLINE_MODE, NOT_ALLOWED, NETWORK, TIMEOUT, SERVER, TOO_LARGE, INVALID_DATA, NO_CATALOG }
 
 /** An IOException so that it passes untouched through a parser when thrown from the capped stream. */
-class DownloadException(val failure: DownloadFailure, message: String, cause: Throwable? = null) : IOException(message, cause)
+class DownloadException(
+    val failure: DownloadFailure,
+    message: String,
+    cause: Throwable? = null,
+    /** The HTTP status when the server answered with one this class does not accept (a 4xx), else null. */
+    val httpStatus: Int? = null,
+) : IOException(message, cause)
 
 /**
  * One GET of a fixed URL with the app's network rules: every hop (redirects included) is first authorized by the
@@ -36,8 +42,9 @@ class BoundedHttp(
     /** Sent as `User-Agent` when set; null leaves the platform's default. Never carries an app or user identifier. */
     private val userAgent: String? = null,
 ) {
-    fun <T> get(url: String, accept: String, reader: (InputStream) -> T): T {
+    fun <T> get(url: String, accept: String, headers: Map<String, String> = emptyMap(), reader: (InputStream) -> T): T {
         val deadline = clock() + totalTimeoutMs
+        val firstHost = runCatching { URI.create(url).host?.lowercase() }.getOrNull()
         var current = url
         repeat(MAX_REDIRECTS + 1) {
             val uri = try { URI.create(current) } catch (e: IllegalArgumentException) {
@@ -64,6 +71,8 @@ class BoundedHttp(
                 c.readTimeout = readTimeoutMs
                 c.setRequestProperty("Accept", accept)
                 userAgent?.let { c.setRequestProperty("User-Agent", it) }
+                // Extra headers (an API key) go only to the host first asked for, never to a host a redirect points to.
+                if (headers.isNotEmpty() && host.lowercase() == firstHost) headers.forEach { (k, v) -> c.setRequestProperty(k, v) }
                 c.setRequestProperty("Accept-Encoding", "gzip")
                 val code = c.responseCode
                 when {
@@ -88,7 +97,7 @@ class BoundedHttp(
                         }
                     }
                     code in 500..599 -> throw DownloadException(DownloadFailure.SERVER, "HTTP $code")
-                    else -> throw DownloadException(DownloadFailure.NETWORK, "HTTP $code")
+                    else -> throw DownloadException(DownloadFailure.NETWORK, "HTTP $code", httpStatus = code)
                 }
             } catch (e: DownloadException) {
                 throw e
