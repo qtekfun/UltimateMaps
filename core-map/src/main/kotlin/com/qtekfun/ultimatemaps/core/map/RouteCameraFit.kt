@@ -13,7 +13,9 @@ import kotlin.math.tan
 /**
  * Pure camera fit: the flat, north-up camera (centre and zoom) that shows every point of a route inside the part of the
  * screen that is not covered by something ([CameraPadding]: bottom sheet, top bar, button column, status bar).
- * Web-Mercator maths with 512 px tiles (what MapLibre uses). No Android types, so it is tested on the JVM.
+ * Web-Mercator maths with 512 px tiles (what MapLibre uses). MapLibre's tiles are 512 DENSITY-INDEPENDENT pixels, so on a
+ * screen of [density] device pixels per dp the world is `512 * density * 2^zoom` device pixels wide: without the density
+ * the zoom came out about 2.4 levels too high on a 2.6x phone (seen on a Pixel 8). No Android types, so it is tested on the JVM.
  */
 object RouteCameraFit {
     /** Never zoom in past this for a very short (or single point) route: the map would show only a street corner. */
@@ -24,12 +26,14 @@ object RouteCameraFit {
     const val MIN_FREE_FRACTION = 0.25
 
     private const val TILE = 512.0
+    private const val MIN_DENSITY = 0.5
     private const val MAX_LAT = 85.0511
 
     /**
      * Camera that frames [points] on a [widthPx] x [heightPx] screen with [padding] covered. Null when there is nothing
      * to frame or the screen has no size yet. A single point (or identical points) gets [maxZoom]. Padding that would
-     * leave less than [MIN_FREE_FRACTION] of the height (or width) free is reduced proportionally.
+     * leave less than [MIN_FREE_FRACTION] of the height (or width) free is reduced proportionally. [density] is the screen's
+     * device pixels per dp (all pixel arguments are device pixels).
      */
     fun fit(
         points: List<LatLon>,
@@ -38,6 +42,7 @@ object RouteCameraFit {
         padding: CameraPadding,
         maxZoom: Double = MAX_ZOOM,
         minZoom: Double = MIN_ZOOM,
+        density: Double = 1.0,
     ): CameraState? {
         if (points.isEmpty() || widthPx <= 0 || heightPx <= 0) return null
         val p = clampPadding(padding, widthPx, heightPx)
@@ -56,12 +61,13 @@ object RouteCameraFit {
         }
         val dx = maxX - minX
         val dy = maxY - minY
-        val zx = if (dx <= 0.0) Double.POSITIVE_INFINITY else log2(freeW / (TILE * dx))
-        val zy = if (dy <= 0.0) Double.POSITIVE_INFINITY else log2(freeH / (TILE * dy))
+        val world = TILE * density.coerceAtLeast(MIN_DENSITY) // device pixels of the world at zoom 0
+        val zx = if (dx <= 0.0) Double.POSITIVE_INFINITY else log2(freeW / (world * dx))
+        val zy = if (dy <= 0.0) Double.POSITIVE_INFINITY else log2(freeH / (world * dy))
         val zoom = min(zx, zy).coerceIn(minZoom, maxZoom)
 
         // The box centre must land on the centre of the free rectangle, which is off the screen centre by this much.
-        val scale = TILE * 2.0.pow(zoom)
+        val scale = world * 2.0.pow(zoom)
         val offX = (p.left - p.right) / 2.0
         val offY = (p.top - p.bottom) / 2.0
         val cx = (minX + maxX) / 2.0 - offX / scale

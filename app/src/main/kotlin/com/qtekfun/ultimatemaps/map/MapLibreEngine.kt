@@ -462,7 +462,9 @@ class MapLibreEngine(
         val m = map ?: return
         val padding = com.qtekfun.ultimatemaps.core.map.CameraPadding(left.coerceAtLeast(0), top.coerceAtLeast(0), right.coerceAtLeast(0), bottom.coerceAtLeast(0))
         // The margins are folded into the position itself, so the camera padding of the navigation does not apply twice.
-        val target = com.qtekfun.ultimatemaps.core.map.RouteCameraFit.fit(points, view.width, view.height, padding)?.let {
+        val target = com.qtekfun.ultimatemaps.core.map.RouteCameraFit.fit(
+            points, view.width, view.height, padding, density = view.resources.displayMetrics.density.toDouble(),
+        )?.let {
             CameraPosition.Builder().target(LatLng(it.center.lat, it.center.lon)).zoom(it.zoom).bearing(0.0).tilt(0.0)
                 .padding(0.0, 0.0, 0.0, 0.0).build()
         } ?: run {
