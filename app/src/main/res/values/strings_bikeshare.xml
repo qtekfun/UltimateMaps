@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Bike-share stations: Settings group (inside the Navigation category), map card, live availability, attribution and backup -->
+    <string name="bike_group_title">Bike-share stations</string>
+    <string name="bike_switch_title">Show bike-share stations</string>
+    <string name="bike_switch_body">Shows the docking stations of the bike-share systems of Barcelona (Bicing) and Madrid (BiciMAD) on the map. It downloads one small data file from your map server (the same one as the maps); your position is never sent.</string>
+    <string name="bike_live_title">Show live bike availability</string>
+    <string name="bike_live_body">While a station card is open, asks that system\'s public data feed how many bikes and free docks it has, at most once every 30 seconds. This contacts a third-party server (barcelona.publicbikesystem.net or madrid.publicbikesystem.net), which can see your IP address and that you look at its system, but not which station. Off by default.</string>
+    <string name="bike_data_title">Station data</string>
+    <string name="bike_data_count">%1$d stations, data from %2$s</string>
+    <string name="bike_data_never">No station data downloaded yet.</string>
+    <string name="bike_attribution_settings">Station data: Bicing, Ajuntament de Barcelona (Open Data BCN, CC BY 4.0); BiciMAD, Empresa Municipal de Transportes de Madrid (datos.madrid.es, CC BY 4.0).</string>
+
+    <!-- Card of a tapped station -->
+    <string name="bike_category">Bike-share station</string>
+    <string name="bike_card_title_unknown">Bike-share station</string>
+    <string name="bike_card_system">%1$s</string>
+    <string name="bike_card_capacity">Docks: %1$d</string>
+    <string name="bike_card_capacity_unknown">Docks: not specified</string>
+    <string name="bike_card_availability">%1$d bikes, %2$d free docks (updated %3$s)</string>
+    <string name="bike_card_note">The number of docks is from the data file. Whether a bike is available is only known if you turn on live availability in Settings.</string>
+    <string name="bike_card_data_date">Data from %1$s</string>
+    <string name="bike_card_close">Close</string>
+    <string name="bike_go">Route to the station</string>
+    <string name="bike_add_stop">Add stop</string>
+    <string name="conn_purpose_bike">Bike availability (bike-share systems)</string>
+
+    <!-- Backup and restore -->
+    <string name="backup_item_bikeshare">Bike-share stations</string>
+    <string name="backup_item_bikeshare_live">Live bike availability</string>
+    <string name="backup_group_bikeshare">Bike-share stations</string>
+</resources>

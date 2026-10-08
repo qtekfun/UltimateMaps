@@ -127,6 +127,11 @@ class RegionCatalog(
      * `scripts/build-routes.py`; several MB). Catalogs without it are valid; the app then has no trail overlay.
      */
     val routes: RegionAsset? = null,
+    /**
+     * Optional small file with bike-share stations of the Spanish systems whose licence allows it (`bikeshare-es.bin`, built
+     * by `scripts/build-bikeshare.py`). Catalogs without it are valid; the app then has no bike-share data.
+     */
+    val bikeshare: RegionAsset? = null,
 ) {
     val regions: List<Region> = regions.toList()
     private val byId = this.regions.associateBy { it.id }
@@ -149,6 +154,7 @@ class RegionCatalog(
         chargers?.let { checkAsset(it, "chargers") }
         zbe?.let { checkAsset(it, "zbe") }
         routes?.let { checkAsset(it, "routes") }
+        bikeshare?.let { checkAsset(it, "bikeshare") }
         require(transit.map { it.id }.toSet().size == transit.size) { "duplicate transit ids" }
         transit.forEach { t ->
             require(t.id.matches(ID_RE)) { "invalid transit id ${t.id}" }
@@ -200,6 +206,7 @@ class RegionCatalog(
         if (chargers != null) put("chargers", assetJson(chargers))
         if (zbe != null) put("zbe", assetJson(zbe))
         if (routes != null) put("routes", assetJson(routes))
+        if (bikeshare != null) put("bikeshare", assetJson(bikeshare))
         if (transit.isNotEmpty()) put("transit", buildJsonArray {
             transit.forEach { t ->
                 add(buildJsonObject {
@@ -276,6 +283,7 @@ class RegionCatalog(
             val chargers = (root["chargers"] as? JsonObject)?.let { asset(it) }
             val zbe = (root["zbe"] as? JsonObject)?.let { asset(it) }
             val routes = (root["routes"] as? JsonObject)?.let { asset(it) }
+            val bikeshare = (root["bikeshare"] as? JsonObject)?.let { asset(it) }
             // `transit` is a list of indexes (one per city or metro area). A single object (the shape of the very first
             // drafts) is read as a list of one; `name` is accepted for `city`.
             val transitEntries: List<JsonElement> = when (val t = root["transit"]) {
@@ -317,7 +325,7 @@ class RegionCatalog(
                     }?.toMap().orEmpty(),
                 )
             }
-            RegionCatalog(root.getValue("catalogVersion").jsonPrimitive.content, regions, baseMaps, cameras, transit, chargers, routes = routes, zbe = zbe)
+            RegionCatalog(root.getValue("catalogVersion").jsonPrimitive.content, regions, baseMaps, cameras, transit, chargers, routes = routes, zbe = zbe, bikeshare = bikeshare)
         } catch (e: CatalogException) {
             throw e
         } catch (e: Exception) { // malformed JSON, missing fields, failed invariants
