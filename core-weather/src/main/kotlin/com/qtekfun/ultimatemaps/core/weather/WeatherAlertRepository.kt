@@ -81,10 +81,11 @@ class WeatherAlertRepository(
             ?: WeatherAlertIndex(CapParser.toWarnings(bundle, lang, now)).also { cachedIndex = it; cachedIndexKey = cacheKey }
     }
 
-    /** Forgets everything (the switch went off, or the key was removed). */
+    /** Forgets the warnings (the switch went off, or the key was removed), but not the wait before the next request. */
     fun clear() {
         synchronized(lock) {
-            bundle = emptyList(); fetchedAt = null; lastAttemptAt = null; blockedUntil = Long.MIN_VALUE
+            // The wait since the last request is kept on purpose: switching off and on again must not skip the floor.
+            bundle = emptyList(); fetchedAt = null
             cachedIndex = null; cachedIndexKey = null
         }
         statusFlow.value = WeatherStatus()

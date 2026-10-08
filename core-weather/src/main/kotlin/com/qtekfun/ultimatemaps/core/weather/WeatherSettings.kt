@@ -55,3 +55,30 @@ object ApiKeys {
     /** The key from what the user typed or pasted (all whitespace removed), or null when it cannot be an AEMET key (a JWT). */
     fun clean(input: String): String? = input.filterNot { it.isWhitespace() }.takeIf { shape.matches(it) }
 }
+
+/** Keeps the key in memory after the first read, so the Keystore is not asked on every refresh. Write-through. */
+class CachedApiKeyStore(private val inner: ApiKeyStore) : ApiKeyStore {
+    private val lock = Any()
+    private var loaded = false
+    private var cached: String? = null
+
+    override fun read(): String? = synchronized(lock) {
+        if (!loaded) {
+            cached = inner.read()
+            loaded = true
+        }
+        cached
+    }
+
+    override fun write(key: String) = synchronized(lock) {
+        inner.write(key)
+        cached = key
+        loaded = true
+    }
+
+    override fun clear() = synchronized(lock) {
+        inner.clear()
+        cached = null
+        loaded = true
+    }
+}

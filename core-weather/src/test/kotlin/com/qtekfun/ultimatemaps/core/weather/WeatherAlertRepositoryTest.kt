@@ -170,11 +170,13 @@ class WeatherAlertRepositoryTest {
         assertEquals("Wind", r.index().warnings.single().event)
     }
 
-    @Test fun `clear forgets the data and the wait`() {
+    @Test fun `clear forgets the data but not the floor, so toggling the switch cannot hammer AEMET`() {
         val r = repo()
         r.refresh(true)
         r.clear()
         assertTrue(r.index().warnings.isEmpty())
+        assertEquals(WeatherRefresh.TooSoon, r.refresh(true))
+        now += 16 * min
         assertEquals(WeatherRefresh.Updated, r.refresh(true))
         assertNull(WeatherStatus().lastResult)
     }
