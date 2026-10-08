@@ -145,6 +145,8 @@ private fun pendingLabel(spec: SettingSpec): Int = when (spec.id) {
     "zbe/enabled" -> R.string.backup_item_zbe
     "bikeshare/enabled" -> R.string.backup_item_bikeshare
     "bikeshare/live_availability" -> R.string.backup_item_bikeshare_live
+    "weather/enabled" -> R.string.backup_item_weather
+    "weather/show_yellow" -> R.string.backup_item_weather_yellow
     "trails/enabled" -> R.string.backup_item_trails
     "navigation/cercanias_real_time" -> R.string.backup_item_cercanias_rt
     else -> R.string.backup_item_other
@@ -158,6 +160,7 @@ private fun groupLabel(group: String): Int = when (group) {
     SettingsSchema.GROUP_CHARGERS -> R.string.backup_group_chargers
     SettingsSchema.GROUP_ZBE -> R.string.backup_group_zbe
     SettingsSchema.GROUP_BIKESHARE -> R.string.backup_group_bikeshare
+    SettingsSchema.GROUP_WEATHER -> R.string.backup_group_weather
     SettingsSchema.GROUP_TRAILS -> R.string.backup_group_trails
     SettingsSchema.GROUP_HISTORY -> R.string.backup_group_history
     SettingsSchema.GROUP_RECORDING -> R.string.backup_group_recording

@@ -1,0 +1,24 @@
+# AEMET weather alerts (data source #8)
+
+Opt-in, off by default, on demand. Code: module `:core-weather` (pure JVM) and `app/.../weather/`, `settings/WeatherSettingsSection.kt`.
+
+## What AEMET allows (read at the source on 2026-10-08)
+
+- **Legal notice** (`aemet.es/es/nota_legal`): reuse of AEMET information is allowed for commercial and non-commercial purposes, free and non-exclusive. Conditions: do not distort the meaning ("desnaturalizar el sentido de la información"), state the update date when the original has one, keep the metadata, do not suggest AEMET sponsors or endorses the reuse, do not access by unauthorised means or in a way that can overload the service. Attribution: "© AEMET" or "Información elaborada por la Agencia Estatal de Meteorología" for unchanged information; **"Fuente: AEMET"** (or "Información elaborada utilizando, entre otras, la obtenida de la Agencia Estatal de Meteorología") for value-added services. The app shows "Fuente: AEMET" on the card, the route summary and in Settings, and never implies endorsement.
+- **OpenData FAQ v1.4** (`opendata.aemet.es/centrodedescargas/docs/FAQs220424.pdf`): a free API key is required for automated queries; keys requested after 2017-09-13 do not expire; one email can get several keys; **40 requests per minute per user** plus a global limit. The key is requested at `opendata.aemet.es/centrodedescargas/altaUsuario` (email confirmation within 5 days). Personal data: an email address (the key identifies the user to AEMET).
+- **OpenAPI document** (`opendata.aemet.es/AEMET_OpenData_specification.json`): server `https://opendata.aemet.es/opendata`; security scheme `api_key` **in the header**; endpoint `GET /api/avisos_cap/ultimoelaborado/area/{area}` with `esp` (all Spain) or an autonomous-community code (61 Andalucia ... 76 La Rioja, 77 Comunitat Valenciana, 78 Ceuta, 79 Melilla); answers 200/400/401/403/404 ("no data")/429. The 200 body is `{descripcion, estado, datos, metadatos}`: `datos` is a URL to fetch in a second request.
+- **CAP structure** (checked on AEMET's published CAP files, `aemet.es/documentos_d/eltiempo/prediccion/avisos/cap/`): one `<alert>` per warning zone, `<info>` per language, level in `<parameter>` `AEMET-Meteoalerta nivel` (`amarillo`/`naranja`/`rojo`), `<area>` with `<areaDesc>`, one or more `<polygon>` (`lat,lon` pairs) and a `<geocode>` `AEMET-Meteoalerta zona` (6-digit zone code).
+- **Not verified:** the exact container of the `datos` URL for `avisos_cap` (documented as a tar of CAP files; the code accepts a tar, a gzipped tar or one bare XML) and a real 200 answer, because both need a key. The first run with a real key is the test.
+
+## Design
+
+- **Privacy:** the request is the same for everybody (`/avisos_cap/ultimoelaborado/area/esp`, no query). No position, no area. The key travels in the `api_key` header only, to `opendata.aemet.es` only (the data URL must be on the same host; the key is not sent to it). Matching (point in polygon, route sampled every 1 km) happens on the phone. The key identifies the user to AEMET: Settings and `PRIVACY.md` (both languages) say so.
+- **Key storage:** AES-256-GCM key in the Android Keystore (non-exportable), ciphertext in `mapas_weather_secret/api_key_enc`; excluded from the settings backup (`SettingsSchema.excluded`, covered by `SettingsSchemaCoverageTest`) and `allowBackup` is off. Never logged (the message of an error never carries it).
+- **Network:** `ConnectionPurpose.WEATHER_ALERTS`; the host is added to the policy only while the switch is on and a key is stored, and removed otherwise. With either missing, the repository does not even call the policy (tests use a policy that fails on any call).
+- **Rates:** cache 30 min (warnings are issued about every 30 min); automatic refresh only on foreground / route shown, never polling; "Check now" skips the TTL but never the 15 min floor between two requests (failures count; switching off and on does not reset it); 429 waits one hour; 401/403 stop requests until the key is changed; data older than 3 h is hidden; every failure is silent.
+- **Areas:** polygons are in the CAP files, so no code-to-polygon table is shipped. An area without a polygon is listed but never matches a position or a route (decision: do not guess from zone codes or names).
+- **UI:** chip at the top centre of the map for an orange/red warning at the view centre (in effect or starting within 3 h); card with level colour, text, area, validity, issue time and "Fuente: AEMET"; route summary lists orange/red warnings along the route (in effect or starting within 12 h). Yellow only in the card, only with *Show yellow warnings*. The chip is hidden while navigating and whenever the feature is off.
+
+## Unverified
+
+Everything on a phone; a real key and the real `datos` container; the Keystore cipher (JVM tests use a fake cipher); the look of the chip.

@@ -2,6 +2,12 @@
 
 All notable changes are listed here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and versions follow [Semantic Versioning](https://semver.org).
 
+## [Unreleased]
+
+### Added
+
+- **Weather alerts from AEMET (optional, off by default, needs your own free API key).** Settings, Alerts, *Weather alerts (AEMET)*: paste your AEMET OpenData key (stored encrypted in the Android Keystore, never in backups or logs; it identifies you to AEMET and the settings say so) and the app fetches AEMET's one national bundle of warnings (no position or area is ever sent, at most every 15 minutes, never in the background) and matches it on the phone. An orange or red warning at the centre of the map shows a chip ("Orange warning: Wind until 18:00 (AEMET)") that opens a card with the text, the level colour, the validity and "Fuente: AEMET"; routes in Spain get the same lines in their summary. Yellow warnings appear only in the card, and only if you turn on *Show yellow warnings*. A warning is information, not advice, and the data can be late or incomplete. Verified by JVM and Robolectric tests only (including a local server for the two-step AEMET API); not seen on a device and not tried with a real key.
+
 ## [0.1.0-rc.10] - 2026-10-08
 
 ### Added

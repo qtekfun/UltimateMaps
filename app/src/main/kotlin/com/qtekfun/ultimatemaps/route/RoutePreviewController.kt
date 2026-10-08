@@ -9,6 +9,7 @@ import com.qtekfun.ultimatemaps.core.routing.BikeCycleways
 import com.qtekfun.ultimatemaps.core.routing.RouteOptions
 import com.qtekfun.ultimatemaps.core.routing.ElevationProfile
 import com.qtekfun.ultimatemaps.core.zbe.ZbeCrossing
+import com.qtekfun.ultimatemaps.core.weather.WeatherWarning
 import com.qtekfun.ultimatemaps.core.routing.RoutePlan
 import com.qtekfun.ultimatemaps.core.routing.RouteRequest
 import com.qtekfun.ultimatemaps.core.routing.RoutingProfile
@@ -88,6 +89,9 @@ class RouteState {
     /** Low-emission zones the shown CAR route enters (OpenStreetMap data, may be incomplete); empty for other profiles or without data. */
     var lowEmission by mutableStateOf<List<ZbeCrossing>>(emptyList())
 
+    /** Orange and red weather warnings (AEMET) along the shown route; empty while the feature is off. */
+    var weather by mutableStateOf<List<WeatherWarning>>(emptyList())
+
     /** The next search result or map tap becomes the origin. */
     var pickingOrigin by mutableStateOf(false)
 
@@ -143,6 +147,8 @@ class RoutePreviewController(
     val transit: TransitController? = null,
     /** The zones a route enters (the optional low-emission-zone layer); only asked for car routes. Empty without data. */
     private val lowEmissionZones: (List<LatLon>) -> List<ZbeCrossing> = { emptyList() },
+    /** The orange and red weather warnings along a route (optional AEMET alerts, matched on the phone). Empty while off. */
+    private val weatherWarnings: (List<LatLon>) -> List<WeatherWarning> = { emptyList() },
 ) {
     val state = RouteState()
 
@@ -255,6 +261,7 @@ class RoutePreviewController(
         state.durationSeconds = alt?.durationSeconds ?: main.durationSeconds
         state.elevation = if (alt != null) ElevationProfile.of(alt.geometry, alt.altitudes) else ElevationProfile.of(main.geometry, main.altitudes)
         state.lowEmission = zonesOf(alt?.geometry ?: main.geometry)
+        state.weather = weatherWarnings(alt?.geometry ?: main.geometry)
         showRoute(alt?.geometry ?: main.geometry)
         redrawAlternatives()
     }
@@ -274,6 +281,7 @@ class RoutePreviewController(
         mainRequest = null
         state.elevation = null
         state.lowEmission = emptyList()
+        state.weather = emptyList()
         state.alternatives = emptyList()
         state.alternativesStatus = AlternativesStatus.NONE
         state.selectedAlternative = null
@@ -430,6 +438,7 @@ class RoutePreviewController(
             mainRequest = request
             state.elevation = ElevationProfile.of(plan.geometry, plan.altitudes)
             state.lowEmission = if (profile == RoutingProfile.CAR) lowEmissionZones(plan.geometry) else emptyList()
+            state.weather = weatherWarnings(plan.geometry)
             state.status = RouteStatus.DONE
             showRoute(plan.geometry)
         } else {
