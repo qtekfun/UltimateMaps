@@ -63,7 +63,10 @@ fun settingsCategories(env: SettingsEnv): List<SettingsCategory> = buildList {
             SettingsCategory(
                 "navigation", R.string.hub_navigation_title, R.string.hub_navigation_keywords, { drawNavigationIcon(it) },
                 summary = { navigationSummary(nav) },
-                content = { NavigationSection(nav) },
+                content = {
+                    NavigationSection(nav)
+                    env.trails?.let { TrailsSection(it) }
+                },
             ),
         )
     }

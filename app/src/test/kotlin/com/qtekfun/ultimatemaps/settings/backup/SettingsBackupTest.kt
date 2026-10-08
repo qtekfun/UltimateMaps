@@ -97,7 +97,7 @@ class SettingsBackupTest {
         val result = SettingsBackup.apply(file, b, pending)
 
         val consentIds = SettingsSchema.specs.filter { it.policy == RestorePolicy.NEEDS_CONSENT }.map { it.id }.toSet()
-        assertEquals(setOf("cameras/fixed", "cameras/mobile_zones", "cameras/incidents", "cameras/v16", "cameras/roadworks", "fuel/enabled", "chargers/enabled", "navigation/cercanias_real_time"), consentIds)
+        assertEquals(setOf("cameras/fixed", "cameras/mobile_zones", "cameras/incidents", "cameras/v16", "cameras/roadworks", "fuel/enabled", "chargers/enabled", "trails/enabled", "navigation/cercanias_real_time"), consentIds)
         consentIds.forEach { assertEquals(false, b.read(SettingsSchema.byId(it)!!), "$it must stay off") }
         assertEquals(consentIds, pending.consent)
         assertEquals(consentIds.size, result.needConsent)

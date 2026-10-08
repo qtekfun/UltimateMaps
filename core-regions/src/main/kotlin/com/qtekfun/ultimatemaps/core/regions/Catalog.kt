@@ -117,6 +117,11 @@ class RegionCatalog(
      * without it are valid; the app then simply has no charger data.
      */
     val chargers: RegionAsset? = null,
+    /**
+     * Optional file with the simplified hiking and cycling route relations of OpenStreetMap (`routes-es.bin`, built by
+     * `scripts/build-routes.py`; several MB). Catalogs without it are valid; the app then has no trail overlay.
+     */
+    val routes: RegionAsset? = null,
 ) {
     val regions: List<Region> = regions.toList()
     private val byId = this.regions.associateBy { it.id }
@@ -137,6 +142,7 @@ class RegionCatalog(
         }
         cameras?.let { checkAsset(it, "cameras") }
         chargers?.let { checkAsset(it, "chargers") }
+        routes?.let { checkAsset(it, "routes") }
         require(transit.map { it.id }.toSet().size == transit.size) { "duplicate transit ids" }
         transit.forEach { t ->
             require(t.id.matches(ID_RE)) { "invalid transit id ${t.id}" }
@@ -186,6 +192,7 @@ class RegionCatalog(
         })
         if (cameras != null) put("cameras", assetJson(cameras))
         if (chargers != null) put("chargers", assetJson(chargers))
+        if (routes != null) put("routes", assetJson(routes))
         if (transit.isNotEmpty()) put("transit", buildJsonArray {
             transit.forEach { t ->
                 add(buildJsonObject {
@@ -260,6 +267,7 @@ class RegionCatalog(
             }
             val cameras = (root["cameras"] as? JsonObject)?.let { asset(it) }
             val chargers = (root["chargers"] as? JsonObject)?.let { asset(it) }
+            val routes = (root["routes"] as? JsonObject)?.let { asset(it) }
             // `transit` is a list of indexes (one per city or metro area). A single object (the shape of the very first
             // drafts) is read as a list of one; `name` is accepted for `city`.
             val transitEntries: List<JsonElement> = when (val t = root["transit"]) {
@@ -301,7 +309,7 @@ class RegionCatalog(
                     }?.toMap().orEmpty(),
                 )
             }
-            RegionCatalog(root.getValue("catalogVersion").jsonPrimitive.content, regions, baseMaps, cameras, transit, chargers)
+            RegionCatalog(root.getValue("catalogVersion").jsonPrimitive.content, regions, baseMaps, cameras, transit, chargers, routes)
         } catch (e: CatalogException) {
             throw e
         } catch (e: Exception) { // malformed JSON, missing fields, failed invariants
