@@ -29,7 +29,7 @@ jobs:
       - name: Instalar NDK y CMake exactos
         run: |
           yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null || true
-          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "ndk;28.2.13676358" "cmake;3.31.6" "platforms;android-37"
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "ndk;28.2.13676358" "cmake;3.31.6"
 
       # The CoMaps core is a submodule (pinned tag) and its generated data is not versioned.
       # The script initializes only the nested submodules it needs (requires network and PyPI).
