@@ -54,6 +54,13 @@ data class NavState(
     val stopsRemaining: Int = 0,
     /** Metres along the route to the next intermediate stop; null when there is none left. */
     val nextStopMeters: Double? = null,
+    /**
+     * Radius of the likely error of [position] in metres while [estimated]; 0 when the position comes from a fix.
+     * Grows with the time and the distance since the last fix, and is bounded by the tunnel span when inside one.
+     */
+    val errorMeters: Double = 0.0,
+    /** The signal was lost inside (or just before) a known tunnel span: the loss is expected and the exit is known. */
+    val inTunnel: Boolean = false,
 )
 
 /** Things that happen on the way besides voice prompts. Each is emitted once. */

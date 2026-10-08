@@ -4,6 +4,7 @@ import com.qtekfun.ultimatemaps.core.geo.LatLon
 import com.qtekfun.ultimatemaps.core.map.LocationFix
 import com.qtekfun.ultimatemaps.core.routing.Maneuver
 import com.qtekfun.ultimatemaps.core.routing.RoutePlan
+import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
@@ -23,6 +24,10 @@ class RouteTracker(
     /** Where along the route to start (resuming after the process was killed); 0 for a fresh route. */
     startAlongMeters: Double = 0.0,
     private val onEvent: ((NavEvent) -> Unit)? = null,
+    /** Where the tunnels of this route are, if anything knows; null keeps the plain 30 s signal-loss estimate everywhere. */
+    tunnelSpans: TunnelSpanSource? = null,
+    /** Optional stop/go detection (IMU) used only while there is no signal inside a known tunnel. */
+    private val stopGo: StopGoSignal = StopGoSignal.NONE,
     private val onAnnouncement: ((Announcement) -> Unit)? = null,
 ) {
     /** The plan as followed: unusable points removed (see [sanitized]). */
@@ -31,6 +36,15 @@ class RouteTracker(
 
     private val maneuvers: Array<Maneuver> =
         plan.guidance.maneuvers.sortedBy { it.geometryIndex }.toTypedArray()
+    private val spans: Array<TunnelSpan> = sanitizeSpans(
+        tunnelSpans?.let { src -> try { src.spansFor(geometry) } catch (_: Exception) { emptyList() } } ?: emptyList(),
+        geometry.totalMeters,
+    ).toTypedArray()
+    private val tunnelObserver: TunnelObserver? = tunnelSpans as? TunnelObserver
+    private val estimator = TunnelEstimator(config.tunnel)
+    private var lossBegun = false
+    private var lossSpan = -1
+    private var errorMeters = 0.0
     private val mAlong = DoubleArray(maneuvers.size) { geometry.alongOfIndex(maneuvers[it].geometryIndex) }
     private val mAnnounced = IntArray(maneuvers.size) { -1 }
     // Stops at the very start are not stops (a round trip would "reach" one on the first fix).
@@ -99,6 +113,7 @@ class RouteTracker(
         }
         staleStreak = 0
         val first = lastFixTime < 0
+        val prevFixTime = lastFixTime
         val dt = if (first || t <= lastFixTime) 0.0 else (t - lastFixTime) / 1000.0
         val wasNoSignal = status == NavStatus.NO_SIGNAL
 
@@ -173,7 +188,7 @@ class RouteTracker(
             return // between the "on" band and the threshold: not enough to rejoin
         }
 
-        val along = match.along
+        var along = match.along
         if (!resync) {
             // A spike along the road (multipath) must not drag the progress ahead for good: a jump the speed cannot
             // explain is ignored unless it repeats, which means it was real.
@@ -185,6 +200,7 @@ class RouteTracker(
         }
         jumpCount = 0
         if (resync) {
+            if (wasNoSignal && lossBegun) along = handBack(t, prevFixTime, along, acc)
             progress = along
             if (!fixSpeed.isNaN()) speed = fixSpeed
         } else {
@@ -205,6 +221,10 @@ class RouteTracker(
         anchor = progress
         anchorTime = t
         estimated = false
+        errorMeters = 0.0
+        lossBegun = false
+        lossSpan = -1
+        estimator.onFix(t, progress, fixSpeed, speed, acc)
 
         if (!fixSpeed.isNaN() && fixSpeed < config.arrivalStopSpeedMps) {
             if (stillSince < 0) stillSince = t
@@ -226,12 +246,69 @@ class RouteTracker(
         if (status == NavStatus.OFF_ROUTE || status == NavStatus.REROUTING) return false
         status = NavStatus.NO_SIGNAL
         estimated = true
-        val seconds = min(gap, config.estimateMaxMillis) / 1000.0
-        val estimate = min(anchor + speed * seconds, max(anchor, geometry.totalMeters - 1.0))
-        if (estimate > progress) progress = estimate
+        if (!lossBegun) beginLoss()
+        val lastPoint = max(anchor, geometry.totalMeters - 1.0)
+        if (lossSpan < 0) {
+            // No tunnel known here: the plain estimate, last speed held for at most estimateMaxMillis.
+            val seconds = min(gap, config.estimateMaxMillis) / 1000.0
+            val estimate = min(anchor + speed * seconds, lastPoint)
+            if (estimate > progress) progress = estimate
+            errorMeters = estimator.errorMeters(gap / 1000.0, progress - anchor)
+        } else {
+            // Known tunnel: advance until its exit (never past it, never to the end of the route), up to the hard caps.
+            val sp = spans[lossSpan]
+            val slack = if (sp.source == TunnelSource.LEARNED) {
+                config.tunnel.learnedSlackFraction * sp.lengthMeters + config.tunnel.learnedSlackMeters
+            } else {
+                0.0
+            }
+            val estimate = estimator.advance(nowMillis, anchor, stopGo.motionState(nowMillis), min(sp.endMeters + slack, lastPoint))
+            if (estimate > progress) progress = estimate
+            speed = estimator.speedMps
+            errorMeters = estimator.errorMeters(
+                min(gap, config.tunnel.hardMaxMillis) / 1000.0, progress - anchor, sp.endMeters + slack - min(anchor, sp.startMeters),
+            )
+        }
         derive(nowMillis, allowArrival = false, resynced = false)
         return true
     }
+
+    /** A loss starts: it is expected (inside or just before a known span) or not. */
+    private fun beginLoss() {
+        lossBegun = true
+        lossSpan = -1
+        for (i in spans.indices) {
+            if (anchor >= spans[i].startMeters - config.tunnel.entryMarginMeters && anchor <= spans[i].endMeters) {
+                lossSpan = i
+                break
+            }
+        }
+    }
+
+    /**
+     * The first fix after a loss, at route position [along]: snaps to the portal when the fix is poor and lands near
+     * the exit of the span, and teaches the learned store about a loss that had no known span. Returns the position to use.
+     */
+    private fun handBack(t: Long, prevFixTime: Long, along: Double, accuracy: Double): Double {
+        if (lossSpan >= 0) {
+            val end = spans[lossSpan].endMeters
+            if (accuracy > config.tunnel.snapAccuracyMeters && abs(along - end) <= config.tunnel.snapMarginMeters) return end
+        } else if (config.tunnel.learn && prevFixTime >= 0 && t - prevFixTime >= config.tunnel.learnMinMillis &&
+            along - anchor >= config.tunnel.learnMinMeters
+        ) {
+            tunnelObserver?.onTunnelObserved(geometry.pointAt(anchor), geometry.pointAt(along))
+        }
+        return along
+    }
+
+    private fun inSpan(along: Double): Boolean {
+        for (s in spans) if (along >= s.startMeters && along <= s.endMeters) return true
+        return false
+    }
+
+    /** Inside a known tunnel the "now" prompt of a maneuver cannot be timed when the estimate is looser than its band. */
+    private fun nowUnreliable(along: Double): Boolean =
+        estimated && spans.isNotEmpty() && errorMeters > config.announcements.now.metersAt(speed) && inSpan(along)
 
     /** The session marks that a reroute is running (only meaningful while off route). */
     fun setRerouting(active: Boolean) {
@@ -249,7 +326,7 @@ class RouteTracker(
         // (rejoined the route elsewhere): a prompt for a turn that is already behind would only confuse.
         for (k in passedFrom until mIdx) {
             if (mAnnounced[k] >= LEVEL_NOW) continue
-            if (!resynced && k == mIdx - 1) fire(k, LEVEL_NOW, 0.0) else mAnnounced[k] = LEVEL_NOW
+            if (!resynced && k == mIdx - 1 && !nowUnreliable(mAlong[k])) fire(k, LEVEL_NOW, 0.0) else mAnnounced[k] = LEVEL_NOW
         }
         if (allowArrival) {
             while (nextStop < stopAlong.size && progress >= stopAlong[nextStop] - config.arrivalRadiusMeters) {
@@ -287,12 +364,13 @@ class RouteTracker(
 
     private fun announce(distance: Double) {
         val bands = config.announcements
-        val level = when {
+        var level = when {
             distance <= bands.now.metersAt(speed) -> LEVEL_NOW
             distance <= bands.near.metersAt(speed) -> LEVEL_NEAR
             distance <= bands.far.metersAt(speed) -> LEVEL_FAR
             else -> -1
         }
+        if (level == LEVEL_NOW && nowUnreliable(mAlong[mIdx])) level = LEVEL_NEAR
         if (level > mAnnounced[mIdx]) fire(mIdx, level, distance)
     }
 
@@ -330,6 +408,8 @@ class RouteTracker(
             routeRevision = revision,
             stopsRemaining = stopAlong.size - nextStop,
             nextStopMeters = if (nextStop < stopAlong.size) max(0.0, stopAlong[nextStop] - progress) else null,
+            errorMeters = if (estimated) errorMeters else 0.0,
+            inTunnel = status == NavStatus.NO_SIGNAL && lossSpan >= 0,
         )
     }
 

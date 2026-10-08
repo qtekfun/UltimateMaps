@@ -39,11 +39,14 @@ class NavigationSession(
     private val reroute: Rerouter? = null,
     /** Where along [plan] to start (resuming after the process was killed). */
     startAlongMeters: Double = 0.0,
+    /** Where the tunnels are (and, if it is also a [TunnelObserver], where to remember new ones); null = unknown. */
+    private val tunnelSpans: TunnelSpanSource? = null,
+    private val stopGo: StopGoSignal = StopGoSignal.NONE,
     private val clock: () -> Long = System::currentTimeMillis,
 ) : AutoCloseable {
     private val _announcements = MutableSharedFlow<Announcement>(extraBufferCapacity = 64, onBufferOverflow = BufferOverflow.DROP_OLDEST)
     private val _events = MutableSharedFlow<NavEvent>(extraBufferCapacity = 16, onBufferOverflow = BufferOverflow.DROP_OLDEST)
-    private var tracker = RouteTracker(plan, config, 0, startAlongMeters, ::emitEvent, ::emitAnnouncement)
+    private var tracker = RouteTracker(plan, config, 0, startAlongMeters, ::emitEvent, tunnelSpans, stopGo, ::emitAnnouncement)
     private val _state = MutableStateFlow(tracker.snapshot())
     private val _route = MutableStateFlow(tracker.plan)
 
@@ -160,7 +163,7 @@ class NavigationSession(
         rerouteJob = null
         rerouteGeneration++
         revision++
-        tracker = RouteTracker(plan, config, revision, 0.0, ::emitEvent, ::emitAnnouncement)
+        tracker = RouteTracker(plan, config, revision, 0.0, ::emitEvent, tunnelSpans, stopGo, ::emitAnnouncement)
         _route.value = tracker.plan
         lastFix?.let(tracker::onFix)
         publish()
