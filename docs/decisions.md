@@ -615,3 +615,8 @@ Format: date · decision · reason · discarded alternatives · how to revert it
 - **Decision:** the switches stay off (the app never calls `setPerfMode`); they remain debug-only experiments. Discarded alternative: enabling `quiet,prune,cache` by default (the earlier matrix suggested it, the drive did not confirm it).
 - **Next:** if the 2 s target stays, measure `cand*` and `tmo*` (they trade route quality for time and can change the route) or relax the target for 600 km trips (owner's decision).
 - **Also done:** the EV charger file is published in the weekly data release (`data-261004-20261007-h`: `chargers-es.bin`, 175,522 bytes, catalog block `chargers` present). Not checked: the station count and the app's use of the file on a phone.
+
+## 2026-10-08 · Android Auto dropped (owner decision)
+- **Decision:** we do not build Android Auto. Requirement RF-14 and roadmap phase F6 are marked as dropped; `docs/phase2/android-auto.md` keeps the analysis for the record.
+- **Reason:** it works only through Google's proprietary Android Auto host app (car-screen texts go through it, Google-controlled app eligibility, Play-oriented install path), which conflicts with "no Google as a provider" and the privacy rules. The Car App Library itself would have been fine (Apache-2.0, no GMS), but it is useless without the host.
+- **Discarded alternative:** a `gms` flavor or the plain `foss` flavor with `androidx.car.app` (14 to 17 working days estimated); reopen only if the owner changes the rule.
