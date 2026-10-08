@@ -130,6 +130,9 @@ class MapLibreEngine(
     private var hazardTapListener: ((String) -> Unit)? = null
     private var viewportListener: ((GeoBounds, Double) -> Unit)? = null
     private var gestureListener: (() -> Unit)? = null
+    private val extraGestureListeners = mutableListOf<() -> Unit>()
+    private var originSource: GeoJsonSource? = null
+    private var pendingOrigin: LatLon? = null
     private var heading: Float? = null
     private var buildings3d = false
 
@@ -159,7 +162,10 @@ class MapLibreEngine(
             m.setMaxPitchPreference(MAX_PITCH) // the navigation's 3D view tilts up to 60 degrees
             m.addOnCameraIdleListener { handleIdle(m) }
             m.addOnCameraMoveStartedListener { reason ->
-                if (reason == MapLibreMap.OnCameraMoveStartedListener.REASON_API_GESTURE) gestureListener?.invoke()
+                if (reason == MapLibreMap.OnCameraMoveStartedListener.REASON_API_GESTURE) {
+                    gestureListener?.invoke()
+                    extraGestureListeners.forEach { it() }
+                }
             }
             m.addOnMapClickListener { p -> handleTap(p) }
             pendingCamera?.let { m.moveCamera(CameraUpdateFactory.newCameraPosition(it.toPosition())); pendingCamera = null }
@@ -328,7 +334,15 @@ class MapLibreEngine(
         pushTracks()
     }
 
-    override fun clearRoute() = showRoute(emptyList(), fit = false)
+    override fun clearRoute() {
+        showRouteOrigin(null)
+        showRoute(emptyList(), fit = false)
+    }
+
+    override fun showRouteOrigin(point: LatLon?) {
+        pendingOrigin = point
+        pushOverlay(originSource, point)
+    }
 
     override fun showAlternativeRoutes(routes: List<List<LatLon>>) {
         pendingAlternatives = routes
@@ -429,19 +443,32 @@ class MapLibreEngine(
     }
 
     override fun frameRoute(points: List<LatLon>, padding: CameraPadding) {
-        if (points.size < 2) return
+        if (points.isEmpty()) return
         fitPoints(points, padding.left, padding.top, padding.right, padding.bottom, 700)
     }
 
     /** Animates to a flat north-up camera showing [points] inside the pixel margins, with NO camera padding left over. */
     private fun fitPoints(points: List<LatLon>, left: Int, top: Int, right: Int, bottom: Int, durationMillis: Int) {
         val m = map ?: return
-        val bounds = LatLngBounds.Builder().apply { points.forEach { include(LatLng(it.lat, it.lon)) } }.build()
+        val padding = com.qtekfun.ultimatemaps.core.map.CameraPadding(left.coerceAtLeast(0), top.coerceAtLeast(0), right.coerceAtLeast(0), bottom.coerceAtLeast(0))
         // The margins are folded into the position itself, so the camera padding of the navigation does not apply twice.
-        val fitted = runCatching { m.getCameraForLatLngBounds(bounds, intArrayOf(left, top, right, bottom), 0.0, 0.0) }.getOrNull() ?: return
-        val position = CameraPosition.Builder(fitted).padding(0.0, 0.0, 0.0, 0.0).build()
-        m.animateCamera(CameraUpdateFactory.newCameraPosition(position), durationMillis)
+        val target = com.qtekfun.ultimatemaps.core.map.RouteCameraFit.fit(points, view.width, view.height, padding)?.let {
+            CameraPosition.Builder().target(LatLng(it.center.lat, it.center.lon)).zoom(it.zoom).bearing(0.0).tilt(0.0)
+                .padding(0.0, 0.0, 0.0, 0.0).build()
+        } ?: run {
+            // The view has no size yet: let MapLibre do it.
+            val bounds = LatLngBounds.Builder().apply { points.forEach { include(LatLng(it.lat, it.lon)) } }.build()
+            val fitted = runCatching { m.getCameraForLatLngBounds(bounds, intArrayOf(left, top, right, bottom), 0.0, 0.0) }.getOrNull() ?: return
+            CameraPosition.Builder(fitted).padding(0.0, 0.0, 0.0, 0.0).build()
+        }
+        val update = CameraUpdateFactory.newCameraPosition(target)
+        if (animationsDisabled()) m.moveCamera(update) else m.animateCamera(update, durationMillis)
     }
+
+    /** True when the user turned system animations off ("remove animations" / animator scale 0): move instead of animate. */
+    private fun animationsDisabled(): Boolean = runCatching {
+        android.provider.Settings.Global.getFloat(view.context.contentResolver, android.provider.Settings.Global.ANIMATOR_DURATION_SCALE, 1f) == 0f
+    }.getOrDefault(false)
 
     override fun setMapTapListener(listener: ((LatLon) -> Unit)?) {
         tapListener = listener
@@ -598,6 +625,10 @@ class MapLibreEngine(
 
     override fun setCameraGestureListener(listener: (() -> Unit)?) {
         gestureListener = listener
+    }
+
+    override fun addCameraGestureListener(listener: () -> Unit) {
+        extraGestureListeners += listener
     }
 
     override fun setViewportListener(listener: ((GeoBounds, Double) -> Unit)?) {
@@ -788,6 +819,7 @@ class MapLibreEngine(
             style.addSource(pin)
             style.addSource(GeoJsonSource(MARKERS_SOURCE).also { markersSource = it })
             style.addSource(GeoJsonSource(PARKING_SOURCE).also { parkingSource = it })
+            style.addSource(GeoJsonSource(ORIGIN_SOURCE).also { originSource = it })
             style.addLayer(
                 CircleLayer(MARKERS_LAYER, MARKERS_SOURCE).withProperties(
                     circleRadius(6f), circleColor(MARKER_COLOR), circleStrokeColor(WHITE), circleStrokeWidth(2f),
@@ -803,6 +835,11 @@ class MapLibreEngine(
             style.addLayer(
                 CircleLayer(PARKING_LAYER, PARKING_SOURCE).withProperties(
                     circleRadius(8f), circleColor(PARKING_COLOR), circleStrokeColor(WHITE), circleStrokeWidth(3f),
+                ),
+            )
+            style.addLayer(
+                CircleLayer(ORIGIN_LAYER, ORIGIN_SOURCE).withProperties(
+                    circleRadius(7f), circleColor(WHITE), circleStrokeColor(ROUTE_COLOR), circleStrokeWidth(4f),
                 ),
             )
             style.addLayer(
@@ -831,6 +868,7 @@ class MapLibreEngine(
             pushUser()
             pushOverlay(pinSource, pendingPin)
             pushOverlay(parkingSource, pendingParking)
+            pushOverlay(originSource, pendingOrigin)
             pushMarkers()
             dispatchViewport() // the first station draw (a new style has no camera-idle of its own)
         }
@@ -893,6 +931,8 @@ class MapLibreEngine(
         const val USER_LAYER = "mapas-user"
         const val PIN_SOURCE = "mapas-pin-src"
         const val PIN_LAYER = "mapas-pin"
+        const val ORIGIN_SOURCE = "mapas-origin-src"
+        const val ORIGIN_LAYER = "mapas-origin"
         const val PARKING_SOURCE = "mapas-parking-src"
         const val PARKING_LAYER = "mapas-parking"
         const val MARKERS_SOURCE = "mapas-saved-src"
