@@ -56,7 +56,7 @@ Key interfaces (Kotlin): `MapEngine`, `SearchEngine`, `RoutingEngine`, `Location
 | Compass | `SensorManager` (`TYPE_ROTATION_VECTOR`) | — |
 | Push notifications | Not used | — |
 | GMS detection | Only via `PackageManager`, to show notices; without `GoogleApiAvailability` | — |
-| Android Auto (later phase) | Not applicable | `gms` flavor if the Car App Library is needed; decide when we get there, because of F-Droid's dependency policy |
+| Android Auto | Dropped (owner, 2026-10-08) | Needs Google's proprietary host app; see `docs/phase2/android-auto.md` |
 | Purchases/donations | External link; no Play Billing | — |
 
 Rule: **a single build flavor (`foss`) by default**. A `gms` flavor is created only if measurements justify a specific improvement.
