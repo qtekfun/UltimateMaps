@@ -7,4 +7,9 @@
     <!-- Chip texts: the status bar chip fits about 7 characters. -->
     <string name="live_update_chip_reroute">Recalc.</string>
     <string name="live_update_chip_no_signal">Sin GPS</string>
+    <string name="driving_focus_group">Concentración al conducir</string>
+    <string name="driving_focus_hide_bar_title">Ocultar la barra de estado al navegar</string>
+    <string name="driving_focus_hide_bar_body">Los iconos de notificaciones de otras apps no se ven en la pantalla de navegación. Desliza hacia abajo desde el borde superior para ver la barra un momento. Desactivado por defecto.</string>
+    <string name="driving_focus_open_dnd">Abrir ajustes de No molestar</string>
+    <string name="driving_focus_dnd_note">Android no permite que una app bloquee los avisos emergentes de otras. Para evitarlos al conducir, configura un modo No molestar que permita llamadas (Ajustes, No molestar, Personas, Llamadas: Todos) y actívalo cuando conduzcas.</string>
 </resources>

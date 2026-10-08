@@ -36,6 +36,8 @@ class NavigationSettingsEnv(
     val liveUpdateAvailable: Boolean = android.os.Build.VERSION.SDK_INT >= 36,
     /** How the step-by-step public-transport trip announces itself; null hides the card (tests, no transit). */
     val transitTrip: com.qtekfun.ultimatemaps.transit.follow.TransitTripSettingsStore? = null,
+    /** Opens the system Do Not Disturb settings (no permission needed); a no-op in tests. */
+    val openDoNotDisturb: () -> Unit = {},
 )
 
 /**
@@ -160,6 +162,20 @@ fun NavigationSection(env: NavigationSettingsEnv) {
             tag = "nav_motion_tunnels_switch",
             onChange = { on -> env.store.update { it.copy(motionSensorsInTunnels = on) } },
         )
+    }
+    Spacer(Modifier.height(10.dp))
+    SectionTitle(stringResource(R.string.driving_focus_group))
+    Card("nav_driving_focus_card") {
+        SwitchRow(
+            title = stringResource(R.string.driving_focus_hide_bar_title),
+            body = stringResource(R.string.driving_focus_hide_bar_body),
+            checked = s.hideStatusBar,
+            tag = "nav_hide_status_bar_switch",
+            onChange = { on -> env.store.update { it.copy(hideStatusBar = on) } },
+        )
+        Spacer(Modifier.height(8.dp))
+        TextButton(stringResource(R.string.driving_focus_open_dnd), "nav_open_dnd", onClick = env.openDoNotDisturb)
+        BasicText(stringResource(R.string.driving_focus_dnd_note), style = Mapas.typography.callout.copy(color = Mapas.colors.secondaryLabel), modifier = Modifier.testTag("nav_dnd_note"))
     }
     env.transitTrip?.let { trip ->
         Spacer(Modifier.height(10.dp))

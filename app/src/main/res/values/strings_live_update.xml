@@ -7,4 +7,9 @@
     <!-- Chip texts: the status bar chip fits about 7 characters. -->
     <string name="live_update_chip_reroute">Reroute</string>
     <string name="live_update_chip_no_signal">No GPS</string>
+    <string name="driving_focus_group">Driving focus</string>
+    <string name="driving_focus_hide_bar_title">Hide the status bar while navigating</string>
+    <string name="driving_focus_hide_bar_body">The notification icons of other apps stay out of sight on the navigation screen. Swipe down from the top edge to see the bar for a moment. Off by default.</string>
+    <string name="driving_focus_open_dnd">Open Do Not Disturb settings</string>
+    <string name="driving_focus_dnd_note">Android does not let an app block other apps\' pop-ups. To avoid them while driving, set up a Do Not Disturb mode that allows calls (Settings, Do Not Disturb, People, Calls: Everyone) and turn it on when you drive.</string>
 </resources>

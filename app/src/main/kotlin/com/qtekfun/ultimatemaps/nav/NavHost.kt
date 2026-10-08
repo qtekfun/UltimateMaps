@@ -136,6 +136,7 @@ class NavHost(
         val ui by screen.ui.collectAsState()
         KeepScreenOn(ui.active && ui.phase != NavPhase.ARRIVED)
         ShowOverLockScreen(ui.active)
+        HideStatusBar(ui.active && com.qtekfun.ultimatemaps.voice.VoiceModule.settings(activity).settings.collectAsState().value.hideStatusBar)
         NavScreen(
             ui = ui,
             actions = NavActions(
@@ -191,6 +192,26 @@ fun ShowOverLockScreen(on: Boolean) {
         val activity = context.findActivity()
         if (on && activity != null) setShowWhenLocked(activity, true)
         onDispose { if (on && activity != null) setShowWhenLocked(activity, false) }
+    }
+}
+
+/**
+ * Hides the system status bar while [on] (Settings > Driving focus), so the notification icons of other apps do not
+ * distract. A swipe from the top shows the bars for a moment (transient). The navigation screen pads with the
+ * status-bar inset ignoring visibility, so nothing jumps when the bar goes. Shown again when [on] ends or the
+ * composition leaves (the activity stops).
+ */
+@Composable
+fun HideStatusBar(on: Boolean) {
+    val view = androidx.compose.ui.platform.LocalView.current
+    DisposableEffect(on, view) {
+        val window = view.context.findActivity()?.window
+        val controller = window?.let { androidx.core.view.WindowCompat.getInsetsController(it, view) }
+        if (on && controller != null) {
+            controller.systemBarsBehavior = androidx.core.view.WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+            controller.hide(androidx.core.view.WindowInsetsCompat.Type.statusBars())
+        }
+        onDispose { if (on) controller?.show(androidx.core.view.WindowInsetsCompat.Type.statusBars()) }
     }
 }
 
