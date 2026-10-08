@@ -4,6 +4,8 @@ import com.qtekfun.ultimatemaps.cameras.PrefsCameraSettingsStore
 import com.qtekfun.ultimatemaps.chargers.PrefsChargerSettingsStore
 import com.qtekfun.ultimatemaps.zbe.PrefsZbeSettingsStore
 import com.qtekfun.ultimatemaps.bikeshare.PrefsBikeShareSettingsStore
+import com.qtekfun.ultimatemaps.weather.KeystoreApiKeyStore
+import com.qtekfun.ultimatemaps.weather.PrefsWeatherAlertSettings
 import com.qtekfun.ultimatemaps.trails.PrefsRouteSettingsStore
 import com.qtekfun.ultimatemaps.fuel.PrefsFuelSettingsStore
 import com.qtekfun.ultimatemaps.map.PrefsCameraStateStore
@@ -44,6 +46,8 @@ class SettingsSchemaCoverageTest {
         addAll(keysOf(PrefsChargerSettingsStore::class.java, PrefsChargerSettingsStore.PREFS))
         addAll(keysOf(PrefsZbeSettingsStore::class.java, PrefsZbeSettingsStore.PREFS))
         addAll(keysOf(PrefsBikeShareSettingsStore::class.java, PrefsBikeShareSettingsStore.PREFS))
+        addAll(keysOf(PrefsWeatherAlertSettings::class.java, PrefsWeatherAlertSettings.PREFS))
+        addAll(keysOf(KeystoreApiKeyStore::class.java, KeystoreApiKeyStore.PREFS))
         addAll(keysOf(PrefsRouteSettingsStore::class.java, PrefsRouteSettingsStore.PREFS))
         addAll(keysOf(PrefsHistorySettings::class.java, PrefsHistorySettings.PREFS))
         addAll(keysOf(PrefsRecordingSettings::class.java, PrefsRecordingSettings.PREFS))
@@ -92,7 +96,7 @@ class SettingsSchemaCoverageTest {
             .toSortedSet()
         val expected = sortedSetOf(
             "AndroidNavServiceControl.kt", "AndroidPlaces.kt", "AndroidSettingsStorage.kt", "CoMapsSearchBackend.kt", "MapasApp.kt",
-            "PendingRestore.kt", "PlaceLanguage.kt", "PrefsCameraSettingsStore.kt", "PrefsBikeShareSettingsStore.kt", "PrefsCameraStateStore.kt", "PrefsChargerSettingsStore.kt", "PrefsFuelSettingsStore.kt",
+            "PendingRestore.kt", "PlaceLanguage.kt", "PrefsCameraSettingsStore.kt", "PrefsBikeShareSettingsStore.kt", "PrefsWeatherAlertSettings.kt", "KeystoreApiKeyStore.kt", "PrefsCameraStateStore.kt", "PrefsChargerSettingsStore.kt", "PrefsFuelSettingsStore.kt",
             "PrefsNavSettingsStore.kt", "PrefsRouteSettingsStore.kt", "PrefsZbeSettingsStore.kt", "RecordingController.kt", "RegionsController.kt", "SearchHistory.kt", "TransitTripSettings.kt",
         )
         assertEquals(expected, found, "a new SharedPreferences file needs a SettingsSchema entry or an exclusion, then add its file here")

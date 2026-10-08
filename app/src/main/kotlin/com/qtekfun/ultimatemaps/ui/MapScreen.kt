@@ -54,6 +54,7 @@ class MapScreenState {
     /** Camera tilt in degrees, latitude of the view centre and zoom: the compass shows when tilted, the scale bar uses the other two. */
     var tilt by mutableFloatStateOf(0f)
     var centerLatitude by mutableDoubleStateOf(0.0)
+    var centerLongitude by mutableDoubleStateOf(0.0)
     var zoom by mutableDoubleStateOf(0.0)
 
     /** The scale bar waits for the first camera report. */
@@ -68,6 +69,7 @@ class MapScreenState {
         bearing = camera.bearing.toFloat()
         tilt = camera.tilt.toFloat()
         centerLatitude = camera.center.lat
+        centerLongitude = camera.center.lon
         zoom = camera.zoom
         cameraKnown = true
     }

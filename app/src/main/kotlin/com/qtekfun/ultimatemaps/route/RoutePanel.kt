@@ -93,6 +93,7 @@ fun RoutePanel(
             } else {
                 ResultAndStart(s, navStart)
                 if (s.status == RouteStatus.DONE) LowEmissionWarning(s.lowEmission) // full width: below the figures and Start
+                if (s.status == RouteStatus.DONE) com.qtekfun.ultimatemaps.weather.WeatherRouteWarning(s.weather)
                 AlternativesSection(route)
                 Spacer(Modifier.height(4.dp))
                 RouteOptionsSection(route)
@@ -163,8 +164,10 @@ private fun FromToCard(route: RoutePreviewController, onUseLocation: () -> Unit)
                 TextAction(stringResource(R.string.route_change_short), route::beginPickOrigin, "route_change_origin")
             }
         }
-        // "Use my location" only matters when the start is not already the location, or when it is missing.
-        val useLocation = !s.pickingOrigin && (s.origin is RouteOrigin.Picked || s.status == RouteStatus.NEEDS_ORIGIN)
+        // "Use my location" matters when the start is not already the location, or when it is missing, and ALWAYS while
+        // the origin is being picked: it is the one-tap way back after choosing "Change" (the Cancel button sits under
+        // the results list and the keyboard can hide it).
+        val useLocation = s.pickingOrigin || s.origin is RouteOrigin.Picked || s.status == RouteStatus.NEEDS_ORIGIN
         if (useLocation) {
             CardRow(startInset = true) {
                 Spacer(Modifier.weight(1f))
