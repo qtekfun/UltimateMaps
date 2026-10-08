@@ -12,6 +12,12 @@
     <string name="place_open_now">Abierto ahora</string>
     <string name="place_closed_now">Cerrado ahora</string>
     <string name="place_open_unknown">Abierto ahora: desconocido</string>
+    <string name="place_open_closes_at">Abierto ahora · Cierra a las %1$s</string>
+    <string name="place_open_closes_on">Abierto ahora · Cierra el %1$s a las %2$s</string>
+    <string name="place_closed_opens_at">Cerrado · Abre a las %1$s</string>
+    <string name="place_closed_opens_tomorrow">Cerrado · Abre mañana a las %1$s</string>
+    <string name="place_closed_opens_on">Cerrado · Abre el %1$s a las %2$s</string>
+    <string name="place_hours_holidays_note">No se tienen en cuenta los festivos.</string>
     <string name="place_no_dialer">No hay ninguna aplicación de teléfono</string>
     <string name="place_no_browser">No hay ningún navegador</string>
 

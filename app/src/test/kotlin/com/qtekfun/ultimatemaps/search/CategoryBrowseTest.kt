@@ -134,9 +134,9 @@ class CategoryBrowseTest {
 
     @Test fun everyCategoryHasADistinctQueryAndLabelResource() {
         val entries = PlaceCategory.entries
-        assertEquals(10, entries.size)
-        assertEquals(10, entries.map { it.query }.toSet().size)
-        assertEquals(10, entries.map { it.id }.toSet().size)
+        assertEquals(11, entries.size)
+        assertEquals(11, entries.map { it.query }.toSet().size)
+        assertEquals(11, entries.map { it.id }.toSet().size)
     }
 
     @Test fun chipsListNearbyPlacesWithDistanceAndTappingTheSelectedOneClears() {

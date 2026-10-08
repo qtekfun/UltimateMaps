@@ -118,18 +118,37 @@ class PlaceExtrasCardTest {
     @Test fun simpleHoursShowTheTextAndOpenNow() {
         show(PlaceExtras(openingHours = "Mo-Fr 08:00-20:00; Sa 09:00-14:00"))
         assertEquals("Hours: Mo-Fr 08:00-20:00; Sa 09:00-14:00", text("place_hours"))
-        assertEquals("Open now", text("place_open_state"))
+        assertEquals("Open now · Closes at 20:00", text("place_open_state"))
+        absent("place_hours_note")
     }
 
     @Test fun closedOutsideTheHours() {
         show(PlaceExtras(openingHours = "Mo-Fr 08:00-20:00"), now = mondayNight)
-        assertEquals("Closed now", text("place_open_state"))
+        assertEquals("Closed · Opens tomorrow at 08:00", text("place_open_state"))
+    }
+
+    @Test fun alwaysOpenSaysJustOpenNow() {
+        show(PlaceExtras(openingHours = "24/7"))
+        assertEquals("Open now", text("place_open_state"))
+    }
+
+    @Test fun closedFarAheadNamesTheDay() {
+        show(PlaceExtras(openingHours = "Sa 10:00-14:00"))
+        assertEquals("Closed · Opens Saturday at 10:00", text("place_open_state"))
+    }
+
+    @Test fun holidayRulesAreIgnoredWithANote() {
+        show(PlaceExtras(openingHours = "Mo-Fr 08:00-20:00; PH off"))
+        assertEquals("Hours: Mo-Fr 08:00-20:00; PH off", text("place_hours"))
+        assertEquals("Open now · Closes at 20:00", text("place_open_state"))
+        assertEquals("Public holidays are not taken into account.", text("place_hours_note"))
     }
 
     @Test fun hoursBeyondTheParserSayUnknownAndStillShowTheText() {
-        show(PlaceExtras(openingHours = "Mo-Fr 08:00-20:00; PH off"))
-        assertEquals("Hours: Mo-Fr 08:00-20:00; PH off", text("place_hours"))
+        show(PlaceExtras(openingHours = "Mo-Fr 08:00-20:00; sunrise-sunset"))
+        assertEquals("Hours: Mo-Fr 08:00-20:00; sunrise-sunset", text("place_hours"))
         assertEquals("Open now: unknown", text("place_open_state"))
+        absent("place_hours_note")
     }
 
     @Test @Config(sdk = [34], qualifiers = "es-rES-w411dp-h891dp-xxhdpi")
