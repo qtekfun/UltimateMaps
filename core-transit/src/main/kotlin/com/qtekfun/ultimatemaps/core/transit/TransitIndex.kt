@@ -92,6 +92,11 @@ class TransitIndex(
     val stopTimeCount: Int get() = arrivals.size
     val lineCount: Int get() = lineShortName.size
 
+    /** Modes of the lines that have at least one pattern: what a mode filter can act on in this index. */
+    val availableModes: Set<TransitMode> by lazy {
+        patternLine.map { TransitMode.ofRouteType(lineType[it]) }.toSet()
+    }
+
     fun patternStopCount(p: Int): Int = patternStopOffset[p + 1] - patternStopOffset[p]
     fun patternTrips(p: Int): Int = patternTripOffset[p + 1] - patternTripOffset[p]
 

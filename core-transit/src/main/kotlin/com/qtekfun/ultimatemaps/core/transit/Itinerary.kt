@@ -98,7 +98,7 @@ sealed interface ItineraryLeg {
 }
 
 /** A complete theoretical (schedule-based) trip. */
-data class Itinerary(val legs: List<ItineraryLeg>) {
+data class Itinerary(val legs: List<ItineraryLeg>, val note: JourneyNote? = null) {
     val departAt: Long get() = legs.first().departAt
     val arriveAt: Long get() = legs.last().arriveAt
     val durationSec: Long get() = arriveAt - departAt

@@ -28,8 +28,14 @@ data class PlannerConfig(
     val stationTransferSec: Int = 120,
     /** Maximum number of vehicle changes (rounds = maxTransfers + 1). */
     val maxTransfers: Int = 4,
-    /** A walk-only itinerary is offered when it takes at most this long. */
-    val maxWalkOnlySec: Int = 1800,
+    /** The walk-only itinerary is always offered when walking (with the detour factor) takes at most this long. */
+    val walkAlternativeMaxSec: Int = 1200,
+    /** A vehicle journey is dropped when it saves less than this over walking (when walking is offered). */
+    val minTransitSavingSec: Int = 300,
+    /** ... or less than this fraction of the walking time. */
+    val minTransitSavingFraction: Double = 0.2,
+    /** Cap on the walking of one journey (access, transfers and egress); 0 = no cap. */
+    val maxTotalWalkSec: Int = 900,
 )
 
 /** One stop of a ride with its scheduled times (seconds since midnight of the query service day). */
@@ -59,7 +65,10 @@ sealed interface Leg {
     ) : Leg
 }
 
-data class Journey(val legs: List<Leg>) {
+data class Journey(val legs: List<Leg>, val note: JourneyNote? = null) {
+    /** Seconds spent walking (all walking legs). */
+    val walkSec: Int get() = legs.sumOf { if (it is Leg.Walk) it.arriveSec - it.departSec else 0 }
+
     val departSec: Int get() = legs.first().departSec
     val arriveSec: Int get() = legs.last().arriveSec
     val rideCount: Int get() = legs.count { it is Leg.Ride }
@@ -187,6 +196,10 @@ class TransitPlanner(val index: TransitIndex, val config: PlannerConfig = Planne
     private val accessSec = IntArray(nStops)
     private val egressSec = IntArray(nStops)
 
+    private val patternMode = Array(nPatterns) { TransitMode.ofRouteType(index.lineType[index.patternLine[it]]) }
+    private val patAllowed = BooleanArray(nPatterns)
+    private var allowedModes: Set<TransitMode>? = null
+
     private var activeDay = Int.MIN_VALUE
     private var active: Array<BooleanArray> = emptyArray()
 
@@ -197,9 +210,35 @@ class TransitPlanner(val index: TransitIndex, val config: PlannerConfig = Planne
     /** Number of footpath edges (for diagnostics). */
     val footpathCount: Int get() = fpTo.size
 
+    /**
+     * Plans one query. The result holds the vehicle journeys (Pareto set over arrival time and rides) and, when walking
+     * is a reasonable alternative, the walk-only journey (no ride legs).
+     *
+     * - Walking is offered when it takes at most `walkAlternativeMaxSec`. Then a vehicle journey must beat it by
+     *   `max(minTransitSavingSec, minTransitSavingFraction x walking)`; if some vehicle journey beat walking but not by
+     *   enough, the walk-only journey carries [JourneyNote.WALK_ABOUT_AS_FAST].
+     * - `maxTotalWalkSec` drops journeys that walk more in total. This is a filter on the earliest-arrival journeys, not a
+     *   second criterion inside the search: a journey that walks less but arrives later is not looked for (access and
+     *   egress stops are limited to the cap so that the common case works).
+     * - Lines whose mode is not in `options.modes` are never boarded; walking transfers are always allowed.
+     *
+     * [walkReferenceDepartSec] is the time walking would have started; [planNextDepartures] passes the original query time so
+     * that a later bus is compared with leaving on foot now.
+     */
     @Synchronized
-    fun plan(origin: LatLon, destination: LatLon, epochDay: Int, departSec: Int): List<Journey> {
+    fun plan(
+        origin: LatLon,
+        destination: LatLon,
+        epochDay: Int,
+        departSec: Int,
+        options: PlanOptions = PlanOptions(),
+        walkReferenceDepartSec: Int = departSec,
+    ): List<Journey> {
         loadActive(epochDay)
+        applyModes(options.modes)
+        val walkAltMax = options.walkAlternativeMaxSec ?: config.walkAlternativeMaxSec
+        val minSaving = options.minTransitSavingSec ?: config.minTransitSavingSec
+        val walkCap = options.maxTotalWalkSec ?: config.maxTotalWalkSec
         val oLat = micro(origin.lat)
         val oLon = micro(origin.lon)
         val dLat = micro(destination.lat)
@@ -216,7 +255,7 @@ class TransitPlanner(val index: TransitIndex, val config: PlannerConfig = Planne
         egressSec.fill(-1)
 
         // access
-        val accessStops = nearest(oLat, oLon, config.accessRadiusM, config.maxAccessStops)
+        val accessStops = nearest(oLat, oLon, config.accessRadiusM, config.maxAccessStops, walkCap)
         var markedList = IntList()
         for (e in accessStops) {
             val s = (e shr 32).toInt() // packed below
@@ -229,15 +268,17 @@ class TransitPlanner(val index: TransitIndex, val config: PlannerConfig = Planne
             marked[s] = true
         }
         // egress
-        for (e in nearest(dLat, dLon, config.accessRadiusM, config.maxAccessStops)) egressSec[(e shr 32).toInt()] = (e and 0xFFFFFFFFL).toInt()
+        for (e in nearest(dLat, dLon, config.accessRadiusM, config.maxAccessStops, walkCap)) egressSec[(e shr 32).toInt()] = (e and 0xFFFFFFFFL).toInt()
 
         val direct = walkSec(distanceM(oLat, oLon, dLat, dLon))
-        val walkOnly = if (direct <= config.maxWalkOnlySec) {
-            Journey(listOf(Leg.Walk(-1, -1, departSec, departSec + direct, (distanceM(oLat, oLon, dLat, dLon) * config.detourFactor).toInt())))
-        } else {
-            null
-        }
-        var bestDest = if (walkOnly != null) departSec + direct else INF
+        val walkOffered = direct <= walkAltMax
+        val walkMeters = (distanceM(oLat, oLon, dLat, dLon) * config.detourFactor).toInt()
+        // The walk leaves when the traveller asked to leave, even if a later bus is being looked for.
+        val walkArrive = walkReferenceDepartSec + direct
+        val requiredSaving = if (walkOffered) max(minSaving, ceil(direct * config.minTransitSavingFraction).toInt()) else 0
+        // Vehicle journeys that do not even beat walking are not searched; those that beat it by too little are found
+        // and then dropped, which is how the "walking is about as fast" note is known.
+        var bestDest = if (walkOffered) walkArrive else INF
 
         val roundDest = IntArray(rounds + 1) { INF }
         val roundDestStop = IntArray(rounds + 1) { -1 }
@@ -253,6 +294,7 @@ class TransitPlanner(val index: TransitIndex, val config: PlannerConfig = Planne
                 marked[s] = false
                 for (e in spStart[s] until spStart[s + 1]) {
                     val p = spPattern[e]
+                    if (!patAllowed[p]) continue
                     val pos = spPos[e]
                     if (patEarliest[p] < 0) {
                         queue.add(p)
@@ -349,25 +391,51 @@ class TransitPlanner(val index: TransitIndex, val config: PlannerConfig = Planne
         for (m in 0 until markedList.size) marked[markedList[m]] = false
 
         val out = ArrayList<Journey>()
-        for (k in 1..rounds) if (roundDestStop[k] >= 0) out.add(reconstruct(k, roundDestStop[k], oLat, oLon, dLat, dLon))
-        // transit results all beat the walk-only time (it seeded the pruning bound), so keep walking only when alone
-        if (out.isEmpty() && walkOnly != null) out.add(walkOnly)
+        var droppedForSaving = false
+        for (k in 1..rounds) {
+            if (roundDestStop[k] < 0) continue
+            val j = reconstruct(k, roundDestStop[k], oLat, oLon, dLat, dLon)
+            if (walkCap > 0 && j.walkSec > walkCap) continue
+            if (walkOffered && j.arriveSec > walkArrive - requiredSaving) {
+                droppedForSaving = true
+                continue
+            }
+            out.add(j)
+        }
+        if (walkOffered) {
+            val leg = Leg.Walk(-1, -1, walkReferenceDepartSec, walkArrive, walkMeters)
+            out.add(Journey(listOf(leg), if (droppedForSaving) JourneyNote.WALK_ABOUT_AS_FAST else null))
+        }
         return out
+    }
+
+    /** Rebuilds the per-pattern "may be boarded" flags when the allowed modes changed since the last query. */
+    private fun applyModes(modes: Set<TransitMode>) {
+        if (modes == allowedModes) return
+        for (p in 0 until nPatterns) patAllowed[p] = patternMode[p] in modes
+        allowedModes = modes
     }
 
     /**
      * The best itinerary for each of the next [count] distinct departures: after each result the search is
      * restarted one minute after that itinerary's first boarding. Used as the "next departures" fallback.
      */
-    fun planNextDepartures(origin: LatLon, destination: LatLon, epochDay: Int, departSec: Int, count: Int, horizonSec: Int = 6 * 3600): List<Journey> {
+    fun planNextDepartures(
+        origin: LatLon,
+        destination: LatLon,
+        epochDay: Int,
+        departSec: Int,
+        count: Int,
+        horizonSec: Int = 6 * 3600,
+        options: PlanOptions = PlanOptions(),
+    ): List<Journey> {
         val results = ArrayList<Journey>()
         var t = departSec
         while (results.size < count && t <= departSec + horizonSec) {
-            val best = plan(origin, destination, epochDay, t).minWithOrNull(compareBy({ it.arriveSec }, { it.transfers })) ?: break
-            if (best.rideCount == 0) {
-                results.add(best)
-                break
-            }
+            // Only vehicle journeys: the walk-only option belongs to the query time, not to a later departure.
+            val best = plan(origin, destination, epochDay, t, options, walkReferenceDepartSec = departSec)
+                .filter { it.rideCount > 0 }
+                .minWithOrNull(compareBy({ it.arriveSec }, { it.transfers })) ?: break
             results.add(best)
             t = best.legs.first { it is Leg.Ride }.departSec - accessWalkBefore(best) + 60
         }
@@ -553,9 +621,9 @@ class TransitPlanner(val index: TransitIndex, val config: PlannerConfig = Planne
     }
 
     /** Nearest stops within [radiusM] as `stop shl 32 | walkSeconds`, nearest first, at most [limit]. */
-    private fun nearest(lat: Int, lon: Int, radiusM: Int, limit: Int): LongArray {
+    private fun nearest(lat: Int, lon: Int, radiusM: Int, limit: Int, maxWalkSec: Int = 0): LongArray {
         val found = ArrayList<Pair<Double, Int>>()
-        forEachNear(lat, lon, radiusM) { s, d -> found.add(d to s) }
+        forEachNear(lat, lon, radiusM) { s, d -> if (maxWalkSec <= 0 || walkSec(d) <= maxWalkSec) found.add(d to s) }
         found.sortBy { it.first }
         val m = min(limit, found.size)
         return LongArray(m) { (found[it].second.toLong() shl 32) or walkSec(found[it].first).toLong() }
