@@ -14,6 +14,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -50,6 +52,8 @@ class TransitTripHost(
     private val settings: NavSettingsStore,
     private val speaker: TransitTripSpeaker,
     private val io: CoroutineDispatcher = Dispatchers.IO,
+    /** Keeps Renfe's real-time data fresh while a trip is followed (does nothing with the switch off). */
+    private val realTime: com.qtekfun.ultimatemaps.transit.CercaniasRealTime? = null,
 ) {
     private val glove = MutableStateFlow(prefs.glove)
     private val resumable = MutableStateFlow(false)
@@ -60,6 +64,15 @@ class TransitTripHost(
 
     init {
         scope.launch { controller.prompts.collect { speaker.onPrompt(it) } }
+        realTime?.let { rt ->
+            scope.launch {
+                var holding = false
+                controller.state.map { it != null }.distinctUntilChanged().collect { active ->
+                    if (active && !holding) rt.acquire() else if (!active && holding) rt.release()
+                    holding = active
+                }
+            }
+        }
     }
 
     val active: Boolean get() = controller.isActive

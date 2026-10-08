@@ -17,6 +17,7 @@ import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -50,6 +51,12 @@ private val target: Dp @Composable get() = maxOf(MIN_TARGET, Mapas.dimens.touchT
 @Composable
 fun TransitSection(controller: TransitController, modifier: Modifier = Modifier) {
     val s = controller.state
+    val realTime = controller.realTime
+    // Cercanías real time (opt-in): ask once when a trip with a Renfe train is shown. The repository rate-limits it; with the
+    // switch off this never runs.
+    LaunchedEffect(s.itineraries, realTime?.enabled) {
+        if (realTime != null && realTime.enabled && s.itineraries.any { i -> i.rides.any(realTime::supports) }) realTime.refresh()
+    }
     Column(modifier.fillMaxWidth().testTag("transit_section")) {
         DepartureRow(controller)
         Spacer(Modifier.height(8.dp))
@@ -64,7 +71,7 @@ fun TransitSection(controller: TransitController, modifier: Modifier = Modifier)
                 ItineraryList(controller)
             }
         }
-        if (s.phase == TransitPhase.DONE) TransitFooter(s)
+        if (s.phase == TransitPhase.DONE) TransitFooter(s, realTimeNote = realTime != null && realTime.enabled && s.itineraries.any { i -> i.rides.any(realTime::supports) })
     }
 }
 
@@ -166,13 +173,13 @@ private fun ItineraryList(controller: TransitController) {
     val s = controller.state
     Column(Modifier.fillMaxWidth().testTag("transit_list"), verticalArrangement = Arrangement.spacedBy(8.dp)) {
         s.itineraries.forEachIndexed { i, it ->
-            ItineraryRow(i, it, selected = i == s.selected, zone = s.zone) { controller.select(i) }
+            ItineraryRow(i, it, selected = i == s.selected, zone = s.zone, realTime = controller.realTime) { controller.select(i) }
         }
     }
 }
 
 @Composable
-private fun ItineraryRow(index: Int, it: Itinerary, selected: Boolean, zone: java.time.ZoneId, onClick: () -> Unit) {
+private fun ItineraryRow(index: Int, it: Itinerary, selected: Boolean, zone: java.time.ZoneId, realTime: TransitRealTime?, onClick: () -> Unit) {
     val colors = Mapas.colors
     val context = LocalContext.current
     val locale = LocalConfiguration.current.locales[0]
@@ -221,7 +228,24 @@ private fun ItineraryRow(index: Int, it: Itinerary, selected: Boolean, zone: jav
             style = Mapas.typography.callout.copy(color = colors.secondaryLabel),
             modifier = Modifier.testTag("transit_option_${index}_facts"),
         )
+        // Real time (Renfe): one short line per train that is in the feed, e.g. "C4 · Delayed 4 min".
+        it.rides.forEachIndexed { k, ride ->
+            val status = RealTimeTexts.status(context.resources, rideRealTime(realTime, ride)) ?: return@forEachIndexed
+            BasicText(
+                "${ride.line.shortName} · ${status.text}",
+                style = Mapas.typography.callout.copy(color = if (status.level == RealTimeTexts.Level.ON_TIME) colors.secondaryLabel else colors.warning),
+                modifier = Modifier.testTag("transit_option_${index}_rt_$k"),
+            )
+        }
     }
+}
+
+/** What real time says about [ride]; reading [TransitRealTime.version] makes the caller recompose when new data arrives. */
+@Composable
+internal fun rideRealTime(realTime: TransitRealTime?, ride: ItineraryLeg.Ride): com.qtekfun.ultimatemaps.core.transit.rt.LegRealTime? {
+    if (realTime == null) return null
+    @Suppress("UNUSED_VARIABLE") val version = realTime.version
+    return if (realTime.enabled && realTime.supports(ride)) realTime.forRide(ride) else null
 }
 
 /** The line as a rounded chip: its short name in the line colour (GTFS route_color, or a per-mode default). */
@@ -298,7 +322,7 @@ private fun ItineraryCard(controller: TransitController, it: Itinerary) {
         it.legs.forEachIndexed { i, leg ->
             when (leg) {
                 is ItineraryLeg.Walk -> WalkRow(i, leg, s.zone, locale)
-                is ItineraryLeg.Ride -> RideRow(i, leg, s.zone, context)
+                is ItineraryLeg.Ride -> RideRow(i, leg, s.zone, context, rideRealTime(controller.realTime, leg), controller.realTime?.let { rt -> rt.enabled && rt.supports(leg) } == true)
             }
             if (i < it.legs.lastIndex) Box(Modifier.fillMaxWidth().height(1.dp).background(colors.separator))
         }
@@ -329,7 +353,7 @@ private fun WalkRow(i: Int, leg: ItineraryLeg.Walk, zone: java.time.ZoneId, loca
 }
 
 @Composable
-private fun RideRow(i: Int, leg: ItineraryLeg.Ride, zone: java.time.ZoneId, context: android.content.Context) {
+private fun RideRow(i: Int, leg: ItineraryLeg.Ride, zone: java.time.ZoneId, context: android.content.Context, rt: com.qtekfun.ultimatemaps.core.transit.rt.LegRealTime?, realTimeOn: Boolean) {
     val colors = Mapas.colors
     Row(Modifier.fillMaxWidth().padding(vertical = 10.dp).testTag("transit_leg_$i")) {
         TimeColumn(TransitFormat.time(leg.departAt, zone))
@@ -355,6 +379,7 @@ private fun RideRow(i: Int, leg: ItineraryLeg.Ride, zone: java.time.ZoneId, cont
                 style = Mapas.typography.callout.copy(color = colors.secondaryLabel),
                 modifier = Modifier.testTag("transit_leg_${i}_stops"),
             )
+            if (realTimeOn) RealTimeBlock(i, rt)
             Row(Modifier.fillMaxWidth()) {
                 BasicText(
                     stringResource(R.string.transit_leg_alight, leg.alighting.name),
@@ -371,15 +396,37 @@ private fun RideRow(i: Int, leg: ItineraryLeg.Ride, zone: java.time.ZoneId, cont
     }
 }
 
+/**
+ * Under a Renfe train: "Real time (Renfe)" with its status when the train is in the feed, then any alert. When the train is
+ * not in the feed (or nothing arrived yet) it says nothing about real time; the footer keeps the "theoretical" note true.
+ */
+@Composable
+private fun RealTimeBlock(i: Int, rt: com.qtekfun.ultimatemaps.core.transit.rt.LegRealTime?) {
+    val res = LocalContext.current.resources
+    val colors = Mapas.colors
+    val status = RealTimeTexts.status(res, rt)
+    if (status != null) {
+        BasicText(
+            stringResource(R.string.transit_rt_label) + " · " + status.text,
+            style = Mapas.typography.callout.copy(color = if (status.level == RealTimeTexts.Level.ON_TIME) colors.secondaryLabel else colors.warning),
+            modifier = Modifier.testTag("transit_leg_${i}_rt"),
+        )
+    }
+    RealTimeTexts.details(res, rt).forEachIndexed { k, line ->
+        BasicText(line, style = Mapas.typography.callout.copy(color = colors.warning), modifier = Modifier.testTag("transit_leg_${i}_rt_detail_$k"))
+    }
+}
+
 // ---------------------------------------------------------------------------------------------------- footer
 
 /** Honest note, validity of the data and the attribution the licences ask for (with links). */
 @Composable
-private fun TransitFooter(s: TransitState) {
+private fun TransitFooter(s: TransitState, realTimeNote: Boolean = false) {
     val locale = LocalConfiguration.current.locales[0]
     Spacer(Modifier.height(8.dp))
     Column(Modifier.fillMaxWidth().testTag("transit_footer")) {
-        PanelNote(stringResource(R.string.transit_theoretical_note), "transit_note")
+        PanelNote(stringResource(if (realTimeNote) R.string.transit_rt_note else R.string.transit_theoretical_note), "transit_note")
+        if (realTimeNote) PanelNote(stringResource(R.string.transit_rt_source), "transit_rt_source")
         val from = s.validFrom
         val to = s.validTo
         if (from != null && to != null) {
