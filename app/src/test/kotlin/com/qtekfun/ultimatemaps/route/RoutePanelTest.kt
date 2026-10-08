@@ -112,6 +112,22 @@ class RoutePanelTest {
     }
 
     @Test
+    fun whilePickingAnOriginUseMyLocationIsOneTapBack() {
+        route.start(PlaceInfo("Plaza Mayor", LatLon(40.1, -3.1)))
+        settle { route.state.status == RouteStatus.DONE }
+        route.beginPickOrigin() // "Change" was tapped: the search field replaces the lower part
+        var calls = 0
+        rule.setContent {
+            MapasTheme(darkTheme = false) { RoutePanel(route, onUseLocation = { calls++; route.useCurrentLocation() }, originSearch = {}) }
+        }
+        // The origin is already the current location, yet the way back must be offered while the origin is being picked.
+        rule.onNodeWithTag("route_use_location").assertIsDisplayed()
+        rule.onNodeWithTag("route_use_location").performClick()
+        assertEquals(1, calls)
+        assertEquals(false, route.state.pickingOrigin)
+    }
+
+    @Test
     fun explainsNeedMoreMaps() {
         outcome = RouteOutcome(RouteCode.NEED_MORE_MAPS, null)
         route.start(PlaceInfo("Far", LatLon(10.0, 10.0)))
