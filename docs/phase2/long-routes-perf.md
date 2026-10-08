@@ -1,5 +1,7 @@
 # Long car routes: where the time goes and the switches to A/B on a phone
 
+> **Removed on 2026-10-08 (owner decision).** The run-time switches described here (patches 0002 and 0003, `um::PerfFlags`, `RoutePerfMode`, the `perf` extra of the debug bench) were taken out of the code: they brought nothing outside the lab. This document is kept as the analysis; the A/B results are kept in `docs/phase2/device-test/route-perf-ab-2026-10-08.md`. CoMaps patches 0001 and 0004 remain and the numbering is not reused.
+
 Status: analysis by reading the code, plus run-time switches. **Nothing here was run:** the core cannot run on a PC and the Pixel 8 was not used, so this document contains no timings of its own. The only numbers are the owner's measurements in `docs/phase2/device-test/route-bench-2026-10-07.md` (Madrid to Barcelona 620 km about 19 s, Madrid to Lleida 29 to 33 s, Barcelona to Madrid 47 s, Madrid to Zaragoza 312 km 8 to 9 s, short trips 1 to 2 s). Paths below are in `third_party/comaps/libs/routing/` unless noted.
 
 ## 1. Call path of a long car route
