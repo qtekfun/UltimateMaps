@@ -22,6 +22,7 @@ enum class PlaceCategory(val id: String, @StringRes val label: Int, @StringRes v
     PARKING("parking", R.string.category_parking, R.string.category_query_parking),
     LODGING("lodging", R.string.category_lodging, R.string.category_query_lodging),
     TOILETS("toilets", R.string.category_toilets, R.string.category_query_toilets),
+    DRINKING_WATER("drinking_water", R.string.category_drinking_water, R.string.category_query_drinking_water),
 }
 
 /**

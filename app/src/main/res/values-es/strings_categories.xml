@@ -10,6 +10,7 @@
     <string name="category_parking">Aparcamiento</string>
     <string name="category_lodging">Alojamiento</string>
     <string name="category_toilets">Aseos</string>
+    <string name="category_drinking_water">Agua potable</string>
 
     <string name="category_query_pharmacy">farmacia</string>
     <string name="category_query_supermarket">supermercado</string>
@@ -21,6 +22,7 @@
     <string name="category_query_parking">aparcamiento</string>
     <string name="category_query_lodging">hotel</string>
     <string name="category_query_toilets">aseo</string>
+    <string name="category_query_drinking_water">agua potable</string>
 
     <string name="category_distance_note">Las distancias son en línea recta desde tu ubicación o el centro del mapa.</string>
     <string name="category_none">No se ha encontrado nada cerca en los mapas descargados.</string>
