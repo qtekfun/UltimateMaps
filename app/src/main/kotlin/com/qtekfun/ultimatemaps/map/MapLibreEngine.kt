@@ -13,6 +13,7 @@ import com.qtekfun.ultimatemaps.core.map.CameraStateStore
 import com.qtekfun.ultimatemaps.core.map.MapEngine
 import com.qtekfun.ultimatemaps.core.map.MapTheme
 import com.qtekfun.ultimatemaps.core.map.TrackLine
+import com.qtekfun.ultimatemaps.core.map.TrailLine
 import com.qtekfun.ultimatemaps.core.map.TransitMapLeg
 import org.maplibre.android.MapLibre
 import org.maplibre.android.camera.CameraPosition
@@ -129,6 +130,9 @@ class MapLibreEngine(
     private var pendingChargers: List<ChargerPin> = emptyList()
     private var chargerSource: GeoJsonSource? = null
     private var chargerTapListener: ((String) -> Unit)? = null
+    private var pendingTrails: List<TrailLine> = emptyList()
+    private var trailSource: GeoJsonSource? = null
+    private var trailTapListener: ((Int, LatLon) -> Unit)? = null
     private var pendingHazardPins: List<HazardPin> = emptyList()
     private var pendingHazardLines: List<HazardLine> = emptyList()
     private var hazardPinSource: GeoJsonSource? = null
@@ -514,6 +518,34 @@ class MapLibreEngine(
         )
     }
 
+    // --- Hiking and cycling routes ---
+
+    override fun showTrails(lines: List<TrailLine>) {
+        pendingTrails = lines
+        pushTrails()
+    }
+
+    override fun setTrailTapListener(listener: ((Int, LatLon) -> Unit)?) {
+        trailTapListener = listener
+    }
+
+    private fun pushTrails() {
+        val source = trailSource ?: return
+        if (map == null) return
+        source.setGeoJson(
+            FeatureCollection.fromFeatures(
+                TrailStyle.drawable(pendingTrails).map { l ->
+                    Feature.fromGeometry(org.maplibre.geojson.LineString.fromLngLats(l.points.map { Point.fromLngLat(it.lon, it.lat) })).apply {
+                        val props = TrailStyle.properties(l)
+                        addNumberProperty(TrailStyle.ID, props.getValue(TrailStyle.ID) as Int)
+                        addNumberProperty(TrailStyle.LEVEL, props.getValue(TrailStyle.LEVEL) as Int)
+                        addBooleanProperty(TrailStyle.CYCLING, props.getValue(TrailStyle.CYCLING) as Boolean)
+                    }
+                },
+            ),
+        )
+    }
+
     /** Zones: a translucent amber fill and a dashed outline (the dashes tell it apart from a route without colour), under the route line. */
     private fun addZoneLayer(style: Style, dark: Boolean) {
         style.addSource(GeoJsonSource(ZBE_SOURCE).also { zoneSource = it })
@@ -526,6 +558,53 @@ class MapLibreEngine(
             ),
         )
         pushZones()
+    }
+
+    /** Route lines go below everything the app draws (tracks, the route, markers); walking and cycling differ by dash. */
+    private fun addTrailLayers(style: Style, dark: Boolean) {
+        style.addSource(GeoJsonSource(TrailStyle.SOURCE).also { trailSource = it })
+        fun width(extra: Float): Expression = Expression.interpolate(
+            Expression.linear(), Expression.zoom(),
+            *TrailStyle.WIDTH_STOPS.map { (z, w) -> Expression.stop(z, w + extra) }.toTypedArray(),
+        )
+        val color = Expression.match(
+            Expression.get(TrailStyle.LEVEL),
+            Expression.color(TrailStyle.colorOf(0)),
+            Expression.stop(1, Expression.color(TrailStyle.colorOf(1))),
+            Expression.stop(2, Expression.color(TrailStyle.colorOf(2))),
+            Expression.stop(3, Expression.color(TrailStyle.colorOf(3))),
+        )
+        style.addLayer(
+            LineLayer(TrailStyle.CASING_LAYER, TrailStyle.SOURCE).withProperties(
+                lineColor(if (dark) 0xFF1C1C1E.toInt() else WHITE), lineWidth(width(1.6f)),
+                lineOpacity(0.55f), lineCap(Property.LINE_CAP_ROUND), lineJoin(Property.LINE_JOIN_ROUND),
+            ),
+        )
+        for ((id, cycling, dash) in listOf(
+            Triple(TrailStyle.HIKING_LAYER, false, TrailStyle.HIKING_DASH),
+            Triple(TrailStyle.CYCLING_LAYER, true, TrailStyle.CYCLING_DASH),
+        )) {
+            style.addLayer(
+                LineLayer(id, TrailStyle.SOURCE).withFilter(Expression.eq(Expression.get(TrailStyle.CYCLING), cycling)).withProperties(
+                    lineColor(color), lineWidth(width(0f)), lineDasharray(dash.toTypedArray()),
+                    lineCap(Property.LINE_CAP_BUTT), lineJoin(Property.LINE_JOIN_ROUND),
+                ),
+            )
+        }
+        pushTrails()
+    }
+
+    /** A route line under the finger (within [TrailStyle.TOUCH_DP]); reports it with the tapped point. */
+    private fun trailAt(m: MapLibreMap, p: LatLng): Boolean {
+        val listener = trailTapListener ?: return false
+        if (trailSource == null || pendingTrails.isEmpty()) return false
+        val d = view.resources.displayMetrics.density
+        val at = m.projection.toScreenLocation(p)
+        val half = TrailStyle.TOUCH_DP / 2 * d
+        val hits = m.queryRenderedFeatures(RectF(at.x - half, at.y - half, at.x + half, at.y + half), TrailStyle.HIKING_LAYER, TrailStyle.CYCLING_LAYER)
+        val id = hits.firstNotNullOfOrNull { f -> f.getNumberProperty(TrailStyle.ID)?.toInt() } ?: return false
+        listener(id, LatLon.ofOrNull(p.latitude, p.longitude) ?: return false)
+        return true
     }
 
     // --- EV charging stations ---
@@ -760,6 +839,7 @@ class MapLibreEngine(
         if (m != null && fuelAt(m, p) != null) return true
         if (m != null && chargerAt(m, p) != null) return true
         if (m != null && hazardAt(m, p) != null) return true
+        if (m != null && trailAt(m, p)) return true
         val listener = tapListener ?: return false
         listener(LatLon.ofOrNull(p.latitude, p.longitude) ?: return false)
         return true
@@ -853,6 +933,7 @@ class MapLibreEngine(
             val user = GeoJsonSource(USER_SOURCE).also { userSource = it }
             val pin = GeoJsonSource(PIN_SOURCE).also { pinSource = it }
             addZoneLayer(style, wanted == MapTheme.DARK) // low-emission zones: below everything drawn on top of the map
+            addTrailLayers(style, wanted == MapTheme.DARK) // hiking and cycling routes: below everything else
             addTracksLayer(style, wanted == MapTheme.DARK) // below the route line
             addRouteLayer(style, wanted == MapTheme.DARK) // below the markers, pin and user dots
             addTransitLayer(style, wanted == MapTheme.DARK)

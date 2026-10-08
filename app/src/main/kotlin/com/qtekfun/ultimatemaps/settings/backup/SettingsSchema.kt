@@ -10,6 +10,8 @@ import com.qtekfun.ultimatemaps.core.zbe.ZbeSettings
 import com.qtekfun.ultimatemaps.core.chargers.ChargerSettings
 import com.qtekfun.ultimatemaps.core.chargers.MinPower
 import com.qtekfun.ultimatemaps.core.chargers.SocketType
+import com.qtekfun.ultimatemaps.core.routes.RouteSettings
+import com.qtekfun.ultimatemaps.trails.PrefsRouteSettingsStore
 import com.qtekfun.ultimatemaps.core.fuel.FuelSettings
 import com.qtekfun.ultimatemaps.core.fuel.FuelTypes
 import com.qtekfun.ultimatemaps.core.fuel.MIN_REFRESH_MINUTES
@@ -93,6 +95,7 @@ object SettingsSchema {
     const val GROUP_CAMERAS = "cameras"
     const val GROUP_CHARGERS = "chargers"
     const val GROUP_ZBE = "zbe"
+    const val GROUP_TRAILS = "trails"
     const val GROUP_HISTORY = "history"
     const val GROUP_RECORDING = "recording"
     const val GROUP_REGIONS = "regions"
@@ -123,12 +126,14 @@ object SettingsSchema {
     private val cameras = CameraSettings()
     private val chargers = ChargerSettings()
     private val zbe = ZbeSettings()
+    private val trails = RouteSettings()
 
     private val navPrefs = PrefsNavSettingsStore.PREFS
     private val fuelPrefs = PrefsFuelSettingsStore.PREFS
     private val camPrefs = PrefsCameraSettingsStore.PREFS
     private val chargerPrefs = PrefsChargerSettingsStore.PREFS
     private val zbePrefs = PrefsZbeSettingsStore.PREFS
+    private val trailPrefs = PrefsRouteSettingsStore.PREFS
 
     /** Every exported setting, sorted by group and key (the order of the file). */
     val specs: List<SettingSpec> = listOf(
@@ -204,6 +209,10 @@ object SettingsSchema {
         bool(GROUP_ZBE, zbePrefs, PrefsZbeSettingsStore.KEY_ENABLED, zbe.enabled, RestorePolicy.NEEDS_CONSENT),
         bool(GROUP_ZBE, zbePrefs, PrefsZbeSettingsStore.KEY_SHOW_ON_MAP, zbe.showOnMap),
         enum(GROUP_ZBE, zbePrefs, PrefsZbeSettingsStore.KEY_PROMPT_MODE, zbe.promptMode, AlertSoundMode.entries.map { it.name }),
+        // Hiking and cycling routes: the switch starts a download of several MB, so it needs consent; the kinds are plain preferences.
+        bool(GROUP_TRAILS, trailPrefs, PrefsRouteSettingsStore.KEY_ENABLED, trails.enabled, RestorePolicy.NEEDS_CONSENT),
+        bool(GROUP_TRAILS, trailPrefs, PrefsRouteSettingsStore.KEY_HIKING, trails.hiking),
+        bool(GROUP_TRAILS, trailPrefs, PrefsRouteSettingsStore.KEY_CYCLING, trails.cycling),
 
         // Search history switch (not the history itself).
         bool(GROUP_HISTORY, PrefsHistorySettings.PREFS, PrefsHistorySettings.KEY_ENABLED, true),

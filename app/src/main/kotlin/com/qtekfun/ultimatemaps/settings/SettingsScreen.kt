@@ -78,6 +78,8 @@ class SettingsEnv(
     val chargers: ChargersSettingsEnv? = null,
     /** "Low-emission zones" group of the Alerts category (switch, map toggle, prompt mode, data); null hides it. */
     val zbe: ZbeSettingsEnv? = null,
+    /** "Hiking and cycling routes" group of the Navigation category (switch and kinds); null hides it. */
+    val trails: TrailsSettingsEnv? = null,
     /** Track recording part of the Data category (switch and delete); null hides it. */
     val recording: RecordingSettingsEnv? = null,
     /** Language of place information section (search results and place card); null hides it. */

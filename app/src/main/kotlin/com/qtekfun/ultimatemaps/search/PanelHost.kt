@@ -20,6 +20,11 @@ import com.qtekfun.ultimatemaps.chargers.ChargerCardHost
 import com.qtekfun.ultimatemaps.chargers.ChargerCardState
 import com.qtekfun.ultimatemaps.chargers.ChargersEnv
 import com.qtekfun.ultimatemaps.map.ChargerMapLayer
+import com.qtekfun.ultimatemaps.map.TrailMapLayer
+import com.qtekfun.ultimatemaps.trails.TrailCardController
+import com.qtekfun.ultimatemaps.trails.TrailCardHost
+import com.qtekfun.ultimatemaps.trails.TrailCardState
+import com.qtekfun.ultimatemaps.trails.TrailsEnv
 import com.qtekfun.ultimatemaps.cameras.HazardCardState
 import com.qtekfun.ultimatemaps.cameras.HazardsEnv
 import com.qtekfun.ultimatemaps.map.HazardMapLayer
@@ -85,6 +90,8 @@ class PanelHost(
     private val hazards: HazardsEnv? = null,
     /** Optional EV-charger layer (null: none). */
     private val chargers: ChargersEnv? = null,
+    /** Optional hiking and cycling route layer (null: none). */
+    private val trails: TrailsEnv? = null,
     /** The navigation model; with it the route card offers "Start" and "Simulate". Null: preview only. */
     private val navScreen: NavScreenController? = null,
 ) {
@@ -270,7 +277,7 @@ class PanelHost(
         places = places,
         card = FuelCardState(),
         category = { activity.getString(R.string.fuel_category) },
-        onOpened = { screen.notice = null; screen.detent = SheetDetent.MEDIUM; chargerCard.card.close() },
+        onOpened = { screen.notice = null; screen.detent = SheetDetent.MEDIUM; chargerCard.card.close(); trailCard.card.close() },
         // "Go" replaces the destination: the running navigation ends and the route preview takes over.
         beforeGo = { navScreen?.takeIf { it.ui.value.active }?.stop() },
         // "Add stop" while navigating re-plans the trip in progress instead of editing a preview.
@@ -290,7 +297,7 @@ class PanelHost(
     val hazardCard: HazardCardController = HazardCardController(
         describer = { id -> hazards?.describer?.describe(id) },
         card = HazardCardState(),
-        onOpened = { screen.notice = null; screen.detent = SheetDetent.MEDIUM; chargerCard.card.close() },
+        onOpened = { screen.notice = null; screen.detent = SheetDetent.MEDIUM; chargerCard.card.close(); trailCard.card.close() },
     )
 
     val chargerCard: ChargerCardController = ChargerCardController(
@@ -298,12 +305,32 @@ class PanelHost(
         route = route,
         card = ChargerCardState(),
         category = { activity.getString(R.string.ev_category) },
-        onOpened = { screen.notice = null; screen.detent = SheetDetent.MEDIUM; fuelCard.card.close(); hazardCard.card.close() },
+        onOpened = { screen.notice = null; screen.detent = SheetDetent.MEDIUM; fuelCard.card.close(); hazardCard.card.close(); trailCard.card.close() },
         beforeGo = { navScreen?.takeIf { it.ui.value.active }?.stop() },
         navigating = { navigating },
         navStops = navScreen?.let { n -> { point -> n.addStop(point) } },
         scope = activity.lifecycleScope,
     )
+
+    val trailCard: TrailCardController = TrailCardController(
+        repository = trails?.repository ?: com.qtekfun.ultimatemaps.core.routes.RouteRepository(),
+        route = route,
+        card = TrailCardState(),
+        category = { activity.getString(R.string.trail_category) },
+        onOpened = { screen.notice = null; screen.detent = SheetDetent.MEDIUM; fuelCard.card.close(); hazardCard.card.close(); chargerCard.card.close() },
+        beforeGo = { navScreen?.takeIf { it.ui.value.active }?.stop() },
+        navigating = { navigating },
+    )
+
+    private val trailLayer: TrailMapLayer? = trails?.let { t ->
+        TrailMapLayer(
+            scope = activity.lifecycleScope,
+            io = Dispatchers.Default,
+            repository = t.repository,
+            settings = t.settings,
+            render = engine::showTrails,
+        )
+    }
 
     private val chargerLayer: ChargerMapLayer? = chargers?.let { c ->
         ChargerMapLayer(
@@ -364,6 +391,7 @@ class PanelHost(
     fun onDestroy() {
         fuelLayer.stop()
         chargerLayer?.stop()
+        trailLayer?.stop()
         hazardLayer?.stop()
         search.close()
         navLauncher?.reset()
@@ -382,13 +410,16 @@ class PanelHost(
         engine.setFuelTapListener(fuelCard::onStationTap)
         engine.setHazardTapListener(hazardCard::onTap)
         engine.setChargerTapListener(chargerCard::onChargerTap)
+        engine.setTrailTapListener(trailCard::onTrailTap)
         engine.setViewportListener { bounds, zoom ->
             fuelLayer.onViewport(bounds, zoom)
             hazardLayer?.onViewport(bounds, zoom)
             chargerLayer?.onViewport(bounds, zoom)
+            trailLayer?.onViewport(bounds, zoom)
         }
         fuelLayer.start()
         chargerLayer?.start()
+        trailLayer?.start()
         hazardLayer?.start()
         // A recording was saved or tracks were deleted: refresh the tracks list.
         (tracks.recording?.controller)?.let { r -> activity.lifecycleScope.launch { r.stored.collect { tracks.refresh() } } }
@@ -397,6 +428,7 @@ class PanelHost(
     private fun show(info: PlaceInfo, zoom: Double = PLACE_ZOOM) {
         screen.notice = null
         screen.detent = SheetDetent.MEDIUM
+        trailCard.card.close()
         engine.showPin(info.point)
         engine.animateTo(CameraState(info.point, zoom))
         places.showCard(info)
@@ -486,11 +518,19 @@ class PanelHost(
                 navigating = { navigating },
             )
         }
+        val trailHost = remember {
+            TrailCardHost(
+                state = trailCard.card,
+                generatedMillis = { trails?.repository?.generatedMillis?.value },
+                onGoToStart = trailCard::goToStart,
+            )
+        }
         SheetPanel(
             search, places, actions, route = route, fuel = fuel, navStart = navStart,
             quick = quick, history = history, onEmergency = ::openEmergency, tracks = tracks,
             hazard = hazardCard.card,
             charger = chargerHost,
+            trail = trailHost,
         )
     }
 

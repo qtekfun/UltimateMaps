@@ -63,6 +63,14 @@ data class FuelPin(val id: String, val point: LatLon, val label: String, val che
  */
 data class ChargerPin(val id: String, val point: LatLon, val fast: Boolean)
 
+/**
+ * One piece of an optional hiking or cycling route, drawn as a line under the route and the pins. [id] is opaque to the
+ * engine (it hands it back on a tap). [level] is 0 local, 1 regional, 2 national, 3 international: it sets the colour.
+ * [cycling] lines (bicycle and mountain-bike routes) use a different dash than walking ones, so the two never rely on
+ * colour alone.
+ */
+class TrailLine(val id: Int, val level: Int, val cycling: Boolean, val points: List<LatLon>)
+
 /** One imported GPX track (or route) drawn as a line: [segments] are drawn separately, [color] is ARGB. */
 class TrackLine(val id: Long, val segments: List<List<LatLon>>, val color: Int)
 
@@ -192,6 +200,14 @@ interface MapEngine : AutoCloseable {
 
     /** Reports taps on a charging station (its id), after petrol stations and before hazards; null removes it. */
     fun setChargerTapListener(listener: ((String) -> Unit)?) {}
+
+    // --- Hiking and cycling routes (optional layer) ---
+
+    /** Draws exactly these route pieces; an empty list removes them. Never called per frame. */
+    fun showTrails(lines: List<TrailLine>) {}
+
+    /** Reports taps on a route line (its id and the tapped point), after stations, chargers and hazards; null removes it. */
+    fun setTrailTapListener(listener: ((Int, LatLon) -> Unit)?) {}
 
     /** Reports the visible rectangle and zoom when a camera gesture or animation ends (never per frame); null removes it. */
     fun setViewportListener(listener: ((GeoBounds, Double) -> Unit)?) {}
