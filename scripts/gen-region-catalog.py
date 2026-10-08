@@ -37,6 +37,9 @@ unchanged and the app works without camera data.
 `--chargers-file` (with `--chargers-base`) adds the optional `chargers` block for the EV-charging-station file
 (`chargers-es.bin`, built by `scripts/build-chargers.py`); without it the catalog is unchanged and the app works without it.
 
+`--zbe-file` (with `--zbe-base`) adds the optional `zbe` block for the low-emission-zone polygon file (`zbe-es.bin`, built by
+`scripts/build-zbe.py`); without it the catalog is unchanged and the app works without it.
+
 `--transit-file` (repeatable, with `--transit-base`) adds the optional `transit` array, one entry per city index
 `transit-<id>.umti` built by `scripts/build-transit.sh`. Each file needs its sidecar `transit-<id>.json` (written by the same
 tool: id, city, timezone, bounds, validFrom, validTo, attribution). Without the option the catalog is unchanged and the app
@@ -182,6 +185,11 @@ def build_chargers(chargers_file, chargers_base, log=lambda m: None):
     return build_static_file("chargers", "chargers", chargers_file, chargers_base, log)
 
 
+def build_zbe(zbe_file, zbe_base, log=lambda m: None):
+    """Optional `zbe` block for `zbe-es.bin` (see scripts/build-zbe.py) or None when there is no file."""
+    return build_static_file("zbe", "zbe", zbe_file, zbe_base, log)
+
+
 TRANSIT_META_KEYS = ("id", "city", "timezone", "validFrom", "validTo", "attribution")
 
 
@@ -217,7 +225,8 @@ def build_transit(transit_files, transit_base, log=lambda m: None):
 def build(countries, mwm_dir=None, pmtiles_dir=None, mwm_base=None, pmtiles_base=None, catalog_version=None,
           fetch=(), max_download_bytes=20 << 20, log=lambda m: None, mwm_url_by_slug=False,
           base_dir=None, base_url=None, cameras_file=None, cameras_base=None,
-          transit_files=(), transit_base=None, names=None, chargers_file=None, chargers_base=None):
+          transit_files=(), transit_base=None, names=None, chargers_file=None, chargers_base=None,
+          zbe_file=None, zbe_base=None):
     version = str(countries["v"])
     series = countries.get("map_series", "")
     mwm_base = (mwm_base or DEFAULT_MWM_BASE.format(series=series, v=version))
@@ -290,6 +299,9 @@ def build(countries, mwm_dir=None, pmtiles_dir=None, mwm_base=None, pmtiles_base
     chargers = build_chargers(chargers_file, chargers_base, log)
     if chargers:
         cat["chargers"] = chargers
+    zbe = build_zbe(zbe_file, zbe_base, log)
+    if zbe:
+        cat["zbe"] = zbe
     transit = build_transit(transit_files, transit_base, log)
     if transit:
         cat["transit"] = transit
@@ -315,6 +327,8 @@ def main(argv=None):
     ap.add_argument("--cameras-base", help="base URL of the cameras file (required with --cameras-file)")
     ap.add_argument("--chargers-file", help="chargers-es.bin from scripts/build-chargers.py (adds the optional `chargers` block)")
     ap.add_argument("--chargers-base", help="base URL of the chargers file (required with --chargers-file)")
+    ap.add_argument("--zbe-file", help="zbe-es.bin from scripts/build-zbe.py (adds the optional `zbe` block)")
+    ap.add_argument("--zbe-base", help="base URL of the zbe file (required with --zbe-file)")
     ap.add_argument("--transit-file", action="append", default=[], help="transit-<id>.umti (repeatable; adds the optional `transit` array)")
     ap.add_argument("--transit-base", help="base URL of the transit files (required with --transit-file)")
     ap.add_argument("--names-dir", default=os.path.join(os.path.dirname(__file__), "..", "third_party", "comaps", "data",
@@ -334,6 +348,7 @@ def main(argv=None):
                 mwm_url_by_slug=a.mwm_url_by_slug, base_dir=a.base_dir, base_url=a.base_url,
                 cameras_file=a.cameras_file, cameras_base=a.cameras_base,
                 chargers_file=a.chargers_file, chargers_base=a.chargers_base,
+                zbe_file=a.zbe_file, zbe_base=a.zbe_base,
                 transit_files=a.transit_file, transit_base=a.transit_base, names=names)
     text = json.dumps(cat, indent=1, ensure_ascii=False) + "\n"
     if a.output == "-":
