@@ -76,6 +76,8 @@ class SettingsEnv(
     val cameras: CamerasSettingsEnv? = null,
     /** "Electric chargers" group of the Fuel stations category (switch, plug and power filters); null hides it. */
     val chargers: ChargersSettingsEnv? = null,
+    /** "Low-emission zones" group of the Alerts category (switch, map toggle, prompt mode, data); null hides it. */
+    val zbe: ZbeSettingsEnv? = null,
     /** Track recording part of the Data category (switch and delete); null hides it. */
     val recording: RecordingSettingsEnv? = null,
     /** Language of place information section (search results and place card); null hides it. */

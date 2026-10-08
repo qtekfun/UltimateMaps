@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.os.Bundle
+import androidx.lifecycle.lifecycleScope
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -93,6 +94,8 @@ class MainActivity : ComponentActivity() {
             navScreen = app.navScreen,
         )
         navHost = NavHost(this, engine, app.navScreen)
+        // Low-emission zones: drawn under the route line while the switch and the map toggle are on.
+        com.qtekfun.ultimatemaps.zbe.ZbeMapLayer(lifecycleScope, app.zbeData.repository, app.zbeSettings.settings, engine::showLowEmissionZones).start()
         panel.onRequestLocation = ::onLocate
         state.onOpenMaps = { startActivity(Intent(this, RegionsActivity::class.java)) }
         state.onOpenSettings = { startActivity(Intent(this, SettingsActivity::class.java)) }
@@ -103,7 +106,10 @@ class MainActivity : ComponentActivity() {
             LaunchedEffect(dark) { engine.setTheme(if (dark) MapTheme.DARK else MapTheme.LIGHT) }
             val navUi by navHost.uiState()
             val tripUi by app.transitTrip.ui.collectAsState()
-            CompositionLocalProvider(LocalAlertBanner provides app.alertBanner.state, LocalIncidentBanner provides app.incidentBanner) {
+            CompositionLocalProvider(
+                LocalAlertBanner provides app.alertBanner.state, LocalIncidentBanner provides app.incidentBanner,
+                com.qtekfun.ultimatemaps.zbe.LocalZbeBanner provides app.zbeBanner,
+            ) {
             MapasTheme(darkTheme = dark) {
                 MapScreen(
                     state = state, onLocate = ::onLocate, onResetNorth = engine::resetNorth, sheetPanel = { panel.Content() },

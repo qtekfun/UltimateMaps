@@ -66,6 +66,12 @@ data class ChargerPin(val id: String, val point: LatLon, val fast: Boolean)
 /** One imported GPX track (or route) drawn as a line: [segments] are drawn separately, [color] is ARGB. */
 class TrackLine(val id: Long, val segments: List<List<LatLon>>, val color: Int)
 
+/**
+ * One low-emission zone polygon for the map: [rings] are the outer ring first, then the holes; each ring is closed (its first
+ * point is repeated at the end). Several shapes may share a zone (a zone made of separate parts).
+ */
+class ZoneShape(val rings: List<List<LatLon>>)
+
 /** What a camera or traffic marker is. The engine must tell kinds apart by SHAPE as well as colour. */
 enum class HazardKind { FIXED_CAMERA, SECTION, V16, ACCIDENT, CLOSURE, CONGESTION, OBSTACLE, WEATHER, ROADWORKS }
 
@@ -206,4 +212,9 @@ interface MapEngine : AutoCloseable {
      * never part of the normal style; the engine adds them at runtime and removes them again.
      */
     fun setBuildings3d(enabled: Boolean) {}
+
+    // --- Low-emission zones (optional layer) ---
+
+    /** Draws exactly these zone polygons (translucent fill and outline, under the route line); an empty list removes them. */
+    fun showLowEmissionZones(zones: List<ZoneShape>) {}
 }

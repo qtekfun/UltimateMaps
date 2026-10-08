@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Low-emission zones: Settings group (inside the Alerts category), route warning, navigation prompt, backup. The data is OpenStreetMap and says only "zone": nothing here claims a vehicle is allowed or banned. -->
+    <string name="zbe_group_title">Low-emission zones</string>
+    <string name="zbe_switch_title">Low-emission zones</string>
+    <string name="zbe_switch_body">Shows the zones on the map, warns when a car route enters one and prompts once before you drive into one. It downloads one small data file from your map server (the same one as the maps); your position is never sent. The data is based on OpenStreetMap and may be incomplete or out of date: the official rules of the city apply.</string>
+    <string name="zbe_map_title">Show zones on the map</string>
+    <string name="zbe_map_body">A translucent amber area with a dashed outline.</string>
+    <string name="zbe_prompt_title">Prompt before entering a zone</string>
+    <string name="zbe_data_title">Zone data</string>
+    <string name="zbe_data_count">%1$d zones, data from %2$s</string>
+    <string name="zbe_data_never">No zone data downloaded yet.</string>
+    <string name="zbe_data_notice">Based on OpenStreetMap, may be incomplete or out of date; the city\'s official rules apply. The app does not know which vehicles are affected.</string>
+
+    <!-- Route summary (car routes) -->
+    <string name="zbe_route_warning">This route enters a low-emission zone: check the access rules of the city</string>
+    <string name="zbe_route_zones">Zone: %1$s</string>
+    <string name="zbe_route_tagged">Tagged in OpenStreetMap: %1$s</string>
+
+    <!-- Navigation prompt -->
+    <string name="zbe_ahead_title">Low-emission zone ahead</string>
+    <string name="zbe_ahead_hint">Check the access rules</string>
+    <string name="zbe_ahead_description">%1$s in %2$s. %3$s.</string>
+
+    <!-- Backup and restore -->
+    <string name="backup_item_zbe">Low-emission zones</string>
+    <string name="backup_group_zbe">Low-emission zones</string>
+</resources>

@@ -23,6 +23,13 @@ import com.qtekfun.ultimatemaps.chargers.PrefsChargerSettingsStore
 import com.qtekfun.ultimatemaps.core.chargers.ChargerAsset
 import com.qtekfun.ultimatemaps.core.chargers.ChargerDataManager
 import com.qtekfun.ultimatemaps.core.chargers.ChargerSettingsStore
+import com.qtekfun.ultimatemaps.core.zbe.ZbeAheadSpeaker
+import com.qtekfun.ultimatemaps.core.zbe.ZbeAsset
+import com.qtekfun.ultimatemaps.core.zbe.ZbeDataManager
+import com.qtekfun.ultimatemaps.core.zbe.ZbeSettingsStore
+import com.qtekfun.ultimatemaps.zbe.PrefsZbeSettingsStore
+import com.qtekfun.ultimatemaps.zbe.ZbeBannerState
+import com.qtekfun.ultimatemaps.zbe.ZbePrompter
 import com.qtekfun.ultimatemaps.core.cameras.AlertBannerTracker
 import com.qtekfun.ultimatemaps.core.cameras.AlertVoice
 import com.qtekfun.ultimatemaps.core.cameras.ManeuverGuard
@@ -115,6 +122,48 @@ class MapasApp : Application() {
 
     private fun chargerAsset(): ChargerAsset? =
         (regions.catalogState as? CatalogState.Loaded)?.catalog?.chargers?.let { ChargerAsset(it.url, it.sizeBytes, it.sha256) }
+
+    /** Low-emission-zone switch and options (off by default). The map layer, the route warning, the prompt and Settings read these. */
+    val zbeSettings: ZbeSettingsStore by lazy { PrefsZbeSettingsStore(this) }
+
+    /**
+     * The static low-emission-zone file: fetched from the catalog's `zbe` entry through [networkPolicy] (the same server and
+     * purpose as the camera file), cached, and absent-tolerant. Nothing is downloaded when it is created.
+     */
+    val zbeData: ZbeDataManager by lazy {
+        ZbeDataManager(zbeSettings, policy, ::zbeAsset, File(filesDir, "zbe"), syncCatalog = { force -> regions.syncCatalog(force) })
+    }
+
+    private fun zbeAsset(): ZbeAsset? =
+        (regions.catalogState as? CatalogState.Loaded)?.catalog?.zbe?.let { ZbeAsset(it.url, it.sizeBytes, it.sha256) }
+
+    /** The "Low-emission zone ahead" banner of the navigation screen; owned here so the screens can observe it before the prompter exists. */
+    val zbeBanner = kotlinx.coroutines.flow.MutableStateFlow<ZbeBannerState?>(null)
+
+    private var zbePrompter: ZbePrompter? = null
+
+    /**
+     * Starts the one-time "ahead" prompt of car navigations the first time the zone switch is on (idempotent). Kept lazy so the
+     * cold start does not build the navigation controller for users who never turn the feature on. Main thread.
+     */
+    fun ensureZbePrompter() {
+        if (zbePrompter != null || !zbeSettings.settings.value.enabled) return
+        zbePrompter = ZbePrompter(
+            scope = CoroutineScope(SupervisorJob() + Dispatchers.Default),
+            settings = zbeSettings.settings,
+            repository = zbeData.repository,
+            state = navigation.state,
+            route = navigation.route,
+            profile = { navigation.tripProfile },
+            speaker = ZbeAheadSpeaker(
+                VoiceModule.guide(this), VoiceModule.settings(this).settings,
+                mode = { zbeSettings.settings.value.promptMode },
+                maneuverImminent = { navigation.state.value?.let { ManeuverGuard.blocksVoice(it.nextManeuver?.distanceMeters, it.speedMps) } ?: false },
+                player = com.qtekfun.ultimatemaps.voice.AndroidAlertChimePlayer(this),
+            ),
+            bannerState = zbeBanner,
+        ).also { it.start() }
+    }
 
     private fun cameraAsset(): CameraAsset? =
         (regions.catalogState as? CatalogState.Loaded)?.catalog?.cameras?.let { CameraAsset(it.url, it.sizeBytes, it.sha256) }
@@ -330,8 +379,10 @@ class MapasApp : Application() {
         // Cameras and incidents: only read local caches and follow the switches; nothing connects here.
         cameraData.start()
         chargerData.start()
+        zbeData.start()
         incidents.start()
         ensureCameraAlerts()
+        ensureZbePrompter()
         // Points an interrupted recording left in its journal become a track (off the main thread, on the recorder's queue).
         recording.recoverInterrupted()
         registerActivityLifecycleCallbacks(object : ActivityLifecycleCallbacks {
@@ -341,6 +392,7 @@ class MapasApp : Application() {
                     fuel.onForeground()
                     cameraData.onForeground()
                     chargerData.onForeground()
+                    zbeData.onForeground()
                     incidents.onForeground()
                     ensureCameraAlerts()
                     if (alertsStarted) cameraAlerts.onForeground(true)

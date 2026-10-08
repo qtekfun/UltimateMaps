@@ -5,6 +5,8 @@ import com.qtekfun.ultimatemaps.core.cameras.AlertSoundMode
 import com.qtekfun.ultimatemaps.core.cameras.CameraSettings
 import com.qtekfun.ultimatemaps.core.cameras.MIN_INCIDENT_REFRESH_MINUTES
 import com.qtekfun.ultimatemaps.chargers.PrefsChargerSettingsStore
+import com.qtekfun.ultimatemaps.zbe.PrefsZbeSettingsStore
+import com.qtekfun.ultimatemaps.core.zbe.ZbeSettings
 import com.qtekfun.ultimatemaps.core.chargers.ChargerSettings
 import com.qtekfun.ultimatemaps.core.chargers.MinPower
 import com.qtekfun.ultimatemaps.core.chargers.SocketType
@@ -90,6 +92,7 @@ object SettingsSchema {
     const val GROUP_FUEL = "fuel"
     const val GROUP_CAMERAS = "cameras"
     const val GROUP_CHARGERS = "chargers"
+    const val GROUP_ZBE = "zbe"
     const val GROUP_HISTORY = "history"
     const val GROUP_RECORDING = "recording"
     const val GROUP_REGIONS = "regions"
@@ -119,11 +122,13 @@ object SettingsSchema {
     private val fuel = FuelSettings()
     private val cameras = CameraSettings()
     private val chargers = ChargerSettings()
+    private val zbe = ZbeSettings()
 
     private val navPrefs = PrefsNavSettingsStore.PREFS
     private val fuelPrefs = PrefsFuelSettingsStore.PREFS
     private val camPrefs = PrefsCameraSettingsStore.PREFS
     private val chargerPrefs = PrefsChargerSettingsStore.PREFS
+    private val zbePrefs = PrefsZbeSettingsStore.PREFS
 
     /** Every exported setting, sorted by group and key (the order of the file). */
     val specs: List<SettingSpec> = listOf(
@@ -194,6 +199,11 @@ object SettingsSchema {
             },
         ),
         enum(GROUP_CHARGERS, chargerPrefs, PrefsChargerSettingsStore.KEY_MIN_POWER, chargers.minPower, MinPower.entries.map { it.name }),
+
+        // Low-emission zones: the switch starts a download, so it needs consent; the map toggle and the prompt mode are plain preferences.
+        bool(GROUP_ZBE, zbePrefs, PrefsZbeSettingsStore.KEY_ENABLED, zbe.enabled, RestorePolicy.NEEDS_CONSENT),
+        bool(GROUP_ZBE, zbePrefs, PrefsZbeSettingsStore.KEY_SHOW_ON_MAP, zbe.showOnMap),
+        enum(GROUP_ZBE, zbePrefs, PrefsZbeSettingsStore.KEY_PROMPT_MODE, zbe.promptMode, AlertSoundMode.entries.map { it.name }),
 
         // Search history switch (not the history itself).
         bool(GROUP_HISTORY, PrefsHistorySettings.PREFS, PrefsHistorySettings.KEY_ENABLED, true),

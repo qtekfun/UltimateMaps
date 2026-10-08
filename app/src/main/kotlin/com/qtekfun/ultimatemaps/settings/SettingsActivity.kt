@@ -65,6 +65,7 @@ class SettingsActivity : ComponentActivity() {
                 app.cameraSettings, app.cameraData, app.incidents, offline = { regions.offline }, onChanged = app::ensureCameraAlerts,
             ),
             chargers = ChargersSettingsEnv(app.chargerSettings, app.chargerData),
+            zbe = ZbeSettingsEnv(app.zbeSettings, app.zbeData, onChanged = app::ensureZbePrompter),
             recording = RecordingSettingsEnv(app.recording),
             placeLanguage = PlaceLanguageSettingsEnv(PrefsPlaceLanguageStore(this)),
             backup = backupEnv(app),
@@ -94,8 +95,9 @@ class SettingsActivity : ComponentActivity() {
                 "recording/enabled" to { v: Any -> app.recording.setEnabled(v as Boolean) },
             ),
             onFinish = {
-                listOf(app.fuelSettings, app.cameraSettings, app.chargerSettings, VoiceModule.settings(this), app.transitTripSettings).forEach { (it as? SettingsReloadable)?.reload() }
+                listOf(app.fuelSettings, app.cameraSettings, app.chargerSettings, app.zbeSettings, VoiceModule.settings(this), app.transitTripSettings).forEach { (it as? SettingsReloadable)?.reload() }
                 app.ensureCameraAlerts()
+                app.ensureZbePrompter()
             },
         )
         val version = runCatching { packageManager.getPackageInfo(packageName, 0).versionName }.getOrNull().orEmpty()
