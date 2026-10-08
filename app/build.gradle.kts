@@ -133,6 +133,7 @@ dependencies {
     implementation(project(":core-chargers")) // optional EV-charging-station layer
     implementation(project(":core-bikeshare")) // optional bike-share station layer and live availability
     implementation(project(":core-zbe")) // optional low-emission-zone layer, route warning and prompt
+    implementation(project(":core-weather")) // optional AEMET weather warnings (user API key)
     implementation(project(":core-routes")) // optional hiking and cycling route overlay
     implementation(project(":core-nav")) // route tracking and NavigationController (navigation service)
     implementation(project(":core-voice")) // instruction text, voice queue and navigation settings
