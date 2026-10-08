@@ -33,6 +33,7 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 
 ### Fixed
 
+- **The spoken guidance uses the Spanish of Spain.** The app asked the voice engine for plain "Spanish", and the engine answered with its default, usually the Latin American voice. It now asks for your phone's region first (or Spain) and picks an installed offline voice of that region.
 - **The travel-mode selector** no longer cuts the "Transporte" label on narrow screens or with a large font.
 - **Quick chips (Home, Work, Park, SOS)** stay on one line each with less padding and an ellipsis if a label is too long (the label is now "Park" / "Aparcar"), so the row is even in English, Spanish and with a large font.
 - **The bottom sheet is opaque** in the light and dark themes: map labels and the navigation buttons no longer show through the card text.

@@ -73,7 +73,8 @@ class AndroidVoiceTest {
     @Test fun anEngineThatStartsMakesTheVoiceReady() {
         val d = startedDirector()
         assertEquals(VoiceStatus.Ready(VoiceLanguage.ES), d.status.value)
-        assertEquals(Locale.forLanguageTag("es"), shadowTts().currentLanguage)
+        // The engine is asked for Spain's Spanish, not the bare language (whose default voice is usually Latin American).
+        assertEquals(Locale("es", "ES"), shadowTts().currentLanguage)
     }
 
     @Test fun speakingGoesToTheEngineWithTheVolumeAndTheFocusIsTakenAndReturned() {
