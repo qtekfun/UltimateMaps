@@ -2,10 +2,11 @@ package com.qtekfun.ultimatemaps.core.nav
 
 import com.qtekfun.ultimatemaps.core.geo.LatLon
 import com.qtekfun.ultimatemaps.core.geo.distanceTo
+import com.qtekfun.ultimatemaps.core.routing.TunnelRange
 
 /** Where a [TunnelSpan] came from. */
 enum class TunnelSource {
-    /** A per-segment tunnel flag from the routing engine (not exposed by the CoMaps bridge yet, see docs/phase2/tunnel-positioning.md). */
+    /** A per-segment tunnel flag from the routing engine (CoMaps patch 0004 through `RouteGuidance.tunnels`, see docs/phase2/tunnel-positioning.md). */
     ROUTE_FLAG,
 
     /** Map data (for example OSM `tunnel=*` ways) intersected with the route. */
@@ -31,6 +32,43 @@ data class TunnelSpan(
 /** Supplies the tunnel spans of a route. Pure and cheap to call; may return an empty list (no knowledge). */
 fun interface TunnelSpanSource {
     fun spansFor(geometry: RouteGeometry): List<TunnelSpan>
+}
+
+/**
+ * The tunnels the routing engine reported for this very route (`RouteGuidance.tunnels`, point-index ranges), turned
+ * into metres along the route. Ranges with an index outside the geometry or a non-positive length are dropped.
+ */
+class RouteTunnelSpanSource(private val ranges: List<TunnelRange>) : TunnelSpanSource {
+    override fun spansFor(geometry: RouteGeometry): List<TunnelSpan> {
+        if (ranges.isEmpty()) return emptyList()
+        val last = geometry.size - 1
+        return ranges.mapNotNull { r ->
+            if (r.startIndex !in 0..last || r.endIndex !in 0..last || r.endIndex <= r.startIndex) return@mapNotNull null
+            TunnelSpan(geometry.alongOfIndex(r.startIndex), geometry.alongOfIndex(r.endIndex), TunnelSource.ROUTE_FLAG, 1f)
+        }
+    }
+}
+
+/**
+ * [primary] spans win; a [fallback] span is used only where it does not overlap a primary one, so the engine's
+ * data is never contradicted by a learned guess. A failing source counts as knowing nothing. It is also a
+ * [TunnelObserver] that forwards to the fallback when that one learns.
+ */
+class PreferredTunnelSpanSource(
+    private val primary: TunnelSpanSource,
+    private val fallback: TunnelSpanSource?,
+) : TunnelSpanSource, TunnelObserver {
+    override fun spansFor(geometry: RouteGeometry): List<TunnelSpan> {
+        val first = try { primary.spansFor(geometry) } catch (_: Exception) { emptyList() }
+        val second = fallback?.let { f -> try { f.spansFor(geometry) } catch (_: Exception) { emptyList() } }.orEmpty()
+        if (first.isEmpty()) return second
+        if (second.isEmpty()) return first
+        return first + second.filter { s -> first.none { f -> s.startMeters < f.endMeters && f.startMeters < s.endMeters } }
+    }
+
+    override fun onTunnelObserved(entry: LatLon, exit: LatLon) {
+        (fallback as? TunnelObserver)?.onTunnelObserved(entry, exit)
+    }
 }
 
 /** Told by the tracker about a stretch that turned out to be without signal (entry point, exit point). */

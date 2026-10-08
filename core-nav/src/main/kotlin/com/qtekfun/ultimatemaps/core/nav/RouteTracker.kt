@@ -37,7 +37,8 @@ class RouteTracker(
     private val maneuvers: Array<Maneuver> =
         plan.guidance.maneuvers.sortedBy { it.geometryIndex }.toTypedArray()
     private val spans: Array<TunnelSpan> = sanitizeSpans(
-        tunnelSpans?.let { src -> try { src.spansFor(geometry) } catch (_: Exception) { emptyList() } } ?: emptyList(),
+        // The engine's own tunnel ranges first, the learned store only where they say nothing.
+        PreferredTunnelSpanSource(RouteTunnelSpanSource(plan.guidance.tunnels), tunnelSpans).spansFor(geometry),
         geometry.totalMeters,
     ).toTypedArray()
     private val tunnelObserver: TunnelObserver? = tunnelSpans as? TunnelObserver

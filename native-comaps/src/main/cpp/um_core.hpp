@@ -71,7 +71,8 @@ struct RouteOut
   //   [version, nManeuvers, nLimits,
   //    per maneuver: geometryIndex, turn(WireTurn), roundaboutExit(-1 = no), nameIndex(-1 = no), nLanes,
   //                  per lane: laneWayMask, recommended(0/1),
-  //    per limit: from, to, kmh(-1 = no data)]
+  //    per limit: from, to, kmh(-1 = no data)
+  //    optional, only if the route has tunnels (CoMaps patch 0004): nTunnels, per tunnel: from, to (point indices)]
   // Everything is an integer, exact in double. `guidanceNames` is the street table that nameIndex points to.
   std::vector<double> guidance;
   std::vector<std::string> guidanceNames;
