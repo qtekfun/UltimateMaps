@@ -73,6 +73,15 @@ class RouteGeometry(points: List<LatLon>) {
         return LatLon(lat[s] + (lat[s + 1] - lat[s]) * t, lon[s] + (lon[s + 1] - lon[s]) * t)
     }
 
+    /** Allocation-free [pointAt]: writes latitude to `out[0]` and longitude to `out[1]` (for per-frame callers). */
+    fun pointInto(along: Double, out: DoubleArray) {
+        val a = along.coerceIn(0.0, totalMeters)
+        val s = segmentAt(a)
+        val t = if (cum[s + 1] > cum[s]) (a - cum[s]) / (cum[s + 1] - cum[s]) else 0.0
+        out[0] = lat[s] + (lat[s + 1] - lat[s]) * t
+        out[1] = lon[s] + (lon[s + 1] - lon[s]) * t
+    }
+
     /** Route heading at [along]; looks ahead past zero-length segments. */
     fun bearingAt(along: Double): Float {
         var s = segmentAt(along.coerceIn(0.0, totalMeters))
