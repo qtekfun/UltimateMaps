@@ -193,6 +193,7 @@ private fun purposeLabel(p: ConnectionPurpose) = stringResource(
         ConnectionPurpose.MAP_DOWNLOAD -> R.string.conn_purpose_map_download
         ConnectionPurpose.SYNC_WEBDAV -> R.string.conn_purpose_sync
         ConnectionPurpose.TRAFFIC_INCIDENTS -> R.string.conn_purpose_traffic
+        ConnectionPurpose.TRANSIT_REALTIME -> R.string.conn_purpose_transit_rt
         ConnectionPurpose.OTHER -> R.string.conn_purpose_other
     },
 )

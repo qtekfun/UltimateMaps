@@ -19,6 +19,8 @@ import java.io.OutputStream
  *                     profiles: per profile 2*nStops varints (run time from previous departure, dwell),
  *                     per trip: service, headsign, profile, firstArrival, headway, runs; frequency trips last, see nSched]
  * transfers: n, then [from, to, type, min+1]
+ * optional (a file may end after the transfers): flags (1 = stop ids, 2 = trip ids), then one UTF string per stop,
+ *           then one per trip in index order (the feed's own ids, "" when not kept; see FeedOptions.keepIds)
  * ```
  *
  * Trips of one pattern are mostly the same shape shifted in time (and exactly so for frequency-expanded trips), so
@@ -106,6 +108,14 @@ object TransitIndexIo {
             w.varint(index.transferTo[i])
             w.varint(index.transferType[i])
             w.varint(index.transferMinSec[i] + 1)
+        }
+        // Optional trailing section (older files simply end after the transfers): feed ids for real-time matching.
+        val stopIds = index.stopExtId
+        val tripIds = index.tripExtId
+        if (stopIds != null || tripIds != null) {
+            w.varint((if (stopIds != null) 1 else 0) or (if (tripIds != null) 2 else 0))
+            stopIds?.forEach { w.utf(it) }
+            tripIds?.forEach { w.utf(it) }
         }
         w.out.flush()
     }
@@ -219,6 +229,10 @@ object TransitIndexIo {
             ty[i] = r.varint()
             tm[i] = r.varint() - 1
         }
+        // Optional trailing section; its absence (end of file) is a valid older file.
+        val flags = r.varintOrEnd()
+        val stopExt = if (flags != null && flags and 1 != 0) Array(nStops) { r.utf() } else null
+        val tripExt = if (flags != null && flags and 2 != 0) Array(tSvc.size) { r.utf() } else null
         return TransitIndex(
             sources = sources,
             stopLat = lat,
@@ -252,6 +266,8 @@ object TransitIndexIo {
             transferTo = tt,
             transferType = ty,
             transferMinSec = tm,
+            stopExtId = stopExt,
+            tripExtId = tripExt,
         )
     }
 
@@ -308,6 +324,21 @@ object TransitIndexIo {
         fun varint(): Int {
             var shift = 0
             var result = 0
+            while (true) {
+                val b = inp.readUnsignedByte()
+                result = result or ((b and 0x7F) shl shift)
+                if (b and 0x80 == 0) return result
+                shift += 7
+            }
+        }
+
+        /** Like [varint] but null when the stream is already at its end. */
+        fun varintOrEnd(): Int? {
+            val first = inp.read()
+            if (first < 0) return null
+            if (first and 0x80 == 0) return first
+            var result = first and 0x7F
+            var shift = 7
             while (true) {
                 val b = inp.readUnsignedByte()
                 result = result or ((b and 0x7F) shl shift)

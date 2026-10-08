@@ -1,7 +1,7 @@
 package com.qtekfun.ultimatemaps.core.net
 
 /** Why the app would open a connection. Shown to the user in the list of possible connections (RF-12). */
-enum class ConnectionPurpose { ONLINE_TILES, SHORT_LINK_RESOLVE, MAP_DOWNLOAD, SYNC_WEBDAV, TRAFFIC_INCIDENTS, OTHER }
+enum class ConnectionPurpose { ONLINE_TILES, SHORT_LINK_RESOLVE, MAP_DOWNLOAD, SYNC_WEBDAV, TRAFFIC_INCIDENTS, TRANSIT_REALTIME, OTHER }
 
 /** One whitelist entry. [host] is exact (`tile.openstreetmap.org`) or a wildcard (`*.example.org`). */
 data class AllowedEndpoint(

@@ -75,6 +75,9 @@ class BuildResult(val index: TransitIndex, val meta: JsonObject, val feeds: List
  * already in the input directory. A feed whose calendar ended before [today] is left out (and reported), unless
  * [allowExpired] is set; a feed file that is missing is left out too. It is an error when no feed is left.
  */
+/** Feeds in this stop namespace (Renfe) keep their stop and trip ids so a GTFS-RT feed can be matched. */
+const val REALTIME_NAMESPACE = "renfe"
+
 object TransitBuild {
     fun build(manifest: CityManifest, input: File, today: LocalDate, allowExpired: Boolean, generated: String, log: (String) -> Unit = {}): BuildResult {
         val builder = TransitIndexBuilder()
@@ -98,7 +101,7 @@ object TransitBuild {
                 reports += FeedReport(spec.label, from, to, false, "expired")
                 continue
             }
-            builder.addFeed(feed, FeedOptions(spec.label, spec.namespace, spec.attribution, dropNonPositiveDuration = true), ignoredCalendarRange = false)
+            builder.addFeed(feed, FeedOptions(spec.label, spec.namespace, spec.attribution, dropNonPositiveDuration = true, keepIds = spec.namespace == REALTIME_NAMESPACE), ignoredCalendarRange = false)
             reports += FeedReport(spec.label, from, to, true, if (expired) "included although expired" else "ok")
             log("OK   ${spec.label}: $from .. $to")
         }
