@@ -12,7 +12,7 @@ Durations are rough part-time estimates and are revised when the spike ends. The
 | **F3. Motorcycle** | Avoid motorways and tolls, twisty routes, glove mode, track recording and export | 1-2 months | A real motorcycle ride with the screen always visible |
 | **F4. Sync and import** | Nextcloud/WebDAV, Google Takeout import | 1 month | Two devices converge; a real Takeout imported |
 | **F5. Polish and release** | Performance, style, accessibility, Chinese ROMs, F-Droid metadata, reproducible builds | 1-2 months | Published on F-Droid and GitHub |
-| **F6. Android Auto** | Research and, if appropriate, implementation | To be estimated | Decide after F5 |
+| **F6. Android Auto** | **Dropped (2026-10-08, owner decision):** needs Google's proprietary host app, against the no-Google rule. Analysis kept in `docs/phase2/android-auto.md` | - | - |
 | **F2b. Petrol stations** | Fuel prices (LPG, petrol, diesel…) downloaded according to Settings, the price over each station on the map, a card on tap and adding it to the route as destination or stop | 2-3 weeks (estimate) | With a fuel chosen, prices show on the map and you can go to a station or stop at it |
 | **F7. Optional data** | Real-time public transport: **Cercanías** (the metro is dropped). Can be turned on and configured in Settings, off by default | To be estimated | It can be turned on, configured and turned off in Settings; with everything off there is no new connection |
 
