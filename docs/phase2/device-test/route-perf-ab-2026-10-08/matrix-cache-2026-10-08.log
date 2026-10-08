@@ -1,0 +1,5 @@
+--------- beginning of main
+10-08 08:32:23.307 I/UMBENCH (12527): matrix init maps=9
+10-08 08:32:23.308 I/UMBENCH (12527): matrix perf=cache (4) runs=2
+10-08 08:32:24.401 I/UMBENCH (12527): matrix perf=cache run=0 Madrid->Guadalajara code=0 ms=1094 km=59 m=59763.35452288933 s=2883.246018607704 pts=754 absent=[] stats[perf=4 engine_mode=1 total_ms=1088 leaps_ms=0 leaps_routes=0 candidates=0 candidates_ms=0 legs_pruned=0 final_ms=0 subroutes=0 subroutes_cached=0 graphs_reused=0]
+10-08 08:32:24.879 I/UMBENCH (12527): matrix perf=cache run=1 Madrid->Guadalajara code=0 ms=477 km=59 m=59763.35452288933 s=2883.246018607704 pts=754 absent=[] stats[perf=4 engine_mode=1 total_ms=474 leaps_ms=0 leaps_routes=0 candidates=0 candidates_ms=0 legs_pruned=0 final_ms=0 subroutes=0 subroutes_cached=0 graphs_reused=1]
