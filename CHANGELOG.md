@@ -6,6 +6,7 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 
 ### Added
 
+- **Public transport for more cities (data side).** The Public transport list in Maps can hold several cities, each downloaded only when you choose it (with its download size); a trip between two cities that have separate timetables now says so. Build configs for Barcelona/Catalonia, Valencia, Sevilla and Bilbao from the Spanish National Access Point ("Powered by MITRAMS"); the data files appear once the weekly data release builds them.
 - **Third-party notices in About.** Settings, About now has a collapsed *Third-party notices* section with the `NOTICE` text: the licence texts and copyright lines that the libraries inside the app (the CoMaps core and its third-party code, the Artistic License 2.0 of `libkdtree++`, and others) ask to be shipped with the app.
 
 ### Fixed

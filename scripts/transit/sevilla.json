@@ -1,0 +1,12 @@
+{
+  "id": "sevilla",
+  "city": "Sevilla",
+  "timezone": "Europe/Madrid",
+  "bounds": [37.25, -6.12, 37.5, -5.85],
+  "feeds": [
+    {"label": "Tussam buses and tram", "file": "nap_tussam.zip", "namespace": "tussam", "nap": 1567,
+     "attribution": "Powered by MITRAMS (https://www.transportes.gob.es/). Data from the Spanish National Access Point (https://nap.transportes.gob.es/), operator: TUSSAM. Processed data: timetables converted to a compact index."},
+    {"label": "Metro de Sevilla", "file": "nap_metro_sevilla.zip", "namespace": "metrosevilla", "nap": 1583,
+     "attribution": "Powered by MITRAMS (https://www.transportes.gob.es/). Data from the Spanish National Access Point (https://nap.transportes.gob.es/), operator: Metro de Sevilla. Processed data: timetables converted to a compact index."}
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "id": "bilbao",
+  "city": "Bilbao",
+  "timezone": "Europe/Madrid",
+  "bounds": [43.2, -3.05, 43.4, -2.85],
+  "feeds": [
+    {"label": "Bilbobus", "file": "nap_bilbobus.zip", "namespace": "bilbobus", "nap": 1460,
+     "attribution": "Powered by MITRAMS (https://www.transportes.gob.es/). Data from the Spanish National Access Point (https://nap.transportes.gob.es/), operator: Bilbobus. Processed data: timetables converted to a compact index."},
+    {"label": "Funicular de Artxanda", "file": "nap_artxanda.zip", "namespace": "artxanda", "nap": 1264,
+     "attribution": "Powered by MITRAMS (https://www.transportes.gob.es/). Data from the Spanish National Access Point (https://nap.transportes.gob.es/), operator: Funicular de Artxanda. Processed data: timetables converted to a compact index."}
+  ]
+}

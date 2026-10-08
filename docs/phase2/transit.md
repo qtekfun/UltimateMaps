@@ -293,3 +293,7 @@ On a phone: `docs/phase2/transit-follow-checklist.md`.
 ### Not built / open
 
 Arrive-by, shapes, real time, accessibility and fares; pickup/drop-off restrictions and route-specific transfers; the speed plausibility filter for interurban trips (needs the publisher's answer); the EMT frequency semantics (section 3, item 2); the licence question about "always up to date" (`docs/decisions.md`); a static transit layer on the map (M6); the weekly workflow step that downloads the zips, runs the build and passes the files to `gen-region-catalog.py` (not touched: `.github/workflows/` is the owner's); a measurement on a device.
+
+## 8. More cities through the NAP (2026-10-08)
+
+The catalog's `transit` array holds one index per city or metro area; the app downloads each only on request and picks the index whose box holds both ends of a trip (tighter box first). A trip whose ends belong to two indexes is reported, not planned. Configs: `scripts/transit/{barcelona,valencia,sevilla,bilbao}.json` (each feed has a `nap` file id; the data workflow fetches them with `scripts/nap-fetch.py`, header `ApiKey` from the secret `NAP_API_KEY`). Details, omissions (Zaragoza expired, EMT Valencia licence unconfirmed) and what is unverified: `docs/decisions.md`, entry 2026-10-08 "Public transport for more Spanish cities".
