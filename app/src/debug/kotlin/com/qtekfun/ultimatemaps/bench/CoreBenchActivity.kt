@@ -10,6 +10,7 @@ import com.qtekfun.ultimatemaps.core.nav.RouteGeometry
 import com.qtekfun.ultimatemaps.core.nav.RouteTunnelSpanSource
 import com.qtekfun.ultimatemaps.core.routing.RouteRequest
 import com.qtekfun.ultimatemaps.core.routing.RoutingProfile
+import com.qtekfun.ultimatemaps.core.routing.TurnType
 import com.qtekfun.ultimatemaps.nativecomaps.CoMapsCore
 import com.qtekfun.ultimatemaps.nativecomaps.RouteOutcome
 import java.io.File
@@ -37,8 +38,10 @@ class CoreBenchActivity : Activity() {
         // `--ez tunnels true`: routes by car through the Madrid tunnels (Calle 30 / M-30, Paseo del Prado) and logs the
         // tunnel ranges the native core reports (CoMaps patch 0004), as point indices and metres along the route.
         val tunnels = intent?.getBooleanExtra("tunnels", false) == true
+        // `--ez exits true`: routes that leave a motorway by an exit and logs the exit number / signposted road and place.
+        val exits = intent?.getBooleanExtra("exits", false) == true
         thread(name = "umbench") {
-            runCatching { if (tunnels) dumpTunnels() else if (reroute) dumpReroute() else if (matrix) dumpMatrix() else if (guidanceOnly) dumpGuidance() else run() }.onFailure { Log.e(tag, "FAILED: $it", it) }
+            runCatching { if (exits) dumpExits() else if (tunnels) dumpTunnels() else if (reroute) dumpReroute() else if (matrix) dumpMatrix() else if (guidanceOnly) dumpGuidance() else run() }.onFailure { Log.e(tag, "FAILED: $it", it) }
         }
     }
 
@@ -148,6 +151,38 @@ class CoreBenchActivity : Activity() {
             plan?.guidance?.speedLimits?.forEach { s -> Log.i(tag, "  limit ${s.startIndex}..${s.endIndex} kmh=${s.kmh}") }
         }
         Log.i(tag, "FIN guidance")
+    }
+
+    /**
+     * Logs the maneuvers of car routes that leave a motorway (Madrid centre to Alcalá de Henares by the A-2, to Toledo by
+     * the A-42, to Guadalajara by the A-2), with the motorway exit fields: exitRef (junction:ref), towardRef
+     * (destination:ref) and towardName (destination). Not run yet (docs/phase2/motorway-exits.md says what to check):
+     * on a map with those tags the exit maneuvers must carry at least a toward road; a null everywhere means the maps
+     * do not have the tags. Lines are tagged `exits`; only fixed test coordinates are used.
+     */
+    private fun dumpExits() {
+        val core = CoMapsCore()
+        core.init(applicationInfo.sourceDir, File(filesDir, "maps-core").absolutePath, cacheDir.absolutePath, "es")
+        Log.i(tag, "exits init maps=${core.refreshMaps()}")
+        val guided = core.routingEngine(withGuidance = true)
+        val sol = LatLon(40.4170, -3.7036)
+        val routes = listOf(
+            "sol-alcala-de-henares" to (sol to LatLon(40.4818, -3.3643)),
+            "sol-toledo" to (sol to LatLon(39.8628, -4.0273)),
+            "sol-guadalajara" to (sol to LatLon(40.6326, -3.1668)),
+        )
+        for ((name, ends) in routes) {
+            val out = guided.routeDetailed(RouteRequest(ends.first, ends.second, profile = RoutingProfile.CAR))
+            val ms = out.plan?.guidance?.maneuvers.orEmpty()
+            val withData = ms.count { it.exitRef != null || it.towardRef != null || it.towardName != null }
+            val exitTypes = ms.count { it.type == TurnType.EXIT_LEFT || it.type == TurnType.EXIT_RIGHT }
+            Log.i(tag, "exits route=$name code=${out.code} maneuvers=${ms.size} exitTypes=$exitTypes withExitData=$withData err=${out.guidanceError}")
+            ms.filter { it.exitRef != null || it.towardRef != null || it.towardName != null || it.type == TurnType.EXIT_LEFT || it.type == TurnType.EXIT_RIGHT }
+                .forEach { m ->
+                    Log.i(tag, "  exit idx=${m.geometryIndex} type=${m.type} street='${m.streetName}' exitRef=${m.exitRef} towardRef=${m.towardRef} towardName=${m.towardName}")
+                }
+        }
+        Log.i(tag, "FIN exits")
     }
 
     /**
