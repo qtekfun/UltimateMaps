@@ -55,3 +55,25 @@ Tool: `CoreBenchActivity --ez matrix true --ei runs 2 --es perf <mode>` (debug b
 
 `cache` alone saves about 10 to 30% on most pairs (the second route of a pair reuses the graphs: Madrid to Guadalajara 862 ms then 365 ms). Prune adds the large Madrid to Lleida win. The 2 s target for 600 km is still far (about 12 to 13 s forward, about 29 to 31 s in reverse).
 - **Still not measured:** `cand*`, `tmo*` (quality-for-time options), `fast`; behaviour during rerouting in navigation; memory growth with the loader pinned (a long drive across many regions keeps their graphs in memory for up to 10 minutes).
+
+## Update 2: simulated drive with recalculations (`--ez reroute true`)
+Debug bench mode: Madrid to Barcelona with the engine that has guidance (as in navigation), then a recalculation from each tenth of the route with the position nudged about 300 m off the line, then the way back and a short urban route. Native heap and PSS are logged after every step. Logs: `route-perf-reroute-2026-10-08/`. One drive per mode.
+
+| Step | default (ms) | `quiet,prune` | `safe` (`quiet,prune,cache`) |
+|---|---|---|---|
+| initial | 11,639 | 12,080 | 12,627 |
+| reroute 1 / 2 / 3 | 11,273 / 11,920 / 31,026 | 11,417 / 12,178 / 30,911 | 10,683 / 11,814 / 30,426 |
+| reroute 4 / 5 / 6 | 27,614 / 7,481 / 6,530 | 38,958 / 11,576 / 8,719 | 30,394 / 7,081 / 6,121 |
+| reroute 7 / 8 / 9 | 2,900 / 1,097 / 508 | 3,767 / 1,400 / 611 | 2,428 / 768 / 289 |
+| way back / urban | 27,968 / 304 | 31,589 / 304 | 28,219 / 84 |
+| **total** | **140,260** | **163,510** | **140,934** |
+| native heap (MB) | 101 to 106 | 101 to 106 | **443 to 476** |
+| PSS (MB) | 268 to 289 | not parsed | 537 to 567 |
+
+- **Correctness:** every step returns the same length, duration, point count and maneuver count in all three modes, and no mode crashes (after patch 0003). The result codes are all 0.
+- **`quiet,prune`:** same memory as the default, but not faster on a drive: +16% total (single run, noisy: reroute 4 went from 27.6 s to 39.0 s). `prune` only paid off on Madrid to Lleida in the matrix.
+- **`safe` (with `cache`):** same total time as the default, but the kept graphs and pinned handles cost about **340 MB more native memory** from the first route on. Only short recalculations gain (reroute 9: 508 ms to 289 ms; urban 304 ms to 84 ms), which are already fast.
+- **Why the long recalculations do not improve:** each one is dominated by the cross-region leaps stage, which none of these switches reduces.
+
+## Verdict
+Do not turn any of the switches on by default: `quiet,prune` does not help a drive and `cache` costs about 340 MB of RAM for a gain that only shows on already-fast recalculations. They stay as debug experiments. The real lever for the 2 s target is the leaps stage (candidates and time cap, `cand*`/`tmo*`, not measured yet) or relaxing the target.
