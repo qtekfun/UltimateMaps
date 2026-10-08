@@ -206,6 +206,11 @@ class MapasApp : Application() {
             routes = CoreRouteProvider(this),
             // Tunnels learned from signal losses on this device; in memory only (see docs/phase2/tunnel-positioning.md).
             tunnelSpans = LearnedTunnelStore(),
+            // Accelerometer stop/go, registered only while a known tunnel is being crossed without GPS (Settings > Navigation).
+            stopGo = com.qtekfun.ultimatemaps.nav.AndroidStopGoSignal(
+                source = com.qtekfun.ultimatemaps.nav.SensorManagerSampleSource(this),
+                enabled = { VoiceModule.settings(this).settings.value.motionSensorsInTunnels },
+            ),
         )
     }
 
