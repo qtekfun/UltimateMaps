@@ -111,6 +111,8 @@ class TransitController(
     private val showItinerary: (List<TransitMapLeg>) -> Unit = {},
     /** Starts the step-by-step follower on an itinerary; null hides the Start button (no follower available). */
     private val onStartTrip: ((Itinerary, ZoneId) -> Boolean)? = null,
+    /** Cercanías real time for the cards; null hides it (tests, or no source). */
+    val realTime: TransitRealTime? = null,
 ) {
     val state = TransitState()
 

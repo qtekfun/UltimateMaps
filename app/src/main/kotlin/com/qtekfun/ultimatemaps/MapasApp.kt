@@ -264,6 +264,20 @@ class MapasApp : Application() {
     }
 
     /**
+     * Cercanías real time (opt-in, off by default): Renfe's GTFS-RT delays for the itinerary cards and the live follower. While
+     * the switch is off nothing here connects and the host is not even in the policy. Asking is always through [networkPolicy].
+     */
+    val cercaniasRealTime: com.qtekfun.ultimatemaps.transit.CercaniasRealTime by lazy {
+        com.qtekfun.ultimatemaps.transit.CercaniasRealTime(
+            settings = transitTripSettings,
+            addEndpoint = policy::addEndpoint,
+            removeEndpoint = policy::removeEndpoint,
+            repository = com.qtekfun.ultimatemaps.core.transit.rt.RealTimeRepository(com.qtekfun.ultimatemaps.core.transit.rt.HttpRealTimeFetcher(policy)),
+            scope = CoroutineScope(SupervisorJob() + Dispatchers.Default),
+        )
+    }
+
+    /**
      * The step-by-step public-transport trip (see `docs/phase2/transit.md`): the follower over its own location source, the
      * saved state (private, 3 h expiry), the prompts through the navigation voice, and the model of its screen. Kept running
      * in the background by [com.qtekfun.ultimatemaps.transit.follow.TransitTripService]. Re-planning only runs when the user presses
@@ -282,6 +296,7 @@ class MapasApp : Application() {
             location = AndroidLocationSource(this),
             store = com.qtekfun.ultimatemaps.core.transit.follow.TransitTripStore(File(noBackupFilesDir, "transit/trip.bin")),
             replanner = replanner,
+            realTime = cercaniasRealTime,
         )
         val navSettings = VoiceModule.settings(this)
         val speaker = com.qtekfun.ultimatemaps.transit.follow.TransitTripSpeaker(
@@ -292,6 +307,7 @@ class MapasApp : Application() {
         )
         com.qtekfun.ultimatemaps.transit.follow.TransitTripHost(
             scope, controller, com.qtekfun.ultimatemaps.transit.follow.AndroidTripServiceControl(this), SharedNavUiPrefs(this), navSettings, speaker,
+            realTime = cercaniasRealTime,
         )
     }
 
@@ -306,6 +322,8 @@ class MapasApp : Application() {
         Thread({ runCatching { CoreLinks.sync(this) } }, "mapas-core-links").start()
         // Petrol stations: only registers the host (when enabled) and reads the local cache; no connection here.
         fuel.start()
+        // Cercanias real time: only follows its switch (and lists the Renfe host while it is on); no connection here.
+        cercaniasRealTime.start()
         // Cameras and incidents: only read local caches and follow the switches; nothing connects here.
         cameraData.start()
         chargerData.start()

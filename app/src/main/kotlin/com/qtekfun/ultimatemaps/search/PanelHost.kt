@@ -126,6 +126,7 @@ class PanelHost(
                 source = repo,
                 showItinerary = { engine.showTransitItinerary(it) },
                 onStartTrip = { itinerary, zone -> (activity.application as MapasApp).transitTrip.start(itinerary, zone) },
+                realTime = (activity.application as MapasApp).cercaniasRealTime,
             )
         }
 

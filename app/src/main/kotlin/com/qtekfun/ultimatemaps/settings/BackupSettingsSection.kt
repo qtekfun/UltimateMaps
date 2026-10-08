@@ -142,6 +142,7 @@ private fun pendingLabel(spec: SettingSpec): Int = when (spec.id) {
     "cameras/roadworks" -> R.string.backup_item_roadworks
     "fuel/enabled" -> R.string.backup_item_fuel
     "chargers/enabled" -> R.string.backup_item_chargers
+    "navigation/cercanias_real_time" -> R.string.backup_item_cercanias_rt
     else -> R.string.backup_item_other
 }
 

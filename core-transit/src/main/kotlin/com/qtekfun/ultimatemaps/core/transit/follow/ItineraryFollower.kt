@@ -5,6 +5,8 @@ import com.qtekfun.ultimatemaps.core.geo.distanceTo
 import com.qtekfun.ultimatemaps.core.map.LocationFix
 import com.qtekfun.ultimatemaps.core.transit.Itinerary
 import com.qtekfun.ultimatemaps.core.transit.ItineraryLeg
+import com.qtekfun.ultimatemaps.core.transit.rt.LegRealTime
+import com.qtekfun.ultimatemaps.core.transit.rt.RideRealTime
 import kotlin.math.abs
 import kotlin.math.cos
 import kotlin.math.floor
@@ -30,7 +32,9 @@ data class FollowerSnapshot(val legIndex: Int, val boarded: Boolean, val progres
  * - On a metro/rail/tram leg, after [FollowerConfig.signalGapSec] without a usable fix, progress is dead-reckoned from the
  *   timetable shifted by the last known offset and the state says [FollowBasis.ESTIMATED]. The estimate never reaches the
  *   alighting stop on its own: only a real fix completes a ride.
- * - "The plan" is only the schedule: ahead/behind is the clock against the scheduled time at the matched position.
+ * - "The plan" is the schedule: ahead/behind is the clock against the scheduled time at the matched position. For a ride
+ *   that [realTime] knows (Renfe Cercanias, opt-in), the train's real delay replaces that comparison, a departure is the
+ *   scheduled one plus the delay, and a cancelled train is a missed connection (so Re-plan is offered).
  *
  * Call [onFix] for each location fix and [tick] regularly (about once a second) so the clock alone can change the state.
  */
@@ -39,6 +43,8 @@ class ItineraryFollower(
     private val config: FollowerConfig = FollowerConfig(),
     private val clockMillis: () -> Long,
     snapshot: FollowerSnapshot? = null,
+    /** Real time for a ride, when the user switched it on and the train is in the feed; [RideRealTime.NONE] otherwise. */
+    private val realTime: RideRealTime = RideRealTime.NONE,
 ) {
     private val legs = itinerary.legs
 
@@ -263,18 +269,20 @@ class ItineraryFollower(
         val last = lastFix ?: return
         if (!lastAtBoardingStop || ride.line.routeType !in config.estimateRouteTypes) return
         if (nowMs - last.atMs < config.signalGapSec * 1000L) return
-        if (nowMs / 1000 < ride.departAt) return
+        val rt = rtOf(ride)
+        // A cancelled train is not boarded, and a delayed one is boarded at its real departure, not the scheduled one.
+        if (rt?.cancelled == true || nowMs / 1000 < expectedDeparture(ride, rt)) return
         boarded = true
         boardedByEstimate = true
         progressEstimated = true
-        progress = min(scheduleProgress(ride, nowMs / 1000), ride.stops.size - 1 - 1e-3)
+        progress = min(scheduleProgress(ride, nowMs / 1000 - (rt?.delaySec ?: 0)), ride.stops.size - 1 - 1e-3)
     }
 
     private fun estimateProgress(ride: ItineraryLeg.Ride, nowMs: Long) {
         val last = lastFix ?: return
         if (ride.line.routeType !in config.estimateRouteTypes) return
         if (nowMs - last.atMs < config.signalGapSec * 1000L) return
-        val est = scheduleProgress(ride, nowMs / 1000 - (delaySec ?: 0))
+        val est = scheduleProgress(ride, nowMs / 1000 - (rtOf(ride)?.delaySec ?: delaySec ?: 0))
         progress = max(progress, min(est, ride.stops.size - 1 - 1e-3))
         progressEstimated = true
     }
@@ -346,6 +354,11 @@ class ItineraryFollower(
         }
     }
 
+    private fun rtOf(ride: ItineraryLeg.Ride): LegRealTime? = try { realTime.forRide(ride)?.takeIf { it.hasInfo } } catch (_: RuntimeException) { null }
+
+    /** Scheduled departure moved by the train's real delay, when the feed knows it. */
+    private fun expectedDeparture(ride: ItineraryLeg.Ride, rt: LegRealTime?): Long = ride.departAt + (rt?.delaySec?.toLong() ?: 0L)
+
     private fun nextRideIndex(from: Int): Int = (from until legs.size).firstOrNull { legs[it] is ItineraryLeg.Ride } ?: -1
 
     private fun connectionOf(marginSec: Long): ConnectionStatus = when {
@@ -385,15 +398,17 @@ class ItineraryFollower(
                 val next = legs.getOrNull(nextRideIndex(legIdx + 1)) as? ItineraryLeg.Ride
                 val projected = if (lastFix != null) nowSec + (sec ?: 0) else null
                 val plan = planOf(projected?.let { (it - leg.arriveAt).toInt() }, allowAhead = false)
+                val nextRt = next?.let { rtOf(it) }
+                val nextDepart = next?.let { expectedDeparture(it, nextRt) }
                 // Without a position there is nothing to say about reaching the next departure.
-                val margin = if (lastFix == null) null else next?.let { it.departAt - (nowSec + (sec ?: 0)) }
-                val conn = margin?.let { connectionOf(it) }
+                val margin = if (lastFix == null) null else nextDepart?.let { it - (nowSec + (sec ?: 0)) }
+                val conn = if (nextRt?.cancelled == true) ConnectionStatus.MISSED else margin?.let { connectionOf(it) }
                 FollowState(
                     phase = if (offPlan) FollowPhase.OFF_PLAN else phase, legIndex = legIdx, basis = basis,
                     line = next?.line, headsign = next?.headsign, targetName = leg.toName,
                     walkMeters = meters, walkSeconds = sec,
-                    boardAt = next?.departAt, secondsToBoard = next?.let { it.departAt - nowSec },
-                    planOffsetSec = plan.offset, plan = plan.status, planMinutes = plan.minutes,
+                    boardAt = nextDepart, secondsToBoard = nextDepart?.let { it - nowSec },
+                    planOffsetSec = plan.offset, plan = plan.status, planMinutes = plan.minutes, realTime = nextRt,
                     connection = conn, connectionMarginSec = margin?.toInt(), connectionLine = next?.line?.shortName,
                     canReplan = offPlan || conn == ConnectionStatus.MISSED, etaAt = itinerary.arriveAt + (plan.offset ?: 0),
                 )
@@ -407,31 +422,34 @@ class ItineraryFollower(
         val previousIsRide = legIdx > 0 && legs[legIdx - 1] is ItineraryLeg.Ride
         // Once at the stop, one fix outside the radius (GNSS noise, a step to the kerb) does not turn waiting back into walking.
         val atStop = arrivedAtBoarding || (f != null && f.point.distanceTo(ride.boarding.point) <= radius(f.accuracy))
-        val toBoard = ride.departAt - nowSec
+        val rt = rtOf(ride)
+        val departure = expectedDeparture(ride, rt)
+        val toBoard = departure - nowSec
         if (atStop) {
-            val late = (nowSec - ride.departAt).toInt()
-            val conn = if (late > config.waitingLateGraceSec) ConnectionStatus.MISSED else ConnectionStatus.OK
-            val plan = planOf(late.coerceAtLeast(0), allowAhead = false)
+            val late = (nowSec - departure).toInt()
+            val conn = if (rt?.cancelled == true || late > config.waitingLateGraceSec) ConnectionStatus.MISSED else ConnectionStatus.OK
+            // With real time the plan chip says how late the train is; without it, how late the schedule already is.
+            val plan = planOf(rt?.delaySec ?: late.coerceAtLeast(0), allowAhead = false)
             return FollowState(
                 phase = if (offPlan) FollowPhase.OFF_PLAN else FollowPhase.WAITING, legIndex = legIdx, basis = basis,
                 line = ride.line, headsign = ride.headsign, targetName = ride.boarding.name,
-                boardAt = ride.departAt, secondsToBoard = toBoard,
-                planOffsetSec = plan.offset, plan = plan.status, planMinutes = plan.minutes,
+                boardAt = departure, secondsToBoard = toBoard,
+                planOffsetSec = plan.offset, plan = plan.status, planMinutes = plan.minutes, realTime = rt,
                 connection = conn, connectionMarginSec = toBoard.toInt(), connectionLine = ride.line.shortName, changeHere = previousIsRide,
                 canReplan = offPlan || conn == ConnectionStatus.MISSED, etaAt = itinerary.arriveAt + (plan.offset ?: 0),
             )
         }
         val (meters, sec) = if (f == null) null to null else walkRemaining(ride.boarding.point, null)
         val margin = sec?.let { toBoard - it }
-        val conn = margin?.let { connectionOf(it) }
+        val conn = if (rt?.cancelled == true) ConnectionStatus.MISSED else margin?.let { connectionOf(it) }
         // Late for this departure by the negative margin; early or on time is simply on plan.
         val plan = planOf(margin?.let { (-it).toInt().coerceAtLeast(0) }, allowAhead = false)
         return FollowState(
             phase = if (offPlan) FollowPhase.OFF_PLAN else if (legIdx == 0) FollowPhase.BEFORE_START else FollowPhase.TRANSFER,
             legIndex = legIdx, basis = basis,
             line = ride.line, headsign = ride.headsign, targetName = ride.boarding.name,
-            walkMeters = meters, walkSeconds = sec, boardAt = ride.departAt, secondsToBoard = toBoard,
-            planOffsetSec = plan.offset, plan = plan.status, planMinutes = plan.minutes,
+            walkMeters = meters, walkSeconds = sec, boardAt = departure, secondsToBoard = toBoard,
+            planOffsetSec = plan.offset, plan = plan.status, planMinutes = plan.minutes, realTime = rt,
             connection = conn, connectionMarginSec = margin?.toInt(), connectionLine = ride.line.shortName, changeHere = previousIsRide,
             canReplan = offPlan || conn == ConnectionStatus.MISSED, etaAt = itinerary.arriveAt + (plan.offset ?: 0),
         )
@@ -442,7 +460,9 @@ class ItineraryFollower(
         val last = min(floor(progress).toInt(), n - 1)
         val next = min(last + 1, n - 1)
         val remaining = (n - 1) - last
-        val offset = delaySec ?: if (progressEstimated) 0 else null
+        val rt = rtOf(ride)
+        // The train's own delay beats the clock-against-schedule comparison, which only sees where we think we are.
+        val offset = rt?.delaySec ?: delaySec ?: if (progressEstimated) 0 else null
         val plan = planOf(offset, allowAhead = true)
         // Look ahead at the connection to the next boarding: the planned margin moved by the current offset.
         val nextRide = legs.getOrNull(nextRideIndex(legIdx + 1)) as? ItineraryLeg.Ride
@@ -460,7 +480,7 @@ class ItineraryFollower(
             lastStopIndex = last, nextStopIndex = next, stopsRemaining = remaining,
             nextStopName = ride.stops[next].name, nextStopAt = ride.stops[next].arriveAt,
             alightName = ride.alighting.name, alightAt = ride.alighting.arriveAt,
-            planOffsetSec = plan.offset, plan = plan.status, planMinutes = plan.minutes,
+            planOffsetSec = plan.offset, plan = plan.status, planMinutes = plan.minutes, realTime = rt,
             connection = conn, connectionMarginSec = margin?.toInt(), connectionLine = nextRide?.line?.shortName,
             canReplan = offPlan || conn == ConnectionStatus.MISSED, etaAt = itinerary.arriveAt + (plan.offset ?: 0),
         )

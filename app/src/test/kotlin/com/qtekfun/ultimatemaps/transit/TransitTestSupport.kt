@@ -24,7 +24,8 @@ object TransitTestSupport {
 
     private fun t(sec: Int) = "%02d:%02d:%02d".format(sec / 3600, sec / 60 % 60, sec % 60)
 
-    fun service(): TransitService {
+    /** [keepIds]: the index keeps the feed's stop and trip ids (T0..T5, A..C), as a Renfe city's index does. */
+    fun service(keepIds: Boolean = false): TransitService {
         val stopTimes = StringBuilder("trip_id,arrival_time,departure_time,stop_id,stop_sequence\n")
         val trips = StringBuilder("route_id,service_id,trip_id,trip_headsign\n")
         for (n in 0 until 6) {
@@ -40,7 +41,7 @@ object TransitTestSupport {
             "stop_times.txt" to stopTimes.toString(),
         )
         val b = TransitIndexBuilder()
-        b.addFeed(GtfsReader.read(MapSource(files)), FeedOptions("synthetic", "syn", "Powered by Test Agency (https://agency.example/). Processed data."))
+        b.addFeed(GtfsReader.read(MapSource(files)), FeedOptions("synthetic", "syn", "Powered by Test Agency (https://agency.example/). Processed data.", keepIds = keepIds))
         return TransitService(b.build(), zone)
     }
 
