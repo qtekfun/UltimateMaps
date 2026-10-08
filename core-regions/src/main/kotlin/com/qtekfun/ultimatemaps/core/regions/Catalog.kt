@@ -74,6 +74,9 @@ data class BaseMaps(val version: String, val world: RegionAsset, val worldCoasts
 /** Rectangle (degrees) a city's transit data covers; used to pick the city of a trip. */
 data class TransitBounds(val south: Double, val west: Double, val north: Double, val east: Double) {
     fun contains(lat: Double, lon: Double): Boolean = lat in south..north && lon in west..east
+
+    /** Area in square degrees; only used to prefer the tighter of two boxes that both cover a point. */
+    val area: Double get() = (north - south) * (east - west)
 }
 
 /**
@@ -143,6 +146,9 @@ class RegionCatalog(
             require(from != null && to != null && !to.isBefore(from)) { "invalid validity for transit ${t.id}" }
             require(runCatching { java.time.ZoneId.of(t.timezone) }.isSuccess) { "invalid timezone for transit ${t.id}" }
             require(t.attribution.isNotEmpty() && t.attribution.all { it.isNotBlank() }) { "transit ${t.id} needs an attribution" }
+            t.bounds?.let { b ->
+                require(b.south < b.north && b.west < b.east && b.south >= -90 && b.north <= 90 && b.west >= -180 && b.east <= 180) { "invalid bounds for transit ${t.id}" }
+            }
         }
         this.regions.forEach { r ->
             var cur: String? = r.parentId
@@ -254,11 +260,18 @@ class RegionCatalog(
             }
             val cameras = (root["cameras"] as? JsonObject)?.let { asset(it) }
             val chargers = (root["chargers"] as? JsonObject)?.let { asset(it) }
-            val transit = (root["transit"] as? kotlinx.serialization.json.JsonArray)?.map { e ->
+            // `transit` is a list of indexes (one per city or metro area). A single object (the shape of the very first
+            // drafts) is read as a list of one; `name` is accepted for `city`.
+            val transitEntries: List<JsonElement> = when (val t = root["transit"]) {
+                is kotlinx.serialization.json.JsonArray -> t
+                is JsonObject -> listOf(t)
+                else -> emptyList()
+            }
+            val transit = transitEntries.map { e ->
                 val o = e.jsonObject
                 TransitAsset(
                     id = o.getValue("id").jsonPrimitive.content,
-                    city = o.getValue("city").jsonPrimitive.content,
+                    city = (o["city"] ?: o.getValue("name")).jsonPrimitive.content,
                     asset = asset(o),
                     validFrom = o.getValue("validFrom").jsonPrimitive.content,
                     validTo = o.getValue("validTo").jsonPrimitive.content,
@@ -268,7 +281,7 @@ class RegionCatalog(
                     },
                     attribution = o.getValue("attribution").jsonArray.map { it.jsonPrimitive.content },
                 )
-            } ?: emptyList()
+            }
             val regions = root.getValue("regions").jsonArray.map { e ->
                 val o = e.jsonObject
                 val assets = (o["assets"] as? JsonObject)?.let { a ->

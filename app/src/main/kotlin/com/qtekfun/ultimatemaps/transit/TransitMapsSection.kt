@@ -62,6 +62,10 @@ private fun CityRow(row: TransitCityRow, offline: Boolean, locale: java.util.Loc
     ) {
         BasicText(row.city, style = Mapas.typography.body.copy(color = colors.label))
         BasicText(range, style = Mapas.typography.callout.copy(color = if (row.expired) colors.accent else colors.secondaryLabel), modifier = Modifier.testTag("transit_city_${row.id}_validity"))
+        if (row.sizeBytes > 0 && (!row.installed || row.updateAvailable)) {
+            val size = android.text.format.Formatter.formatShortFileSize(androidx.compose.ui.platform.LocalContext.current, row.sizeBytes)
+            BasicText(stringResource(R.string.transit_maps_size, size), style = Mapas.typography.callout.copy(color = colors.secondaryLabel), modifier = Modifier.testTag("transit_city_${row.id}_size"))
+        }
         if (row.installed && !row.updateAvailable) {
             BasicText(stringResource(R.string.transit_maps_installed), style = Mapas.typography.callout.copy(color = colors.secondaryLabel), modifier = Modifier.testTag("transit_city_${row.id}_installed"))
         }

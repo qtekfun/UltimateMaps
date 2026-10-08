@@ -74,6 +74,7 @@ private fun errorText(s: TransitState): String {
     return when (s.error) {
         TransitError.NO_DATA -> stringResource(R.string.transit_err_no_data)
         TransitError.NOT_DOWNLOADED -> stringResource(R.string.transit_err_not_downloaded, s.errorCity.orEmpty())
+        TransitError.ACROSS_INDEXES -> stringResource(R.string.transit_err_across, s.errorCity.orEmpty(), s.errorCity2.orEmpty())
         TransitError.OUTSIDE_COVERAGE -> stringResource(R.string.transit_err_outside)
         TransitError.EXPIRED -> stringResource(R.string.transit_err_expired, s.errorDate?.let { TransitFormat.date(it, locale) }.orEmpty())
         TransitError.NOT_YET_VALID -> stringResource(R.string.transit_err_not_yet, s.errorDate?.let { TransitFormat.date(it, locale) }.orEmpty())

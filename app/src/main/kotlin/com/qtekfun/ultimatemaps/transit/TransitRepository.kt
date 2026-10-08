@@ -5,9 +5,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.qtekfun.ultimatemaps.core.geo.LatLon
 import com.qtekfun.ultimatemaps.core.regions.TransitAsset
-import com.qtekfun.ultimatemaps.core.regions.TransitBounds
+import com.qtekfun.ultimatemaps.core.transit.CoverageEntry
 import com.qtekfun.ultimatemaps.core.transit.InstalledTransit
 import com.qtekfun.ultimatemaps.core.transit.TransitDataManager
+import com.qtekfun.ultimatemaps.core.transit.TransitCoverage
 import com.qtekfun.ultimatemaps.core.transit.TransitFailure
 import com.qtekfun.ultimatemaps.core.transit.TransitService
 import java.time.LocalDate
@@ -101,18 +102,23 @@ class TransitRepository(
     override fun lookup(origin: LatLon, destination: LatLon): TransitLookup {
         val have = manager.installed()
         installed = have
-        val covering = have.firstOrNull { covers(it.bounds, origin, destination) }
-        if (covering != null) {
-            val service = serviceOf(covering) ?: return TransitLookup.Unreadable
-            return TransitLookup.Ready(service, covering.city)
-        }
         val offered = catalogAssets()
-        offered.firstOrNull { covers(it.bounds, origin, destination) }?.let { return TransitLookup.NotDownloaded(it.city) }
+        val haveEntries = have.map { CoverageEntry(it.id, it.city, it.bounds) }
+        val offeredEntries = offered.map { CoverageEntry(it.id, it.city, it.bounds) }
+        // 1. an installed index serves the whole trip (the tightest box when several do)
+        TransitCoverage.covering(haveEntries, origin, destination)?.let { hit ->
+            val info = have.first { it.id == hit.id }
+            val service = serviceOf(info) ?: return TransitLookup.Unreadable
+            return TransitLookup.Ready(service, info.city)
+        }
+        // 2. the catalog offers one that serves the whole trip but it is not installed
+        TransitCoverage.covering(offeredEntries.filter { o -> have.none { it.id == o.id } }, origin, destination)
+            ?.let { return TransitLookup.NotDownloaded(it.city) }
+        // 3. each end has data, but in two different indexes: say so instead of "outside coverage"
+        val all = haveEntries + offeredEntries.filter { o -> have.none { it.id == o.id } }
+        TransitCoverage.across(all, origin, destination)?.let { (a, b) -> return TransitLookup.AcrossIndexes(a.city, b.city) }
         return if (have.isEmpty() && offered.isEmpty()) TransitLookup.NoData else TransitLookup.OutsideCoverage
     }
-
-    private fun covers(b: TransitBounds?, o: LatLon, d: LatLon) =
-        b != null && b.contains(o.lat, o.lon) && b.contains(d.lat, d.lon)
 
     private fun serviceOf(info: InstalledTransit): TransitService? = synchronized(cache) {
         cache[info.id]?.takeIf { it.first == info.sha256 }?.second?.let { return it }
