@@ -65,6 +65,7 @@ class SettingsActivity : ComponentActivity() {
                 app.cameraSettings, app.cameraData, app.incidents, offline = { regions.offline }, onChanged = app::ensureCameraAlerts,
             ),
             chargers = ChargersSettingsEnv(app.chargerSettings, app.chargerData),
+            trails = TrailsSettingsEnv(app.routeSettings, app.routeData),
             recording = RecordingSettingsEnv(app.recording),
             placeLanguage = PlaceLanguageSettingsEnv(PrefsPlaceLanguageStore(this)),
             backup = backupEnv(app),
@@ -94,7 +95,7 @@ class SettingsActivity : ComponentActivity() {
                 "recording/enabled" to { v: Any -> app.recording.setEnabled(v as Boolean) },
             ),
             onFinish = {
-                listOf(app.fuelSettings, app.cameraSettings, app.chargerSettings, VoiceModule.settings(this), app.transitTripSettings).forEach { (it as? SettingsReloadable)?.reload() }
+                listOf(app.fuelSettings, app.cameraSettings, app.chargerSettings, app.routeSettings, VoiceModule.settings(this), app.transitTripSettings).forEach { (it as? SettingsReloadable)?.reload() }
                 app.ensureCameraAlerts()
             },
         )

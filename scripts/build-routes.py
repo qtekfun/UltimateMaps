@@ -4,9 +4,10 @@
 Inputs (nothing is downloaded by this script, the workflow does that). Either:
 
   --relations-opl FILE --ways-geojsonseq FILE
-      `osmium cat -t relation -f opl` of the route relations and `osmium export -f geojsonseq --add-unique-id=type_id` of the
-      ways, both taken from the same `osmium tags-filter ... r/route=hiking,foot,bicycle,mtb` output (that command keeps the
-      member ways and nodes; run `osmium add-locations-to-ways` is NOT needed because `export` does it with its index).
+      Both taken from the output of `osmium tags-filter spain.osm.pbf r/route=hiking,foot,bicycle,mtb` (it keeps the member
+      ways and nodes): the relations with `osmium cat -t relation -f opl`, the ways with
+      `osmium export -c export.json -n -u type_id --geometry-types=linestring -f geojsonseq` where export.json is
+      `{"linear_tags": true, "area_tags": false}` (loops stay lines; `-n` keeps untagged ways; `-u type_id` gives ids `w<id>`).
   --osm-json FILE ...
       Overpass JSON of `relation[route~"^(hiking|foot|bicycle|mtb)$"](bbox); out geom;` (small samples and tests).
 

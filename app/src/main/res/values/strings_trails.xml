@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Hiking and cycling routes: Settings group (inside the Navigation category), map card and attribution -->
+    <string name="trail_group_title">Hiking and cycling routes</string>
+    <string name="trail_switch_title">Show hiking and cycling routes</string>
+    <string name="trail_switch_body">Draws marked hiking, cycling and mountain-bike routes from OpenStreetMap on the map. It downloads one data file of several MB from your map server (the same one as the maps); your position is never sent.</string>
+    <string name="trail_kinds_title">Kinds of route</string>
+    <string name="trail_kind_hiking">Hiking routes (solid dashes)</string>
+    <string name="trail_kind_cycling">Cycling and mountain-bike routes (dots)</string>
+    <string name="trail_legend">Colour shows the reach of the route: purple local, green regional, orange national, red international.</string>
+    <string name="trail_data_title">Route data</string>
+    <string name="trail_data_count">%1$d routes, data from %2$s</string>
+    <string name="trail_data_never">No route data downloaded yet.</string>
+    <string name="trail_attribution">Hiking and cycling routes from OpenStreetMap route relations, © OpenStreetMap contributors (ODbL), simplified.</string>
+
+    <!-- Card of a tapped route -->
+    <string name="trail_category">Route</string>
+    <string name="trail_card_title_unknown">Unnamed route</string>
+    <string name="trail_card_ref">Reference: %1$s</string>
+    <string name="trail_card_kind">%1$s · %2$s</string>
+    <string name="trail_kind_label_hiking">Hiking route</string>
+    <string name="trail_kind_label_cycling">Cycling route</string>
+    <string name="trail_kind_label_mtb">Mountain-bike route</string>
+    <string name="trail_level_local">Local</string>
+    <string name="trail_level_regional">Regional</string>
+    <string name="trail_level_national">National</string>
+    <string name="trail_level_international">International</string>
+    <string name="trail_card_operator">Maintained by: %1$s</string>
+    <string name="trail_card_length">Length: %1$s</string>
+    <string name="trail_card_length_measured">Length: about %1$s (measured on the map, may be incomplete)</string>
+    <string name="trail_card_note">Community data: the route may be incomplete, closed or poorly marked. Check before you rely on it.</string>
+    <string name="trail_card_data_date">Data from %1$s</string>
+    <string name="trail_card_close">Close</string>
+    <string name="trail_go_start">Route to the start</string>
+
+    <!-- Backup and restore -->
+    <string name="backup_item_trails">Hiking and cycling routes</string>
+    <string name="backup_group_trails">Hiking and cycling routes</string>
+</resources>
