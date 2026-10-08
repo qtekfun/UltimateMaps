@@ -113,6 +113,22 @@ class GenCatalogTest(unittest.TestCase):
             self.assertNotIn("cameras", cat)
         self.assertNotIn("chargers", gen.build(COUNTRIES, catalog_version="t"))
 
+    def test_optional_zbe_block(self):
+        with tempfile.TemporaryDirectory() as t:
+            f = os.path.join(t, "zbe-es.bin")
+            put(f, b"z" * 9)
+            c = gen.build(COUNTRIES, catalog_version="t", zbe_file=f, zbe_base="https://x/rel/")["zbe"]
+            self.assertEqual("https://x/rel/zbe-es.bin", c["url"])
+            self.assertEqual(9, c["size"])
+            self.assertEqual(hashlib.sha256(b"z" * 9).hexdigest(), c["sha256"])
+            self.assertEqual("zbe-es.bin", c["file"])
+            self.assertNotIn("zbe", gen.build(COUNTRIES, catalog_version="t", zbe_file=os.path.join(t, "nope.bin"), zbe_base="https://x"))
+            with self.assertRaises(SystemExit):
+                gen.build(COUNTRIES, catalog_version="t", zbe_file=f)
+            cat = gen.build(COUNTRIES, catalog_version="t", zbe_file=f, zbe_base="https://x")
+            self.assertNotIn("chargers", cat)
+        self.assertNotIn("zbe", gen.build(COUNTRIES, catalog_version="t"))
+
     def test_optional_routes_block(self):
         with tempfile.TemporaryDirectory() as t:
             f = os.path.join(t, "routes-es.bin")

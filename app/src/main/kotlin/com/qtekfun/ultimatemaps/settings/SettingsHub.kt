@@ -75,7 +75,10 @@ fun settingsCategories(env: SettingsEnv): List<SettingsCategory> = buildList {
             SettingsCategory(
                 "alerts", R.string.hub_alerts_title, R.string.hub_alerts_keywords, { drawAlertsIcon(it) },
                 summary = { alertsSummary(cam) },
-                content = { CamerasSection(cam) },
+                content = {
+                    CamerasSection(cam)
+                    env.zbe?.let { ZbeSection(it) }
+                },
             ),
         )
     }

@@ -94,7 +94,10 @@ class NavigationController(
     private var session: NavigationSession? = null
     private var runJob: Job? = null
     private var stopPoints: List<LatLon> = emptyList()
-    private var trip = NavTrip()
+    @Volatile private var trip = NavTrip()
+
+    /** How the trip in progress travels (car, foot or bike); the car when nothing runs. */
+    val tripProfile: com.qtekfun.ultimatemaps.core.routing.RoutingProfile get() = trip.profile
 
     /** False while a simulated trip runs: nothing is saved, so a simulation can never be resumed as a real trip. */
     @Volatile private var persist = true

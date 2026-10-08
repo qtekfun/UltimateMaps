@@ -38,6 +38,10 @@ import org.maplibre.android.style.layers.PropertyFactory.iconRotationAlignment
 import org.maplibre.android.style.layers.PropertyFactory.visibility
 import com.qtekfun.ultimatemaps.core.map.CameraPadding
 import org.maplibre.android.style.layers.LineLayer
+import org.maplibre.android.style.layers.FillLayer
+import org.maplibre.android.style.layers.PropertyFactory.fillColor
+import org.maplibre.android.style.layers.PropertyFactory.fillOpacity
+import com.qtekfun.ultimatemaps.core.map.ZoneShape
 import org.maplibre.android.style.layers.PropertyFactory.lineCap
 import org.maplibre.android.style.layers.PropertyFactory.lineColor
 import org.maplibre.android.style.layers.PropertyFactory.lineJoin
@@ -121,6 +125,8 @@ class MapLibreEngine(
     private var pendingFuel: List<FuelPin> = emptyList()
     private var fuelSource: GeoJsonSource? = null
     private var fuelTapListener: ((String) -> Unit)? = null
+    private var pendingZones: List<ZoneShape> = emptyList()
+    private var zoneSource: GeoJsonSource? = null
     private var pendingChargers: List<ChargerPin> = emptyList()
     private var chargerSource: GeoJsonSource? = null
     private var chargerTapListener: ((String) -> Unit)? = null
@@ -489,6 +495,29 @@ class MapLibreEngine(
         fuelTapListener = listener
     }
 
+    // --- Low-emission zones ---
+
+    override fun showLowEmissionZones(zones: List<ZoneShape>) {
+        pendingZones = zones
+        pushZones()
+    }
+
+    private fun pushZones() {
+        val source = zoneSource ?: return
+        if (map == null) return
+        source.setGeoJson(
+            FeatureCollection.fromFeatures(
+                pendingZones.map { z ->
+                    Feature.fromGeometry(
+                        org.maplibre.geojson.Polygon.fromLngLats(
+                            z.rings.map { ring -> ring.map { Point.fromLngLat(it.lon, it.lat) } },
+                        ),
+                    )
+                },
+            ),
+        )
+    }
+
     // --- Hiking and cycling routes ---
 
     override fun showTrails(lines: List<TrailLine>) {
@@ -515,6 +544,20 @@ class MapLibreEngine(
                 },
             ),
         )
+    }
+
+    /** Zones: a translucent amber fill and a dashed outline (the dashes tell it apart from a route without colour), under the route line. */
+    private fun addZoneLayer(style: Style, dark: Boolean) {
+        style.addSource(GeoJsonSource(ZBE_SOURCE).also { zoneSource = it })
+        val color = if (dark) ZBE_COLOR_DARK else ZBE_COLOR_LIGHT
+        style.addLayer(FillLayer(ZBE_FILL_LAYER, ZBE_SOURCE).withProperties(fillColor(color), fillOpacity(if (dark) 0.22f else 0.16f)))
+        style.addLayer(
+            LineLayer(ZBE_LINE_LAYER, ZBE_SOURCE).withProperties(
+                lineColor(color), lineWidth(2f), lineOpacity(0.9f), lineDasharray(arrayOf(3f, 2f)),
+                lineJoin(Property.LINE_JOIN_ROUND),
+            ),
+        )
+        pushZones()
     }
 
     /** Route lines go below everything the app draws (tracks, the route, markers); walking and cycling differ by dash. */
@@ -889,6 +932,7 @@ class MapLibreEngine(
             )
             val user = GeoJsonSource(USER_SOURCE).also { userSource = it }
             val pin = GeoJsonSource(PIN_SOURCE).also { pinSource = it }
+            addZoneLayer(style, wanted == MapTheme.DARK) // low-emission zones: below everything drawn on top of the map
             addTrailLayers(style, wanted == MapTheme.DARK) // hiking and cycling routes: below everything else
             addTracksLayer(style, wanted == MapTheme.DARK) // below the route line
             addRouteLayer(style, wanted == MapTheme.DARK) // below the markers, pin and user dots
@@ -1052,6 +1096,11 @@ class MapLibreEngine(
         const val HZ_TOUCH_DP = 44f
         const val HZ_ZONE_COLOR = 0xFFE8710A.toInt()
         const val HZ_LINE_COLOR = 0xFFD93025.toInt()
+        const val ZBE_SOURCE = "mapas-zbe-src"
+        const val ZBE_FILL_LAYER = "mapas-zbe-fill"
+        const val ZBE_LINE_LAYER = "mapas-zbe-line"
+        const val ZBE_COLOR_LIGHT = 0xFFB35C00.toInt() // dark amber: contrast on the light map
+        const val ZBE_COLOR_DARK = 0xFFFFA64D.toInt()
         const val CHG_SOURCE = "mapas-chg-src"
         const val CHG_LAYER = "mapas-chg"
         const val CHG_ID = "id"

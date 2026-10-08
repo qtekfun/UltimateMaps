@@ -49,6 +49,7 @@ fun nonDefaultValue(spec: SettingSpec, consentOn: Boolean): Any = when (spec.typ
         "preference" -> "LOCAL"
         "map_fuel" -> "g95e5"
         "min_power" -> "KW_50"
+        "prompt_mode" -> "VOICE" // low-emission-zone prompt (default SOUND)
         "source_url" -> "https://fuel.example.org/api/"
         "catalog_url" -> "https://maps.example.org/catalog.json"
         else -> error("no non-default value for ${spec.id}")
@@ -97,7 +98,7 @@ class SettingsBackupTest {
         val result = SettingsBackup.apply(file, b, pending)
 
         val consentIds = SettingsSchema.specs.filter { it.policy == RestorePolicy.NEEDS_CONSENT }.map { it.id }.toSet()
-        assertEquals(setOf("cameras/fixed", "cameras/mobile_zones", "cameras/incidents", "cameras/v16", "cameras/roadworks", "fuel/enabled", "chargers/enabled", "trails/enabled", "navigation/cercanias_real_time"), consentIds)
+        assertEquals(setOf("cameras/fixed", "cameras/mobile_zones", "cameras/incidents", "cameras/v16", "cameras/roadworks", "fuel/enabled", "chargers/enabled", "trails/enabled", "zbe/enabled", "navigation/cercanias_real_time"), consentIds)
         consentIds.forEach { assertEquals(false, b.read(SettingsSchema.byId(it)!!), "$it must stay off") }
         assertEquals(consentIds, pending.consent)
         assertEquals(consentIds.size, result.needConsent)

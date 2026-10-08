@@ -6,7 +6,7 @@
     <string name="hub_navigation_voice_on">Voice: %1$s, %2$d %%</string>
     <string name="hub_navigation_voice_off">Voice: off</string>
     <string name="hub_alerts_title">Alerts</string>
-    <string name="hub_alerts_keywords">speed cameras traffic incidents roadworks warnings sound silent radar</string>
+    <string name="hub_alerts_keywords">speed cameras traffic incidents roadworks warnings sound silent radar low emission zone ZBE</string>
     <string name="hub_alerts_summary">Cameras: %1$s · Traffic: %2$s</string>
     <string name="hub_fuel_keywords">petrol gas diesel gasoline fuel prices stations electric ev charger charging plug</string>
     <string name="hub_fuel_off">Off</string>
