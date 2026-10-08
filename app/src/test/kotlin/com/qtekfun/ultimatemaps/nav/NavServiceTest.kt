@@ -35,6 +35,12 @@ class NavServiceTest {
         assertEquals("12.4 km · 18 min", c.text)
     }
 
+    @Test fun theNotificationNamesTheExitNumberAndTheRoadItLeadsTo() {
+        val next = ManeuverInfo(Maneuver(5, TurnType.EXIT_RIGHT, "Calle Mayor", exitRef = "23", towardRef = "A-2"), 800.0)
+        val c = NavNotificationTexts.of(context, state(NavStatus.ON_ROUTE, next), null, Locale.ENGLISH)
+        assertEquals("800 m: Exit 23 · Take the exit on the right toward A-2", c.title)
+    }
+
     @Test fun theNotificationFollowsTheImperialUnitsSetting() {
         val next = ManeuverInfo(Maneuver(5, TurnType.RIGHT, "Calle Mayor"), 300.0)
         val c = NavNotificationTexts.of(

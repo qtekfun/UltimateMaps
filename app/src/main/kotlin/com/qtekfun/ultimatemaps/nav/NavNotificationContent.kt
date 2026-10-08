@@ -7,6 +7,7 @@ import com.qtekfun.ultimatemaps.core.nav.NavProblem
 import com.qtekfun.ultimatemaps.core.voice.DistanceUnits
 import com.qtekfun.ultimatemaps.core.nav.NavState
 import com.qtekfun.ultimatemaps.core.nav.NavStatus
+import com.qtekfun.ultimatemaps.core.routing.ExitSign
 import com.qtekfun.ultimatemaps.core.routing.TurnType
 import com.qtekfun.ultimatemaps.route.RouteFormat
 import java.util.Locale
@@ -53,7 +54,13 @@ object NavNotificationTexts {
                 val next = state.nextManeuver ?: return NavNotificationContent(app, remaining)
                 val turn = context.getString(turnRes(next.maneuver.type))
                 val street = next.maneuver.streetName?.takeIf { it.isNotBlank() }
-                val action = if (street != null) context.getString(R.string.nav_onto_street, turn, street) else turn
+                val sign = if (ExitSign.isExit(next.maneuver)) ExitSign.label(next.maneuver) else null
+                val exitNumber = ExitSign.ref(next.maneuver)?.let { context.getString(R.string.nav_exit_badge, it) }
+                val action = when {
+                    sign != null -> context.getString(R.string.nav_exit_toward, turn, sign)
+                    street != null -> context.getString(R.string.nav_onto_street, turn, street)
+                    else -> turn
+                }.let { if (exitNumber != null) context.getString(R.string.nav_exit_then, exitNumber, it) else it }
                 NavNotificationContent(
                     context.getString(R.string.nav_in_distance, RouteFormat.distance(next.distanceMeters.coerceAtLeast(0.0), locale, units), action),
                     remaining,
