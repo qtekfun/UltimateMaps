@@ -488,11 +488,15 @@ private fun Status(s: RouteState) {
             val distance = RouteFormat.distance(s.distanceMeters, locale)
             val time = RouteFormat.duration(s.durationSeconds)
             val description = stringResource(R.string.route_summary, distance, time)
-            Column(Modifier.semantics { contentDescription = description }.testTag("route_summary")) {
-                BasicText(time, style = Mapas.typography.largeTitle.copy(color = Mapas.colors.label))
-                BasicText(distance, style = Mapas.typography.callout.copy(color = Mapas.colors.secondaryLabel))
+            // One column: the parent (a Box next to the Start button) lays its children over each other, so the
+            // elevation line has to be part of the same column as the figures.
+            Column {
+                Column(Modifier.semantics { contentDescription = description }.testTag("route_summary")) {
+                    BasicText(time, style = Mapas.typography.largeTitle.copy(color = Mapas.colors.label))
+                    BasicText(distance, style = Mapas.typography.callout.copy(color = Mapas.colors.secondaryLabel))
+                }
+                ElevationSummary(s.elevation)
             }
-            ElevationSummary(s.elevation)
         }
         RouteStatus.IDLE -> Unit
     }
