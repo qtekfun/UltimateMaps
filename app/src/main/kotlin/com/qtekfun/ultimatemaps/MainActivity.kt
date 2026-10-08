@@ -119,6 +119,11 @@ class MainActivity : ComponentActivity() {
                         navHost.Overlay(dark)
                         com.qtekfun.ultimatemaps.transit.follow.TransitTripOverlay(app.transitTrip, dark) { legs -> engine.showTransitItinerary(legs) }
                         // Driving without a navigation: the same alert, under the map controls (the navigation screen draws its own).
+                        // Weather warning (AEMET) at the centre of the view: draws nothing unless the feature is on and a warning applies.
+                        if (!navUi.active && state.cameraKnown) com.qtekfun.ultimatemaps.weather.WeatherChip(
+                            app.weatherAlerts, { com.qtekfun.ultimatemaps.core.geo.LatLon.ofOrNull(state.centerLatitude, state.centerLongitude) },
+                            Modifier.align(Alignment.TopCenter).windowInsetsPadding(WindowInsets.statusBars).padding(top = 52.dp),
+                        )
                         if (!navUi.active) CameraAlertBanner(Modifier.align(Alignment.TopCenter).windowInsetsPadding(WindowInsets.statusBars).padding(top = 96.dp))
                     },
                 ) {

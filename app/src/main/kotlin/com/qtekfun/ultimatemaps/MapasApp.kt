@@ -165,6 +165,33 @@ class MapasApp : Application() {
         BikeAvailabilityRepository(bikeShareSettings.settings, policy, policy::addEndpoint, policy::removeEndpoint)
     }
 
+    /** Weather-alert switches (the switch and the yellow level; both off by default). */
+    val weatherSettings: com.qtekfun.ultimatemaps.core.weather.WeatherAlertSettingsStore by lazy {
+        com.qtekfun.ultimatemaps.weather.PrefsWeatherAlertSettings(this)
+    }
+
+    /**
+     * Optional AEMET weather warnings (opt-in, off by default): the user's own API key sits in the Android Keystore, the one
+     * national bundle is fetched through [networkPolicy] only while the switch is on and a key is present, and everything is
+     * matched on the phone. Nothing connects when it is created or started (see `docs/phase2/weather-alerts.md`).
+     */
+    val weatherAlerts: com.qtekfun.ultimatemaps.weather.WeatherAlertsController by lazy {
+        val keys = com.qtekfun.ultimatemaps.core.weather.CachedApiKeyStore(com.qtekfun.ultimatemaps.weather.KeystoreApiKeyStore(this))
+        com.qtekfun.ultimatemaps.weather.WeatherAlertsController(
+            settings = weatherSettings,
+            keys = keys,
+            repository = com.qtekfun.ultimatemaps.core.weather.WeatherAlertRepository(
+                source = com.qtekfun.ultimatemaps.core.weather.HttpAemetSource(policy),
+                enabled = { weatherSettings.settings.value.enabled },
+                apiKey = keys::read,
+                language = { java.util.Locale.getDefault().language },
+            ),
+            addEndpoint = policy::addEndpoint,
+            removeEndpoint = policy::removeEndpoint,
+            scope = CoroutineScope(SupervisorJob() + Dispatchers.Default),
+        )
+    }
+
     private fun bikeShareAsset(): BikeShareAsset? =
         (regions.catalogState as? CatalogState.Loaded)?.catalog?.bikeshare?.let { BikeShareAsset(it.url, it.sizeBytes, it.sha256) }
 
@@ -427,6 +454,8 @@ class MapasApp : Application() {
         zbeData.start()
         bikeShareData.start()
         bikeAvailability.start()
+        // Weather alerts: only follows the switch and the key (lists the AEMET host while both are in place); no connection unless both are.
+        weatherAlerts.start()
         routeData.start()
         incidents.start()
         ensureCameraAlerts()
@@ -442,6 +471,7 @@ class MapasApp : Application() {
                     chargerData.onForeground()
                     zbeData.onForeground()
                     bikeShareData.onForeground()
+                    weatherAlerts.ensureFresh()
                     routeData.onForeground()
                     incidents.onForeground()
                     ensureCameraAlerts()
