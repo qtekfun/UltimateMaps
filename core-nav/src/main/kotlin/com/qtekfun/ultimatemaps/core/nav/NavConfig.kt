@@ -61,6 +61,8 @@ data class NavConfig(
     // Signal loss
     val signalLossMillis: Long = 5_000L,
     val estimateMaxMillis: Long = 30_000L,
+    /** Tunnel-aware dead reckoning (applies only where a tunnel span is known). */
+    val tunnel: TunnelConfig = TunnelConfig(),
     // Speed limit
     val speedToleranceKmh: Double = 0.0,
     val speedHysteresisKmh: Double = 2.0,

@@ -67,6 +67,8 @@ class NavigationController(
     private val persistEveryMillis: Long = 10_000L,
     private val persistEveryMillisPowerSave: Long = 30_000L,
     private val watchEveryMillis: Long = 2_000L,
+    private val tunnelSpans: TunnelSpanSource? = null,
+    private val stopGo: StopGoSignal = StopGoSignal.NONE,
 ) {
     private val _state = MutableStateFlow<NavState?>(null)
     private val _route = MutableStateFlow<RoutePlan?>(null)
@@ -217,7 +219,7 @@ class NavigationController(
                 provider.route(from, bearing, remaining, destination, trip)?.withStops(remaining)
             }
         }
-        val s = NavigationSession(plan, location, scope, config, rerouter, startAlong, clock)
+        val s = NavigationSession(plan, location, scope, config, rerouter, startAlong, tunnelSpans, stopGo, clock)
         session = s
         stopPoints = pointsOfStops(s.route.value)
         _route.value = s.route.value
