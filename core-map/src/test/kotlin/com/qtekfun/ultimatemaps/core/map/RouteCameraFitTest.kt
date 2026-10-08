@@ -99,4 +99,23 @@ class RouteCameraFitTest {
         val cam = assertNotNull(RouteCameraFit.fit(listOf(LatLon(-80.0, -179.0), LatLon(80.0, 179.0)), 1080, 2400, CameraPadding()))
         assertTrue(cam.zoom in 0.0..RouteCameraFit.MAX_ZOOM)
     }
+
+    @Test fun `a denser screen needs a lower zoom by log2 of the density and the route still fits`() {
+        val route = listOf(LatLon(40.4046, -3.6840), LatLon(40.4154, -3.7074)) // about 2.6 km, as seen on a Pixel 8
+        val pad = CameraPadding(84, 279, 189, 1188)
+        val flat = assertNotNull(RouteCameraFit.fit(route, 1080, 2400, pad, density = 1.0))
+        val pixel = assertNotNull(RouteCameraFit.fit(route, 1080, 2400, pad, density = 2.625))
+        assertEquals(kotlin.math.log2(2.625), flat.zoom - pixel.zoom, 1e-9)
+        // MapLibre draws the world 512 * density * 2^zoom device pixels wide: every point must land inside the free area.
+        val scale = 512.0 * 2.625 * 2.0.pow(pixel.zoom)
+        fun x(lon: Double) = (lon + 180.0) / 360.0
+        fun y(lat: Double) = 0.5 - ln(tan(PI / 4 + Math.toRadians(lat) / 2)) / (2 * PI)
+        for (pt in route) {
+            val px = 1080 / 2.0 + (x(pt.lon) - x(pixel.center.lon)) * scale
+            val py = 2400 / 2.0 + (y(pt.lat) - y(pixel.center.lat)) * scale
+            assertTrue(px in (pad.left - 1.0)..(1080 - pad.right + 1.0), "x=$px")
+            assertTrue(py in (pad.top - 1.0)..(2400 - pad.bottom + 1.0), "y=$py")
+        }
+        assertTrue(pixel.zoom < 14.0, "a 2.6 km route on a 2.6x screen is about zoom 12.7, not ${pixel.zoom}")
+    }
 }
