@@ -107,6 +107,43 @@ class NavScreenTest {
         assertEquals("At the roundabout, take exit 3", text("nav_instruction"))
     }
 
+    @Test fun `an exit shows its number as a badge and the road it leads to`() {
+        val exit = Maneuver(5, TurnType.EXIT_RIGHT, "Autovía del Este", exitRef = "23", towardRef = "A-2", towardName = "Alcalá de Henares")
+        show(driving(nav = navState(next = ManeuverInfo(exit, 800.0))))
+        rule.onNodeWithTag("nav_exit_badge").assertIsDisplayed()
+        assertEquals("Exit 23", text("nav_exit_badge"))
+        assertEquals("Take the exit on the right toward A-2 · Alcalá de Henares", text("nav_instruction"))
+    }
+
+    @Test @Config(sdk = [34], qualifiers = "es-rES-w411dp-h891dp-xxhdpi")
+    fun `in Spanish the exit reads salida and hacia`() {
+        val exit = Maneuver(5, TurnType.EXIT_LEFT, exitRef = "12A", towardRef = "A-2")
+        show(driving(nav = navState(next = ManeuverInfo(exit, 800.0))))
+        assertEquals("Salida 12A", text("nav_exit_badge"))
+        assertEquals("Toma la salida de la izquierda hacia A-2", text("nav_instruction"))
+    }
+
+    @Test fun `an exit with only a toward has no badge and one with no data keeps the old text`() {
+        show(driving(nav = navState(next = ManeuverInfo(Maneuver(5, TurnType.EXIT_RIGHT, towardRef = "A-2"), 800.0))))
+        rule.onNodeWithTag("nav_exit_badge").assertDoesNotExist()
+        assertEquals("Take the exit on the right toward A-2", text("nav_instruction"))
+        ui = driving(nav = navState(next = ManeuverInfo(Maneuver(5, TurnType.EXIT_RIGHT, "Calle Sol"), 800.0)))
+        rule.waitForIdle()
+        rule.onNodeWithTag("nav_exit_badge").assertDoesNotExist()
+        assertEquals("Take the exit on the right onto Calle Sol", text("nav_instruction"))
+    }
+
+    @Test fun `a plain turn never shows an exit badge`() {
+        show(driving())
+        rule.onNodeWithTag("nav_exit_badge").assertDoesNotExist()
+    }
+
+    @Test fun `the then line carries the exit number and the road too`() {
+        val then = ManeuverInfo(Maneuver(9, TurnType.EXIT_RIGHT, exitRef = "23", towardRef = "A-2"), 800.0)
+        show(driving(nav = navState(following = then)))
+        assertEquals("Exit 23 · Take the exit on the right toward A-2", text("nav_then_text"))
+    }
+
     @Test fun `with no guidance it still says to follow the route`() {
         show(driving(nav = navState(next = null)))
         assertEquals("Follow the route", text("nav_instruction"))

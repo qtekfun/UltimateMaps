@@ -1,3 +1,5 @@
+@file:OptIn(androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
+
 package com.qtekfun.ultimatemaps.nav
 
 import android.content.res.Resources
@@ -20,6 +22,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.statusBarsIgnoringVisibility
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.windowInsetsPadding
@@ -48,6 +51,7 @@ import androidx.compose.ui.unit.sp
 import com.qtekfun.ultimatemaps.R
 import com.qtekfun.ultimatemaps.core.nav.NavProblem
 import com.qtekfun.ultimatemaps.core.nav.NavState
+import com.qtekfun.ultimatemaps.core.routing.ExitSign
 import com.qtekfun.ultimatemaps.core.routing.Lane
 import com.qtekfun.ultimatemaps.core.routing.Maneuver
 import com.qtekfun.ultimatemaps.core.routing.TurnType
@@ -88,12 +92,24 @@ object NavTexts {
         val exit = m.roundaboutExit
         if (m.type == TurnType.ROUNDABOUT_ENTER && exit != null && exit > 0) return res.getString(R.string.nav_ui_roundabout_exit, exit)
         val turn = res.getString(NavNotificationTexts.turnRes(m.type))
+        val sign = if (ExitSign.isExit(m)) ExitSign.label(m) else null
+        if (sign != null) return res.getString(R.string.nav_exit_toward, turn, sign)
         val street = m.streetName?.takeIf { it.isNotBlank() }
         return if (street != null && m.type != TurnType.ARRIVE && m.type != TurnType.ARRIVE_LEFT && m.type != TurnType.ARRIVE_RIGHT) {
             res.getString(R.string.nav_onto_street, turn, street)
         } else {
             turn
         }
+    }
+
+    /** "Exit 23": the number of the exit to take, for the small badge next to the icon; null when the map has none. */
+    fun exitBadge(res: Resources, m: Maneuver): String? = ExitSign.ref(m)?.let { res.getString(R.string.nav_exit_badge, it) }
+
+    /** The line of the following maneuver ("Exit 23 · Take the exit on the right toward A-2"). */
+    fun thenInstruction(res: Resources, m: Maneuver): String {
+        val text = instruction(res, m)
+        val badge = exitBadge(res, m) ?: return text
+        return res.getString(R.string.nav_exit_then, badge, text)
     }
 }
 
@@ -169,7 +185,7 @@ private fun BoxScope.Driving(ui: NavUi, nav: NavState, actions: NavActions) {
 private fun StartingBanner() {
     val c = NavTheme.colors
     Box(
-        Modifier.fillMaxWidth().windowInsetsPadding(WindowInsets.statusBars).padding(12.dp).clip(RoundedCornerShape(16.dp)).background(c.banner).padding(16.dp).testTag("nav_starting"),
+        Modifier.fillMaxWidth().windowInsetsPadding(WindowInsets.statusBarsIgnoringVisibility).padding(12.dp).clip(RoundedCornerShape(16.dp)).background(c.banner).padding(16.dp).testTag("nav_starting"),
     ) {
         BasicText(stringResource(R.string.nav_ui_follow_route), style = Mapas.typography.title.copy(color = c.onBanner))
     }
@@ -190,7 +206,7 @@ private fun Banner(ui: NavUi, nav: NavState) {
             .fillMaxWidth()
             .clip(RoundedCornerShape(bottomStart = 20.dp, bottomEnd = 20.dp))
             .background(c.banner)
-            .windowInsetsPadding(WindowInsets.statusBars)
+            .windowInsetsPadding(WindowInsets.statusBarsIgnoringVisibility)
             .padding(horizontal = 16.dp, vertical = 12.dp)
             .testTag("nav_banner"),
     ) {
@@ -204,11 +220,23 @@ private fun Banner(ui: NavUi, nav: NavState) {
             Spacer(Modifier.width(14.dp))
             Column(Modifier.weight(1f)) {
                 if (next != null) {
-                    BasicText(
-                        RouteFormat.distance(next.distanceMeters.coerceAtLeast(0.0), locale),
-                        style = Mapas.typography.largeTitle.copy(color = c.onBanner, fontSize = if (glove) 40.sp else 34.sp, fontWeight = FontWeight.Bold),
-                        modifier = Modifier.testTag("nav_distance"),
-                    )
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        BasicText(
+                            RouteFormat.distance(next.distanceMeters.coerceAtLeast(0.0), locale),
+                            style = Mapas.typography.largeTitle.copy(color = c.onBanner, fontSize = if (glove) 40.sp else 34.sp, fontWeight = FontWeight.Bold),
+                            modifier = Modifier.testTag("nav_distance"),
+                        )
+                        NavTexts.exitBadge(res, next.maneuver)?.let { badge ->
+                            Spacer(Modifier.width(10.dp))
+                            BasicText(
+                                badge,
+                                style = Mapas.typography.callout.copy(color = c.banner, fontWeight = FontWeight.Bold, fontSize = if (glove) 20.sp else 16.sp),
+                                maxLines = 1,
+                                modifier = Modifier.clip(RoundedCornerShape(8.dp)).background(c.onBanner).padding(horizontal = 8.dp, vertical = 3.dp)
+                                    .testTag("nav_exit_badge"),
+                            )
+                        }
+                    }
                 }
                 BasicText(
                     instruction,
@@ -226,7 +254,7 @@ private fun Banner(ui: NavUi, nav: NavState) {
                 Image(NavIcons.turn(f.maneuver.type), null, colorFilter = ColorFilter.tint(c.onBannerSecondary), modifier = Modifier.size(24.dp))
                 Spacer(Modifier.width(8.dp))
                 BasicText(
-                    NavTexts.instruction(res, f.maneuver),
+                    NavTexts.thenInstruction(res, f.maneuver),
                     style = Mapas.typography.callout.copy(color = c.onBannerSecondary), maxLines = 1,
                     modifier = Modifier.weight(1f).testTag("nav_then_text"),
                 )
@@ -508,7 +536,7 @@ private fun BoxScope.ResumeCard(actions: NavActions) {
     Column(
         Modifier
             .align(Alignment.TopCenter)
-            .windowInsetsPadding(WindowInsets.statusBars)
+            .windowInsetsPadding(WindowInsets.statusBarsIgnoringVisibility)
             .padding(12.dp)
             .clip(RoundedCornerShape(16.dp))
             .background(c.banner)
