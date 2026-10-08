@@ -42,6 +42,8 @@ import com.qtekfun.ultimatemaps.nav.NavStartHost
 import com.qtekfun.ultimatemaps.cameras.HazardCard
 import com.qtekfun.ultimatemaps.chargers.ChargerCard
 import com.qtekfun.ultimatemaps.chargers.ChargerCardHost
+import com.qtekfun.ultimatemaps.trails.TrailCard
+import com.qtekfun.ultimatemaps.trails.TrailCardHost
 import com.qtekfun.ultimatemaps.cameras.HazardCardState
 import com.qtekfun.ultimatemaps.route.RoutePanel
 import com.qtekfun.ultimatemaps.route.RoutePreviewController
@@ -102,6 +104,8 @@ fun SheetPanel(
     hazard: HazardCardState? = null,
     /** The card of a tapped EV charger (null: none). */
     charger: ChargerCardHost? = null,
+    /** The card of a tapped hiking or cycling route (null: none). */
+    trail: TrailCardHost? = null,
 ) {
     val card = places.state.card
     Column(modifier.fillMaxWidth().testTag("sheet_panel")) {
@@ -124,6 +128,8 @@ fun SheetPanel(
             )
         } else if (route != null && route.state.active) {
             RoutePanel(route, actions.onUseLocation, originSearch = { SearchPane(search, actions, Modifier, categories = false) }, navStart = navStart)
+        } else if (trail != null && trail.state.trail != null) {
+            TrailCard(state = trail.state, generatedMillis = trail.generatedMillis(), onGoToStart = trail.onGoToStart)
         } else if (card != null) {
             PlaceCard(
                 info = card,

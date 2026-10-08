@@ -2,7 +2,7 @@
 <resources>
     <!-- Hub rows: title, words the search also matches, and the one-line summary of the current state -->
     <string name="hub_navigation_title">Navigation and voice</string>
-    <string name="hub_navigation_keywords">voice units route avoid motorways tolls ferries 3d buildings bike cycleways status bar distance chip live update sound volume language kilometers miles</string>
+    <string name="hub_navigation_keywords">voice units route avoid motorways tolls ferries 3d buildings bike cycleways status bar distance chip live update sound volume language kilometers miles hiking cycling trails routes mountain bike</string>
     <string name="hub_navigation_voice_on">Voice: %1$s, %2$d %%</string>
     <string name="hub_navigation_voice_off">Voice: off</string>
     <string name="hub_alerts_title">Alerts</string>

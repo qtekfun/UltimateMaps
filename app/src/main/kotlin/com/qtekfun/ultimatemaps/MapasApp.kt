@@ -23,6 +23,10 @@ import com.qtekfun.ultimatemaps.chargers.PrefsChargerSettingsStore
 import com.qtekfun.ultimatemaps.core.chargers.ChargerAsset
 import com.qtekfun.ultimatemaps.core.chargers.ChargerDataManager
 import com.qtekfun.ultimatemaps.core.chargers.ChargerSettingsStore
+import com.qtekfun.ultimatemaps.core.routes.RouteAsset
+import com.qtekfun.ultimatemaps.core.routes.RouteDataManager
+import com.qtekfun.ultimatemaps.core.routes.RouteSettingsStore
+import com.qtekfun.ultimatemaps.trails.PrefsRouteSettingsStore
 import com.qtekfun.ultimatemaps.core.cameras.AlertBannerTracker
 import com.qtekfun.ultimatemaps.core.cameras.AlertVoice
 import com.qtekfun.ultimatemaps.core.cameras.ManeuverGuard
@@ -112,6 +116,20 @@ class MapasApp : Application() {
     val chargerData: ChargerDataManager by lazy {
         ChargerDataManager(chargerSettings, policy, ::chargerAsset, File(filesDir, "chargers"), syncCatalog = { force -> regions.syncCatalog(force) })
     }
+
+    /** Hiking and cycling route overlay switch and kinds (off by default). The map layer, the card and Settings read these. */
+    val routeSettings: RouteSettingsStore by lazy { PrefsRouteSettingsStore(this) }
+
+    /**
+     * The route file (several MB): fetched from the catalog's `routes` entry through [networkPolicy] (same server and purpose
+     * as the camera file), cached, and absent-tolerant. Nothing is downloaded when it is created or while the switch is off.
+     */
+    val routeData: RouteDataManager by lazy {
+        RouteDataManager(routeSettings, policy, ::routeAsset, File(filesDir, "routes"), syncCatalog = { force -> regions.syncCatalog(force) })
+    }
+
+    private fun routeAsset(): RouteAsset? =
+        (regions.catalogState as? CatalogState.Loaded)?.catalog?.routes?.let { RouteAsset(it.url, it.sizeBytes, it.sha256) }
 
     private fun chargerAsset(): ChargerAsset? =
         (regions.catalogState as? CatalogState.Loaded)?.catalog?.chargers?.let { ChargerAsset(it.url, it.sizeBytes, it.sha256) }
@@ -330,6 +348,7 @@ class MapasApp : Application() {
         // Cameras and incidents: only read local caches and follow the switches; nothing connects here.
         cameraData.start()
         chargerData.start()
+        routeData.start()
         incidents.start()
         ensureCameraAlerts()
         // Points an interrupted recording left in its journal become a track (off the main thread, on the recorder's queue).
@@ -341,6 +360,7 @@ class MapasApp : Application() {
                     fuel.onForeground()
                     cameraData.onForeground()
                     chargerData.onForeground()
+                    routeData.onForeground()
                     incidents.onForeground()
                     ensureCameraAlerts()
                     if (alertsStarted) cameraAlerts.onForeground(true)

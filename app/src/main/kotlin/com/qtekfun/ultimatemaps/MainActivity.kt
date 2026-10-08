@@ -90,6 +90,7 @@ class MainActivity : ComponentActivity() {
                 HazardDescriber(this, app.cameraData.repository, app.incidents.repository),
             ),
             chargers = com.qtekfun.ultimatemaps.chargers.ChargersEnv(app.chargerSettings.settings, app.chargerData.repository),
+            trails = com.qtekfun.ultimatemaps.trails.TrailsEnv(app.routeSettings.settings, app.routeData.repository),
             navScreen = app.navScreen,
         )
         navHost = NavHost(this, engine, app.navScreen)

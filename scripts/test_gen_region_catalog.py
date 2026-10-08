@@ -113,6 +113,22 @@ class GenCatalogTest(unittest.TestCase):
             self.assertNotIn("cameras", cat)
         self.assertNotIn("chargers", gen.build(COUNTRIES, catalog_version="t"))
 
+    def test_optional_routes_block(self):
+        with tempfile.TemporaryDirectory() as t:
+            f = os.path.join(t, "routes-es.bin")
+            put(f, b"r" * 9)
+            c = gen.build(COUNTRIES, catalog_version="t", routes_file=f, routes_base="https://x/rel/")["routes"]
+            self.assertEqual("https://x/rel/routes-es.bin", c["url"])
+            self.assertEqual(9, c["size"])
+            self.assertEqual(hashlib.sha256(b"r" * 9).hexdigest(), c["sha256"])
+            self.assertEqual("routes-es.bin", c["file"])
+            self.assertNotIn("routes", gen.build(COUNTRIES, catalog_version="t", routes_file=os.path.join(t, "nope.bin"), routes_base="https://x"))
+            with self.assertRaises(SystemExit):
+                gen.build(COUNTRIES, catalog_version="t", routes_file=f)
+            cat = gen.build(COUNTRIES, catalog_version="t", routes_file=f, routes_base="https://x")
+            self.assertNotIn("chargers", cat)
+        self.assertNotIn("routes", gen.build(COUNTRIES, catalog_version="t"))
+
     def test_optional_transit_block(self):
         import json
         with tempfile.TemporaryDirectory() as t:
