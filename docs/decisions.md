@@ -609,3 +609,9 @@ Format: date · decision · reason · discarded alternatives · how to revert it
 - **Verified on the Pixel 8:** `cache` and `safe` run all 12 pairs with identical routes and no crash (Madrid to Lleida 24.1 s to 6.6 s with `safe`; most other pairs 5 to 30% faster).
 - **Decision:** production still never calls `setPerfMode`; `quiet,prune,cache` is NOT turned on by default yet. Reasons: one matrix per mode on a shared phone, no test of rerouting during navigation, and pinned handles keep the regions' graphs in memory for up to 10 minutes. Next step before turning it on: a `--ei runs 3` repeat plus a navigation reroute test.
 - **Owner to decide:** turn on `quiet,prune,cache` by default after those checks; relax the 2 s target for 600 km trips.
+
+## 2026-10-08 · Long-route switches: tested on a simulated drive, not turned on by default
+- **Measured** (`docs/phase2/device-test/route-perf-ab-2026-10-08.md`, update 2): a Madrid to Barcelona drive with 9 recalculations, the way back and an urban route, in the default mode, `quiet,prune` and `quiet,prune,cache`. All routes are identical in every step and nothing crashes. But `quiet,prune` is 16% slower overall on the drive and `cache` leaves the total time unchanged while holding about 340 MB more native memory.
+- **Decision:** the switches stay off (the app never calls `setPerfMode`); they remain debug-only experiments. Discarded alternative: enabling `quiet,prune,cache` by default (the earlier matrix suggested it, the drive did not confirm it).
+- **Next:** if the 2 s target stays, measure `cand*` and `tmo*` (they trade route quality for time and can change the route) or relax the target for 600 km trips (owner's decision).
+- **Also done:** the EV charger file is published in the weekly data release (`data-261004-20261007-h`: `chargers-es.bin`, 175,522 bytes, catalog block `chargers` present). Not checked: the station count and the app's use of the file on a phone.

@@ -30,9 +30,57 @@ class CoreBenchActivity : Activity() {
         // `--ez matrix true`: long routes between cities to find where routing fails between regions (also takes
         // `--es perf <mode>` and `--ei runs <n>`, see dumpMatrix).
         val matrix = intent?.getBooleanExtra("matrix", false) == true
+        // `--ez reroute true`: simulates a long drive Madrid to Barcelona with a recalculation every 10% of the route
+        // (the position nudged about 300 m off the line, as when the driver leaves it), with `--es perf <tokens>`.
+        val reroute = intent?.getBooleanExtra("reroute", false) == true
         thread(name = "umbench") {
-            runCatching { if (matrix) dumpMatrix() else if (guidanceOnly) dumpGuidance() else run() }.onFailure { Log.e(tag, "FAILED: $it", it) }
+            runCatching { if (reroute) dumpReroute() else if (matrix) dumpMatrix() else if (guidanceOnly) dumpGuidance() else run() }.onFailure { Log.e(tag, "FAILED: $it", it) }
         }
+    }
+
+    /** Native heap and total PSS in MB, to see what the kept graphs cost. */
+    private fun memory(): String {
+        val info = android.os.Debug.MemoryInfo().also(android.os.Debug::getMemoryInfo)
+        return "native_mb=${android.os.Debug.getNativeHeapAllocatedSize() / (1024 * 1024)} pss_mb=${info.totalPss / 1024}"
+    }
+
+    /** A long drive with recalculations: same route and same later routes must come out identical in every perf mode. */
+    private fun dumpReroute() {
+        val core = CoMapsCore()
+        core.init(applicationInfo.sourceDir, File(filesDir, "maps-core").absolutePath, cacheDir.absolutePath, "es")
+        Log.i(tag, "reroute init maps=${core.refreshMaps()}")
+        val perf = RoutePerfMode.parse(intent?.getStringExtra("perf"))
+        core.setPerfMode(perf)
+        val name = RoutePerfMode.describe(perf)
+        Log.i(tag, "reroute perf=$name ($perf) ${memory()}")
+        // The navigation uses the engine with guidance, so do the same here.
+        val router = core.routingEngine(withGuidance = true)
+        val madrid = LatLon(40.4168, -3.7038)
+        val bcn = LatLon(41.3874, 2.1686)
+        fun log(step: String, out: RouteOutcome, ms: Long) = Log.i(
+            tag,
+            "reroute perf=$name step=$step code=${out.code} ms=$ms m=${out.plan?.distanceMeters} s=${out.plan?.durationSeconds} " +
+                "pts=${out.plan?.geometry?.size} maneuvers=${out.plan?.guidance?.maneuvers?.size} ${memory()} stats[${core.lastRouteStats()}]",
+        )
+        var t0 = SystemClock.elapsedRealtime()
+        val out = router.routeDetailed(RouteRequest(madrid, bcn, profile = RoutingProfile.CAR))
+        log("initial", out, SystemClock.elapsedRealtime() - t0)
+        val line = out.plan?.geometry.orEmpty()
+        if (line.size > 20) {
+            for (tenth in 1..9) {
+                val p = line[line.size * tenth / 10]
+                val from = LatLon(p.lat + 0.003, p.lon + 0.002)
+                t0 = SystemClock.elapsedRealtime()
+                val r = router.routeDetailed(RouteRequest(from, bcn, profile = RoutingProfile.CAR))
+                log("reroute$tenth", r, SystemClock.elapsedRealtime() - t0)
+            }
+        }
+        // The way back, then a short route in one region: the kept graphs must not poison later, different requests.
+        t0 = SystemClock.elapsedRealtime()
+        log("back", router.routeDetailed(RouteRequest(bcn, madrid, profile = RoutingProfile.CAR)), SystemClock.elapsedRealtime() - t0)
+        t0 = SystemClock.elapsedRealtime()
+        log("urban", router.routeDetailed(RouteRequest(LatLon(40.4170, -3.7036), LatLon(40.4065, -3.6890), profile = RoutingProfile.CAR)), SystemClock.elapsedRealtime() - t0)
+        Log.i(tag, "FIN matrix reroute perf=$name")
     }
 
     /** City pairs by car: core code, time and length (no coordinates in the log, only city names). */
