@@ -14,7 +14,8 @@ import java.io.IOException
  * [IOException], so a corrupt or truncated file or message can never cause an out-of-memory or an endless loop.
  */
 object RoutePlanCodec {
-    const val VERSION = 1
+    /** 2 adds the tunnel ranges after the stops; version 1 (older saved states) is still read, with no tunnels. */
+    const val VERSION = 2
     const val MAX_POINTS = 4_000_000
     private const val MAX_ITEMS = 1_000_000
     private const val MAX_LANES = 64
@@ -51,12 +52,17 @@ object RoutePlanCodec {
         }
         out.writeInt(g.stops.size)
         for (i in g.stops) out.writeInt(i)
+        out.writeInt(g.tunnels.size)
+        for (t in g.tunnels) {
+            out.writeInt(t.startIndex)
+            out.writeInt(t.endIndex)
+        }
     }
 
     @Throws(IOException::class)
     fun read(input: DataInput): RoutePlan {
         val version = input.readUnsignedByte()
-        if (version != VERSION) throw IOException("unsupported route version $version")
+        if (version != 1 && version != VERSION) throw IOException("unsupported route version $version")
         val distance = input.readDouble()
         val duration = input.readDouble()
         val count = bounded(input.readInt(), MAX_POINTS)
@@ -89,7 +95,9 @@ object RoutePlanCodec {
         }
         val stops = ArrayList<Int>()
         repeat(bounded(input.readInt(), MAX_ITEMS)) { stops += input.readInt() }
-        return RoutePlan(geometry, distance, duration, RouteGuidance(maneuvers, limits, stops))
+        val tunnels = ArrayList<TunnelRange>()
+        if (version >= 2) repeat(bounded(input.readInt(), MAX_ITEMS)) { tunnels += TunnelRange(input.readInt(), input.readInt()) }
+        return RoutePlan(geometry, distance, duration, RouteGuidance(maneuvers, limits, stops, tunnels))
     }
 
     private fun bounded(n: Int, max: Int): Int {
