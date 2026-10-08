@@ -35,7 +35,7 @@ Rough total up to F5: 6-12 months. Each phase ends with a usable version.
 | R18 | The F7 APIs change, ask for a key or limit usage (they are third-party) | Medium | Medium | Prior spike; one interface per source; one failing must not affect the others; optional key entered by the user |
 | R19 | Scope: F7 extends what "What we are not doing" excluded (public transport) | Medium | Medium | F7 only after F5; each source is optional and can be removed without touching the core |
 | R11 | Inherited CoMaps licenses: bsdiff (BSD Protection), code2000 font (shareware), Entypo icons (CC BY-SA 3.0) | High if not addressed | High | Exclude or replace before release; pin GPLv3+ |
-| R12 | Long route (≈ 18 s vs 2 s) and search (≈ 0.6 s vs 0.1 s) of the CoMaps core out of threshold | High | High | Repeat with a subset of regions; relax the long-route threshold; or B with Valhalla |
+| R12 | Long route and search of the CoMaps core out of threshold | Medium (long route: threshold relaxed 2026-10-08, now met; search still open) | Medium | Long route: relaxed to tiers (see RF-04) after the World-map fix (18 s to 12-15 s); search: 0.6 s vs 0.1 s still to improve |
 | R13 | Signed `countries.txt` (Ed25519) and SHA-1 per region: an own mirror requires recompiling with our key; RF-02 asks for SHA-256 | Medium | Medium | Assess when choosing the engine |
 | R14 | CoMaps' fdroid flavor depends on microG `play-services-location` | High if its `:app` is reused | Medium | Consume only `:sdk` |
 | R15 | Android 17: no `adb push` to `Android/data`; native MapLibre does not read `file://` there | Medium | Low | Data in `filesDir` or download by the app |
