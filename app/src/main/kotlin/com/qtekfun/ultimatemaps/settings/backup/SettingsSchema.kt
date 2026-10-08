@@ -5,6 +5,8 @@ import com.qtekfun.ultimatemaps.core.cameras.AlertSoundMode
 import com.qtekfun.ultimatemaps.core.cameras.CameraSettings
 import com.qtekfun.ultimatemaps.core.cameras.MIN_INCIDENT_REFRESH_MINUTES
 import com.qtekfun.ultimatemaps.chargers.PrefsChargerSettingsStore
+import com.qtekfun.ultimatemaps.zbe.PrefsZbeSettingsStore
+import com.qtekfun.ultimatemaps.core.zbe.ZbeSettings
 import com.qtekfun.ultimatemaps.core.chargers.ChargerSettings
 import com.qtekfun.ultimatemaps.core.chargers.MinPower
 import com.qtekfun.ultimatemaps.core.chargers.SocketType
@@ -92,6 +94,7 @@ object SettingsSchema {
     const val GROUP_FUEL = "fuel"
     const val GROUP_CAMERAS = "cameras"
     const val GROUP_CHARGERS = "chargers"
+    const val GROUP_ZBE = "zbe"
     const val GROUP_TRAILS = "trails"
     const val GROUP_HISTORY = "history"
     const val GROUP_RECORDING = "recording"
@@ -122,12 +125,14 @@ object SettingsSchema {
     private val fuel = FuelSettings()
     private val cameras = CameraSettings()
     private val chargers = ChargerSettings()
+    private val zbe = ZbeSettings()
     private val trails = RouteSettings()
 
     private val navPrefs = PrefsNavSettingsStore.PREFS
     private val fuelPrefs = PrefsFuelSettingsStore.PREFS
     private val camPrefs = PrefsCameraSettingsStore.PREFS
     private val chargerPrefs = PrefsChargerSettingsStore.PREFS
+    private val zbePrefs = PrefsZbeSettingsStore.PREFS
     private val trailPrefs = PrefsRouteSettingsStore.PREFS
 
     /** Every exported setting, sorted by group and key (the order of the file). */
@@ -200,6 +205,10 @@ object SettingsSchema {
         ),
         enum(GROUP_CHARGERS, chargerPrefs, PrefsChargerSettingsStore.KEY_MIN_POWER, chargers.minPower, MinPower.entries.map { it.name }),
 
+        // Low-emission zones: the switch starts a download, so it needs consent; the map toggle and the prompt mode are plain preferences.
+        bool(GROUP_ZBE, zbePrefs, PrefsZbeSettingsStore.KEY_ENABLED, zbe.enabled, RestorePolicy.NEEDS_CONSENT),
+        bool(GROUP_ZBE, zbePrefs, PrefsZbeSettingsStore.KEY_SHOW_ON_MAP, zbe.showOnMap),
+        enum(GROUP_ZBE, zbePrefs, PrefsZbeSettingsStore.KEY_PROMPT_MODE, zbe.promptMode, AlertSoundMode.entries.map { it.name }),
         // Hiking and cycling routes: the switch starts a download of several MB, so it needs consent; the kinds are plain preferences.
         bool(GROUP_TRAILS, trailPrefs, PrefsRouteSettingsStore.KEY_ENABLED, trails.enabled, RestorePolicy.NEEDS_CONSENT),
         bool(GROUP_TRAILS, trailPrefs, PrefsRouteSettingsStore.KEY_HIKING, trails.hiking),

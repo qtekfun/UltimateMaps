@@ -89,6 +89,7 @@ fun RoutePanel(
                 TransitSection(transit)
             } else {
                 ResultAndStart(s, navStart)
+                if (s.status == RouteStatus.DONE) LowEmissionWarning(s.lowEmission) // full width: below the figures and Start
                 AlternativesSection(route)
                 Spacer(Modifier.height(4.dp))
                 RouteOptionsSection(route)

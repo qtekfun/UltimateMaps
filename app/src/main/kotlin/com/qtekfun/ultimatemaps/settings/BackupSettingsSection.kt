@@ -142,6 +142,7 @@ private fun pendingLabel(spec: SettingSpec): Int = when (spec.id) {
     "cameras/roadworks" -> R.string.backup_item_roadworks
     "fuel/enabled" -> R.string.backup_item_fuel
     "chargers/enabled" -> R.string.backup_item_chargers
+    "zbe/enabled" -> R.string.backup_item_zbe
     "trails/enabled" -> R.string.backup_item_trails
     "navigation/cercanias_real_time" -> R.string.backup_item_cercanias_rt
     else -> R.string.backup_item_other
@@ -153,6 +154,7 @@ private fun groupLabel(group: String): Int = when (group) {
     SettingsSchema.GROUP_FUEL -> R.string.backup_group_fuel
     SettingsSchema.GROUP_CAMERAS -> R.string.backup_group_cameras
     SettingsSchema.GROUP_CHARGERS -> R.string.backup_group_chargers
+    SettingsSchema.GROUP_ZBE -> R.string.backup_group_zbe
     SettingsSchema.GROUP_TRAILS -> R.string.backup_group_trails
     SettingsSchema.GROUP_HISTORY -> R.string.backup_group_history
     SettingsSchema.GROUP_RECORDING -> R.string.backup_group_recording

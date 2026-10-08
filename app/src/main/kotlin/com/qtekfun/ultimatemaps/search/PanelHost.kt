@@ -188,6 +188,10 @@ class PanelHost(
         defaultBikeCycleways = { com.qtekfun.ultimatemaps.voice.VoiceModule.settings(activity).settings.value.bikeCycleways },
         showAlternatives = engine::showAlternativeRoutes,
         transit = transitController,
+        lowEmissionZones = { geometry ->
+            val app = activity.application as MapasApp
+            if (app.zbeSettings.settings.value.enabled) app.zbeData.repository.index.crossings(geometry) else emptyList()
+        },
     )
 
     /** "Start" / "Simulate" on the route card: the guided route goes through the same shared core and lock. */

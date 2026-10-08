@@ -2,6 +2,7 @@ package com.qtekfun.ultimatemaps.settings.backup
 
 import com.qtekfun.ultimatemaps.cameras.PrefsCameraSettingsStore
 import com.qtekfun.ultimatemaps.chargers.PrefsChargerSettingsStore
+import com.qtekfun.ultimatemaps.zbe.PrefsZbeSettingsStore
 import com.qtekfun.ultimatemaps.trails.PrefsRouteSettingsStore
 import com.qtekfun.ultimatemaps.fuel.PrefsFuelSettingsStore
 import com.qtekfun.ultimatemaps.map.PrefsCameraStateStore
@@ -40,6 +41,7 @@ class SettingsSchemaCoverageTest {
         addAll(keysOf(PrefsTransitTripSettings::class.java, PrefsTransitTripSettings.PREFS))
         addAll(keysOf(PrefsCameraSettingsStore::class.java, PrefsCameraSettingsStore.PREFS))
         addAll(keysOf(PrefsChargerSettingsStore::class.java, PrefsChargerSettingsStore.PREFS))
+        addAll(keysOf(PrefsZbeSettingsStore::class.java, PrefsZbeSettingsStore.PREFS))
         addAll(keysOf(PrefsRouteSettingsStore::class.java, PrefsRouteSettingsStore.PREFS))
         addAll(keysOf(PrefsHistorySettings::class.java, PrefsHistorySettings.PREFS))
         addAll(keysOf(PrefsRecordingSettings::class.java, PrefsRecordingSettings.PREFS))
@@ -89,7 +91,7 @@ class SettingsSchemaCoverageTest {
         val expected = sortedSetOf(
             "AndroidNavServiceControl.kt", "AndroidPlaces.kt", "AndroidSettingsStorage.kt", "CoMapsSearchBackend.kt", "MapasApp.kt",
             "PendingRestore.kt", "PlaceLanguage.kt", "PrefsCameraSettingsStore.kt", "PrefsCameraStateStore.kt", "PrefsChargerSettingsStore.kt", "PrefsFuelSettingsStore.kt",
-            "PrefsNavSettingsStore.kt", "PrefsRouteSettingsStore.kt", "RecordingController.kt", "RegionsController.kt", "SearchHistory.kt", "TransitTripSettings.kt",
+            "PrefsNavSettingsStore.kt", "PrefsRouteSettingsStore.kt", "PrefsZbeSettingsStore.kt", "RecordingController.kt", "RegionsController.kt", "SearchHistory.kt", "TransitTripSettings.kt",
         )
         assertEquals(expected, found, "a new SharedPreferences file needs a SettingsSchema entry or an exclusion, then add its file here")
     }

@@ -37,6 +37,9 @@ unchanged and the app works without camera data.
 `--chargers-file` (with `--chargers-base`) adds the optional `chargers` block for the EV-charging-station file
 (`chargers-es.bin`, built by `scripts/build-chargers.py`); without it the catalog is unchanged and the app works without it.
 
+`--zbe-file` (with `--zbe-base`) adds the optional `zbe` block for the low-emission-zone polygon file (`zbe-es.bin`, built by
+`scripts/build-zbe.py`); without it the catalog is unchanged and the app works without it.
+
 `--routes-file` (with `--routes-base`) adds the optional `routes` block for the hiking and cycling route overlay
 (`routes-es.bin`, built by `scripts/build-routes.py`); without it the catalog is unchanged and the app works without it.
 
@@ -185,6 +188,11 @@ def build_chargers(chargers_file, chargers_base, log=lambda m: None):
     return build_static_file("chargers", "chargers", chargers_file, chargers_base, log)
 
 
+def build_zbe(zbe_file, zbe_base, log=lambda m: None):
+    """Optional `zbe` block for `zbe-es.bin` (see scripts/build-zbe.py) or None when there is no file."""
+    return build_static_file("zbe", "zbe", zbe_file, zbe_base, log)
+
+
 def build_routes(routes_file, routes_base, log=lambda m: None):
     """Optional `routes` block for `routes-es.bin` (see scripts/build-routes.py) or None when there is no file."""
     return build_static_file("routes", "routes", routes_file, routes_base, log)
@@ -226,6 +234,7 @@ def build(countries, mwm_dir=None, pmtiles_dir=None, mwm_base=None, pmtiles_base
           fetch=(), max_download_bytes=20 << 20, log=lambda m: None, mwm_url_by_slug=False,
           base_dir=None, base_url=None, cameras_file=None, cameras_base=None,
           transit_files=(), transit_base=None, names=None, chargers_file=None, chargers_base=None,
+          zbe_file=None, zbe_base=None,
           routes_file=None, routes_base=None):
     version = str(countries["v"])
     series = countries.get("map_series", "")
@@ -299,6 +308,9 @@ def build(countries, mwm_dir=None, pmtiles_dir=None, mwm_base=None, pmtiles_base
     chargers = build_chargers(chargers_file, chargers_base, log)
     if chargers:
         cat["chargers"] = chargers
+    zbe = build_zbe(zbe_file, zbe_base, log)
+    if zbe:
+        cat["zbe"] = zbe
     routes = build_routes(routes_file, routes_base, log)
     if routes:
         cat["routes"] = routes
@@ -327,6 +339,8 @@ def main(argv=None):
     ap.add_argument("--cameras-base", help="base URL of the cameras file (required with --cameras-file)")
     ap.add_argument("--chargers-file", help="chargers-es.bin from scripts/build-chargers.py (adds the optional `chargers` block)")
     ap.add_argument("--chargers-base", help="base URL of the chargers file (required with --chargers-file)")
+    ap.add_argument("--zbe-file", help="zbe-es.bin from scripts/build-zbe.py (adds the optional `zbe` block)")
+    ap.add_argument("--zbe-base", help="base URL of the zbe file (required with --zbe-file)")
     ap.add_argument("--routes-file", help="routes-es.bin from scripts/build-routes.py (adds the optional `routes` block)")
     ap.add_argument("--routes-base", help="base URL of the routes file (required with --routes-file)")
     ap.add_argument("--transit-file", action="append", default=[], help="transit-<id>.umti (repeatable; adds the optional `transit` array)")
@@ -348,6 +362,7 @@ def main(argv=None):
                 mwm_url_by_slug=a.mwm_url_by_slug, base_dir=a.base_dir, base_url=a.base_url,
                 cameras_file=a.cameras_file, cameras_base=a.cameras_base,
                 chargers_file=a.chargers_file, chargers_base=a.chargers_base,
+                zbe_file=a.zbe_file, zbe_base=a.zbe_base,
                 routes_file=a.routes_file, routes_base=a.routes_base,
                 transit_files=a.transit_file, transit_base=a.transit_base, names=names)
     text = json.dumps(cat, indent=1, ensure_ascii=False) + "\n"
