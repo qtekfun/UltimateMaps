@@ -74,6 +74,10 @@ With no usable fix for 5 s (`onTick`, which the session calls every 1 s) → `NO
 keep coming out using the estimate. When a fix returns the real one wins and it resynchronises. If it was already off route it does not switch to
 `NO_SIGNAL`.
 
+With a known tunnel span (see `docs/phase2/tunnel-positioning.md`, stage 1) the loss is expected: `NavState.inTunnel = true`, the estimate
+advances until the span exit instead of stopping after 30 s, `errorMeters` publishes its likely error, and `NOW` prompts inside the span are
+downgraded to `NEAR` while the error exceeds the `NOW` band. Without a span nothing changes.
+
 ## Voice announcements
 
 Three levels per maneuver, `clamp(v·seconds, min, max)`:
