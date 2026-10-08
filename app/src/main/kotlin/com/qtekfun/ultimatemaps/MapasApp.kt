@@ -5,6 +5,7 @@ import android.app.Application
 import android.os.Bundle
 import java.io.File
 import com.qtekfun.ultimatemaps.core.nav.NavStateStore
+import com.qtekfun.ultimatemaps.core.nav.LearnedTunnelStore
 import com.qtekfun.ultimatemaps.core.nav.NavigationController
 import com.qtekfun.ultimatemaps.core.net.AllowedEndpoint
 import com.qtekfun.ultimatemaps.core.net.ConnectionPurpose
@@ -203,6 +204,8 @@ class MapasApp : Application() {
             store = NavStateStore(File(noBackupFilesDir, "navigation/state.bin")),
             environment = SimulationAwareEnvironment(AndroidNavEnvironment(this), navLocation),
             routes = CoreRouteProvider(this),
+            // Tunnels learned from signal losses on this device; in memory only (see docs/phase2/tunnel-positioning.md).
+            tunnelSpans = LearnedTunnelStore(),
         )
     }
 

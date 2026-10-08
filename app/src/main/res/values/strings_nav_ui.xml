@@ -14,6 +14,7 @@
     <string name="nav_ui_arrive_at">Arrive %1$s</string>
     <string name="nav_ui_phase_off_route">You left the route</string>
     <string name="nav_ui_phase_no_signal">GPS signal lost. Estimated position</string>
+    <string name="nav_ui_phase_in_tunnel">GPS lost in tunnel. Estimated position</string>
     <string name="nav_ui_phase_stop_reached">Stop reached. Continue to the destination</string>
     <string name="nav_ui_limit_description">Speed limit %1$d</string>
     <string name="nav_ui_speed_description">Current speed %1$d km/h</string>

@@ -281,7 +281,9 @@ private fun StatusStrip(ui: NavUi) {
         problem == NavProblem.LOCATION_DISABLED -> stringResource(R.string.nav_problem_gps_off) to c.statusDanger
         ui.phase == NavPhase.OFF_ROUTE -> stringResource(R.string.nav_ui_phase_off_route) to c.statusDanger
         ui.phase == NavPhase.REROUTING -> stringResource(R.string.nav_recalculating) to c.statusWarning
-        ui.phase == NavPhase.NO_SIGNAL -> stringResource(R.string.nav_ui_phase_no_signal) to c.statusWarning
+        ui.phase == NavPhase.NO_SIGNAL -> stringResource(
+            if (ui.nav?.inTunnel == true) R.string.nav_ui_phase_in_tunnel else R.string.nav_ui_phase_no_signal,
+        ) to c.statusWarning
         ui.phase == NavPhase.STOP_REACHED -> stringResource(R.string.nav_ui_phase_stop_reached) to c.statusInfo
         else -> return
     }
