@@ -192,6 +192,7 @@ fun NavigationSection(env: NavigationSettingsEnv) {
             BasicText(stringResource(R.string.transit_rt_source), style = Mapas.typography.caption.copy(color = Mapas.colors.secondaryLabel), modifier = Modifier.testTag("nav_transit_rt_source"))
         }
     }
+    env.transitTrip?.let { TransitPlanningCards(it) }
     Spacer(Modifier.height(10.dp))
     SectionTitle(stringResource(R.string.hub_group_route))
     Card("nav_avoid_card") {

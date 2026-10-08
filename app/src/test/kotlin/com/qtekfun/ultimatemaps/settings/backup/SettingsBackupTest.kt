@@ -34,6 +34,9 @@ fun nonDefaultValue(spec: SettingSpec, consentOn: Boolean): Any = when (spec.typ
         "voice_volume" -> 50
         "refresh_minutes" -> 180
         "incident_refresh_minutes" -> 30
+        "plan_walk_alt_min" -> 30
+        "plan_min_saving_min" -> 10
+        "plan_max_walk_min" -> 0 // no cap (default 15)
         else -> error("no non-default value for ${spec.id}")
     }
     SettingType.STRING -> when (spec.key) {
@@ -50,7 +53,11 @@ fun nonDefaultValue(spec: SettingSpec, consentOn: Boolean): Any = when (spec.typ
         "catalog_url" -> "https://maps.example.org/catalog.json"
         else -> error("no non-default value for ${spec.id}")
     }
-    SettingType.STRING_SET -> if (spec.key == "sockets") setOf("TYPE2", "CCS") else setOf("g95e5", "goa")
+    SettingType.STRING_SET -> when (spec.key) {
+        "sockets" -> setOf("TYPE2", "CCS")
+        "plan_modes" -> setOf("BUS", "METRO")
+        else -> setOf("g95e5", "goa")
+    }
 }
 
 @RunWith(RobolectricTestRunner::class) // org.json needs the Android implementation

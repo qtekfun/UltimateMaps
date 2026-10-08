@@ -53,6 +53,7 @@ import com.qtekfun.ultimatemaps.recording.TapLocationSource
 import java.text.DateFormat
 import java.util.Date
 import com.qtekfun.ultimatemaps.regions.RegionsController
+import com.qtekfun.ultimatemaps.transit.follow.planOptions
 import com.qtekfun.ultimatemaps.voice.VoiceNavSink
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -288,7 +289,9 @@ class MapasApp : Application() {
         val replanner = com.qtekfun.ultimatemaps.core.transit.follow.TransitReplanner { from, to, at ->
             kotlinx.coroutines.withContext(Dispatchers.IO) {
                 val ready = transit.lookup(from, to) as? com.qtekfun.ultimatemaps.transit.TransitLookup.Ready
-                (ready?.service?.plan(from, to, at) as? com.qtekfun.ultimatemaps.core.transit.TransitPlan.Found)?.itineraries?.firstOrNull()
+                // the same mode chips and walking limits as the route panel
+                val options = transitTripSettings.planOptions()
+                (ready?.service?.plan(from, to, at, options = options) as? com.qtekfun.ultimatemaps.core.transit.TransitPlan.Found)?.itineraries?.firstOrNull()
             }
         }
         val controller = com.qtekfun.ultimatemaps.core.transit.follow.TransitTripController(
