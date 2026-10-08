@@ -54,6 +54,8 @@ sealed interface Leg {
         val stopCount: Int,
         /** Every stop from boarding to alighting (both included) with its scheduled times; empty when not recorded. */
         val stops: List<RideStop> = emptyList(),
+        /** Absolute trip number in the index (for its feed id), or -1. */
+        val trip: Int = -1,
     ) : Leg
 }
 
@@ -421,6 +423,7 @@ class TransitPlanner(val index: TransitIndex, val config: PlannerConfig = Planne
                     departSec = index.departures[tBase + boardPos] + shift,
                     arriveSec = index.arrivals[tBase + alightPos] + shift,
                     stopCount = alightPos - boardPos,
+                    trip = index.patternTripOffset[p] + tl,
                     stops = (boardPos..alightPos).map { i ->
                         RideStop(index.patternStops[off + i], index.arrivals[tBase + i] + shift, index.departures[tBase + i] + shift)
                     },

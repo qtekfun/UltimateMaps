@@ -5,6 +5,7 @@ import com.qtekfun.ultimatemaps.core.map.LocationFix
 import com.qtekfun.ultimatemaps.core.map.LocationSource
 import com.qtekfun.ultimatemaps.core.transit.Itinerary
 import com.qtekfun.ultimatemaps.core.transit.ItineraryLeg
+import com.qtekfun.ultimatemaps.core.transit.rt.RideRealTime
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -54,6 +55,8 @@ class TransitTripController(
     private val clock: () -> Long = System::currentTimeMillis,
     private val tickMillis: Long = 1_000L,
     private val persistEveryMillis: Long = 10_000L,
+    /** Real time for the rides (null: none). Read from memory on every tick; this class never fetches. */
+    private val realTime: RideRealTime = RideRealTime.NONE,
 ) {
     private val _state = MutableStateFlow<TransitTripState?>(null)
     private val _prompts = MutableSharedFlow<FollowPrompt>(extraBufferCapacity = 16)
@@ -112,7 +115,7 @@ class TransitTripController(
         replanJob?.cancel()
         location.stop()
         zoneId = zone
-        val f = ItineraryFollower(itinerary, config, clock, snapshot)
+        val f = ItineraryFollower(itinerary, config, clock, snapshot, realTime)
         follower = f
         _state.value = TransitTripState(itinerary, f.state, zone)
         saveLocked(force = true)
@@ -197,7 +200,7 @@ class TransitTripController(
                     if (found == null || found.isWalkOnly) {
                         _state.value = _state.value?.copy(replanning = false, replanFailed = true)
                     } else {
-                        val nf = ItineraryFollower(found, config, clock)
+                        val nf = ItineraryFollower(found, config, clock, realTime = realTime)
                         follower = nf
                         _state.value = TransitTripState(found, nf.state, zoneId)
                         saveLocked(force = true)

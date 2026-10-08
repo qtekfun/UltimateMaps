@@ -8,6 +8,7 @@ import com.qtekfun.ultimatemaps.core.voice.DistanceUnits
 import com.qtekfun.ultimatemaps.nav.LiveUpdatePlan
 import com.qtekfun.ultimatemaps.nav.LiveUpdatePolicy
 import com.qtekfun.ultimatemaps.nav.NavNotificationContent
+import com.qtekfun.ultimatemaps.transit.RealTimeTexts
 import java.time.ZoneId
 import java.util.Locale
 import kotlin.math.roundToInt
@@ -24,14 +25,15 @@ object TransitTripNotificationTexts {
             text.detail,
             TransitTripTexts.connection(res, s) ?: TransitTripTexts.signal(res, s),
             TransitTripTexts.planChip(res, s),
+            RealTimeTexts.status(res, s.realTime)?.text,
         ).joinToString(" · ")
-        return NavNotificationContent(text.title, extra.ifBlank { res.getString(R.string.trip_scheduled_note) })
+        return NavNotificationContent(text.title, extra.ifBlank { RealTimeTexts.note(res, s.realTime, R.string.trip_scheduled_note) })
     }
 
     /** Changes only when something worth redrawing changes (throttle key). */
     fun key(trip: TransitTripState?): String {
         val s = trip?.follow ?: return "none"
-        return "${s.phase}|${s.legIndex}|${s.nextStopIndex}|${s.plan}|${s.planMinutes}|${s.connection}|${s.basis}|${s.canReplan}"
+        return "${s.phase}|${s.legIndex}|${s.nextStopIndex}|${s.plan}|${s.planMinutes}|${s.connection}|${s.basis}|${s.canReplan}|${s.realTime?.cancelled}|${s.realTime?.delaySec?.div(60)}"
     }
 }
 

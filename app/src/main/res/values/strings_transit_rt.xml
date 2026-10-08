@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Settings: opt-in switch -->
+    <string name="transit_rt_title">Cercanías real time</string>
+    <string name="transit_rt_body">Asks Renfe\'s server for train delays while you use public transport. Your position is never sent; Renfe sees your IP address.</string>
+    <string name="transit_rt_source">Data: Renfe (CC BY 4.0), data.renfe.com</string>
+
+    <!-- Labels and statuses -->
+    <string name="transit_rt_label">Real time (Renfe)</string>
+    <plurals name="transit_rt_delayed">
+        <item quantity="one">Delayed %d min</item>
+        <item quantity="other">Delayed %d min</item>
+    </plurals>
+    <plurals name="transit_rt_early">
+        <item quantity="one">%d min early</item>
+        <item quantity="other">%d min early</item>
+    </plurals>
+    <string name="transit_rt_on_time">On time</string>
+    <string name="transit_rt_cancelled">Cancelled</string>
+    <string name="transit_rt_alert">Alert: %1$s</string>
+    <string name="transit_rt_skips">Does not stop at %1$s</string>
+    <string name="transit_rt_note">Times are theoretical, taken from the published timetables. Legs marked \"Real time (Renfe)\" also include the delays Renfe reports; every other leg has no real-time information.</string>
+
+    <!-- Backup restore list and connection list -->
+    <string name="backup_item_cercanias_rt">Cercanías real time</string>
+    <string name="conn_purpose_transit_rt">Train delays (Renfe)</string>
+</resources>

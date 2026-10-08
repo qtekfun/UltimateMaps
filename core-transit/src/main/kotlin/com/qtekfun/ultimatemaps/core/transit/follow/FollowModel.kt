@@ -1,6 +1,7 @@
 package com.qtekfun.ultimatemaps.core.transit.follow
 
 import com.qtekfun.ultimatemaps.core.transit.LineInfo
+import com.qtekfun.ultimatemaps.core.transit.rt.LegRealTime
 
 /** Where the traveller is in the itinerary, as far as the follower can tell. */
 enum class FollowPhase {
@@ -60,7 +61,7 @@ data class FollowState(
     val targetName: String? = null,
     val walkMeters: Int? = null,
     val walkSeconds: Int? = null,
-    /** Scheduled departure of the next boarding and the seconds left to it (negative once passed). */
+    /** Departure of the next boarding (the scheduled one plus the train's real delay when [realTime] knows it) and the seconds left to it (negative once passed). */
     val boardAt: Long? = null,
     val secondsToBoard: Long? = null,
     /** Stop positions of the ride in progress: last stop passed, next stop, stops left until (and including) the alighting one. */
@@ -86,6 +87,8 @@ data class FollowState(
     val canReplan: Boolean = false,
     /** Scheduled arrival at the destination moved by the current offset. */
     val etaAt: Long = 0L,
+    /** Real time (Renfe, opt-in) for the ride this state is about: delay, cancellation, alerts. Null when none. */
+    val realTime: LegRealTime? = null,
 ) {
     val estimated: Boolean get() = basis == FollowBasis.ESTIMATED
 }

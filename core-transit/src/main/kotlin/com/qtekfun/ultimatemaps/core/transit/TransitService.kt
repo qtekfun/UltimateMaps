@@ -85,7 +85,10 @@ class TransitService(val index: TransitIndex, val zone: ZoneId, config: PlannerC
                 is Leg.Ride -> ItineraryLeg.Ride(
                     line = LineInfo.of(index, leg.line),
                     headsign = leg.headsign,
-                    stops = leg.stops.map { ItineraryStop(index.stopName[it.stop], point(it.stop), at(it.arriveSec), at(it.departSec)) },
+                    stops = leg.stops.map {
+                        ItineraryStop(index.stopName[it.stop], point(it.stop), at(it.arriveSec), at(it.departSec), index.stopExtId?.get(it.stop)?.ifEmpty { null })
+                    },
+                    tripId = leg.trip.takeIf { it >= 0 }?.let { index.tripExtId?.get(it) }?.ifEmpty { null },
                 )
             }
         }

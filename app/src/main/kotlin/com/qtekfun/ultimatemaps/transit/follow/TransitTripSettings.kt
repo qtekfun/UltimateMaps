@@ -11,13 +11,26 @@ import kotlinx.coroutines.flow.StateFlow
 interface TransitTripSettingsStore {
     val promptMode: StateFlow<AlertSoundMode>
     fun setPromptMode(mode: AlertSoundMode)
+
+    /**
+     * "Cercanias real time" (opt-in, off by default): while on, the app asks Renfe's server for train delays while the user
+     * uses public transport. Nothing is asked while it is off.
+     */
+    val realTimeEnabled: StateFlow<Boolean>
+    fun setRealTimeEnabled(on: Boolean)
 }
 
-class InMemoryTransitTripSettings(initial: AlertSoundMode = AlertSoundMode.VOICE) : TransitTripSettingsStore {
+class InMemoryTransitTripSettings(initial: AlertSoundMode = AlertSoundMode.VOICE, realTime: Boolean = false) : TransitTripSettingsStore {
     private val state = MutableStateFlow(initial)
+    private val rt = MutableStateFlow(realTime)
     override val promptMode: StateFlow<AlertSoundMode> = state
     override fun setPromptMode(mode: AlertSoundMode) {
         state.value = mode
+    }
+
+    override val realTimeEnabled: StateFlow<Boolean> = rt
+    override fun setRealTimeEnabled(on: Boolean) {
+        rt.value = on
     }
 }
 
@@ -27,6 +40,15 @@ class PrefsTransitTripSettings(private val prefs: SharedPreferences) : TransitTr
 
     private val state = MutableStateFlow(read())
     override val promptMode: StateFlow<AlertSoundMode> = state
+    private val rt = MutableStateFlow(readRealTime())
+    override val realTimeEnabled: StateFlow<Boolean> = rt
+
+    @Synchronized
+    override fun setRealTimeEnabled(on: Boolean) {
+        if (on == rt.value) return
+        prefs.edit().putBoolean(KEY_REAL_TIME, on).apply()
+        rt.value = on
+    }
 
     @Synchronized
     override fun setPromptMode(mode: AlertSoundMode) {
@@ -39,7 +61,11 @@ class PrefsTransitTripSettings(private val prefs: SharedPreferences) : TransitTr
     @Synchronized
     override fun reload() {
         state.value = read()
+        rt.value = readRealTime()
     }
+
+    /** Only a stored boolean `true` turns it on; anything else (missing, damaged, another type) is off. */
+    private fun readRealTime(): Boolean = try { prefs.getBoolean(KEY_REAL_TIME, false) } catch (_: ClassCastException) { false }
 
     private fun read(): AlertSoundMode =
         AlertSoundMode.entries.firstOrNull { it.name == prefs.getString(KEY_PROMPTS, null) } ?: DEFAULT
@@ -47,6 +73,7 @@ class PrefsTransitTripSettings(private val prefs: SharedPreferences) : TransitTr
     companion object {
         const val PREFS = "mapas_transit_trip"
         const val KEY_PROMPTS = "prompts"
+        const val KEY_REAL_TIME = "cercanias_real_time"
         val DEFAULT = AlertSoundMode.VOICE
     }
 }

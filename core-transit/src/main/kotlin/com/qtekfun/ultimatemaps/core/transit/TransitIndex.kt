@@ -78,6 +78,13 @@ class TransitIndex(
     val transferTo: IntArray,
     val transferType: IntArray,
     val transferMinSec: IntArray,
+    /**
+     * Feed stop id of each stop, or "" (not kept). Only feeds built with [FeedOptions.keepIds] keep them (Renfe Cercanias),
+     * so that a real-time feed can be matched to the index. Null in indexes built before this existed.
+     */
+    val stopExtId: Array<String>? = null,
+    /** Feed trip id of each trip (absolute trip number), or "". Same rules as [stopExtId]. */
+    val tripExtId: Array<String>? = null,
 ) {
     val stopCount: Int get() = stopLat.size
     val patternCount: Int get() = patternLine.size

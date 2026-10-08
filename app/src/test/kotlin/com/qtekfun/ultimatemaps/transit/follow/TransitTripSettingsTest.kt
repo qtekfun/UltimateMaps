@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.test.core.app.ApplicationProvider
@@ -63,6 +64,52 @@ class TransitTripSettingsTest {
         assertEquals("VOICE", spec.default)
         assertEquals("SOUND", spec.sanitize("SOUND"))
         assertNull(spec.sanitize("LOUD"))
+    }
+
+    @Test fun cercaniasRealTimeIsOffByDefaultAndTheChoiceIsStored() {
+        val p = prefs()
+        val s = PrefsTransitTripSettings(p)
+        assertEquals(false, s.realTimeEnabled.value)
+        s.setRealTimeEnabled(true)
+        assertEquals(true, p.getBoolean(PrefsTransitTripSettings.KEY_REAL_TIME, false))
+        assertEquals(true, PrefsTransitTripSettings(p).realTimeEnabled.value)
+        s.setRealTimeEnabled(false)
+        assertEquals(false, PrefsTransitTripSettings(p).realTimeEnabled.value)
+    }
+
+    @Test fun aDamagedRealTimeValueIsOffAndReloadReadsARestore() {
+        val p = prefs()
+        p.edit().putString(PrefsTransitTripSettings.KEY_REAL_TIME, "yes").commit()
+        val s = PrefsTransitTripSettings(p)
+        assertEquals(false, s.realTimeEnabled.value)
+        p.edit().clear().putBoolean(PrefsTransitTripSettings.KEY_REAL_TIME, true).commit()
+        s.reload()
+        assertEquals(true, s.realTimeEnabled.value)
+    }
+
+    @Test fun cercaniasRealTimeIsInTheBackupWhitelistAndNeedsConsentToTurnOn() {
+        val spec = assertNotNull(SettingsSchema.find(SettingsSchema.GROUP_NAVIGATION, PrefsTransitTripSettings.KEY_REAL_TIME))
+        assertEquals(PrefsTransitTripSettings.PREFS, spec.prefsName)
+        assertEquals(false, spec.default)
+        assertEquals(com.qtekfun.ultimatemaps.settings.backup.RestorePolicy.NEEDS_CONSENT, spec.policy)
+        assertEquals(true, spec.sanitize(true))
+    }
+
+    @Test fun theSwitchIsInSettingsWithTheNoteAndTurnsItOnAndOff() {
+        val store = InMemoryTransitTripSettings()
+        rule.setContent {
+            MapasTheme(darkTheme = false) {
+                Column(androidx.compose.ui.Modifier.verticalScroll(rememberScrollState())) {
+                    NavigationSection(NavigationSettingsEnv(InMemoryNavSettingsStore(), FakeGuide(), transitTrip = store))
+                }
+            }
+        }
+        rule.onNodeWithTag("nav_transit_rt_card").performScrollTo().assertIsDisplayed()
+        rule.onNodeWithText("Asks Renfe's server for train delays while you use public transport. Your position is never sent; Renfe sees your IP address.").performScrollTo().assertIsDisplayed()
+        rule.onNodeWithTag("nav_transit_rt_switch").performScrollTo().performClick()
+        assertEquals(true, store.realTimeEnabled.value)
+        rule.onNodeWithTag("nav_transit_rt_switch").performScrollTo().performClick()
+        assertEquals(false, store.realTimeEnabled.value)
     }
 
     @Test fun settingsNavigationOffersTheThreeModesAndAChoiceIsSaved() {

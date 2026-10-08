@@ -120,7 +120,9 @@ class TransitTripStore(
                         writePoint(out, s.point)
                         out.writeLong(s.arriveAt)
                         out.writeLong(s.departAt)
+                        writeNullable(out, s.feedId)
                     }
+                    writeNullable(out, leg.tripId)
                 }
             }
         }
@@ -143,8 +145,8 @@ class TransitTripStore(
                     val headsign = input.readUTF()
                     val count = input.readInt()
                     if (count !in 2..MAX_STOPS) throw IOException("bad stop count")
-                    val stops = List(count) { ItineraryStop(input.readUTF(), readPoint(input), input.readLong(), input.readLong()) }
-                    legs.add(ItineraryLeg.Ride(line, headsign, stops))
+                    val stops = List(count) { ItineraryStop(input.readUTF(), readPoint(input), input.readLong(), input.readLong(), readNullable(input)) }
+                    legs.add(ItineraryLeg.Ride(line, headsign, stops, tripId = readNullable(input)))
                 }
                 else -> throw IOException("bad leg type")
             }
@@ -169,7 +171,7 @@ class TransitTripStore(
 
     companion object {
         private const val MAGIC = 0x554D5452 // "UMTR"
-        private const val FORMAT = 1
+        private const val FORMAT = 2
         private const val WALK = 0
         private const val RIDE = 1
         private const val MAX_LEGS = 64

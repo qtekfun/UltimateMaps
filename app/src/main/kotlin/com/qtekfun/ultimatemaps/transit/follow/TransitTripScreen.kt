@@ -52,6 +52,7 @@ import com.qtekfun.ultimatemaps.core.transit.follow.PlanStatus
 import com.qtekfun.ultimatemaps.core.transit.follow.TransitTripState
 import com.qtekfun.ultimatemaps.nav.LightStatusBarIcons
 import com.qtekfun.ultimatemaps.transit.LineChip
+import com.qtekfun.ultimatemaps.transit.RealTimeTexts
 import com.qtekfun.ultimatemaps.transit.TransitFormat
 import com.qtekfun.ultimatemaps.ui.theme.Mapas
 import com.qtekfun.ultimatemaps.ui.theme.NavTheme
@@ -179,6 +180,16 @@ private fun Strips(trip: TransitTripState, actions: TransitTripActions) {
             }
             Strip(chip, bg, "trip_plan_chip")
         }
+        // Real time (Renfe, opt-in): the train's own status and any alert, only for the ride this state is about.
+        RealTimeTexts.status(res, s.realTime)?.let { st ->
+            val bg = when (st.level) {
+                RealTimeTexts.Level.ON_TIME -> c.statusInfo
+                RealTimeTexts.Level.LATE -> c.statusWarning
+                RealTimeTexts.Level.CANCELLED -> c.statusDanger
+            }
+            Strip(res.getString(R.string.transit_rt_label) + " · " + st.text, bg, "trip_rt_status")
+        }
+        RealTimeTexts.details(res, s.realTime).forEachIndexed { k, line -> Strip(line, c.statusWarning, "trip_rt_detail_$k") }
         TransitTripTexts.signal(res, s)?.let { Strip(it, c.statusWarning, "trip_signal") }
         TransitTripTexts.connection(res, s)?.let { Strip(it, c.statusDanger, "trip_connection") }
         if (trip.replanning) Strip(stringResource(R.string.trip_replanning), c.statusInfo, "trip_replanning")
@@ -229,7 +240,7 @@ private fun BottomPanel(ui: TransitTripUi, trip: TransitTripState, s: FollowStat
                     modifier = Modifier.testTag("trip_eta"),
                 )
                 BasicText(
-                    stringResource(R.string.trip_scheduled_note),
+                    RealTimeTexts.note(LocalContext.current.resources, s.realTime, R.string.trip_scheduled_note),
                     style = Mapas.typography.caption.copy(color = c.onPanelSecondary),
                     modifier = Modifier.testTag("trip_note"),
                 )

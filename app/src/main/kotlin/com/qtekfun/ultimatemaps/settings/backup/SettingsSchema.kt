@@ -143,6 +143,8 @@ object SettingsSchema {
         bool(GROUP_NAVIGATION_UI, SharedNavUiPrefs.PREFS, SharedNavUiPrefs.KEY_GLOVE, false),
         // Public-transport trip prompts (sound, voice or silent).
         enum(GROUP_NAVIGATION, PrefsTransitTripSettings.PREFS, PrefsTransitTripSettings.KEY_PROMPTS, PrefsTransitTripSettings.DEFAULT, AlertSoundMode.entries.map { it.name }),
+        // Cercanias real time: the switch makes the app contact Renfe's server, so it needs consent like the other online switches.
+        bool(GROUP_NAVIGATION, PrefsTransitTripSettings.PREFS, PrefsTransitTripSettings.KEY_REAL_TIME, false, RestorePolicy.NEEDS_CONSENT),
 
         // Petrol stations: the switch needs consent (it starts downloads); the rest is plain preference.
         bool(GROUP_FUEL, fuelPrefs, PrefsFuelSettingsStore.KEY_ENABLED, fuel.enabled, RestorePolicy.NEEDS_CONSENT),

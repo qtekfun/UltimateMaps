@@ -40,7 +40,14 @@ data class LineInfo(val shortName: String, val longName: String, val color: Int,
 }
 
 /** A stop of a ride with its scheduled times as absolute epoch seconds. */
-data class ItineraryStop(val name: String, val point: LatLon, val arriveAt: Long, val departAt: Long)
+data class ItineraryStop(
+    val name: String,
+    val point: LatLon,
+    val arriveAt: Long,
+    val departAt: Long,
+    /** The feed's own stop id when the index kept it (real-time matching); null otherwise. */
+    val feedId: String? = null,
+)
 
 /**
  * One part of an itinerary. All times are absolute epoch seconds (the schedule is converted with the city's time zone,
@@ -76,6 +83,8 @@ sealed interface ItineraryLeg {
         val headsign: String,
         val stops: List<ItineraryStop>,
         val shape: List<LatLon>? = null,
+        /** The feed's own trip id when the index kept it (real-time matching); null otherwise. */
+        val tripId: String? = null,
     ) : ItineraryLeg {
         val boarding: ItineraryStop get() = stops.first()
         val alighting: ItineraryStop get() = stops.last()

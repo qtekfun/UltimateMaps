@@ -15,6 +15,8 @@ class FeedOptions(
      * feeds): they would teleport riders. Counted in [TransitIndexBuilder.droppedTrips].
      */
     val dropNonPositiveDuration: Boolean = false,
+    /** Keep the feed's stop and trip ids in the index (for matching a GTFS-RT feed). Costs about 13 bytes per trip. */
+    val keepIds: Boolean = false,
 )
 
 /**
@@ -33,6 +35,8 @@ class TransitIndexBuilder {
     private val stopLon = IntList()
     private val stopName = ArrayList<String>()
     private val stopGroupKey = ArrayList<String>()
+    private val stopExt = ArrayList<String>()
+    private var anyKeepIds = false
 
     private val lineShort = ArrayList<String>()
     private val lineLong = ArrayList<String>()
@@ -71,6 +75,7 @@ class TransitIndexBuilder {
     private class PatternAcc(val line: Int, val stops: IntArray) {
         val svc = IntList()
         val head = IntList()
+        val ext = ArrayList<String>()
         val arr = IntList(64)
         val dep = IntList(64)
         val tripCount get() = svc.size
@@ -78,6 +83,7 @@ class TransitIndexBuilder {
         // frequency-based trips
         val fSvc = IntList()
         val fHead = IntList()
+        val fExt = ArrayList<String>()
         val fHeadway = IntList()
         val fRuns = IntList()
         val fArr = IntList()
@@ -92,6 +98,7 @@ class TransitIndexBuilder {
 
     fun addFeed(feed: GtfsFeed, options: FeedOptions, ignoredCalendarRange: Boolean = false) {
         val ns = options.stopNamespace
+        if (options.keepIds) anyKeepIds = true
         val localStop = IntArray(feed.stopIds.size) { -1 }
         fun stopOf(i: Int): Int {
             var g = localStop[i]
@@ -102,6 +109,7 @@ class TransitIndexBuilder {
                 stopLon.add(Math.round(feed.stopLon[i] * 1e6).toInt())
                 stopName.add(feed.stopNames[i])
                 stopGroupKey.add(if (feed.stopParents[i].isEmpty()) "" else ns + ":" + feed.stopParents[i])
+                stopExt.add(if (options.keepIds) feed.stopIds[i] else "")
                 stopName.size - 1
             }
             localStop[i] = g
@@ -154,6 +162,7 @@ class TransitIndexBuilder {
             if (windows == null) {
                 acc.svc.add(svc)
                 acc.head.add(head)
+                acc.ext.add(if (options.keepIds) feed.tripIds[trip] else "")
                 for (k in a until b) {
                     acc.arr.add(feed.stTimeArr[k])
                     acc.dep.add(feed.stTimeDep[k])
@@ -168,6 +177,7 @@ class TransitIndexBuilder {
                     val shift = start - first
                     acc.fSvc.add(svc)
                     acc.fHead.add(head)
+                    acc.fExt.add("")
                     acc.fHeadway.add(step)
                     acc.fRuns.add((end - start + step - 1) / step)
                     for (k in a until b) {
@@ -224,6 +234,7 @@ class TransitIndexBuilder {
         val patFreqStart = IntArray(nP)
         val arrivals = IntArray(totalTimes)
         val departures = IntArray(totalTimes)
+        val tExt = if (anyKeepIds) Array(totalTrips) { "" } else null
         for ((p, acc) in pats.withIndex()) {
             val n = acc.stops.size
             System.arraycopy(acc.stops, 0, pStops, patStopOff[p], n)
@@ -234,6 +245,7 @@ class TransitIndexBuilder {
             for ((newT, oldT) in order.withIndex()) {
                 tSvc[patTripOff[p] + newT] = acc.svc[oldT]
                 tHead[patTripOff[p] + newT] = acc.head[oldT]
+                tExt?.set(patTripOff[p] + newT, acc.ext[oldT])
                 val dst = patTimeBase[p] + newT * n
                 System.arraycopy(acc.arr.data, oldT * n, arrivals, dst, n)
                 System.arraycopy(acc.dep.data, oldT * n, departures, dst, n)
@@ -290,6 +302,8 @@ class TransitIndexBuilder {
             transferTo = trTo.toArray(),
             transferType = trType.toArray(),
             transferMinSec = trMin.toArray(),
+            stopExtId = if (anyKeepIds) stopExt.toTypedArray() else null,
+            tripExtId = tExt,
         )
     }
 }

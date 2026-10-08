@@ -178,6 +178,19 @@ fun NavigationSection(env: NavigationSettingsEnv) {
             Spacer(Modifier.height(4.dp))
             BasicText(stringResource(R.string.trip_prompts_note), style = Mapas.typography.callout.copy(color = Mapas.colors.secondaryLabel))
         }
+        Spacer(Modifier.height(10.dp))
+        val realTime by trip.realTimeEnabled.collectAsState()
+        Card("nav_transit_rt_card") {
+            SwitchRow(
+                title = stringResource(R.string.transit_rt_title),
+                body = stringResource(R.string.transit_rt_body),
+                checked = realTime,
+                tag = "nav_transit_rt_switch",
+                onChange = { on -> trip.setRealTimeEnabled(on) },
+            )
+            Spacer(Modifier.height(4.dp))
+            BasicText(stringResource(R.string.transit_rt_source), style = Mapas.typography.caption.copy(color = Mapas.colors.secondaryLabel), modifier = Modifier.testTag("nav_transit_rt_source"))
+        }
     }
     Spacer(Modifier.height(10.dp))
     SectionTitle(stringResource(R.string.hub_group_route))
