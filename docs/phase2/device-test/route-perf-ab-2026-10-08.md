@@ -32,3 +32,26 @@ Tool: `CoreBenchActivity --ez matrix true --ei runs 2 --es perf <mode>` (debug b
 ## Process notes
 - Run through `~/mapas-data/bench/run-matrix.sh` (holds `/tmp/pixel-device.lock`, force-stops the app at the end). Lessons: an `adb` server started inside a `flock` command inherits the lock descriptor and holds the lock forever; start it outside the lock. With the Wi-Fi entry present, use the USB serial (`-s`). `grep -m1` on a `logcat` pipe does not end the pipe until the next line arrives.
 - The first baseline attempt of the session was contaminated by two overlapping matrix runs; it is not used.
+
+## Update: the `cache` crash is fixed (patch 0003)
+- **Cause:** `IndexRouter::ClearState()` runs at the end of every route and calls `MwmDataSource::FreeHandles()`, which destroys the `MwmHandle` objects. The persistent graph loader of `cache` keeps `Geometry` loaders (a `FeatureSource` and an altitude loader built on the handle) and `IndexGraph`s (which point into the mwm value) between routes, so they dangled; the next route that read them crashed (`SIGSEGV`, null dereference in `IndexGraph::GetEdgeListImpl`).
+- **Fix:** `native-comaps/patches/0003-persistent-loader-keeps-mwm-handles.patch`: `ClearState()` frees the handles only when there is no persistent loader. The handles stay pinned while the loader lives (it is dropped with the router on `RefreshMaps`, after 10 minutes, or when the option is switched off).
+- **Re-run on the phone** (same setup, `after-fix` logs): `cache` and `safe` (`quiet,prune,cache`) finish all 12 pairs x 2 runs with no crash, and every route is identical (length `m=` and duration `s=`) to the baseline.
+
+| Pair | baseline | `cache` | `safe` |
+|---|---|---|---|
+| Madrid to Guadalajara | 884 | 614 | 780 |
+| Madrid to Medinaceli | 1,879 | 1,234 | 1,476 |
+| Madrid to Zaragoza | 7,542 | 6,425 | 8,282 |
+| Madrid to Lleida | 24,104 | 22,712 | **6,644** |
+| Madrid to Tarragona | 10,798 | 9,182 | 9,878 |
+| Madrid to Barcelona | 15,085 | 12,710 | 12,900 |
+| Zaragoza to Lleida | 1,866 | 1,518 | 1,423 |
+| Zaragoza to Barcelona | 9,609 | 8,668 | 9,000 |
+| Lleida to Barcelona | 6,646 | 5,996 | 6,077 |
+| Lleida to Tarragona | 1,654 | 1,114 | 1,209 |
+| Tarragona to Barcelona | 1,936 | 1,440 | 1,508 |
+| Barcelona to Madrid | 31,692 | 28,920 | 31,133 |
+
+`cache` alone saves about 10 to 30% on most pairs (the second route of a pair reuses the graphs: Madrid to Guadalajara 862 ms then 365 ms). Prune adds the large Madrid to Lleida win. The 2 s target for 600 km is still far (about 12 to 13 s forward, about 29 to 31 s in reverse).
+- **Still not measured:** `cand*`, `tmo*` (quality-for-time options), `fast`; behaviour during rerouting in navigation; memory growth with the loader pinned (a long drive across many regions keeps their graphs in memory for up to 10 minutes).
