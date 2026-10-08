@@ -102,17 +102,6 @@ class CoMapsCore internal constructor(private val bridge: NativeBridge) : CoreHa
         return bridge.refreshMaps()
     }
 
-    /** Debug bench only: [RoutePerfMode] flags for the next routes (the app leaves the default, 0). */
-    @Synchronized
-    fun setPerfMode(flags: Int) {
-        check(initialized) { "CoMapsCore.init() not called" }
-        bridge.setPerfMode(flags)
-    }
-
-    /** Timing split of the last route (`perf=... total_ms=... leaps_ms=...`), no coordinates; empty before the first route. */
-    @Synchronized
-    fun lastRouteStats(): String = if (initialized) bridge.lastRouteStats() else ""
-
     override fun searchEngine(locale: String, timeoutMs: Int): SearchEngine =
         CoMapsSearchEngine(this, locale, timeoutMs)
 

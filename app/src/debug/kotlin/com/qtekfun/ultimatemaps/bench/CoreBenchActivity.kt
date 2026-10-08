@@ -12,7 +12,6 @@ import com.qtekfun.ultimatemaps.core.routing.RouteRequest
 import com.qtekfun.ultimatemaps.core.routing.RoutingProfile
 import com.qtekfun.ultimatemaps.nativecomaps.CoMapsCore
 import com.qtekfun.ultimatemaps.nativecomaps.RouteOutcome
-import com.qtekfun.ultimatemaps.nativecomaps.RoutePerfMode
 import java.io.File
 import kotlin.concurrent.thread
 
@@ -30,10 +29,10 @@ class CoreBenchActivity : Activity() {
         // `--ez guidance true`: instead of the full bench, dumps the guidance of test routes (maneuvers, lanes, limits).
         val guidanceOnly = intent?.getBooleanExtra("guidance", false) == true
         // `--ez matrix true`: long routes between cities to find where routing fails between regions (also takes
-        // `--es perf <mode>` and `--ei runs <n>`, see dumpMatrix).
+        // `--ei runs <n>`, see dumpMatrix).
         val matrix = intent?.getBooleanExtra("matrix", false) == true
         // `--ez reroute true`: simulates a long drive Madrid to Barcelona with a recalculation every 10% of the route
-        // (the position nudged about 300 m off the line, as when the driver leaves it), with `--es perf <tokens>`.
+        // (the position nudged about 300 m off the line, as when the driver leaves it).
         val reroute = intent?.getBooleanExtra("reroute", false) == true
         // `--ez tunnels true`: routes by car through the Madrid tunnels (Calle 30 / M-30, Paseo del Prado) and logs the
         // tunnel ranges the native core reports (CoMaps patch 0004), as point indices and metres along the route.
@@ -43,29 +42,26 @@ class CoreBenchActivity : Activity() {
         }
     }
 
-    /** Native heap and total PSS in MB, to see what the kept graphs cost. */
+    /** Native heap and total PSS in MB. */
     private fun memory(): String {
         val info = android.os.Debug.MemoryInfo().also(android.os.Debug::getMemoryInfo)
         return "native_mb=${android.os.Debug.getNativeHeapAllocatedSize() / (1024 * 1024)} pss_mb=${info.totalPss / 1024}"
     }
 
-    /** A long drive with recalculations: same route and same later routes must come out identical in every perf mode. */
+    /** A long drive with recalculations: the route times after each recalculation. */
     private fun dumpReroute() {
         val core = CoMapsCore()
         core.init(applicationInfo.sourceDir, File(filesDir, "maps-core").absolutePath, cacheDir.absolutePath, "es")
         Log.i(tag, "reroute init maps=${core.refreshMaps()}")
-        val perf = RoutePerfMode.parse(intent?.getStringExtra("perf"))
-        core.setPerfMode(perf)
-        val name = RoutePerfMode.describe(perf)
-        Log.i(tag, "reroute perf=$name ($perf) ${memory()}")
+        Log.i(tag, "reroute ${memory()}")
         // The navigation uses the engine with guidance, so do the same here.
         val router = core.routingEngine(withGuidance = true)
         val madrid = LatLon(40.4168, -3.7038)
         val bcn = LatLon(41.3874, 2.1686)
         fun log(step: String, out: RouteOutcome, ms: Long) = Log.i(
             tag,
-            "reroute perf=$name step=$step code=${out.code} ms=$ms m=${out.plan?.distanceMeters} s=${out.plan?.durationSeconds} " +
-                "pts=${out.plan?.geometry?.size} maneuvers=${out.plan?.guidance?.maneuvers?.size} ${memory()} stats[${core.lastRouteStats()}]",
+            "reroute step=$step code=${out.code} ms=$ms m=${out.plan?.distanceMeters} s=${out.plan?.durationSeconds} " +
+                "pts=${out.plan?.geometry?.size} maneuvers=${out.plan?.guidance?.maneuvers?.size} ${memory()}",
         )
         var t0 = SystemClock.elapsedRealtime()
         val out = router.routeDetailed(RouteRequest(madrid, bcn, profile = RoutingProfile.CAR))
@@ -80,12 +76,12 @@ class CoreBenchActivity : Activity() {
                 log("reroute$tenth", r, SystemClock.elapsedRealtime() - t0)
             }
         }
-        // The way back, then a short route in one region: the kept graphs must not poison later, different requests.
+        // The way back, then a short route in one region.
         t0 = SystemClock.elapsedRealtime()
         log("back", router.routeDetailed(RouteRequest(bcn, madrid, profile = RoutingProfile.CAR)), SystemClock.elapsedRealtime() - t0)
         t0 = SystemClock.elapsedRealtime()
         log("urban", router.routeDetailed(RouteRequest(LatLon(40.4170, -3.7036), LatLon(40.4065, -3.6890), profile = RoutingProfile.CAR)), SystemClock.elapsedRealtime() - t0)
-        Log.i(tag, "FIN matrix reroute perf=$name")
+        Log.i(tag, "FIN reroute")
     }
 
     /** City pairs by car: core code, time and length (no coordinates in the log, only city names). */
@@ -103,29 +99,25 @@ class CoreBenchActivity : Activity() {
             "Madrid" to "Tarragona", "Madrid" to "Barcelona", "Zaragoza" to "Lleida", "Zaragoza" to "Barcelona",
             "Lleida" to "Barcelona", "Lleida" to "Tarragona", "Tarragona" to "Barcelona", "Barcelona" to "Madrid",
         )
-        // `--es perf <tokens>`: long-route switches of the core (see RoutePerfMode: quiet, prune, cache, cand8, tmo5, safe, fast...).
-        // `--ei runs <n>`: how many times each pair is routed in a row (with `cache` the second run shows the reuse).
-        val perf = RoutePerfMode.parse(intent?.getStringExtra("perf"))
+        // `--ei runs <n>`: how many times each pair is routed in a row.
         val runs = (intent?.getIntExtra("runs", 1) ?: 1).coerceIn(1, 10)
-        core.setPerfMode(perf)
-        val perfName = RoutePerfMode.describe(perf)
-        Log.i(tag, "matrix perf=$perfName ($perf) runs=$runs")
+        Log.i(tag, "matrix runs=$runs")
         val router = core.routingEngine()
         for ((a, b) in pairs) {
             repeat(runs) { run ->
                 val t0 = SystemClock.elapsedRealtime()
                 val out = router.routeDetailed(RouteRequest(c.getValue(a), c.getValue(b), profile = RoutingProfile.CAR))
                 val ms = SystemClock.elapsedRealtime() - t0
-                // m= and s= are exact: with the "safe" modes they must equal the default run's, which proves identical routes.
+                // m= and s= are exact, so two runs can be compared for identical routes.
                 Log.i(
                     tag,
-                    "matrix perf=$perfName run=$run $a->$b code=${out.code} ms=$ms km=${out.plan?.distanceMeters?.div(1000)?.toInt()} " +
+                    "matrix run=$run $a->$b code=${out.code} ms=$ms km=${out.plan?.distanceMeters?.div(1000)?.toInt()} " +
                         "m=${out.plan?.distanceMeters} s=${out.plan?.durationSeconds} pts=${out.plan?.geometry?.size} " +
-                        "absent=${out.absentCountries} stats[${core.lastRouteStats()}]",
+                        "absent=${out.absentCountries}",
                 )
             }
         }
-        Log.i(tag, "FIN matrix perf=$perfName")
+        Log.i(tag, "FIN matrix")
     }
 
     /** Dumps to logcat the guidance of an urban route in Madrid by car, bike and on foot. Not run yet: see docs/phase2/maneuvers.md. */

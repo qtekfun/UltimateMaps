@@ -39,22 +39,6 @@ constexpr int32_t kCycleLevelShift = 4;
 constexpr int32_t kCycleLevelMask = 3 << kCycleLevelShift;
 constexpr int32_t kCycleLevelOnly = 3;
 
-// Route performance switches (debug bench only; the app never sets them, so the default 0 is today's behaviour).
-// One integer of bit flags, see docs/phase2/long-routes-perf.md and RoutePerfMode in Kotlin (keep both in sync).
-enum PerfFlags : int32_t
-{
-  kPerfQuietLog = 1 << 0,         // engine log level raised to error while a route is calculated (identical routes)
-  kPerfPruneCandidates = 1 << 1,  // skip leaps candidates a lower bound proves worse (identical routes, cars)
-  kPerfPersistGraphs = 1 << 2,    // keep the car index graphs between routes (identical routes)
-};
-// 2 bits: how many distinct first/last transitions the leaps search collects (0 = 15 stock, 1 = 8, 2 = 5, 3 = 3).
-// Fewer candidates is faster but may pick a slightly worse route.
-constexpr int32_t kPerfCandShift = 3;
-constexpr int32_t kPerfCandMask = 3 << kPerfCandShift;
-// 2 bits: wall-clock cap on the leaps search once it has a route (0 = 30 s stock, 1 = 10 s, 2 = 5 s, 3 = 2 s).
-constexpr int32_t kPerfTimeoutShift = 5;
-constexpr int32_t kPerfTimeoutMask = 3 << kPerfTimeoutShift;
-
 // Own result code (not a routing::RouterResultCode): "Only cycle infrastructure" found no route. Same value as
 // RouteCode.NO_CYCLE_ROUTE in Kotlin.
 constexpr int32_t kRouteNoCycleRoute = 1004;
@@ -113,12 +97,6 @@ public:
   // withGuidance = false leaves the route exactly as before (no extra cost).
   RouteOut Route(Profile profile, std::vector<double> const & latLonPoints, int32_t avoidFlags, int timeoutSec,
                  bool withGuidance = false);
-
-  // Sets the performance switches (PerfFlags + the two 2-bit fields). 0 = stock behaviour. Applies to the next routes.
-  void SetPerfMode(int32_t flags);
-
-  // One line "key=value ..." with the timing split of the last route (no coordinates), empty before the first route.
-  std::string LastRouteStats();
 
   void Shutdown();
 

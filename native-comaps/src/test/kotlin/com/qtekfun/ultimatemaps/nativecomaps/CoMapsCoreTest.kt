@@ -22,12 +22,6 @@ internal class FakeBridge : NativeBridge {
 
     override fun init(apk: String, writableDir: String, tmpDir: String, locale: String) = initError
     override fun refreshMaps() = 3
-    val perfModes = mutableListOf<Int>()
-    override fun setPerfMode(flags: Int) {
-        perfModes += flags
-    }
-
-    override fun lastRouteStats() = "perf=${perfModes.lastOrNull() ?: 0}"
     override fun search(
         query: String, hasPos: Boolean, lat: Double, lon: Double, limit: Int, timeoutMs: Int, locale: String,
     ): Array<String> {
@@ -108,21 +102,6 @@ class CoMapsCoreTest {
         assertEquals(Triple(2, listOf(40.0, -3.0, 40.05, -3.05, 40.1, -3.1), 1 or 8), f.lastRoute)
         assertEquals(1500.0, plan!!.distanceMeters)
         assertEquals(2, plan.geometry.size)
-    }
-
-    @Test fun `perf mode is passed to the bridge and never set by a plain route`() {
-        val f = FakeBridge()
-        val c = core(f)
-        c.routingEngine().route(RouteRequest(a, b))
-        assertEquals(emptyList(), f.perfModes)
-        c.setPerfMode(RoutePerfMode.parse("safe"))
-        assertEquals(listOf(7), f.perfModes)
-        assertEquals("perf=7", c.lastRouteStats())
-    }
-
-    @Test fun `perf mode needs an initialised core`() {
-        assertFailsWith<IllegalStateException> { CoMapsCore(FakeBridge()).setPerfMode(1) }
-        assertEquals("", CoMapsCore(FakeBridge()).lastRouteStats())
     }
 
     @Test fun `all four avoid options map to distinct bits`() {
