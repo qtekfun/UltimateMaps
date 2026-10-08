@@ -18,6 +18,7 @@ import com.qtekfun.ultimatemaps.core.geo.distanceTo
 import com.qtekfun.ultimatemaps.core.map.CameraPadding
 import com.qtekfun.ultimatemaps.core.map.CameraState
 import com.qtekfun.ultimatemaps.core.map.MapEngine
+import com.qtekfun.ultimatemaps.core.nav.RouteGeometry
 import kotlinx.coroutines.launch
 
 /**
@@ -35,7 +36,17 @@ class NavHost(
     private val now: () -> Long = android.os.SystemClock::elapsedRealtime,
     /** Height of the map view in pixels (for the camera padding). */
     private val screenHeightPx: () -> Int = { activity.resources.displayMetrics.heightPixels },
+    /** Battery saver on: the marker and the camera are pushed at most at [PowerSavePolicy.SAVER_FPS]. */
+    private val powerSave: () -> Boolean = {
+        (activity.getSystemService(Context.POWER_SERVICE) as? android.os.PowerManager)?.isPowerSaveMode == true
+    },
 ) {
+    /** Marker and camera, one push per display frame (see [NavPoseDriver]). */
+    private val pose = NavPoseDriver(engine)
+    private var lastNav: com.qtekfun.ultimatemaps.core.nav.NavState? = null
+    private var geometryRevision = -1
+    private val frames = FrameLoop()
+
     private var routeRevisionShown = -1
     private var wasActive = false
     private var wasFollowing = true
@@ -54,7 +65,11 @@ class NavHost(
         activity.lifecycleScope.launch {
             activity.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 routeRevisionShown = -1 // the style may have been reloaded while stopped: draw the line again
-                screen.ui.collect(::render)
+                try {
+                    screen.ui.collect(::render)
+                } finally {
+                    frames.stop() // not started: no frame callbacks (screen off, app in the background)
+                }
             }
         }
     }
@@ -63,6 +78,10 @@ class NavHost(
     internal fun render(ui: NavUi) {
         if (!ui.active) {
             if (wasActive) {
+                frames.stop()
+                pose.reset()
+                lastNav = null
+                geometryRevision = -1
                 engine.clearRoute()
                 engine.setBuildings3d(false)
                 engine.setUserHeading(null)
@@ -100,24 +119,76 @@ class NavHost(
             routeRevisionShown = nav.routeRevision
         }
         wasOverview = ui.overview
-        var heading = camera.heading ?: nav.bearingDegrees.toDouble()
+        val t = now()
+        val fresh = nav !== lastNav
+        if (fresh) {
+            if (nav.routeRevision != geometryRevision || lastNav == null) {
+                pose.setRoute(screen.navigation.route.value?.geometry?.takeIf { it.size >= 2 }?.let(::RouteGeometry))
+                geometryRevision = nav.routeRevision
+            }
+            pose.onFix(nav, t)
+            lastNav = nav
+        }
         if (ui.following) {
             val modeChanged = wasView3d != null && wasView3d != ui.view3d
             if (modeChanged || !wasFollowing) easePending = true
-            val target = camera.next(nav, now(), force = !wasFollowing || modeChanged, mode3d = ui.view3d, screenHeightPx = screenHeightPx())
-            if (target != null) {
-                engine.animateTo(target, if (easePending) NavCamera.TRANSITION_MILLIS else camera.animationMillis)
+            if (fresh || modeChanged || !wasFollowing) {
+                val target = camera.target(nav, mode3d = ui.view3d, screenHeightPx = screenHeightPx())
+                pose.retarget(target, transition = easePending, current = engine.cameraState())
                 easePending = false
             }
-            heading = camera.heading ?: heading
         } else {
             camera.reset()
+            pose.release()
         }
-        // The arrow first: the user source is pushed once, by showUserLocation, with the heading already set.
-        engine.setUserHeading(heading.toFloat())
-        engine.showUserLocation(nav.position)
+        pose.frame(t)
+        frames.start()
         wasFollowing = ui.following
         wasView3d = ui.view3d
+    }
+
+    /** One display frame: the marker and the camera at their interpolated place. Public for the tests. */
+    internal fun frame(nowMillis: Long) {
+        pose.frame(nowMillis, if (powerSave()) PowerSavePolicy.SAVER_MIN_INTERVAL_MILLIS else PowerSavePolicy.NORMAL_MIN_INTERVAL_MILLIS)
+    }
+
+    /**
+     * Posts a Choreographer callback per display frame while the marker or the camera still has something to do, and
+     * nothing otherwise (a standing car, the screen off, the navigation over): no work and no wake-ups.
+     */
+    private inner class FrameLoop : android.view.Choreographer.FrameCallback {
+        private var posted = false
+        private var saver = false
+        private var saverCheckedAt = Long.MIN_VALUE
+        private var lastFrameAt = Long.MIN_VALUE
+
+        fun start() {
+            if (posted || !pose.needsFrames(now())) return
+            posted = true
+            android.view.Choreographer.getInstance().postFrameCallback(this)
+        }
+
+        fun stop() {
+            if (!posted) return
+            posted = false
+            android.view.Choreographer.getInstance().removeFrameCallback(this)
+        }
+
+        override fun doFrame(frameTimeNanos: Long) {
+            posted = false
+            val t = now()
+            if (saverCheckedAt == Long.MIN_VALUE || t - saverCheckedAt > PowerSavePolicy.CHECK_MILLIS) {
+                saver = powerSave()
+                saverCheckedAt = t
+            }
+            // The user took the camera: stop moving it at once, before the flow delivers the new state.
+            if (!screen.ui.value.following) pose.release()
+            pose.frame(t, if (saver) PowerSavePolicy.SAVER_MIN_INTERVAL_MILLIS else PowerSavePolicy.NORMAL_MIN_INTERVAL_MILLIS)
+            // A clock that did not advance (a test's frozen clock) has nothing more to animate: do not spin.
+            val advanced = t != lastFrameAt
+            lastFrameAt = t
+            if (advanced && screen.ui.value.active) start()
+        }
     }
 
     /** Frames what is left of the route (from the point nearest to the user) with room for the banner and the bottom panel. */
@@ -248,4 +319,16 @@ internal fun remainingRoute(geometry: List<LatLon>, position: LatLon): List<LatL
         }
     }
     return listOf(position) + geometry.subList(best, geometry.size)
+}
+
+/** Frame-rate policy of the marker and camera updates. */
+object PowerSavePolicy {
+    /** Normal: up to 60 pushes per second (on a 120 Hz display, every second frame). */
+    const val NORMAL_FPS = 60
+    const val NORMAL_MIN_INTERVAL_MILLIS = 1_000L / NORMAL_FPS - 2
+
+    /** Battery saver: at most 30 pushes per second. */
+    const val SAVER_FPS = 30
+    const val SAVER_MIN_INTERVAL_MILLIS = 1_000L / SAVER_FPS - 2
+    const val CHECK_MILLIS = 5_000L
 }

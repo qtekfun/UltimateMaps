@@ -67,57 +67,67 @@ class NavHost3dTest {
     private fun ui(nav: NavState = navState(speedMps = 10.0), view3d: Boolean = true, buildings3d: Boolean = true, following: Boolean = true, overview: Boolean = false) =
         NavUi(phase = NavPhase.ON_ROUTE, nav = nav, view3d = view3d, buildings3d = buildings3d, following = following, overview = overview)
 
-    @Test fun `starting in 3D eases into the tilt with the marker low, a heading arrow and the buildings`() {
+    /** Runs display frames (16 ms apart) on the host's clock for [millis]. */
+    private fun settle(host: NavHost, millis: Long = 3_000) {
+        val end = clock + millis
+        while (clock < end) {
+            clock += 16
+            host.frame(clock)
+        }
+    }
+
+    @Test fun `starting in 3D eases from the camera as it is into the tilt with the marker low, an arrow and the buildings`() {
         withHost { host ->
             host.render(ui())
-            val move = engine.moves.single()
-            assertEquals(NavCamera.TRANSITION_MILLIS, move.millis)
-            assertTrue(move.state.tilt in 55.0..60.0)
-            assertEquals(90.0, move.state.bearing, 1e-9)
-            assertTrue(NavCameraPlanner.markerY(move.state.padding, 2400) >= 2400 * 2.0 / 3.0)
+            assertEquals(33.0, engine.moves.first().state.bearing, 1.0) // the first frame is where the camera was: no jump
+            assertEquals(40.0, engine.moves.first().state.tilt, 1.0)
+            settle(host)
+            val move = engine.moves.last()
+            assertTrue(move.state.tilt in 54.9..60.0)
+            assertEquals(90.0, move.state.bearing, 0.5)
+            assertTrue(NavCameraPlanner.markerY(move.state.padding, 2400) >= 2400 * 2.0 / 3.0 - 2)
             assertEquals(listOf(true), engine.buildings)
-            assertEquals(90f, engine.headings.last())
+            assertEquals(90f, engine.headings.last()!!, 0.5f)
             assertNotNull(engine.user)
         }
     }
 
-    @Test fun `following updates are throttled and use the short animation`() {
+    @Test fun `following never restarts a map animation, every follow push is a plain move`() {
         withHost { host ->
             host.render(ui())
             clock += 100
-            host.render(ui(navState(speedMps = 10.0).copy(position = pt(100.0, 0.0)))) // too soon
-            assertEquals(1, engine.moves.size)
+            host.render(ui(navState(speedMps = 10.0).copy(position = pt(100.0, 0.0))))
             clock += 1_000
             host.render(ui(navState(speedMps = 10.0).copy(position = pt(100.0, 0.0))))
-            assertEquals(2, engine.moves.size)
-            assertEquals(NavCamera().animationMillis, engine.moves.last().millis)
+            settle(host)
+            assertTrue(engine.moves.size > 20)
+            assertTrue(engine.moves.all { it.millis == 0 })
         }
     }
 
     @Test fun `2D asks for a flat course up camera with less padding and no buildings`() {
         withHost { host ->
             host.render(ui(view3d = false))
-            val move = engine.moves.single()
-            assertEquals(0.0, move.state.tilt)
-            assertEquals(90.0, move.state.bearing, 1e-9)
+            settle(host)
+            val move = engine.moves.last()
+            assertEquals(0.0, move.state.tilt, 0.1)
+            assertEquals(90.0, move.state.bearing, 0.5)
             assertTrue(move.state.padding.top < NavCameraPlanner.padding(true, 2400).top)
             assertEquals(emptyList(), engine.buildings) // never shown: nothing to remove
-            assertEquals(90f, engine.headings.last()) // the arrow is also there in 2D
+            assertEquals(90f, engine.headings.last()!!, 0.5f) // the arrow is also there in 2D
         }
     }
 
-    @Test fun `switching to 2D and back eases at once, even inside the interval, and the buildings follow`() {
+    @Test fun `switching to 2D and back eases the tilt, and the buildings follow`() {
         withHost { host ->
             host.render(ui())
-            clock += 50
+            settle(host)
             host.render(ui(view3d = false))
-            assertEquals(2, engine.moves.size)
-            assertEquals(0.0, engine.moves.last().state.tilt)
-            assertEquals(NavCamera.TRANSITION_MILLIS, engine.moves.last().millis)
-            clock += 50
+            settle(host)
+            assertEquals(0.0, engine.moves.last().state.tilt, 0.1)
             host.render(ui(view3d = true))
-            assertEquals(3, engine.moves.size)
-            assertTrue(engine.moves.last().state.tilt >= 55.0)
+            settle(host)
+            assertTrue(engine.moves.last().state.tilt >= 54.9)
             assertEquals(listOf(true, false, true), engine.buildings)
         }
     }
@@ -130,31 +140,36 @@ class NavHost3dTest {
             host.render(ui(buildings3d = true)) // no repeated calls
             host.render(ui(buildings3d = false))
             assertEquals(listOf(true, false), engine.buildings)
-            assertEquals(1, engine.moves.size)
+            assertTrue(engine.moves.all { it.millis == 0 }) // no animation was asked for
         }
     }
 
     @Test fun `a standing car keeps the last bearing on the map and on the arrow`() {
         withHost { host ->
             host.render(ui(navState(speedMps = 10.0).copy(bearingDegrees = 90f)))
-            clock += 1_000
+            settle(host)
             host.render(ui(navState(speedMps = 0.0).copy(bearingDegrees = 270f)))
-            assertEquals(90f, engine.headings.last())
+            settle(host)
+            assertEquals(90f, engine.headings.last()!!, 0.5f)
             // The zoom changes (slow now), but the bearing sent to the map is still the last one.
-            assertEquals(90.0, engine.moves.last().state.bearing, 1e-9)
+            assertEquals(90.0, engine.moves.last().state.bearing, 0.5)
         }
     }
 
-    @Test fun `after the user pans, recentering eases back into the view at once`() {
+    @Test fun `after the user pans the camera is left alone, and recentering eases back into the view`() {
         withHost { host ->
             host.render(ui())
+            settle(host)
+            val before = engine.moves.size
             host.render(ui(following = false))
-            assertEquals(1, engine.moves.size) // not following: the camera is left alone
-            clock += 10
+            settle(host)
+            assertEquals(before, engine.moves.size) // not following: the camera is left alone
+            engine.current = engine.current.copy(tilt = 0.0, zoom = 15.0) // the user flattened and zoomed out
             host.render(ui(following = true)) // recenter
-            assertEquals(2, engine.moves.size)
-            assertEquals(NavCamera.TRANSITION_MILLIS, engine.moves.last().millis)
-            assertTrue(engine.moves.last().state.tilt >= 55.0)
+            assertEquals(15.0, engine.moves.last().state.zoom, 0.05) // starts where the camera is
+            settle(host)
+            assertTrue(engine.moves.last().state.tilt >= 54.9)
+            assertTrue(engine.moves.last().state.zoom > 16.5)
         }
     }
 
@@ -173,9 +188,11 @@ class NavHost3dTest {
             assertEquals(false, engine.buildings.last())
             assertNull(engine.user)
             assertEquals(1, engine.clears)
-            // A second inactive snapshot does nothing more.
+            // A second inactive snapshot does nothing more, and the frames stay off.
             host.render(NavUi())
+            settle(host)
             assertEquals(1, engine.moves.size)
+            assertNull(engine.user)
         }
     }
 
@@ -186,21 +203,26 @@ class NavHost3dTest {
             engine.moves.clear()
             clock += 5_000
             host.render(ui())
-            assertEquals(NavCamera.TRANSITION_MILLIS, engine.moves.single().millis)
+            settle(host)
+            assertTrue(engine.moves.isNotEmpty())
+            assertTrue(engine.moves.last().state.tilt >= 54.9)
         }
     }
 
     @Test fun `the overview leaves the camera to the engine and following resumes with an ease`() {
         withHost { host ->
             host.render(ui())
+            settle(host)
             val before = engine.moves.size
             clock += 2_000
             host.render(ui(following = false, overview = true))
+            settle(host)
             assertEquals(before, engine.moves.size) // frameRoute is the engine's own animation, no follow update
+            engine.current = engine.current.copy(tilt = 0.0)
             clock += 8_000
             host.render(ui(following = true, overview = false))
-            assertEquals(before + 1, engine.moves.size)
-            assertEquals(NavCamera.TRANSITION_MILLIS, engine.moves.last().millis)
+            assertEquals(0.0, engine.moves.last().state.tilt, 0.1) // starts from the overview camera
+            settle(host)
             assertFalse(engine.moves.last().state.tilt == 0.0)
         }
     }
