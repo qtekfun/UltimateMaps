@@ -66,6 +66,7 @@ fun settingsCategories(env: SettingsEnv): List<SettingsCategory> = buildList {
                 content = {
                     NavigationSection(nav)
                     env.trails?.let { TrailsSection(it) }
+                    env.bikeShare?.let { BikeShareSection(it) }
                 },
             ),
         )

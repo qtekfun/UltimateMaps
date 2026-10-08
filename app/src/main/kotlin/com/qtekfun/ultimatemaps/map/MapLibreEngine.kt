@@ -54,6 +54,7 @@ import org.maplibre.android.style.layers.PropertyFactory.circleStrokeColor
 import org.maplibre.android.style.layers.PropertyFactory.circleStrokeWidth
 import org.maplibre.android.style.sources.GeoJsonSource
 import android.graphics.RectF
+import com.qtekfun.ultimatemaps.core.map.BikePin
 import com.qtekfun.ultimatemaps.core.map.ChargerPin
 import com.qtekfun.ultimatemaps.core.map.FuelPin
 import com.qtekfun.ultimatemaps.core.map.HazardLine
@@ -130,6 +131,9 @@ class MapLibreEngine(
     private var pendingChargers: List<ChargerPin> = emptyList()
     private var chargerSource: GeoJsonSource? = null
     private var chargerTapListener: ((String) -> Unit)? = null
+    private var pendingBikes: List<BikePin> = emptyList()
+    private var bikeSource: GeoJsonSource? = null
+    private var bikeTapListener: ((String) -> Unit)? = null
     private var pendingTrails: List<TrailLine> = emptyList()
     private var trailSource: GeoJsonSource? = null
     private var trailTapListener: ((Int, LatLon) -> Unit)? = null
@@ -667,6 +671,59 @@ class MapLibreEngine(
         return id
     }
 
+    // --- Bike-share stations ---
+
+    override fun showBikeStations(pins: List<BikePin>) {
+        pendingBikes = pins
+        pushBikes()
+    }
+
+    override fun setBikeTapListener(listener: ((String) -> Unit)?) {
+        bikeTapListener = listener
+    }
+
+    private fun pushBikes() {
+        val source = bikeSource ?: return
+        if (map == null) return
+        source.setGeoJson(
+            FeatureCollection.fromFeatures(
+                pendingBikes.map { p ->
+                    Feature.fromGeometry(Point.fromLngLat(p.point.lon, p.point.lat)).apply { addStringProperty(BIKE_ID, p.id) }
+                },
+            ),
+        )
+    }
+
+    private fun addBikeLayer(style: Style, dark: Boolean) {
+        val d = view.resources.displayMetrics
+        style.addImage(BikeIcons.STATION, BikeIcons.render(dark, d.density, d.densityDpi))
+        style.addSource(GeoJsonSource(BIKE_SOURCE).also { bikeSource = it })
+        style.addLayer(
+            SymbolLayer(BIKE_LAYER, BIKE_SOURCE).withProperties(
+                iconImage(BikeIcons.STATION), iconAllowOverlap(true), iconAnchor(Property.ICON_ANCHOR_CENTER),
+            ),
+        )
+        pushBikes()
+    }
+
+    /** Bike-share station under the finger (within a 48 dp square). */
+    private fun bikeAt(m: MapLibreMap, p: LatLng): String? {
+        val listener = bikeTapListener ?: return null
+        if (bikeSource == null || pendingBikes.isEmpty()) return null
+        val d = view.resources.displayMetrics.density
+        val at = m.projection.toScreenLocation(p)
+        val half = HZ_TOUCH_DP / 2 * d
+        val hits = m.queryRenderedFeatures(RectF(at.x - half, at.y - half, at.x + half, at.y + half), BIKE_LAYER)
+        if (hits.isEmpty()) return null
+        val best = hits.minByOrNull { f ->
+            val g = f.geometry() as? Point
+            if (g == null) Double.MAX_VALUE else (g.latitude() - p.latitude).let { a -> a * a } + (g.longitude() - p.longitude).let { a -> a * a }
+        }
+        val id = best?.getStringProperty(BIKE_ID) ?: return null
+        listener(id)
+        return id
+    }
+
     // --- Speed cameras and traffic incidents ---
 
     override fun showHazards(pins: List<HazardPin>, lines: List<HazardLine>) {
@@ -840,6 +897,7 @@ class MapLibreEngine(
         val m = map
         if (m != null && fuelAt(m, p) != null) return true
         if (m != null && chargerAt(m, p) != null) return true
+        if (m != null && bikeAt(m, p) != null) return true
         if (m != null && hazardAt(m, p) != null) return true
         if (m != null && trailAt(m, p)) return true
         val listener = tapListener ?: return false
@@ -940,6 +998,7 @@ class MapLibreEngine(
             addRouteLayer(style, wanted == MapTheme.DARK) // below the markers, pin and user dots
             addTransitLayer(style, wanted == MapTheme.DARK)
             addHazardLayers(style, wanted == MapTheme.DARK)
+            addBikeLayer(style, wanted == MapTheme.DARK)
             addChargerLayer(style, wanted == MapTheme.DARK)
             addFuelLayer(style, wanted == MapTheme.DARK)
             style.addSource(user)
@@ -1103,6 +1162,9 @@ class MapLibreEngine(
         const val ZBE_LINE_LAYER = "mapas-zbe-line"
         const val ZBE_COLOR_LIGHT = 0xFFB35C00.toInt() // dark amber: contrast on the light map
         const val ZBE_COLOR_DARK = 0xFFFFA64D.toInt()
+        const val BIKE_SOURCE = "mapas-bike-src"
+        const val BIKE_LAYER = "mapas-bike"
+        const val BIKE_ID = "id"
         const val CHG_SOURCE = "mapas-chg-src"
         const val CHG_LAYER = "mapas-chg"
         const val CHG_ID = "id"

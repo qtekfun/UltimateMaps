@@ -67,6 +67,7 @@ class SettingsActivity : ComponentActivity() {
             chargers = ChargersSettingsEnv(app.chargerSettings, app.chargerData),
             zbe = ZbeSettingsEnv(app.zbeSettings, app.zbeData, onChanged = app::ensureZbePrompter),
             trails = TrailsSettingsEnv(app.routeSettings, app.routeData),
+            bikeShare = BikeShareSettingsEnv(app.bikeShareSettings, app.bikeShareData),
             recording = RecordingSettingsEnv(app.recording),
             placeLanguage = PlaceLanguageSettingsEnv(PrefsPlaceLanguageStore(this)),
             backup = backupEnv(app),
@@ -96,7 +97,7 @@ class SettingsActivity : ComponentActivity() {
                 "recording/enabled" to { v: Any -> app.recording.setEnabled(v as Boolean) },
             ),
             onFinish = {
-                listOf(app.fuelSettings, app.cameraSettings, app.chargerSettings, app.zbeSettings, app.routeSettings, VoiceModule.settings(this), app.transitTripSettings).forEach { (it as? SettingsReloadable)?.reload() }
+                listOf(app.fuelSettings, app.cameraSettings, app.chargerSettings, app.zbeSettings, app.bikeShareSettings, app.routeSettings, VoiceModule.settings(this), app.transitTripSettings).forEach { (it as? SettingsReloadable)?.reload() }
                 app.ensureCameraAlerts()
                 app.ensureZbePrompter()
             },

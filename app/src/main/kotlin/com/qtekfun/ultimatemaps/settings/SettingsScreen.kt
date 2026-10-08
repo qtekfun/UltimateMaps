@@ -80,6 +80,8 @@ class SettingsEnv(
     val zbe: ZbeSettingsEnv? = null,
     /** "Hiking and cycling routes" group of the Navigation category (switch and kinds); null hides it. */
     val trails: TrailsSettingsEnv? = null,
+    /** "Bike-share stations" group of the Navigation category (switch, live availability switch, data); null hides it. */
+    val bikeShare: BikeShareSettingsEnv? = null,
     /** Track recording part of the Data category (switch and delete); null hides it. */
     val recording: RecordingSettingsEnv? = null,
     /** Language of place information section (search results and place card); null hides it. */
@@ -198,6 +200,7 @@ private fun purposeLabel(p: ConnectionPurpose) = stringResource(
         ConnectionPurpose.SYNC_WEBDAV -> R.string.conn_purpose_sync
         ConnectionPurpose.TRAFFIC_INCIDENTS -> R.string.conn_purpose_traffic
         ConnectionPurpose.TRANSIT_REALTIME -> R.string.conn_purpose_transit_rt
+        ConnectionPurpose.BIKE_AVAILABILITY -> R.string.conn_purpose_bike
         ConnectionPurpose.OTHER -> R.string.conn_purpose_other
     },
 )

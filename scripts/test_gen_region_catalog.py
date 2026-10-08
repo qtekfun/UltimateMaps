@@ -129,6 +129,20 @@ class GenCatalogTest(unittest.TestCase):
             self.assertNotIn("chargers", cat)
         self.assertNotIn("zbe", gen.build(COUNTRIES, catalog_version="t"))
 
+    def test_optional_bikeshare_block(self):
+        with tempfile.TemporaryDirectory() as t:
+            f = os.path.join(t, "bikeshare-es.bin")
+            put(f, b"b" * 9)
+            c = gen.build(COUNTRIES, catalog_version="t", bikeshare_file=f, bikeshare_base="https://x/rel/")["bikeshare"]
+            self.assertEqual("https://x/rel/bikeshare-es.bin", c["url"])
+            self.assertEqual(9, c["size"])
+            self.assertEqual(hashlib.sha256(b"b" * 9).hexdigest(), c["sha256"])
+            self.assertEqual("bikeshare-es.bin", c["file"])
+            self.assertNotIn("bikeshare", gen.build(COUNTRIES, catalog_version="t", bikeshare_file=os.path.join(t, "nope.bin"), bikeshare_base="https://x"))
+            with self.assertRaises(SystemExit):
+                gen.build(COUNTRIES, catalog_version="t", bikeshare_file=f)
+        self.assertNotIn("bikeshare", gen.build(COUNTRIES, catalog_version="t"))
+
     def test_optional_routes_block(self):
         with tempfile.TemporaryDirectory() as t:
             f = os.path.join(t, "routes-es.bin")

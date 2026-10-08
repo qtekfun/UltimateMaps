@@ -91,6 +91,20 @@ class CatalogBaseTest {
     }
 
     @Test
+    fun `optional bikeshare file round trips with a relative url and is validated`() {
+        val c = RegionCatalog.parse(json(base = ""","bikeshare":${asset("bikeshare-es.bin", "bikeshare-es.bin")}"""), baseUrl = "https://h.example/rel/catalog.json")
+        val file = assertNotNull(c.bikeshare)
+        assertEquals("https://h.example/rel/bikeshare-es.bin", file.url)
+        assertEquals(RegionCatalog.parse(c.toJson()).bikeshare, file)
+        assertNull(c.zbe, "the optional files are independent")
+        assertNull(RegionCatalog.parse(json()).bikeshare, "catalogs without it stay valid")
+        assertFailsWith<CatalogException> {
+            RegionCatalog.parse(json(base = ""","bikeshare":{"url":"x","size":5,"sha256":"zz","file":"bikeshare-es.bin"}"""))
+        }
+        assertFailsWith<CatalogException> { RegionCatalog.parse(json(base = ""","bikeshare":${asset("x", "../evil.bin")}""")) }
+    }
+
+    @Test
     fun `optional routes file round trips with a relative url and is validated`() {
         val c = RegionCatalog.parse(json(base = ""","routes":${asset("routes-es.bin", "routes-es.bin")}"""), baseUrl = "https://h.example/rel/catalog.json")
         val file = assertNotNull(c.routes)

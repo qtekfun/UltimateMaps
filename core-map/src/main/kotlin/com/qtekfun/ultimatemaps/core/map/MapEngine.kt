@@ -63,6 +63,9 @@ data class FuelPin(val id: String, val point: LatLon, val label: String, val che
  */
 data class ChargerPin(val id: String, val point: LatLon, val fast: Boolean)
 
+/** A bike-share station marker; [id] is what the tap listener reports. */
+data class BikePin(val id: String, val point: LatLon)
+
 /**
  * One piece of an optional hiking or cycling route, drawn as a line under the route and the pins. [id] is opaque to the
  * engine (it hands it back on a tap). [level] is 0 local, 1 regional, 2 national, 3 international: it sets the colour.
@@ -200,6 +203,14 @@ interface MapEngine : AutoCloseable {
 
     /** Reports taps on a charging station (its id), after petrol stations and before hazards; null removes it. */
     fun setChargerTapListener(listener: ((String) -> Unit)?) {}
+
+    // --- Bike-share stations (optional layer) ---
+
+    /** Draws exactly these bike-share stations; an empty list removes them. Never called per frame. */
+    fun showBikeStations(pins: List<BikePin>) {}
+
+    /** Reports taps on a bike-share station (its id), after charging stations and before hazards; null removes it. */
+    fun setBikeTapListener(listener: ((String) -> Unit)?) {}
 
     // --- Hiking and cycling routes (optional layer) ---
 

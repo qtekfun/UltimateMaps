@@ -6,6 +6,8 @@ import com.qtekfun.ultimatemaps.core.cameras.CameraSettings
 import com.qtekfun.ultimatemaps.core.cameras.MIN_INCIDENT_REFRESH_MINUTES
 import com.qtekfun.ultimatemaps.chargers.PrefsChargerSettingsStore
 import com.qtekfun.ultimatemaps.zbe.PrefsZbeSettingsStore
+import com.qtekfun.ultimatemaps.bikeshare.PrefsBikeShareSettingsStore
+import com.qtekfun.ultimatemaps.core.bikeshare.BikeShareSettings
 import com.qtekfun.ultimatemaps.core.zbe.ZbeSettings
 import com.qtekfun.ultimatemaps.core.chargers.ChargerSettings
 import com.qtekfun.ultimatemaps.core.chargers.MinPower
@@ -95,6 +97,7 @@ object SettingsSchema {
     const val GROUP_CAMERAS = "cameras"
     const val GROUP_CHARGERS = "chargers"
     const val GROUP_ZBE = "zbe"
+    const val GROUP_BIKESHARE = "bikeshare"
     const val GROUP_TRAILS = "trails"
     const val GROUP_HISTORY = "history"
     const val GROUP_RECORDING = "recording"
@@ -126,6 +129,7 @@ object SettingsSchema {
     private val cameras = CameraSettings()
     private val chargers = ChargerSettings()
     private val zbe = ZbeSettings()
+    private val bikeShare = BikeShareSettings()
     private val trails = RouteSettings()
 
     private val navPrefs = PrefsNavSettingsStore.PREFS
@@ -133,6 +137,7 @@ object SettingsSchema {
     private val camPrefs = PrefsCameraSettingsStore.PREFS
     private val chargerPrefs = PrefsChargerSettingsStore.PREFS
     private val zbePrefs = PrefsZbeSettingsStore.PREFS
+    private val bikePrefs = PrefsBikeShareSettingsStore.PREFS
     private val trailPrefs = PrefsRouteSettingsStore.PREFS
 
     /** Every exported setting, sorted by group and key (the order of the file). */
@@ -209,6 +214,9 @@ object SettingsSchema {
         bool(GROUP_ZBE, zbePrefs, PrefsZbeSettingsStore.KEY_ENABLED, zbe.enabled, RestorePolicy.NEEDS_CONSENT),
         bool(GROUP_ZBE, zbePrefs, PrefsZbeSettingsStore.KEY_SHOW_ON_MAP, zbe.showOnMap),
         enum(GROUP_ZBE, zbePrefs, PrefsZbeSettingsStore.KEY_PROMPT_MODE, zbe.promptMode, AlertSoundMode.entries.map { it.name }),
+        // Bike-share stations: the switch starts a download and the live switch contacts a third-party host, so both need consent.
+        bool(GROUP_BIKESHARE, bikePrefs, PrefsBikeShareSettingsStore.KEY_ENABLED, bikeShare.enabled, RestorePolicy.NEEDS_CONSENT),
+        bool(GROUP_BIKESHARE, bikePrefs, PrefsBikeShareSettingsStore.KEY_LIVE_AVAILABILITY, bikeShare.liveAvailability, RestorePolicy.NEEDS_CONSENT),
         // Hiking and cycling routes: the switch starts a download of several MB, so it needs consent; the kinds are plain preferences.
         bool(GROUP_TRAILS, trailPrefs, PrefsRouteSettingsStore.KEY_ENABLED, trails.enabled, RestorePolicy.NEEDS_CONSENT),
         bool(GROUP_TRAILS, trailPrefs, PrefsRouteSettingsStore.KEY_HIKING, trails.hiking),

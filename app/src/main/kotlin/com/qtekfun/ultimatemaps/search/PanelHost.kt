@@ -15,6 +15,11 @@ import com.qtekfun.ultimatemaps.core.fuel.FuelSettingsStore
 import com.qtekfun.ultimatemaps.core.geo.CoordinateQuery
 import com.qtekfun.ultimatemaps.core.geo.LatLon
 import com.qtekfun.ultimatemaps.cameras.HazardCardController
+import com.qtekfun.ultimatemaps.bikeshare.BikeCardController
+import com.qtekfun.ultimatemaps.bikeshare.BikeCardHost
+import com.qtekfun.ultimatemaps.bikeshare.BikeCardState
+import com.qtekfun.ultimatemaps.bikeshare.BikeShareEnv
+import com.qtekfun.ultimatemaps.map.BikeMapLayer
 import com.qtekfun.ultimatemaps.chargers.ChargerCardController
 import com.qtekfun.ultimatemaps.chargers.ChargerCardHost
 import com.qtekfun.ultimatemaps.chargers.ChargerCardState
@@ -92,6 +97,8 @@ class PanelHost(
     private val chargers: ChargersEnv? = null,
     /** Optional hiking and cycling route layer (null: none). */
     private val trails: TrailsEnv? = null,
+    /** Optional bike-share station layer (null: none). */
+    private val bikeShare: BikeShareEnv? = null,
     /** The navigation model; with it the route card offers "Start" and "Simulate". Null: preview only. */
     private val navScreen: NavScreenController? = null,
 ) {
@@ -268,8 +275,11 @@ class PanelHost(
     /** An EV charger card is open (it is shown over the navigation screen too). */
     val chargerCardOpen: Boolean get() = chargerCard.card.charger != null
 
+    /** A bike-share station card is open (it is shown over the navigation screen too). */
+    val bikeCardOpen: Boolean get() = bikeCard.card.station != null
+
     /** The sheet may be drawn above the navigation screen: a station, charger or hazard card is open. */
-    val cardOverNavigation: Boolean get() = fuelCardOpen || hazardCardOpen || chargerCardOpen
+    val cardOverNavigation: Boolean get() = fuelCardOpen || hazardCardOpen || chargerCardOpen || bikeCardOpen
 
     val fuelCard = FuelCardController(
         repository = fuelRepository,
@@ -277,7 +287,7 @@ class PanelHost(
         places = places,
         card = FuelCardState(),
         category = { activity.getString(R.string.fuel_category) },
-        onOpened = { screen.notice = null; screen.detent = SheetDetent.MEDIUM; chargerCard.card.close(); trailCard.card.close() },
+        onOpened = { screen.notice = null; screen.detent = SheetDetent.MEDIUM; chargerCard.card.close(); trailCard.card.close(); bikeCard.close() },
         // "Go" replaces the destination: the running navigation ends and the route preview takes over.
         beforeGo = { navScreen?.takeIf { it.ui.value.active }?.stop() },
         // "Add stop" while navigating re-plans the trip in progress instead of editing a preview.
@@ -297,7 +307,7 @@ class PanelHost(
     val hazardCard: HazardCardController = HazardCardController(
         describer = { id -> hazards?.describer?.describe(id) },
         card = HazardCardState(),
-        onOpened = { screen.notice = null; screen.detent = SheetDetent.MEDIUM; chargerCard.card.close(); trailCard.card.close() },
+        onOpened = { screen.notice = null; screen.detent = SheetDetent.MEDIUM; chargerCard.card.close(); trailCard.card.close(); bikeCard.close() },
     )
 
     val chargerCard: ChargerCardController = ChargerCardController(
@@ -305,11 +315,24 @@ class PanelHost(
         route = route,
         card = ChargerCardState(),
         category = { activity.getString(R.string.ev_category) },
-        onOpened = { screen.notice = null; screen.detent = SheetDetent.MEDIUM; fuelCard.card.close(); hazardCard.card.close(); trailCard.card.close() },
+        onOpened = { screen.notice = null; screen.detent = SheetDetent.MEDIUM; fuelCard.card.close(); hazardCard.card.close(); trailCard.card.close(); bikeCard.close() },
         beforeGo = { navScreen?.takeIf { it.ui.value.active }?.stop() },
         navigating = { navigating },
         navStops = navScreen?.let { n -> { point -> n.addStop(point) } },
         scope = activity.lifecycleScope,
+    )
+
+    val bikeCard: BikeCardController = BikeCardController(
+        repository = bikeShare?.repository ?: com.qtekfun.ultimatemaps.core.bikeshare.BikeShareRepository(),
+        route = route,
+        card = BikeCardState(),
+        category = { activity.getString(R.string.bike_category) },
+        onOpened = { screen.notice = null; screen.detent = SheetDetent.MEDIUM; fuelCard.card.close(); hazardCard.card.close(); chargerCard.card.close(); trailCard.card.close() },
+        beforeGo = { navScreen?.takeIf { it.ui.value.active }?.stop() },
+        navigating = { navigating },
+        navStops = navScreen?.let { n -> { point -> n.addStop(point) } },
+        scope = activity.lifecycleScope,
+        live = bikeShare?.live ?: { null },
     )
 
     val trailCard: TrailCardController = TrailCardController(
@@ -317,7 +340,7 @@ class PanelHost(
         route = route,
         card = TrailCardState(),
         category = { activity.getString(R.string.trail_category) },
-        onOpened = { screen.notice = null; screen.detent = SheetDetent.MEDIUM; fuelCard.card.close(); hazardCard.card.close(); chargerCard.card.close() },
+        onOpened = { screen.notice = null; screen.detent = SheetDetent.MEDIUM; fuelCard.card.close(); hazardCard.card.close(); chargerCard.card.close(); bikeCard.close() },
         beforeGo = { navScreen?.takeIf { it.ui.value.active }?.stop() },
         navigating = { navigating },
     )
@@ -329,6 +352,16 @@ class PanelHost(
             repository = t.repository,
             settings = t.settings,
             render = engine::showTrails,
+        )
+    }
+
+    private val bikeLayer: BikeMapLayer? = bikeShare?.let { b ->
+        BikeMapLayer(
+            scope = activity.lifecycleScope,
+            io = Dispatchers.Default,
+            repository = b.repository,
+            settings = b.settings,
+            render = engine::showBikeStations,
         )
     }
 
@@ -391,6 +424,7 @@ class PanelHost(
     fun onDestroy() {
         fuelLayer.stop()
         chargerLayer?.stop()
+        bikeLayer?.stop()
         trailLayer?.stop()
         hazardLayer?.stop()
         search.close()
@@ -410,15 +444,18 @@ class PanelHost(
         engine.setFuelTapListener(fuelCard::onStationTap)
         engine.setHazardTapListener(hazardCard::onTap)
         engine.setChargerTapListener(chargerCard::onChargerTap)
+        engine.setBikeTapListener(bikeCard::onStationTap)
         engine.setTrailTapListener(trailCard::onTrailTap)
         engine.setViewportListener { bounds, zoom ->
             fuelLayer.onViewport(bounds, zoom)
             hazardLayer?.onViewport(bounds, zoom)
             chargerLayer?.onViewport(bounds, zoom)
+            bikeLayer?.onViewport(bounds, zoom)
             trailLayer?.onViewport(bounds, zoom)
         }
         fuelLayer.start()
         chargerLayer?.start()
+        bikeLayer?.start()
         trailLayer?.start()
         hazardLayer?.start()
         // A recording was saved or tracks were deleted: refresh the tracks list.
@@ -518,6 +555,14 @@ class PanelHost(
                 navigating = { navigating },
             )
         }
+        val bikeHost = remember {
+            BikeCardHost(
+                state = bikeCard.card,
+                generatedMillis = { bikeShare?.repository?.generatedMillis?.value },
+                onGo = bikeCard::go, onAddStop = bikeCard::addStop,
+                navigating = { navigating },
+            )
+        }
         val trailHost = remember {
             TrailCardHost(
                 state = trailCard.card,
@@ -530,6 +575,7 @@ class PanelHost(
             quick = quick, history = history, onEmergency = ::openEmergency, tracks = tracks,
             hazard = hazardCard.card,
             charger = chargerHost,
+            bike = bikeHost,
             trail = trailHost,
         )
     }

@@ -40,6 +40,8 @@ import com.qtekfun.ultimatemaps.places.PlacesMessage
 import com.qtekfun.ultimatemaps.places.subtitleOf
 import com.qtekfun.ultimatemaps.nav.NavStartHost
 import com.qtekfun.ultimatemaps.cameras.HazardCard
+import com.qtekfun.ultimatemaps.bikeshare.BikeCard
+import com.qtekfun.ultimatemaps.bikeshare.BikeCardHost
 import com.qtekfun.ultimatemaps.chargers.ChargerCard
 import com.qtekfun.ultimatemaps.chargers.ChargerCardHost
 import com.qtekfun.ultimatemaps.trails.TrailCard
@@ -106,11 +108,20 @@ fun SheetPanel(
     charger: ChargerCardHost? = null,
     /** The card of a tapped hiking or cycling route (null: none). */
     trail: TrailCardHost? = null,
+    /** The card of a tapped bike-share station (null: none). */
+    bike: BikeCardHost? = null,
 ) {
     val card = places.state.card
     Column(modifier.fillMaxWidth().testTag("sheet_panel")) {
         if (hazard != null && hazard.info != null) {
             HazardCard(hazard)
+        } else if (bike != null && bike.state.station != null) {
+            // Over the route panel too: "Add stop" needs the card while a route is active.
+            BikeCard(
+                state = bike.state, generatedMillis = bike.generatedMillis(),
+                routeActive = route?.state?.active == true || bike.navigating(),
+                onGo = bike.onGo, onAddStop = bike.onAddStop,
+            )
         } else if (charger != null && charger.state.charger != null) {
             // Over the route panel too: "Add stop" needs the card while a route is active.
             ChargerCard(

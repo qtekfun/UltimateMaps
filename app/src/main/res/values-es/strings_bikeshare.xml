@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Estaciones de bicicleta compartida: grupo de Ajustes (dentro de la categoría Navegación), ficha del mapa, disponibilidad en vivo, atribución y copia de seguridad -->
+    <string name="bike_group_title">Estaciones de bicicleta compartida</string>
+    <string name="bike_switch_title">Mostrar estaciones de bicicleta compartida</string>
+    <string name="bike_switch_body">Muestra en el mapa las estaciones de los sistemas de bicicleta compartida de Barcelona (Bicing) y Madrid (BiciMAD). Descarga un archivo pequeño de datos de tu servidor de mapas (el mismo que los mapas); tu posición nunca se envía.</string>
+    <string name="bike_live_title">Mostrar disponibilidad de bicis en vivo</string>
+    <string name="bike_live_body">Mientras hay una ficha de estación abierta, pregunta al feed público de datos de ese sistema cuántas bicis y anclajes libres tiene, como máximo una vez cada 30 segundos. Contacta con un servidor de terceros (barcelona.publicbikesystem.net o madrid.publicbikesystem.net), que puede ver tu dirección IP y que consultas su sistema, pero no qué estación. Desactivado por defecto.</string>
+    <string name="bike_data_title">Datos de estaciones</string>
+    <string name="bike_data_count">%1$d estaciones, datos de %2$s</string>
+    <string name="bike_data_never">Aún no se han descargado datos de estaciones.</string>
+    <string name="bike_attribution_settings">Datos de estaciones: Bicing, Ajuntament de Barcelona (Open Data BCN, CC BY 4.0); BiciMAD, Empresa Municipal de Transportes de Madrid (datos.madrid.es, CC BY 4.0).</string>
+
+    <!-- Ficha de una estación -->
+    <string name="bike_category">Estación de bicicleta compartida</string>
+    <string name="bike_card_title_unknown">Estación de bicicleta compartida</string>
+    <string name="bike_card_system">%1$s</string>
+    <string name="bike_card_capacity">Anclajes: %1$d</string>
+    <string name="bike_card_capacity_unknown">Anclajes: no indicados</string>
+    <string name="bike_card_availability">%1$d bicis, %2$d anclajes libres (actualizado %3$s)</string>
+    <string name="bike_card_note">El número de anclajes viene del archivo de datos. Si hay bicis disponibles solo se sabe si activas la disponibilidad en vivo en Ajustes.</string>
+    <string name="bike_card_data_date">Datos de %1$s</string>
+    <string name="bike_card_close">Cerrar</string>
+    <string name="bike_go">Ruta a la estación</string>
+    <string name="bike_add_stop">Añadir parada</string>
+    <string name="conn_purpose_bike">Disponibilidad de bicis (sistemas de bicicleta compartida)</string>
+
+    <!-- Copia de seguridad y restauración -->
+    <string name="backup_item_bikeshare">Estaciones de bicicleta compartida</string>
+    <string name="backup_item_bikeshare_live">Disponibilidad de bicis en vivo</string>
+    <string name="backup_group_bikeshare">Estaciones de bicicleta compartida</string>
+</resources>
