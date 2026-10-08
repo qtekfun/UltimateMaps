@@ -67,6 +67,12 @@ data class RoutePlan(
     val durationSeconds: Double,
     /** Maneuvers, lanes and speed limits for turn-by-turn; [RouteGuidance.EMPTY] when the engine gives none. */
     val guidance: RouteGuidance = RouteGuidance.EMPTY,
+    /**
+     * Height in metres above sea level of every [geometry] point, [Double.NaN] where the maps have none; empty when the
+     * engine gives no heights (then nothing is known). Same size as [geometry] when present. Raw: smoothing and the
+     * ascent/descent are [ElevationProfile]'s job.
+     */
+    val altitudes: List<Double> = emptyList(),
 )
 
 /** On-device routing contract. Returns null when no route exists. */

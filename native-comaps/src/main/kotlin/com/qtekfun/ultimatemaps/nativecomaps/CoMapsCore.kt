@@ -215,12 +215,31 @@ internal fun decodeSearch(raw: Array<String>, version: Int = SearchWire.VERSION)
     }
 }
 
+/** Optional altitude trailer of the route array: `..., alt0..altN-1, N, ALTITUDE_MARKER` (see `RouteFlat` in um_jni.cpp). */
+internal object RouteWire {
+    const val ALTITUDE_MARKER = -7_777_777.0
+    const val NO_ALTITUDE = -32768.0
+}
+
 internal fun decodeRoute(raw: DoubleArray): RouteOutcome {
-    require(raw.size >= 3 && (raw.size - 3) % 2 == 0) { "malformed route response: ${raw.size}" }
+    require(raw.size >= 3) { "malformed route response: ${raw.size}" }
+    var end = raw.size
+    var altitudes: List<Double> = emptyList()
+    if (end >= 5 && raw[end - 1] == RouteWire.ALTITUDE_MARKER) {
+        val n = raw[end - 2]
+        require(n == Math.rint(n) && n >= 0 && n <= (end - 5).toDouble()) { "malformed altitude trailer: $n" }
+        val count = n.toInt()
+        altitudes = (end - 2 - count until end - 2).map { raw[it].let { a -> if (a == RouteWire.NO_ALTITUDE) Double.NaN else a } }
+        end -= 2 + count
+    }
+    require((end - 3) % 2 == 0) { "malformed route response: ${raw.size}" }
     val code = raw[0].toInt()
     if (code != RouteCode.NO_ERROR && code != RouteCode.HAS_WARNINGS) return RouteOutcome(code, null)
-    val geometry = (3 until raw.size step 2).mapNotNull { LatLon.ofOrNull(raw[it], raw[it + 1]) }
-    return RouteOutcome(code, RoutePlan(geometry, raw[1], raw[2]))
+    val points = (end - 3) / 2
+    val geometry = (3 until end step 2).mapNotNull { LatLon.ofOrNull(raw[it], raw[it + 1]) }
+    // A dropped invalid point would misalign the heights with the geometry: then there is no profile rather than a wrong one.
+    val aligned = if (altitudes.size == points && geometry.size == points) altitudes else emptyList()
+    return RouteOutcome(code, RoutePlan(geometry, raw[1], raw[2], altitudes = aligned))
 }
 
 /** Route + guidance. The route is validated just as strictly as in [decodeRoute]; a broken guidance does not bring the route down. */
