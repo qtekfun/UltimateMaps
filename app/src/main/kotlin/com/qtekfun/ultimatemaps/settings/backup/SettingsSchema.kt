@@ -139,6 +139,7 @@ object SettingsSchema {
         bool(GROUP_NAVIGATION, navPrefs, PrefsNavSettingsStore.KEY_VIEW_3D, nav.view3d),
         bool(GROUP_NAVIGATION, navPrefs, PrefsNavSettingsStore.KEY_BUILDINGS_3D, nav.buildings3d),
         bool(GROUP_NAVIGATION, navPrefs, PrefsNavSettingsStore.KEY_LIVE_UPDATE_CHIP, nav.liveUpdateChip),
+        bool(GROUP_NAVIGATION, navPrefs, PrefsNavSettingsStore.KEY_MOTION_TUNNELS, nav.motionSensorsInTunnels),
         bool(GROUP_NAVIGATION_UI, SharedNavUiPrefs.PREFS, SharedNavUiPrefs.KEY_GLOVE, false),
         // Public-transport trip prompts (sound, voice or silent).
         enum(GROUP_NAVIGATION, PrefsTransitTripSettings.PREFS, PrefsTransitTripSettings.KEY_PROMPTS, PrefsTransitTripSettings.DEFAULT, AlertSoundMode.entries.map { it.name }),

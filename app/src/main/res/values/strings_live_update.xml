@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="nav_motion_tunnels_title">Use motion sensors in tunnels</string>
+    <string name="nav_motion_tunnels_body">Only while the GPS is lost in a known tunnel, the accelerometer tells a stopped car from a moving one, so the position estimate does not drift in a queue. Nothing is stored or sent.</string>
     <string name="live_update_title">Show distance in the status bar</string>
     <string name="live_update_body">On Android 16 and later, the distance to the next turn appears as a chip in the status bar while you navigate. You can also turn promoted notifications off for this app in the system settings.</string>
     <!-- Chip texts: the status bar chip fits about 7 characters. -->

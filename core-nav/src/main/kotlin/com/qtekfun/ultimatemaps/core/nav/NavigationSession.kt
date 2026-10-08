@@ -114,6 +114,7 @@ class NavigationSession(
         rerouteJob = null
         loop?.cancel()
         loop = null
+        stopGo.release()
     }
 
     override fun close() = stop()

@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="nav_motion_tunnels_title">Usar los sensores de movimiento en túneles</string>
+    <string name="nav_motion_tunnels_body">Solo mientras se pierde el GPS en un túnel conocido, el acelerómetro distingue un coche parado de uno en marcha, para que la posición estimada no se adelante en una cola. No se guarda ni se envía nada.</string>
     <string name="live_update_title">Mostrar la distancia en la barra de estado</string>
     <string name="live_update_body">En Android 16 y posteriores, la distancia al próximo giro aparece como una burbuja en la barra de estado mientras navegas. También puedes desactivar las notificaciones promocionadas de esta app en los ajustes del sistema.</string>
     <!-- Chip texts: the status bar chip fits about 7 characters. -->

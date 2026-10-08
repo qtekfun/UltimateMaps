@@ -151,6 +151,16 @@ fun NavigationSection(env: NavigationSettingsEnv) {
             )
         }
     }
+    Spacer(Modifier.height(10.dp))
+    Card("nav_motion_tunnels_card") {
+        SwitchRow(
+            title = stringResource(R.string.nav_motion_tunnels_title),
+            body = stringResource(R.string.nav_motion_tunnels_body),
+            checked = s.motionSensorsInTunnels,
+            tag = "nav_motion_tunnels_switch",
+            onChange = { on -> env.store.update { it.copy(motionSensorsInTunnels = on) } },
+        )
+    }
     env.transitTrip?.let { trip ->
         Spacer(Modifier.height(10.dp))
         val mode by trip.promptMode.collectAsState()
