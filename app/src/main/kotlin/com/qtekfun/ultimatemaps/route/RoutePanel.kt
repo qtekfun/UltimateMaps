@@ -37,14 +37,17 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.isSpecified
 import com.qtekfun.ultimatemaps.R
 import com.qtekfun.ultimatemaps.core.routing.RoutingProfile
 import com.qtekfun.ultimatemaps.nav.LaunchStatus
@@ -273,7 +276,18 @@ private fun StopButton(icon: ImageVector, description: String, enabled: Boolean,
 private fun ProfileSelector(route: RoutePreviewController) {
     val colors = Mapas.colors
     val groupName = stringResource(R.string.route_profile_group)
-    Row(
+    val segments = buildList {
+        profiles.forEach { (profile, label, tag) ->
+            add(ProfileSegmentData(route.state.profile == profile && !route.state.transitMode, profileIcon(profile), stringResource(label), tag) { route.setProfile(profile) })
+        }
+        if (route.transit != null) {
+            add(ProfileSegmentData(route.state.transitMode, RouteIcons.transit, stringResource(R.string.route_profile_transit), "profile_transit") { route.setTransitMode(true) })
+        }
+    }
+    val measurer = rememberTextMeasurer()
+    val density = LocalDensity.current
+    val base = Mapas.typography.callout
+    BoxWithConstraints(
         Modifier
             .fillMaxWidth()
             .clip(Mapas.shapes.control)
@@ -281,37 +295,58 @@ private fun ProfileSelector(route: RoutePreviewController) {
             .padding(2.dp)
             .selectableGroup()
             .semantics { contentDescription = groupName },
-        horizontalArrangement = Arrangement.spacedBy(2.dp),
     ) {
-        profiles.forEach { (profile, label, tag) ->
-            val selected = route.state.profile == profile && !route.state.transitMode
-            ProfileSegment(selected, profileIcon(profile), stringResource(label), tag, Modifier.weight(1f)) { route.setProfile(profile) }
+        // Segments are as wide as their text needs (weighted by it), never an equal share: "Transporte" is much longer than "Bici".
+        // When even that does not fit (narrow screen, large font) the icons go first, then the text shrinks a little.
+        val available = maxWidth - SEGMENT_GAP * (segments.size - 1)
+        fun needed(scale: Float, icons: Boolean): List<Dp> = segments.map {
+            val style = if (base.fontSize.isSpecified) base.copy(fontSize = base.fontSize * scale) else base
+            val textPx = measurer.measure(it.label, style, softWrap = false, maxLines = 1).size.width
+            with(density) { textPx.toDp() } + SEGMENT_PADDING * 2 + if (icons) SEGMENT_ICON else 0.dp
         }
-        if (route.transit != null) {
-            ProfileSegment(
-                route.state.transitMode, RouteIcons.transit, stringResource(R.string.route_profile_transit), "profile_transit", Modifier.weight(1f),
-            ) { route.setTransitMode(true) }
+        val options = listOf(1f to true, 1f to false, 0.9f to false, 0.8f to false)
+        val choice = options.firstOrNull { (scale, icons) -> needed(scale, icons).fold(0.dp) { a, b -> a + b } <= available } ?: options.last()
+        val widths = needed(choice.first, choice.second)
+        Row(horizontalArrangement = Arrangement.spacedBy(SEGMENT_GAP)) {
+            segments.forEachIndexed { i, seg ->
+                ProfileSegment(seg, choice.second, choice.first, Modifier.weight(widths[i].value))
+            }
         }
     }
 }
 
+private val SEGMENT_GAP = 2.dp
+private val SEGMENT_PADDING = 6.dp
+private val SEGMENT_ICON = 26.dp
+
+private class ProfileSegmentData(val selected: Boolean, val icon: ImageVector, val label: String, val tag: String, val onSelect: () -> Unit)
+
 @Composable
-private fun ProfileSegment(selected: Boolean, icon: ImageVector, label: String, tag: String, modifier: Modifier, onSelect: () -> Unit) {
+private fun ProfileSegment(seg: ProfileSegmentData, showIcon: Boolean, textScale: Float, modifier: Modifier) {
     val colors = Mapas.colors
     Row(
         modifier
             .heightIn(min = target)
             .clip(Mapas.shapes.field)
-            .background(if (selected) colors.segmentThumb else Color.Transparent)
-            .selectable(selected = selected, role = Role.RadioButton) { onSelect() }
-            .testTag(tag),
+            .background(if (seg.selected) colors.segmentThumb else Color.Transparent)
+            .selectable(selected = seg.selected, role = Role.RadioButton) { seg.onSelect() }
+            .testTag(seg.tag),
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        val fg = if (selected) colors.label else colors.secondaryLabel
-        Icon(icon, fg, 20.dp)
-        Spacer(Modifier.width(6.dp))
-        BasicText(label, style = Mapas.typography.callout.copy(color = fg), maxLines = 1)
+        val fg = if (seg.selected) colors.label else colors.secondaryLabel
+        val base = Mapas.typography.callout
+        if (showIcon) {
+            Icon(seg.icon, fg, 20.dp)
+            Spacer(Modifier.width(6.dp))
+        }
+        BasicText(
+            seg.label,
+            style = (if (base.fontSize.isSpecified) base.copy(fontSize = base.fontSize * textScale) else base).copy(color = fg),
+            maxLines = 1,
+            softWrap = false,
+            modifier = Modifier.testTag(seg.tag + "_label"),
+        )
     }
 }
 

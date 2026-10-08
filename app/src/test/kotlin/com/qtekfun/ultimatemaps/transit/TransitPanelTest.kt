@@ -6,7 +6,9 @@ import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.compose.ui.test.onChild
+import androidx.compose.ui.test.filterToOne
+import androidx.compose.ui.test.hasText
+import androidx.compose.ui.test.onChildren
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -119,7 +121,7 @@ class TransitPanelTest {
         val it = transit.state.itineraries.first()
         val zone = transit.state.zone
         rule.onNodeWithTag("transit_option_0").assertIsDisplayed()
-        rule.onNodeWithTag("transit_option_0_chip_0", useUnmergedTree = true).onChild().assertTextEquals("M1")
+        rule.onNodeWithTag("transit_option_0_chip_0", useUnmergedTree = true).onChildren().filterToOne(hasText("M1")).assertTextEquals("M1")
         rule.onNodeWithTag("transit_option_0_facts", useUnmergedTree = true).assertTextContains("Direct", substring = true)
         rule.onNodeWithTag("transit_option_0_facts", useUnmergedTree = true).assertTextContains("walking", substring = true)
         rule.onNodeWithTag("transit_option_0_duration", useUnmergedTree = true).assertExists()
@@ -138,7 +140,7 @@ class TransitPanelTest {
         // legs: walk to the boarding stop, the ride, walk to the destination
         rule.onNodeWithTag("transit_leg_0_text", useUnmergedTree = true).assertTextContains("Walk", substring = true)
         rule.onNodeWithTag("transit_leg_0_text", useUnmergedTree = true).assertTextContains("Alpha Square", substring = true)
-        rule.onNodeWithTag("transit_leg_1_chip", useUnmergedTree = true).onChild().assertTextEquals("M1")
+        rule.onNodeWithTag("transit_leg_1_chip", useUnmergedTree = true).onChildren().filterToOne(hasText("M1")).assertTextEquals("M1")
         rule.onNodeWithTag("transit_leg_1_direction", useUnmergedTree = true).assertTextEquals("Towards Charlie Town")
         rule.onNodeWithTag("transit_leg_1_board", useUnmergedTree = true).assertTextEquals("Board at Alpha Square")
         rule.onNodeWithTag("transit_leg_1_stops", useUnmergedTree = true).assertTextEquals("2 stops")
