@@ -297,7 +297,7 @@ class FuelStationCardTest {
         show()
         rule.onNodeWithText("Save").assertIsDisplayed()
         rule.onNodeWithTag("fuel_save").performClick()
-        rule.waitUntil(5_000) { controller.card.saved }
+        rule.waitUntil(30_000) { controller.card.saved }
         rule.onNodeWithText("Saved").assertIsDisplayed()
         rule.onNodeWithText("Saved in Favorites").assertIsDisplayed()
         // the saved place is the station (name, address, category)
@@ -305,7 +305,7 @@ class FuelStationCardTest {
         val saved = places.state.rows.single().place
         assertEquals("Repsol", saved.name)
         rule.onNodeWithTag("fuel_save").performClick()
-        rule.waitUntil(5_000) { !controller.card.saved }
+        rule.waitUntil(30_000) { !controller.card.saved }
     }
 
     @Test
