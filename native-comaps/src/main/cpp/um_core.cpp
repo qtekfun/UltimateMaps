@@ -166,6 +166,42 @@ int32_t WireTurnOf(routing::turns::TurnItem const & t)
   }
 }
 
+// Fills out.altitudes: one value per point of route.GetPoly() (start junction + one per route segment). Left empty if
+// the counts disagree or no point has a height, so the app never gets altitudes it cannot align with the geometry.
+void FillAltitudes(routing::Route const & route, RouteOut & out)
+{
+  try
+  {
+    if (route.GetSubrouteCount() == 0)
+      return;
+    geometry::Altitudes alts;
+    route.GetAltitudes(alts);
+    if (alts.size() != route.GetPoly().GetSize())
+      return;
+    bool any = false;
+    out.altitudes.reserve(alts.size());
+    for (auto const a : alts)
+    {
+      if (a == geometry::kInvalidAltitude)
+      {
+        out.altitudes.push_back(kNoAltitude);
+      }
+      else
+      {
+        out.altitudes.push_back(static_cast<double>(a));
+        any = true;
+      }
+    }
+    if (!any)
+      out.altitudes.clear();
+  }
+  catch (RootException const & e)
+  {
+    LOG(LWARNING, ("Altitudes failed:", e.Msg()));
+    out.altitudes.clear();
+  }
+}
+
 // Fills out.guidance / out.guidanceNames from route.GetRouteSegments(). The geometry indices are those of
 // route.GetPoly(): there is one more point than segments and the maneuver of segment i falls on point i+1 (TurnItem::m_index).
 void FillGuidance(routing::Route const & route, RouteOut & out)
@@ -325,7 +361,10 @@ struct Core::Impl
         numMwmIds->RegisterFile(cf);
     }
 
-    bool const loadAltitudes = vt != routing::VehicleType::Car;
+    // Altitudes feed the elevation profile (docs/phase2/elevation.md), so every vehicle loads them. For the car it
+    // costs one cached read of the mwm altitude section per loaded road feature; if routing latency ever suffers,
+    // revert this line to `vt != routing::VehicleType::Car` and the car route simply has no profile.
+    bool const loadAltitudes = true;
     auto router = std::make_unique<routing::IndexRouter>(vt, loadAltitudes, parentGetter, countryFileGetter,
                                                          getMwmRect, numMwmIds,
                                                          routing::MakeNumMwmTree(*numMwmIds, *infoGetter),
@@ -601,6 +640,7 @@ RouteOut Core::Route(Profile profile, std::vector<double> const & pts, int32_t a
         out.latLon.push_back(ll.m_lat);
         out.latLon.push_back(ll.m_lon);
       }
+      FillAltitudes(route, out);
       out.distanceMeters = route.GetTotalDistanceMeters();
       out.durationSeconds = route.GetTotalTimeSec();
       if (withGuidance)
