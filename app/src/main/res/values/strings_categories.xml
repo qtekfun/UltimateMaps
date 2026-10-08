@@ -11,6 +11,7 @@
     <string name="category_parking">Parking</string>
     <string name="category_lodging">Lodging</string>
     <string name="category_toilets">Toilets</string>
+    <string name="category_drinking_water">Drinking water</string>
 
     <!-- The category name the search core looks for (not shown to the user; must be a name from its category list) -->
     <string name="category_query_pharmacy">pharmacy</string>
@@ -23,6 +24,7 @@
     <string name="category_query_parking">parking</string>
     <string name="category_query_lodging">hotel</string>
     <string name="category_query_toilets">toilet</string>
+    <string name="category_query_drinking_water">drinking water</string>
 
     <string name="category_distance_note">Distances are in a straight line from your location or the map center.</string>
     <string name="category_none">Nothing found nearby in the downloaded maps.</string>
