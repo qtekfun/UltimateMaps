@@ -15,6 +15,8 @@ import com.qtekfun.ultimatemaps.core.voice.LanguageSupport
 import com.qtekfun.ultimatemaps.core.voice.Scheduler
 import com.qtekfun.ultimatemaps.core.voice.SpeechEngine
 import com.qtekfun.ultimatemaps.core.voice.VoiceLanguage
+import com.qtekfun.ultimatemaps.core.voice.VoiceLocale
+import java.util.Locale
 
 /** Audio attributes of the voice: navigation guidance, spoken content (the system never ducks speech of this kind). */
 internal fun guidanceAudioAttributes(): AudioAttributes = AudioAttributes.Builder()
@@ -71,11 +73,33 @@ class AndroidSpeechEngine(private val context: Context, private val enginePackag
 
     override fun setLanguage(language: VoiceLanguage): LanguageSupport {
         val t = tts ?: return LanguageSupport.NOT_SUPPORTED
-        return when (t.setLanguage(language.locale)) {
-            TextToSpeech.LANG_AVAILABLE, TextToSpeech.LANG_COUNTRY_AVAILABLE, TextToSpeech.LANG_COUNTRY_VAR_AVAILABLE -> LanguageSupport.AVAILABLE
-            TextToSpeech.LANG_MISSING_DATA -> LanguageSupport.MISSING_DATA
-            else -> LanguageSupport.NOT_SUPPORTED
+        // Region first (the phone's own, or Spain), the bare language last: asking only for "es" gives the engine's default,
+        // usually Latin American Spanish. See VoiceLocale.
+        var worst = LanguageSupport.NOT_SUPPORTED
+        for (candidate in VoiceLocale.candidates(language, Locale.getDefault())) {
+            when (t.setLanguage(candidate)) {
+                TextToSpeech.LANG_AVAILABLE, TextToSpeech.LANG_COUNTRY_AVAILABLE, TextToSpeech.LANG_COUNTRY_VAR_AVAILABLE -> {
+                    chooseVoice(t, candidate)
+                    return LanguageSupport.AVAILABLE
+                }
+                TextToSpeech.LANG_MISSING_DATA -> worst = LanguageSupport.MISSING_DATA
+                else -> Unit
+            }
         }
+        return worst
+    }
+
+    /** Picks the best installed offline voice of the wanted region; keeps the engine's own choice when none fits. */
+    private fun chooseVoice(t: TextToSpeech, wanted: Locale) {
+        val all = runCatching { t.voices }.getOrNull().orEmpty()
+        val options = all.map {
+            VoiceLocale.VoiceOption(
+                it.name, it.locale, it.quality, it.isNetworkConnectionRequired,
+                installed = !it.features.contains(TextToSpeech.Engine.KEY_FEATURE_NOT_INSTALLED),
+            )
+        }
+        val best = VoiceLocale.pickVoice(options, wanted) ?: return
+        all.firstOrNull { it.name == best.name }?.let { runCatching { t.voice = it } }
     }
 
     override fun speak(id: String, text: String, volume: Float): Boolean {
