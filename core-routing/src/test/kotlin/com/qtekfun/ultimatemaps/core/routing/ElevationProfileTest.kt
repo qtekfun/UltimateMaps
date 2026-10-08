@@ -155,8 +155,8 @@ class ElevationProfileTest {
         assertTrue(back.altitudes[1].isNaN())
         val none = encode(plan.copy(altitudes = emptyList()))
         assertTrue(decode(none).altitudes.isEmpty())
-        // A version 2 file is the same bytes without the trailing altitude count, with the version byte set to 2.
-        val v2 = none.copyOf(none.size - 4).also { it[0] = 2 }
+        // A version 2 file is the same bytes without the trailing altitude and exit counts, with the version byte set to 2.
+        val v2 = none.copyOf(none.size - 8).also { it[0] = 2 }
         assertTrue(decode(v2).altitudes.isEmpty())
     }
 }
