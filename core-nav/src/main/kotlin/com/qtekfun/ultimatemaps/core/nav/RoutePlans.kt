@@ -4,6 +4,7 @@ import com.qtekfun.ultimatemaps.core.geo.LatLon
 import com.qtekfun.ultimatemaps.core.routing.RouteGuidance
 import com.qtekfun.ultimatemaps.core.routing.RoutePlan
 import com.qtekfun.ultimatemaps.core.routing.SpeedLimit
+import com.qtekfun.ultimatemaps.core.routing.TunnelRange
 
 private fun LatLon.isUsable() = lat.isFinite() && lon.isFinite() && lat in -90.0..90.0 && lon in -180.0..180.0
 
@@ -38,6 +39,7 @@ fun RoutePlan.sanitized(): RoutePlan {
             g.maneuvers.map { it.copy(geometryIndex = map(it.geometryIndex)) },
             g.speedLimits.map { SpeedLimit(map(it.startIndex), map(it.endIndex), it.kmh) },
             g.stops.map(::map),
+            g.tunnels.map { TunnelRange(map(it.startIndex), map(it.endIndex)) },
         ),
     )
 }

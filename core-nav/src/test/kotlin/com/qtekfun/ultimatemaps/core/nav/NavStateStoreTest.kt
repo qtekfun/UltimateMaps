@@ -1,5 +1,6 @@
 package com.qtekfun.ultimatemaps.core.nav
 
+import com.qtekfun.ultimatemaps.core.routing.TunnelRange
 import com.qtekfun.ultimatemaps.core.routing.Lane
 import com.qtekfun.ultimatemaps.core.routing.LaneDirection
 import com.qtekfun.ultimatemaps.core.routing.Maneuver
@@ -99,5 +100,39 @@ class NavStateStoreTest {
         assertFalse(store.save(rich(), 99.0))
         assertEquals(7.0, store.load()!!.progressMeters)
         blocked.deleteRecursively()
+    }
+
+    @Test fun codecRoundTripsTunnelRanges() {
+        val plan = rich().let { it.copy(guidance = it.guidance.copy(tunnels = listOf(TunnelRange(2, 5), TunnelRange(7, 9)))) }
+        val bytes = ByteArrayOutputStream().also { RoutePlanCodec.write(DataOutputStream(it), plan) }.toByteArray()
+        assertEquals(plan, RoutePlanCodec.read(DataInputStream(ByteArrayInputStream(bytes))))
+    }
+
+    @Test fun codecStillReadsVersion1WithoutTunnels() {
+        val bytes = ByteArrayOutputStream().also { b ->
+            DataOutputStream(b).apply {
+                writeByte(1)
+                writeDouble(100.0)
+                writeDouble(10.0)
+                writeInt(2)
+                repeat(2) { writeDouble(40.0 + it * 0.001); writeDouble(-3.0) }
+                writeInt(0)  // maneuvers
+                writeInt(0)  // limits
+                writeInt(0)  // stops
+            }
+        }.toByteArray()
+        val plan = RoutePlanCodec.read(DataInputStream(ByteArrayInputStream(bytes)))
+        assertEquals(2, plan.geometry.size)
+        assertTrue(plan.guidance.tunnels.isEmpty())
+    }
+
+    @Test fun planDefaultsHaveNoTunnels() {
+        assertTrue(RoutePlan(listOf(pt(0.0, 0.0), pt(0.0, 10.0)), 10.0, 1.0).guidance.tunnels.isEmpty())
+        assertTrue(RouteGuidance.EMPTY.tunnels.isEmpty())
+    }
+
+    @Test fun sanitizingKeepsTunnelRangesInsideTheDoubledPoint() {
+        val plan = RoutePlan(listOf(pt(0.0, 0.0)), 0.0, 0.0, RouteGuidance(tunnels = listOf(TunnelRange(0, 7))))
+        assertEquals(listOf(TunnelRange(0, 1)), plan.sanitized().guidance.tunnels)
     }
 }

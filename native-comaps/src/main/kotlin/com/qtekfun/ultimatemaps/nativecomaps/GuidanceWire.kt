@@ -5,6 +5,7 @@ import com.qtekfun.ultimatemaps.core.routing.LaneDirection
 import com.qtekfun.ultimatemaps.core.routing.Maneuver
 import com.qtekfun.ultimatemaps.core.routing.RouteGuidance
 import com.qtekfun.ultimatemaps.core.routing.SpeedLimit
+import com.qtekfun.ultimatemaps.core.routing.TunnelRange
 import com.qtekfun.ultimatemaps.core.routing.TurnType
 
 /**
@@ -13,6 +14,7 @@ import com.qtekfun.ultimatemaps.core.routing.TurnType
  * `[version, nManeuvers, nLimits, maneuvers..., limits...]`
  * - maneuver: `geometryIndex, turn, roundaboutExit(-1), nameIndex(-1), nLanes, (laneWayMask, recommended)*`
  * - limit: `from, to, kmh(-1 = no data)`
+ * - optional trailing tunnel section (only when the route has tunnels): `nTunnels, (from, to)*` as point indices
  * An empty array means "no guidance". Any inconsistency throws [IllegalArgumentException] (it never reads out of bounds).
  */
 internal object GuidanceWire {
@@ -64,8 +66,19 @@ internal object GuidanceWire {
             require(kmh == -1 || kmh in 1..400) { "invalid speed limit: $kmh" }
             limits += SpeedLimit(start, end, if (kmh == -1) null else kmh)
         }
+        val tunnels = ArrayList<TunnelRange>()
+        if (!r.exhausted()) {
+            repeat(r.count("nTunnels", raw.size)) {
+                val start = r.int("tunnelFrom")
+                val end = r.int("tunnelTo")
+                require(start in 0 until geometrySize && end in start until geometrySize) {
+                    "invalid tunnel stretch: $start..$end (points: $geometrySize)"
+                }
+                tunnels += TunnelRange(start, end)
+            }
+        }
         require(r.exhausted()) { "guidance with leftover data: ${raw.size - r.pos}" }
-        return RouteGuidance(maneuvers, limits)
+        return RouteGuidance(maneuvers, limits, tunnels = tunnels)
     }
 
     private class Reader(private val a: DoubleArray) {
