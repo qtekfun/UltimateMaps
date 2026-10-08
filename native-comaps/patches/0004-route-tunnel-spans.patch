@@ -1,0 +1,94 @@
+--- a/libs/routing/loaded_path_segment.hpp
++++ b/libs/routing/loaded_path_segment.hpp
+@@ -30,6 +30,7 @@
+   bool m_onRoundabout = false;
+   bool m_isLink = false;
+   bool m_isOneWay = false;
++  bool m_isTunnel = false;  // UltimateMaps: the feature has a highway|*|tunnel type
+ 
+   bool IsValid() const { return m_path.size() > 1; }
+ };
+--- a/libs/routing/route.hpp
++++ b/libs/routing/route.hpp
+@@ -182,6 +182,10 @@
+   void SetTraffic(traffic::SpeedGroup group) { m_traffic = group; }
+ 
+   SpeedInUnits const & GetSpeedLimit() const { return m_speedLimit; }
++
++  // UltimateMaps: the road feature of this segment is tagged as a tunnel (OSM tunnel=*).
++  bool IsTunnel() const { return m_isTunnel; }
++  void SetTunnel(bool isTunnel) { m_isTunnel = isTunnel; }
+   void SetSpeedLimit(SpeedInUnits const & speed) { m_speedLimit = speed; }
+ 
+ private:
+@@ -201,6 +205,8 @@
+   /// Speed limit of |m_segment| if any.
+   SpeedInUnits m_speedLimit;
+ 
++  bool m_isTunnel = false;
++
+   /// Distance from the route (not the subroute) beginning to the farthest end of |m_segment| in meters.
+   double m_distFromBeginningMeters = 0.0;
+ 
+--- a/libs/routing/directions_engine.cpp
++++ b/libs/routing/directions_engine.cpp
+@@ -10,6 +10,7 @@
+ #include "routing/turn_candidate.hpp"
+ #include "routing/turns.hpp"
+ 
++#include "indexer/classificator.hpp"
+ #include "indexer/feature_data.hpp"
+ #include "indexer/feature_meta.hpp"
+ #include "indexer/ftypes_matcher.hpp"
+@@ -78,6 +79,27 @@
+   return m_dataSource.GetFeature(featureId);
+ }
+ 
++namespace
++{
++// UltimateMaps: true if one of the types is highway|<class>|tunnel (the generator gives a tunnel road one of those).
++bool HasHighwayTunnelType(feature::TypesHolder const & types)
++{
++  auto const & c = classif();
++  for (uint32_t t : types)
++  {
++    if (ftype::GetLevel(t) != 3)
++      continue;
++    auto const * p = c.GetRoot()->GetObject(ftype::GetValue(t, 0));
++    if (p->GetName() != "highway")
++      continue;
++    p = p->GetObject(ftype::GetValue(t, 1))->GetObject(ftype::GetValue(t, 2));
++    if (p->GetName() == "tunnel")
++      return true;
++  }
++  return false;
++}
++}  // namespace
++
+ void DirectionsEngine::LoadPathAttributes(FeatureID const & featureId, LoadedPathSegment & pathSegment, bool isForward)
+ {
+   if (!featureId.IsValid())
+@@ -97,6 +119,7 @@
+   pathSegment.m_isLink = m_linkChecker(types);
+   pathSegment.m_onRoundabout = m_roundAboutChecker(types);
+   pathSegment.m_isOneWay = m_onewayChecker(types);
++  pathSegment.m_isTunnel = HasHighwayTunnelType(types);
+ 
+   pathSegment.m_roadNameInfo.m_mwmId = ft->GetID();
+   pathSegment.m_roadNameInfo.m_isLink = pathSegment.m_isLink;
+@@ -354,6 +377,7 @@
+     {
+       auto const & junction = loadedSegment.m_path[i + 1];
+       routeSegments.emplace_back(loadedSegment.m_segments[i], TurnItem(), junction, rni);
++      routeSegments.back().SetTunnel(loadedSegment.m_isTunnel);
+       if (i == 0)
+         rni = {"", "", "", "", "", loadedSegment.m_isLink};
+     }
+@@ -370,6 +394,7 @@
+       --skipTurnSegments;
+ 
+     routeSegments.emplace_back(loadedSegment.m_segments.back(), turnItem, loadedSegment.m_path.back(), rni);
++    routeSegments.back().SetTunnel(loadedSegment.m_isTunnel);
+   }
+ 
+   // ASSERT_EQUAL(routeSegments.front().GetJunction(), result.GetStartPoint(), ());

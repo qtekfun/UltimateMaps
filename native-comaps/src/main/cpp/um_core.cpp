@@ -249,12 +249,38 @@ void FillGuidance(routing::Route const & route, RouteOut & out)
     }
   }
 
-  out.guidance.reserve(3 + maneuvers.size() + limits.size());
+  // Tunnels: one stretch per run of segments flagged as tunnel (patch 0004); segment i = points [i, i+1]. The section
+  // [nTunnels, from, to, ...] is appended after the limits only if there is at least one, so a route without tunnels
+  // is byte-identical to the previous wire format.
+  std::vector<double> tunnels;
+  size_t nTun = 0;
+  for (size_t i = 0; i < segs.size();)
+  {
+    if (!segs[i].IsTunnel())
+    {
+      ++i;
+      continue;
+    }
+    size_t j = i;
+    while (j + 1 < segs.size() && segs[j + 1].IsTunnel())
+      ++j;
+    tunnels.push_back(static_cast<double>(i));
+    tunnels.push_back(static_cast<double>(std::min(j + 1, pointCount - 1)));
+    ++nTun;
+    i = j + 1;
+  }
+
+  out.guidance.reserve(3 + maneuvers.size() + limits.size() + (nTun ? 1 + tunnels.size() : 0));
   out.guidance.push_back(kGuidanceWireVersion);
   out.guidance.push_back(static_cast<double>(nMan));
   out.guidance.push_back(static_cast<double>(nLim));
   out.guidance.insert(out.guidance.end(), maneuvers.begin(), maneuvers.end());
   out.guidance.insert(out.guidance.end(), limits.begin(), limits.end());
+  if (nTun > 0)
+  {
+    out.guidance.push_back(static_cast<double>(nTun));
+    out.guidance.insert(out.guidance.end(), tunnels.begin(), tunnels.end());
+  }
 }
 }  // namespace
 

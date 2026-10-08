@@ -1,5 +1,6 @@
 package com.qtekfun.ultimatemaps.nativecomaps
 
+import com.qtekfun.ultimatemaps.core.routing.TunnelRange
 import com.qtekfun.ultimatemaps.core.geo.LatLon
 import com.qtekfun.ultimatemaps.core.routing.Lane
 import com.qtekfun.ultimatemaps.core.routing.LaneDirection
@@ -163,5 +164,42 @@ class GuidanceWireTest {
 
     @Test fun `malformed route part of a guided reply is still rejected`() {
         assertFailsWith<IllegalArgumentException> { decodeGuidedRoute(RawGuidedRoute(d(0, 1), DoubleArray(0), emptyArray())) }
+    }
+
+    @Test fun `trailing tunnel section is decoded`() {
+        val g = decode(d(1, 0, 0, 2, 1, 3, 6, 9))
+        assertEquals(listOf(TunnelRange(1, 3), TunnelRange(6, 9)), g.tunnels)
+    }
+
+    @Test fun `tunnel section follows the limits`() {
+        val g = decode(d(1, 0, 1, 0, 9, 50, 1, 2, 4))
+        assertEquals(listOf(SpeedLimit(0, 9, 50)), g.speedLimits)
+        assertEquals(listOf(TunnelRange(2, 4)), g.tunnels)
+    }
+
+    @Test fun `no tunnel section means no tunnels`() {
+        assertTrue(decode(d(1, 0, 0)).tunnels.isEmpty())
+    }
+
+    @Test fun `bad tunnel sections are rejected`() {
+        assertFailsWith<IllegalArgumentException> { decode(d(1, 0, 0, 1, 3, 2)) }  // end before start
+        assertFailsWith<IllegalArgumentException> { decode(d(1, 0, 0, 1, 3, 10)) }  // end outside the 10 points
+        assertFailsWith<IllegalArgumentException> { decode(d(1, 0, 0, 2, 1, 3)) }  // truncated
+        assertFailsWith<IllegalArgumentException> { decode(d(1, 0, 0, 1, 1, 3, 7)) }  // leftover data
+        assertFailsWith<IllegalArgumentException> { decode(d(1, 0, 0, -1)) }
+    }
+
+    @Test fun `a guided reply with tunnels reaches the plan`() {
+        val route = d(0, 1500, 120, 40.0, -3.0, 40.1, -3.1, 40.2, -3.2)
+        val out = decodeGuidedRoute(RawGuidedRoute(route, d(1, 0, 0, 1, 1, 2), emptyArray()))
+        assertEquals(listOf(TunnelRange(1, 2)), out.plan!!.guidance.tunnels)
+        assertEquals(null, out.guidanceError)
+    }
+
+    @Test fun `a malformed tunnel section only drops the guidance`() {
+        val route = d(0, 1500, 120, 40.0, -3.0, 40.1, -3.1)
+        val out = decodeGuidedRoute(RawGuidedRoute(route, d(1, 0, 0, 1, 1, 5), emptyArray()))
+        assertTrue(out.plan!!.guidance.tunnels.isEmpty())
+        assertNotNull(out.guidanceError)
     }
 }
