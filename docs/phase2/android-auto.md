@@ -1,4 +1,18 @@
-# Android Auto: analysis and plan
+# Android Auto: analysis (NOT PLANNED: dropped by the owner)
+
+> **Decision, 2026-10-08 (owner): Android Auto is dropped. We do not build it.**
+> The project does not depend on Google for anything that touches the user. Android Auto needs Google's proprietary host app
+> on the phone, and as this analysis found: (a) the street and destination names shown on the car screen go through Google's
+> host; (b) the host checks and restricts which apps may appear (a navigation app has to be in a Google-approved category, and
+> for a real car the documented path is an install from Google Play, which F-Droid and GitHub APKs may not satisfy; Unknown
+> sources does not apply to Car App Library apps); (c) the Car App Library is only a client of that host, so the feature is
+> useless without Google's app. That conflicts with the non-negotiable decisions in `CLAUDE.md` (no Google as a provider, no
+> dependence on proprietary software for core features, privacy). The rest of this document is kept as the record of the analysis,
+> in case the decision is ever reopened. Nothing below is scheduled; ignore its roadmap.
+>
+> Alternatives that need nothing from Google, not planned either: a plain Bluetooth/USB car integration is not possible for
+> maps; the car can show the phone's screen only through Google's host (Android Auto) or the maker's own mirroring.
+
 
 Date: 2026-10-08. Status: plan only, no app code written. Author: research agent. Nothing here was run on a device, on the Desktop Head Unit (DHU) or in a car. Every statement is tagged by how it was obtained:
 
