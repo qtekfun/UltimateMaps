@@ -1,5 +1,6 @@
 package com.qtekfun.ultimatemaps.route
 
+import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.junit4.createComposeRule
@@ -33,6 +34,7 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import java.io.File
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 /** The route card's "Start" and "Simulate" buttons. */
 @RunWith(RobolectricTestRunner::class)
@@ -43,13 +45,14 @@ class RoutePanelStartTest {
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
     private val line = listOf(LatLon(40.0, -3.0), LatLon(40.1, -3.1))
+    private var plan = RoutePlan(line, 12_345.0, 1_500.0)
 
     private val route = RoutePreviewController(
         scope, Dispatchers.IO,
         object : InstalledRegions { override fun coreMaps() = CoreMaps(File("/maps"), 1) },
         backend = { _, _ ->
             object : DetailedRoutingEngine {
-                override fun routeDetailed(request: RouteRequest) = RouteOutcome(RouteCode.NO_ERROR, RoutePlan(line, 12_345.0, 1_500.0))
+                override fun routeDetailed(request: RouteRequest) = RouteOutcome(RouteCode.NO_ERROR, plan)
                 override fun route(request: RouteRequest) = routeDetailed(request).plan
                 override fun close() = Unit
             }
@@ -105,5 +108,14 @@ class RoutePanelStartTest {
         launchState.failure = RouteFailure(RouteFailureKind.NEED_MORE_MAPS, RouteAdvice.DOWNLOAD_MAPS)
         showWith(host)
         rule.onNodeWithTag("route_start_status").assertIsDisplayed()
+    }
+
+    @Test fun `the elevation line sits below the summary and does not overlap it next to Start`() {
+        val long = List(1001) { LatLon(40.0 + it * 1e-4, -3.0) }
+        plan = RoutePlan(long, 12_345.0, 1_500.0, altitudes = List(1001) { if (it <= 500) 600.0 + it * 0.2 else 700.0 - (it - 500) * 0.1 })
+        showWith(host)
+        val summary = rule.onNodeWithTag("route_summary").fetchSemanticsNode().boundsInRoot
+        val elevation = rule.onNodeWithTag("route_elevation").fetchSemanticsNode().boundsInRoot
+        assertTrue(elevation.top >= summary.bottom - 1f, "the elevation line $elevation overlaps the summary $summary")
     }
 }
