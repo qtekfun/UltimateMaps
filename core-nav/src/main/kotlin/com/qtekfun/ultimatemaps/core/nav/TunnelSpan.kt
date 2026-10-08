@@ -151,12 +151,15 @@ class LearnedTunnelStore(
 enum class MotionState { UNKNOWN, STOPPED, MOVING }
 
 /**
- * Stop/go detection while there is no GNSS (an IMU on the device). Only an interface here: the Android
- * implementation is a later step that needs a device to tune. Must be cheap and must not allocate; the data
+ * Stop/go detection while there is no GNSS (an IMU on the device). The Android implementation
+ * is `AndroidStopGoSignal` (app module). Must be cheap and must not allocate; the data
  * stays in memory and is never logged.
  */
 fun interface StopGoSignal {
     fun motionState(nowMillis: Long): MotionState
+
+    /** The loss is over (a fix returned) or the navigation ended: free any sensor. Must be cheap and idempotent. */
+    fun release() {}
 
     companion object {
         val NONE = StopGoSignal { MotionState.UNKNOWN }

@@ -223,6 +223,7 @@ class RouteTracker(
         anchorTime = t
         estimated = false
         errorMeters = 0.0
+        if (lossBegun) stopGo.release()
         lossBegun = false
         lossSpan = -1
         estimator.onFix(t, progress, fixSpeed, speed, acc)

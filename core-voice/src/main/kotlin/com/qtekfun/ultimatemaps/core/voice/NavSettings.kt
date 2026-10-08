@@ -66,6 +66,8 @@ data class NavSettings(
     val buildings3d: Boolean = true,
     /** Android 16+: show the distance to the next turn as a chip in the status bar (promoted Live Update). */
     val liveUpdateChip: Boolean = true,
+    /** While the GPS is lost in a known tunnel, read the accelerometer to tell a stopped car from a moving one. Nothing is stored. */
+    val motionSensorsInTunnels: Boolean = true,
 ) {
     fun normalized(): NavSettings = copy(volumePercent = volumePercent.coerceIn(MIN_VOLUME, 100))
 
