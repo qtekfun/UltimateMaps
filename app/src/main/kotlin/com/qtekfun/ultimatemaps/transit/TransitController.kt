@@ -7,8 +7,13 @@ import com.qtekfun.ultimatemaps.core.geo.LatLon
 import com.qtekfun.ultimatemaps.core.map.TransitMapLeg
 import com.qtekfun.ultimatemaps.core.transit.Itinerary
 import com.qtekfun.ultimatemaps.core.transit.ItineraryLeg
+import com.qtekfun.ultimatemaps.core.transit.PlanOptions
+import com.qtekfun.ultimatemaps.core.transit.TransitMode
 import com.qtekfun.ultimatemaps.core.transit.TransitPlan
 import com.qtekfun.ultimatemaps.core.transit.TransitService
+import com.qtekfun.ultimatemaps.transit.follow.TransitPlanningDefaults
+import com.qtekfun.ultimatemaps.transit.follow.TransitTripSettingsStore
+import com.qtekfun.ultimatemaps.transit.follow.planOptions
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
@@ -63,7 +68,7 @@ fun interface TransitSource {
 
 enum class TransitPhase { IDLE, NEEDS_ORIGIN, COMPUTING, DONE, ERROR }
 
-enum class TransitError { NO_DATA, NOT_DOWNLOADED, ACROSS_INDEXES, OUTSIDE_COVERAGE, EXPIRED, NOT_YET_VALID, NO_ROUTE, INTERNAL }
+enum class TransitError { NO_DATA, NOT_DOWNLOADED, ACROSS_INDEXES, OUTSIDE_COVERAGE, EXPIRED, NOT_YET_VALID, NO_ROUTE, NO_ROUTE_MODES, INTERNAL }
 
 /** Observable state of the transit mode of the route panel. Written from the main thread only. */
 class TransitState {
@@ -83,6 +88,16 @@ class TransitState {
     var departure by mutableStateOf<LocalDateTime?>(null)
     var zone by mutableStateOf(ZoneId.systemDefault())
     var itineraries by mutableStateOf<List<Itinerary>>(emptyList())
+
+    /** The modes the traveller allows (the chips); only [TransitMode.FILTERABLE] ones. */
+    var modes by mutableStateOf<Set<TransitMode>>(TransitPlanningDefaults.ALL_MODES)
+
+    /** Modes of the city's index (from the last answer); the chips shown are the filterable ones in it. */
+    var availableModes by mutableStateOf<Set<TransitMode>>(emptySet())
+
+    /** The chip row is useful only when the index has two or more switchable modes. */
+    val chipModes: List<TransitMode> get() = TransitMode.FILTERABLE.filter { it in availableModes }
+    val showModeChips: Boolean get() = chipModes.size >= 2
 
     /** The itinerary drawn on the map (and shown in the card when [detail]). */
     var selected by mutableStateOf(0)
@@ -113,8 +128,29 @@ class TransitController(
     private val onStartTrip: ((Itinerary, ZoneId) -> Boolean)? = null,
     /** Cercanías real time for the cards; null hides it (tests, or no source). */
     val realTime: TransitRealTime? = null,
+    /** The planner settings (allowed modes and walking limits); null plans with the defaults and does not remember the chips. */
+    private val settings: TransitTripSettingsStore? = null,
 ) {
-    val state = TransitState()
+    val state = TransitState().also { st -> settings?.let { st.modes = it.allowedModes.value } }
+
+    /** Sets one mode chip and plans again; remembered across runs. */
+    fun setMode(mode: TransitMode, on: Boolean) {
+        if (mode !in TransitMode.FILTERABLE) return
+        applyModes(if (on) state.modes + mode else state.modes - mode)
+    }
+
+    /** All modes on again. */
+    fun resetModes() = applyModes(TransitPlanningDefaults.ALL_MODES)
+
+    private fun applyModes(modes: Set<TransitMode>) {
+        if (modes == state.modes) return
+        state.modes = modes
+        settings?.setAllowedModes(modes)
+        replanIfActive()
+    }
+
+    /** The planner options for the next query: the settings' limits and the chips' modes. */
+    private fun options(): PlanOptions = (settings?.planOptions() ?: PlanOptions()).copy(modes = state.modes + TransitMode.OTHER)
 
     /** The itinerary card offers a Start button. */
     val canStartTrip: Boolean get() = onStartTrip != null
@@ -149,9 +185,10 @@ class TransitController(
         state.phase = TransitPhase.COMPUTING
         val chosen = state.departure
         val zone = state.zone
+        val options = options()
         job = scope.launch {
             val outcome: Outcome = try {
-                withContext(io) { compute(from, to, chosen, zone) }
+                withContext(io) { compute(from, to, chosen, zone, options) }
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
@@ -163,10 +200,17 @@ class TransitController(
 
     private sealed interface Outcome {
         data class Found(val itineraries: List<Itinerary>, val service: TransitService, val city: String) : Outcome
-        data class Failed(val error: TransitError, val city: String? = null, val date: LocalDate? = null, val zone: ZoneId? = null, val city2: String? = null) : Outcome
+        data class Failed(
+            val error: TransitError,
+            val city: String? = null,
+            val date: LocalDate? = null,
+            val zone: ZoneId? = null,
+            val city2: String? = null,
+            val available: Set<TransitMode>? = null,
+        ) : Outcome
     }
 
-    private fun compute(from: LatLon, to: LatLon, chosen: LocalDateTime?, zone: ZoneId): Outcome {
+    private fun compute(from: LatLon, to: LatLon, chosen: LocalDateTime?, zone: ZoneId, options: PlanOptions): Outcome {
         return when (val lookup = source.lookup(from, to)) {
             TransitLookup.NoData -> Outcome.Failed(TransitError.NO_DATA)
             TransitLookup.OutsideCoverage -> Outcome.Failed(TransitError.OUTSIDE_COVERAGE)
@@ -176,9 +220,10 @@ class TransitController(
             is TransitLookup.Ready -> {
                 val service = lookup.service
                 val whenAt = chosen?.atZone(service.zone)?.toInstant() ?: clock.now()
-                when (val plan = service.plan(from, to, whenAt)) {
+                when (val plan = service.plan(from, to, whenAt, options = options)) {
                     is TransitPlan.Found -> Outcome.Found(plan.itineraries, service, lookup.city)
-                    TransitPlan.NoRoute -> Outcome.Failed(TransitError.NO_ROUTE, lookup.city, zone = service.zone)
+                    TransitPlan.NoRoute -> Outcome.Failed(TransitError.NO_ROUTE, lookup.city, zone = service.zone, available = service.availableModes)
+                    TransitPlan.NoRouteWithModes -> Outcome.Failed(TransitError.NO_ROUTE_MODES, lookup.city, zone = service.zone, available = service.availableModes)
                     is TransitPlan.Expired -> Outcome.Failed(TransitError.EXPIRED, lookup.city, plan.lastDay, service.zone)
                     is TransitPlan.NotYetValid -> Outcome.Failed(TransitError.NOT_YET_VALID, lookup.city, plan.firstDay, service.zone)
                 }
@@ -190,6 +235,7 @@ class TransitController(
         when (outcome) {
             is Outcome.Found -> {
                 state.zone = outcome.service.zone
+                state.availableModes = outcome.service.availableModes
                 state.itineraries = outcome.itineraries
                 state.selected = 0
                 state.detail = false
@@ -203,6 +249,7 @@ class TransitController(
             }
             is Outcome.Failed -> {
                 outcome.zone?.let { state.zone = it }
+                outcome.available?.let { state.availableModes = it }
                 state.error = outcome.error
                 state.errorCity = outcome.city
                 state.errorCity2 = outcome.city2

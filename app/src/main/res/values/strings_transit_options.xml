@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Mode chips of the public-transport route panel -->
+    <string name="transit_mode_bus">Bus</string>
+    <string name="transit_mode_metro">Metro</string>
+    <string name="transit_mode_tram">Tram</string>
+    <string name="transit_mode_train">Train</string>
+    <string name="transit_mode_ferry">Ferry</string>
+    <string name="transit_mode_other">Other</string>
+    <string name="transit_modes_reset">Reset</string>
+    <string name="transit_err_no_route_modes">No route with the selected transport</string>
+    <string name="transit_note_walk_as_fast">Walking is about as fast</string>
+
+    <!-- Settings: public-transport planning -->
+    <string name="transit_plan_title">Public transport planning</string>
+    <string name="transit_plan_minutes">%1$d min</string>
+    <string name="transit_plan_walk_title">Show walking when it takes under</string>
+    <string name="transit_plan_walk_body">The walking option is always listed next to the transit options when the walk takes less than this.</string>
+    <string name="transit_plan_saving_title">Prefer walking if transit saves less than</string>
+    <string name="transit_plan_saving_body">A transit option that saves less time than this (or less than 20% of the walk) is left out when walking is listed.</string>
+    <string name="transit_plan_maxwalk_title">Max walking per trip</string>
+    <string name="transit_plan_maxwalk_body">Transit options that need more walking in total than this are left out.</string>
+    <string name="transit_plan_maxwalk_none">No limit</string>
+</resources>
