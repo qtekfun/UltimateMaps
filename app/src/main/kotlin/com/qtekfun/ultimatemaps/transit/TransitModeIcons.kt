@@ -55,7 +55,12 @@ internal object TransitModeIcons {
     }
     private val other by lazy { build("mode_other", "M12 12m-8 0a8 8 0 1 0 16 0a8 8 0 1 0-16 0Z", "M12 8V12L15 14") }
 
-    fun of(mode: TransitMode): ImageVector = when (mode) {
+    /** A walking person: head, torso, arm and two legs. */
+    val walk by lazy {
+        build("walk", "M13 4.5m-1.2 0a1.2 1.2 0 1 0 2.4 0a1.2 1.2 0 1 0-2.4 0Z", "M13 8L10.5 13L13 16V21", "M10.5 13L8 20", "M8 11L11 9.5L15 11.5")
+    }
+
+    fun of(mode:TransitMode): ImageVector = when (mode) {
         TransitMode.BUS -> bus
         TransitMode.TRAM -> tram
         TransitMode.TRAIN -> train

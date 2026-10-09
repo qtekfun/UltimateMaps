@@ -32,6 +32,12 @@
     <string name="transit_walking">%1$s walking</string>
     <string name="transit_option_description">Option %1$d: %2$s, arriving %3$s, %4$s, %5$s</string>
     <string name="transit_chip_walk">Walk</string>
+    <string name="transit_walk_pill">%1$d min</string>
+    <string name="transit_walk_only_pill">Walk · %1$d min</string>
+    <plurals name="transit_walk_description">
+        <item quantity="one">Walk %d minute</item>
+        <item quantity="other">Walk %d minutes</item>
+    </plurals>
 
     <!-- Itinerary card -->
     <string name="transit_back">Back to options</string>

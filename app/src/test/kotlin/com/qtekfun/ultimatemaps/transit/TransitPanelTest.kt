@@ -13,6 +13,9 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import com.qtekfun.ultimatemaps.core.geo.LatLon
+import com.qtekfun.ultimatemaps.core.transit.ItineraryLeg
+import com.qtekfun.ultimatemaps.core.transit.JourneyBadge
+import com.qtekfun.ultimatemaps.core.transit.badges
 import com.qtekfun.ultimatemaps.core.routing.RoutePlan
 import com.qtekfun.ultimatemaps.core.routing.RoutingProfile
 import com.qtekfun.ultimatemaps.nativecomaps.DetailedRoutingEngine
@@ -190,5 +193,31 @@ class TransitPanelTest {
         rule.onNodeWithTag("transit_depart_time").assertTextEquals("07:40")
         rule.onNodeWithTag("transit_depart_now").performClick()
         rule.onNodeWithTag("transit_depart_now").assertIsSelected()
+    }
+
+    @Test
+    fun theOptionRowShowsWalkingPillsMatchingTheLegsAndSpeaksThemInOrder() {
+        startTransit()
+        show()
+        val it = transit.state.itineraries.first()
+        val badges = it.badges()
+        val minutes = badges.filterIsInstance<JourneyBadge.Walk>().map { w -> w.minutes }
+        org.junit.Assert.assertTrue("the fixture trip walks", minutes.isNotEmpty())
+        // The minutes come from the legs' own times.
+        val fromLegs = it.legs.filterIsInstance<ItineraryLeg.Walk>().map { w -> ((w.arriveAt - w.departAt + 59) / 60).toInt() }.filter { m -> m > 0 }
+        org.junit.Assert.assertEquals(fromLegs, minutes)
+        badges.forEachIndexed { k, b ->
+            if (b is JourneyBadge.Walk) rule.onNodeWithTag("transit_option_0_walk_$k", useUnmergedTree = true).assertExists()
+        }
+        val description = rule.onNodeWithTag("transit_option_0").fetchSemanticsNode().config[androidx.compose.ui.semantics.SemanticsProperties.ContentDescription].joinToString()
+        var from = 0
+        for (b in badges) {
+            val needle = if (b is JourneyBadge.Walk) "Walk ${b.minutes} minute" else "M1"
+            val at = description.indexOf(needle, from)
+            org.junit.Assert.assertTrue("'$needle' missing or out of order in: $description", at >= 0)
+            from = at + needle.length
+        }
+        // The summary under the badges stays.
+        rule.onNodeWithTag("transit_option_0_facts", useUnmergedTree = true).assertTextContains("walking", substring = true)
     }
 }
