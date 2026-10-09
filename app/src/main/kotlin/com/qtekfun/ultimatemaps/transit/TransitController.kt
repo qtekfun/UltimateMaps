@@ -110,6 +110,9 @@ class TransitState {
     var validTo by mutableStateOf<LocalDate?>(null)
     var unverifiedFeeds by mutableStateOf(0)
 
+    /** Feeds of the installed index whose expired calendar was projected forward at build time (Madrid Metro). */
+    var projectedFeeds by mutableStateOf(0)
+
     val current: Itinerary? get() = itineraries.getOrNull(selected)
 }
 
@@ -244,6 +247,7 @@ class TransitController(
                 state.validFrom = outcome.service.validFrom
                 state.validTo = outcome.service.validTo
                 state.unverifiedFeeds = outcome.service.validity?.unverifiedFeeds ?: outcome.service.index.sources.count { it.calendarRangeIgnored }
+                state.projectedFeeds = outcome.service.index.sources.count { it.calendarProjected }
                 state.phase = TransitPhase.DONE
                 draw()
             }

@@ -203,6 +203,7 @@ Conditions before shipping:
    Madrid step of the data workflow; see `docs/decisions.md`, entry 2026-10-09. If it is expired too, ship Madrid without Metro
    or with flagged old timetables (owner's decision). The
    `ignoreCalendarRange` switch used in this spike is only acceptable for testing.
+   **Update 2026-10-09:** the owner decided to include it anyway: the Metro feed has `"projectCalendar": true` and the builder projects its weekly pattern 60 days past the build date (past exceptions dropped, so holidays run as ordinary days); the index and its sidecar json are flagged `projected` and the itinerary footer says the timetables are from 2025. See `docs/decisions.md`, entry 2026-10-09 "include the expired 2025 timetables".
 2. **Data checks with the publishers**: EMT frequency semantics and the interurban implausible trips (section 3), plus the
    CRTM "always up to date" clause for an offline product (owner's call; see licence table).
 3. **Freshness rule**: index valid-until date from the feeds (Renfe lasts 30 days), shown in the UI, with the app declining to

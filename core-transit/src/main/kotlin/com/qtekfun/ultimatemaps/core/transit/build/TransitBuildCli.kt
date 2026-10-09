@@ -1,5 +1,6 @@
 package com.qtekfun.ultimatemaps.core.transit.build
 
+import com.qtekfun.ultimatemaps.core.transit.CalendarProjection
 import com.qtekfun.ultimatemaps.core.transit.FeedOptions
 import com.qtekfun.ultimatemaps.core.transit.GtfsReadOptions
 import com.qtekfun.ultimatemaps.core.transit.GtfsReader
@@ -8,6 +9,7 @@ import com.qtekfun.ultimatemaps.core.transit.TransitIndexBuilder
 import com.qtekfun.ultimatemaps.core.transit.TransitIndexIo
 import com.qtekfun.ultimatemaps.core.transit.ZipGtfsSource
 import com.qtekfun.ultimatemaps.core.transit.calendarWindow
+import com.qtekfun.ultimatemaps.core.transit.projectCalendar
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
@@ -34,6 +36,11 @@ class FeedSpec(
     val attribution: String,
     /** Keep only stops inside this box (south, west, north, east), for national feeds. */
     val bbox: DoubleArray?,
+    /**
+     * The feed is no longer published and its calendar has ended: project its weekly pattern forward over the index
+     * validity window ([PROJECTION_DAYS] days from the build date) instead of skipping it. See [projectCalendar].
+     */
+    val projectCalendar: Boolean = false,
 )
 
 /** Describes one city: which GTFS zips make its index and what must be said about them. */
@@ -58,6 +65,7 @@ class CityManifest(
                     FeedSpec(
                         f.getValue("label").jsonPrimitive.content, f.getValue("file").jsonPrimitive.content,
                         f.getValue("namespace").jsonPrimitive.content, f.getValue("attribution").jsonPrimitive.content, box(f["bbox"]),
+                        f["projectCalendar"]?.jsonPrimitive?.boolean ?: false,
                     )
                 },
             )
@@ -66,7 +74,11 @@ class CityManifest(
 }
 
 /** Outcome of one feed of a build. */
-class FeedReport(val label: String, val validFrom: LocalDate?, val validTo: LocalDate?, val included: Boolean, val reason: String)
+class FeedReport(
+    val label: String, val validFrom: LocalDate?, val validTo: LocalDate?, val included: Boolean, val reason: String,
+    /** Set when the calendar was projected forward: the last day the feed really published. */
+    val projectedFrom: LocalDate? = null,
+)
 
 class BuildResult(val index: TransitIndex, val meta: JsonObject, val feeds: List<FeedReport>)
 
@@ -77,6 +89,9 @@ class BuildResult(val index: TransitIndex, val meta: JsonObject, val feeds: List
  */
 /** Feeds in this stop namespace (Renfe) keep their stop and trip ids so a GTFS-RT feed can be matched. */
 const val REALTIME_NAMESPACE = "renfe"
+
+/** How many days past the build date a projected calendar is extended. */
+const val PROJECTION_DAYS = 60
 
 object TransitBuild {
     fun build(manifest: CityManifest, input: File, today: LocalDate, allowExpired: Boolean, generated: String, log: (String) -> Unit = {}): BuildResult {
@@ -95,15 +110,29 @@ object TransitBuild {
             val window = calendarWindow(feed)
             val from = window?.first?.takeIf { it != Int.MIN_VALUE }?.let { LocalDate.ofEpochDay(it.toLong()) }
             val to = window?.last?.takeIf { it != Int.MAX_VALUE }?.let { LocalDate.ofEpochDay(it.toLong()) }
-            val expired = to != null && to.isBefore(today)
+            var expired = to != null && to.isBefore(today)
+            var projection: CalendarProjection? = null
+            if (expired && spec.projectCalendar) {
+                projection = projectCalendar(feed, today.toEpochDay().toInt(), today.toEpochDay().toInt() + PROJECTION_DAYS)
+                if (projection != null) {
+                    log("PROJECT ${spec.label}: calendar ended $to; weekly pattern projected to ${LocalDate.ofEpochDay(projection.newLastDay.toLong())} (${projection.extendedServices} services, ${projection.droppedExceptions} past exceptions dropped)")
+                    expired = false
+                }
+            }
             if (expired && !allowExpired) {
                 log("SKIP ${spec.label}: expired (calendar ended $to, build date $today)")
                 reports += FeedReport(spec.label, from, to, false, "expired")
                 continue
             }
-            builder.addFeed(feed, FeedOptions(spec.label, spec.namespace, spec.attribution, dropNonPositiveDuration = true, keepIds = spec.namespace == REALTIME_NAMESPACE), ignoredCalendarRange = false)
-            reports += FeedReport(spec.label, from, to, true, if (expired) "included although expired" else "ok")
-            log("OK   ${spec.label}: $from .. $to")
+            builder.addFeed(feed, FeedOptions(spec.label, spec.namespace, spec.attribution, dropNonPositiveDuration = true, keepIds = spec.namespace == REALTIME_NAMESPACE, calendarProjected = projection != null), ignoredCalendarRange = false)
+            if (projection != null) {
+                val newTo = LocalDate.ofEpochDay(projection.newLastDay.toLong())
+                reports += FeedReport(spec.label, from, newTo, true, "projected", projectedFrom = to)
+                log("OK   ${spec.label}: $from .. $newTo (projected)")
+            } else {
+                reports += FeedReport(spec.label, from, to, true, if (expired) "included although expired" else "ok")
+                log("OK   ${spec.label}: $from .. $to")
+            }
         }
         require(reports.any { it.included }) { "no usable feed for ${manifest.id}" }
         val index = builder.build()
@@ -122,6 +151,9 @@ object TransitBuild {
             put("attribution", buildJsonArray { attribution.forEach { add(JsonPrimitive(it)) } })
             put("generated", generated)
             put("droppedTrips", builder.droppedTrips)
+            // Feeds whose calendar was projected forward from an expired one: the app shows a notice for them.
+            put("projected", reports.any { it.projectedFrom != null })
+            put("projectedFeeds", buildJsonArray { reports.filter { it.projectedFrom != null }.forEach { add(JsonPrimitive(it.label)) } })
             put("feeds", buildJsonArray {
                 reports.forEach { r ->
                     add(buildJsonObject {
@@ -130,6 +162,7 @@ object TransitBuild {
                         put("validTo", r.validTo?.toString()?.let { JsonPrimitive(it) } ?: JsonNull)
                         put("included", r.included)
                         put("status", r.reason)
+                        r.projectedFrom?.let { put("projectedFrom", it.toString()) }
                     })
                 }
             })

@@ -17,6 +17,8 @@ class FeedOptions(
     val dropNonPositiveDuration: Boolean = false,
     /** Keep the feed's stop and trip ids in the index (for matching a GTFS-RT feed). Costs about 13 bytes per trip. */
     val keepIds: Boolean = false,
+    /** The caller projected this feed's expired calendar forward ([projectCalendar]); recorded in the index. */
+    val calendarProjected: Boolean = false,
 )
 
 /**
@@ -202,7 +204,7 @@ class TransitIndexBuilder {
         val window = if (ignoredCalendarRange) null else calendarWindow(feed, usedServices)
         val start = window?.first ?: feed.feedStartDay
         val end = window?.last ?: feed.feedEndDay
-        sources.add(FeedSource(options.label, feed.feedVersion, start, end, options.attribution, ignoredCalendarRange))
+        sources.add(FeedSource(options.label, feed.feedVersion, start, end, options.attribution, ignoredCalendarRange, options.calendarProjected))
     }
 
     fun build(): TransitIndex {

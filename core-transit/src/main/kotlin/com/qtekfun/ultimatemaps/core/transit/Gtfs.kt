@@ -101,7 +101,7 @@ class GtfsFeed(
     val transferMinSec: IntArray,
     val feedVersion: String,
     val feedStartDay: Int,
-    val feedEndDay: Int,
+    var feedEndDay: Int,
 )
 
 object GtfsReader {

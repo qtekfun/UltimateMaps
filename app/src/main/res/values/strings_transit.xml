@@ -55,6 +55,7 @@
     <!-- Honesty and data -->
     <string name="transit_theoretical_note">Times are theoretical, taken from the published timetables. They do not include delays, cancellations or real-time information.</string>
     <string name="transit_valid_range">Timetables valid from %1$s to %2$s.</string>
+    <string name="transit_projected_note">Metro timetables are from 2025 (no newer data is published): times may differ.</string>
     <string name="transit_unverified">Part of this data could not be checked against its calendar.</string>
     <string name="transit_link_description">Open %1$s</string>
 
