@@ -1,0 +1,1 @@
+Release candidate: smoother navigation arrow, motorway exit numbers, hide the status bar while driving, Spanish of Spain for the voice, more public transport alternatives with walking pills, Madrid Metro (old timetables), weather alerts from AEMET (optional), a sectioned Maps screen. Spain only.

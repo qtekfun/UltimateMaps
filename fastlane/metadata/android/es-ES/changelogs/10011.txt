@@ -1,0 +1,1 @@
+Versión candidata: flecha de navegación más suave, número de salida en autovías, ocultar la barra de estado al conducir, voz en español de España, más alternativas de transporte con pastillas de caminar, Metro de Madrid (horarios antiguos), avisos meteorológicos de AEMET (opcional) y pantalla de Mapas por secciones. Solo España.

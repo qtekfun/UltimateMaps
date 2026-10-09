@@ -4,9 +4,26 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 
 ## [Unreleased]
 
+## [0.1.0-rc.11] - 2026-10-09
+
 ### Added
 
 - **Weather alerts from AEMET (optional, off by default, needs your own free API key).** Settings, Alerts, *Weather alerts (AEMET)*: paste your AEMET OpenData key (stored encrypted in the Android Keystore, never in backups or logs; it identifies you to AEMET and the settings say so) and the app fetches AEMET's one national bundle of warnings (no position or area is ever sent, at most every 15 minutes, never in the background) and matches it on the phone. An orange or red warning at the centre of the map shows a chip ("Orange warning: Wind until 18:00 (AEMET)") that opens a card with the text, the level colour, the validity and "Fuente: AEMET"; routes in Spain get the same lines in their summary. Yellow warnings appear only in the card, and only if you turn on *Show yellow warnings*. A warning is information, not advice, and the data can be late or incomplete. Verified by JVM and Robolectric tests only (including a local server for the two-step AEMET API); not seen on a device and not tried with a real key.
+- **Motorway exits.** The banner and the voice now give the exit number and the road you take ("Exit 23 toward A-2 · Alcalá de Henares", "In 800 metres take exit 23 on the right toward A 2"). The data was already in the maps; it is shown only when it exists, nothing is invented.
+- **Driving focus.** Settings, Navigation, *Hide the status bar while navigating* (off by default): the system status bar, with other apps' notification icons, is hidden during a navigation and a swipe from the top shows it briefly. A shortcut opens Android's Do Not Disturb settings, with a note on how to allow calls; Android does not let an app block other apps' pop-ups.
+- **Walking pills in public transport.** Every itinerary shows, in order, a grey pill with a walking icon and the minutes between the line badges (and a walk-only trip shows just the pill).
+- **More public transport alternatives.** Besides the fastest option the planner now offers the one with the least walking, the one with the fewest changes and up to two "walk the rest" options (for example commuter train to Chamartín and then walking), each with a short reason. The maximum-walking setting still applies to the normal list.
+- **Madrid Metro, with old timetables.** No current Metro de Madrid timetable is published anywhere, so the last one (2025) is projected forward and the itinerary footer says "Metro timetables are from 2025 (no newer data is published): times may differ"; public holidays are treated as ordinary days.
+
+### Changed
+
+- **The vehicle marker and the camera glide.** The arrow was rewritten once per GPS fix and the camera ran its own animation, so it moved in jerks; both now move together, one pose per display frame, predicted along the route for at most 1.5 s between fixes (30 frames per second in battery saver).
+- **The Maps screen has sections**: *Maps* (search, installed maps, all maps), *Public transport* and *Downloads* (offline mode, server, storage); the search only filters the maps.
+
+### Fixed
+
+- **The spoken guidance uses the Spanish of Spain.** The app asked the voice engine for plain "Spanish", and the engine answered with its default, usually the Latin American voice. It now asks for your phone's region first (or Spain) and picks an installed offline voice of that region.
+- **Use my location** stays available while you are picking another starting point, so you can go back with one tap.
 
 ## [0.1.0-rc.10] - 2026-10-08
 
@@ -33,7 +50,6 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 
 ### Fixed
 
-- **The spoken guidance uses the Spanish of Spain.** The app asked the voice engine for plain "Spanish", and the engine answered with its default, usually the Latin American voice. It now asks for your phone's region first (or Spain) and picks an installed offline voice of that region.
 - **The travel-mode selector** no longer cuts the "Transporte" label on narrow screens or with a large font.
 - **Quick chips (Home, Work, Park, SOS)** stay on one line each with less padding and an ellipsis if a label is too long (the label is now "Park" / "Aparcar"), so the row is even in English, Spanish and with a large font.
 - **The bottom sheet is opaque** in the light and dark themes: map labels and the navigation buttons no longer show through the card text.
