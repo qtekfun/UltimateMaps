@@ -10,6 +10,9 @@
     <string name="transit_modes_reset">Reset</string>
     <string name="transit_err_no_route_modes">No route with the selected transport</string>
     <string name="transit_note_walk_as_fast">Walking is about as fast</string>
+    <string name="transit_note_less_walking">Less walking</string>
+    <string name="transit_note_fewer_changes">Fewer changes</string>
+    <string name="transit_note_walk_the_rest">Walk the rest</string>
 
     <!-- Settings: public-transport planning -->
     <string name="transit_plan_title">Public transport planning</string>
