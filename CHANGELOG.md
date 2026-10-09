@@ -4,6 +4,8 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 
 ## [Unreleased]
 
+## [0.1.0-rc.14] - 2026-10-09
+
 ### Added
 
 - **"I'm on board" button in the public-transport trip.** One tap tells the app you are (or are not) on the vehicle, and it wins over what the GPS inferred.
