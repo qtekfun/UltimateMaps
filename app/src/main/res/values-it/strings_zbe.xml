@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Low-emission zones: Settings group (inside the Alerts category), route warning, navigation prompt, backup. The data is OpenStreetMap and says only "zone": nothing here claims a vehicle is allowed or banned. -->
+    <string name="zbe_group_title">Zone a basse emissioni</string>
+    <string name="zbe_switch_title">Zone a basse emissioni</string>
+    <string name="zbe_switch_body">Mostra le zone sulla mappa, avvisa quando un percorso in auto ne attraversa una e segnala una volta prima che ci entri. Scarica un piccolo file di dati dal tuo server delle mappe (lo stesso delle mappe); la tua posizione non viene mai inviata. I dati si basano su OpenStreetMap e possono essere incompleti o non aggiornati: valgono le regole ufficiali della città.</string>
+    <string name="zbe_map_title">Mostra le zone sulla mappa</string>
+    <string name="zbe_map_body">Un\'area ambra traslucida con un contorno tratteggiato.</string>
+    <string name="zbe_prompt_title">Avvisa prima di entrare in una zona</string>
+    <string name="zbe_data_title">Dati delle zone</string>
+    <string name="zbe_data_count">%1$d zone, dati del %2$s</string>
+    <string name="zbe_data_never">Nessun dato delle zone ancora scaricato.</string>
+    <string name="zbe_data_notice">Basato su OpenStreetMap, può essere incompleto o non aggiornato; valgono le regole ufficiali della città. L\'app non sa quali veicoli siano interessati.</string>
+
+    <!-- Route summary (car routes) -->
+    <string name="zbe_route_warning">Questo percorso entra in una zona a basse emissioni: controlla le regole di accesso della città</string>
+    <string name="zbe_route_zones">Zona: %1$s</string>
+    <string name="zbe_route_tagged">Taggato in OpenStreetMap: %1$s</string>
+
+    <!-- Navigation prompt -->
+    <string name="zbe_ahead_title">Zona a basse emissioni più avanti</string>
+    <string name="zbe_ahead_hint">Controlla le regole di accesso</string>
+    <string name="zbe_ahead_description">%1$s tra %2$s. %3$s.</string>
+
+    <!-- Backup and restore -->
+    <string name="backup_item_zbe">Zone a basse emissioni</string>
+    <string name="backup_group_zbe">Zone a basse emissioni</string>
+</resources>

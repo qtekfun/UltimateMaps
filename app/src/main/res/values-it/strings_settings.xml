@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_title">Impostazioni</string>
+    <string name="settings_open">Impostazioni</string>
+    <string name="settings_back">Indietro</string>
+
+    <string name="settings_privacy_title">Privacy</string>
+    <string name="settings_offline_title">Modalità offline</string>
+    <string name="settings_offline_body">L\'app non effettua alcuna connessione, nemmeno per i download. Stessa impostazione di Mappe.</string>
+    <string name="settings_regions_title">Catalogo delle regioni</string>
+    <string name="settings_regions_body">Indirizzo del catalogo: %1$s</string>
+    <string name="settings_regions_none">Nessun indirizzo del catalogo impostato.</string>
+    <string name="settings_regions_open">Apri Mappe</string>
+    <string name="settings_connections_title">Connessioni possibili</string>
+    <string name="settings_connections_none">Al momento non è possibile alcuna connessione.</string>
+    <string name="conn_status_active">Consentita</string>
+    <string name="conn_status_disabled">Disattivata</string>
+    <string name="conn_status_blocked_offline">Bloccata dalla modalità offline</string>
+    <string name="conn_purpose_tiles">Tile online</string>
+    <string name="conn_purpose_short_link">Link brevi</string>
+    <string name="conn_purpose_map_download">Download delle mappe</string>
+    <string name="conn_purpose_sync">Sincronizzazione</string>
+    <string name="conn_purpose_other">Altro (prezzi dei carburanti)</string>
+
+    <string name="fuel_title">Distributori di carburante</string>
+    <string name="fuel_switch_title">Mostra distributori e prezzi</string>
+    <string name="fuel_switch_body">Disattivato per impostazione predefinita. Finché è disattivato non viene scaricato nulla.</string>
+    <string name="fuel_fuels_title">Carburanti da scaricare</string>
+    <string name="fuel_fuels_body">Viene richiesto un file per ogni carburante selezionato.</string>
+    <string name="fuel_fuels_none">Seleziona almeno un carburante per scaricarne i prezzi.</string>
+    <string name="fuel_map_title">Carburante mostrato sulla mappa</string>
+    <string name="fuel_map_none">Seleziona un carburante qui sopra per sceglierlo qui.</string>
+    <string name="fuel_refresh_title">Frequenza di aggiornamento</string>
+    <string name="fuel_refresh_minutes">Ogni %1$d min</string>
+    <string name="fuel_refresh_hours">Ogni %1$d h</string>
+    <string name="fuel_refresh_days">Una volta al giorno</string>
+    <string name="fuel_url_title">Indirizzo della fonte</string>
+    <string name="fuel_url_save">Salva</string>
+    <string name="fuel_url_reset">Ripristina</string>
+    <string name="fuel_url_invalid">Indirizzo https non valido.</string>
+    <string name="fuel_url_saved">Salvato.</string>
+    <string name="fuel_last_update">Ultimo aggiornamento: %1$s</string>
+    <string name="fuel_last_update_never">Non ancora scaricato.</string>
+    <string name="fuel_update_now">Aggiorna ora</string>
+    <string name="fuel_update_running">Download di %1$d su %2$d (%3$s)…</string>
+    <string name="fuel_update_ok">Prezzi aggiornati.</string>
+    <string name="fuel_update_kept">Vengono mantenuti gli ultimi dati validi.</string>
+    <string name="fuel_attribution">Dati: Ministerio para la Transición Ecológica y el Reto Demográfico (Geoportal de Hidrocarburos), riutilizzati ai sensi della Legge 37/2007. Informazioni non ufficiali; verifica il prezzo alla pompa.</string>
+
+    <string name="fuel_err_offline">La modalità offline è attiva: non è stata effettuata alcuna connessione.</string>
+    <string name="fuel_err_not_allowed">Connessione non consentita (indirizzo non autorizzato o reindirizzato a un altro server).</string>
+    <string name="fuel_err_network">Impossibile connettersi.</string>
+    <string name="fuel_err_timeout">Tempo scaduto.</string>
+    <string name="fuel_err_server">Il server ha restituito un errore.</string>
+    <string name="fuel_err_too_large">La risposta è troppo grande.</string>
+    <string name="fuel_err_invalid">Dati non validi o incompleti.</string>
+
+    <string name="fuel_confirm_title">Attivare i distributori di carburante?</string>
+    <string name="fuel_confirm_body">Cosa viene richiesto: un file di prezzi per ogni carburante che scegli (nulla finché non ne scegli).\n\nA quale server: %1$s.\n\nCosa vede quel server: il tuo indirizzo IP e quali carburanti scarichi. La tua posizione non viene mai inviata: i file sono nazionali e vengono filtrati sul telefono.\n\nSi connette solo quando lo attivi, premi Aggiorna ora o apri l\'app con dati più vecchi della frequenza di aggiornamento.</string>
+    <string name="fuel_confirm_offline">La modalità offline è attiva, quindi non ci sarà alcuna connessione finché non la disattivi.</string>
+    <string name="fuel_confirm_yes">Attiva</string>
+    <string name="fuel_confirm_no">Annulla</string>
+</resources>

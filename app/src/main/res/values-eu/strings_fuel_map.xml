@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Route stops and petrol-station card (RF-15) -->
+    <string name="route_stops_title">Geldialdiak (%1$d / %2$d)</string>
+    <string name="route_stop_up">Mugitu gora: %1$s</string>
+    <string name="route_stop_down">Mugitu behera: %1$s</string>
+    <string name="route_stop_remove">Kendu ibilbidetik: %1$s</string>
+    <string name="route_stops_limit">%1$d geldialdi gehienez. Kendu bat beste bat gehitzeko.</string>
+    <string name="route_err_stop">Geldialdi bat ez dago deskargatutako mapetako errepide batean. Kendu edo aukeratu beste bat.</string>
+    <string name="fuel_category">Gasolindegia</string>
+    <string name="fuel_card_close">Itxi</string>
+    <string name="fuel_go">Joan</string>
+    <string name="fuel_add_stop">Gehitu geldialdia</string>
+    <string name="fuel_save">Gorde</string>
+    <string name="fuel_saved">Gordeta</string>
+    <string name="fuel_schedule">Ordutegia: %1$s</string>
+    <string name="fuel_prices_title">Prezioak</string>
+    <string name="fuel_price_on_map">%1$s (mapan)</string>
+    <string name="fuel_updated_now">oraintxe eguneratua</string>
+    <string name="fuel_updated_min">duela %1$d min eguneratua</string>
+    <string name="fuel_updated_h">duela %1$d h eguneratua</string>
+    <string name="fuel_updated_d">duela %1$d egun eguneratua</string>
+    <string name="fuel_updated_unknown">eguneratze-ordua ezezaguna</string>
+    <string name="fuel_stop_duplicate">Gasolindegi hau ibilbideko geldialdi bat da jada.</string>
+    <string name="fuel_stop_is_destination">Gasolindegi hau ibilbidearen helmuga da.</string>
+    <string name="fuel_stop_limit">Ibilbideak %1$d geldialdi ditu jada. Kendu bat lehenik.</string>
+    <string name="fuel_stop_no_route">Hasi ibilbide bat lehenik geldialdi bat gehitzeko.</string>
+    <string name="fuel_source">Iturria: Trantsizio Ekologikorako eta Erronka Demografikorako Ministerioa</string>
+    <string name="fuel_price_note">Ministerioak argitaratutako prezioa; ez ofiziala. Egiaztatu ezazu hornigailuan.</string>
+</resources>

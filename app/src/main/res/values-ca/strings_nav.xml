@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Navigation service notification -->
+    <string name="nav_channel_name">Navegació</string>
+    <string name="nav_notification_stop">Atura</string>
+    <string name="nav_notification_open">Obre</string>
+    <string name="nav_in_distance">%1$s: %2$s</string>
+    <string name="nav_onto_street">%1$s a %2$s</string>
+    <string name="nav_exit_badge">Sortida %1$s</string>
+    <string name="nav_exit_toward">%1$s cap a %2$s</string>
+    <string name="nav_waiting_gps">Esperant el senyal GPS…</string>
+    <string name="nav_recalculating">Recalculant la ruta…</string>
+    <string name="nav_arrived">Has arribat</string>
+    <string name="nav_stop_reached">Parada assolida</string>
+    <string name="nav_problem_permission">S\'ha retirat el permís d\'ubicació. Permet-lo per continuar navegant.</string>
+    <string name="nav_problem_gps_off">La ubicació està desactivada. Activa-la per continuar navegant.</string>
+    <string name="nav_resumed">Navegació represa</string>
+    <string name="nav_turn_depart">Inici</string>
+    <string name="nav_turn_straight">Continua recte</string>
+    <string name="nav_turn_slight_right">Mantén la dreta</string>
+    <string name="nav_turn_right">Gira a la dreta</string>
+    <string name="nav_turn_sharp_right">Gir tancat a la dreta</string>
+    <string name="nav_turn_slight_left">Mantén l\'esquerra</string>
+    <string name="nav_turn_left">Gira a l\'esquerra</string>
+    <string name="nav_turn_sharp_left">Gir tancat a l\'esquerra</string>
+    <string name="nav_turn_u_turn">Fes un canvi de sentit</string>
+    <string name="nav_turn_roundabout_enter">Entra a la rotonda</string>
+    <string name="nav_turn_roundabout_leave">Surt de la rotonda</string>
+    <string name="nav_turn_exit_left">Pren la sortida de l\'esquerra</string>
+    <string name="nav_turn_exit_right">Pren la sortida de la dreta</string>
+    <string name="nav_turn_merge">Incorpora\'t</string>
+    <string name="nav_turn_arrive">Arriba a la destinació</string>
+    <string name="nav_turn_arrive_left">La destinació és a l\'esquerra</string>
+    <string name="nav_turn_arrive_right">La destinació és a la dreta</string>
+    <!-- Failed routes (policy in RouteFailurePolicy) -->
+    <string name="nav_route_err_no_regions">No hi ha cap regió instal·lada. Descarrega una regió per calcular rutes fora de línia.</string>
+    <string name="nav_route_err_need_maps">Falten mapes per a aquesta ruta. Descarrega\'ls a Mapes i torna-ho a provar.</string>
+    <string name="nav_route_err_need_maps_named">Falten mapes per a aquesta ruta: %1$s. Descarrega\'ls a Mapes i torna-ho a provar.</string>
+    <string name="nav_route_err_start">L\'inici no és en una via dels mapes descarregats. Tria un altre punt de partida.</string>
+    <string name="nav_route_err_end">La destinació no és en una via dels mapes descarregats.</string>
+    <string name="nav_route_err_stop">Una de les parades no és en una via dels mapes descarregats. Mou-la o treu-la.</string>
+    <string name="nav_route_err_not_found">No s\'ha trobat cap ruta amb aquestes opcions. Prova un altre perfil, altres opcions d\'evitar o altres punts.</string>
+    <string name="nav_route_err_timeout">El càlcul de la ruta ha trigat massa. Torna-ho a provar o tria un punt més proper.</string>
+    <string name="nav_route_err_core">El motor de rutes ha tingut un problema i s\'ha reiniciat. Torna-ho a provar.</string>
+    <string name="nav_route_err_core_unavailable">El motor de rutes continua fallant. Torna-ho a provar d\'aquí a un moment.</string>
+    <string name="nav_route_err_internal">No s\'ha pogut calcular la ruta.</string>
+</resources>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Mode chips of the public-transport route panel -->
+    <string name="transit_mode_bus">Autobús</string>
+    <string name="transit_mode_metro">Metro</string>
+    <string name="transit_mode_tram">Tranvía</string>
+    <string name="transit_mode_train">Tren</string>
+    <string name="transit_mode_ferry">Ferri</string>
+    <string name="transit_mode_other">Outro</string>
+    <string name="transit_modes_reset">Restablecer</string>
+    <string name="transit_err_no_route_modes">Ningunha ruta co transporte seleccionado</string>
+    <string name="transit_note_walk_as_fast">Ir a pé é case igual de rápido</string>
+    <string name="transit_note_less_walking">Menos a pé</string>
+    <string name="transit_note_fewer_changes">Menos cambios</string>
+    <string name="transit_note_walk_the_rest">O resto a pé</string>
+    <string name="transit_note_long_walk_to_station">Camiñada máis longa ata a estación</string>
+
+    <!-- Settings: public-transport planning -->
+    <string name="transit_plan_title">Planificación do transporte público</string>
+    <string name="transit_plan_minutes">%1$d min</string>
+    <string name="transit_plan_walk_title">Amosar o traxecto a pé cando dure menos de</string>
+    <string name="transit_plan_walk_body">A opción a pé sempre aparece xunto ás opcións de transporte público cando a camiñada dura menos ca isto.</string>
+    <string name="transit_plan_saving_title">Preferir ir a pé se o transporte público aforra menos de</string>
+    <string name="transit_plan_saving_body">Unha opción de transporte público que aforra menos tempo ca isto (ou menos do 20% do traxecto a pé) omítese cando se lista o traxecto a pé.</string>
+    <string name="transit_plan_maxwalk_title">Máximo a pé por viaxe</string>
+    <string name="transit_plan_maxwalk_body">Omítense as opcións de transporte público que requiren en total máis camiñada ca isto.</string>
+    <string name="transit_plan_maxwalk_none">Sen límite</string>
+</resources>

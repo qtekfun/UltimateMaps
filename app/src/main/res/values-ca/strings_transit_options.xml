@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Mode chips of the public-transport route panel -->
+    <string name="transit_mode_bus">Autobús</string>
+    <string name="transit_mode_metro">Metro</string>
+    <string name="transit_mode_tram">Tramvia</string>
+    <string name="transit_mode_train">Tren</string>
+    <string name="transit_mode_ferry">Ferri</string>
+    <string name="transit_mode_other">Altres</string>
+    <string name="transit_modes_reset">Restableix</string>
+    <string name="transit_err_no_route_modes">Cap ruta amb el transport seleccionat</string>
+    <string name="transit_note_walk_as_fast">Anar a peu és gairebé igual de ràpid</string>
+    <string name="transit_note_less_walking">Menys a peu</string>
+    <string name="transit_note_fewer_changes">Menys canvis</string>
+    <string name="transit_note_walk_the_rest">La resta a peu</string>
+    <string name="transit_note_long_walk_to_station">Caminada més llarga fins a l\'estació</string>
+
+    <!-- Settings: public-transport planning -->
+    <string name="transit_plan_title">Planificació del transport públic</string>
+    <string name="transit_plan_minutes">%1$d min</string>
+    <string name="transit_plan_walk_title">Mostra el recorregut a peu quan duri menys de</string>
+    <string name="transit_plan_walk_body">L\'opció a peu sempre apareix al costat de les opcions de transport públic quan la caminada dura menys que això.</string>
+    <string name="transit_plan_saving_title">Prefereix anar a peu si el transport públic estalvia menys de</string>
+    <string name="transit_plan_saving_body">Una opció de transport públic que estalvia menys temps que això (o menys del 20% del recorregut a peu) s\'omet quan es llista el recorregut a peu.</string>
+    <string name="transit_plan_maxwalk_title">Màxim a peu per viatge</string>
+    <string name="transit_plan_maxwalk_body">S\'ometen les opcions de transport públic que requereixen en total més caminada que això.</string>
+    <string name="transit_plan_maxwalk_none">Sense límit</string>
+</resources>

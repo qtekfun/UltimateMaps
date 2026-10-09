@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Home, Work and parked car -->
+    <string name="quick_home">Casa</string>
+    <string name="quick_work">Traballo</string>
+    <string name="quick_park">Aparcamento</string>
+    <string name="quick_parked">Coche aparcado</string>
+    <string name="quick_sos">SOS</string>
+    <string name="quick_park_again">Marcar aquí de novo</string>
+    <string name="quick_park_clear">Borrar o coche aparcado</string>
+    <string name="parking_name">Coche aparcado</string>
+    <string name="quick_msg_home_set">Casa definida.</string>
+    <string name="quick_msg_work_set">Traballo definido.</string>
+    <string name="quick_msg_parking_set">Coche aparcado marcado no mapa.</string>
+    <string name="quick_msg_parking_cleared">Coche aparcado borrado.</string>
+    <string name="quick_msg_waiting">Agardando a túa posición…</string>
+    <string name="quick_msg_home_unset">Abre un lugar e toca «Definir como Casa».</string>
+    <string name="quick_msg_work_unset">Abre un lugar e toca «Definir como Traballo».</string>
+    <string name="place_set_home">Definir como Casa</string>
+    <string name="place_set_work">Definir como Traballo</string>
+
+    <!-- Recent searches -->
+    <string name="recent_title">Buscas recentes</string>
+    <string name="recent_clear">Borrar</string>
+    <string name="history_title">Historial de buscas</string>
+    <string name="history_switch_title">Conservar as buscas recentes</string>
+    <string name="history_switch_body">Lembra o que buscaches só neste dispositivo, para suxerilo de novo. Ao desactivalo tamén se borra.</string>
+    <string name="history_clear">Borrar as buscas recentes</string>
+    <string name="history_cleared">Buscas recentes borradas.</string>
+
+    <!-- List customisation -->
+    <string name="list_customize">Personalizar</string>
+    <string name="list_edit_name_hint">Nome</string>
+    <string name="list_edit_emoji_hint">Emoji</string>
+    <string name="list_edit_notes_hint">Notas</string>
+    <string name="list_edit_color">Cor</string>
+    <string name="list_edit_color_none">Sen cor</string>
+    <string name="list_edit_color_swatch">Cor</string>
+    <string name="list_edit_save">Gardar</string>
+    <string name="list_edit_cancel">Cancelar</string>
+
+    <!-- Launcher shortcuts -->
+    <string name="shortcut_search_short">Buscar</string>
+    <string name="shortcut_search_long">Buscar lugares</string>
+    <string name="shortcut_saved_short">Gardados</string>
+    <string name="shortcut_saved_long">Lugares gardados</string>
+    <string name="shortcut_maps_short">Mapas</string>
+    <string name="shortcut_maps_long">Mapas descargados</string>
+    <string name="shortcut_emergency_short">Emerxencia</string>
+    <string name="shortcut_emergency_long">Emerxencia</string>
+
+    <!-- Emergency screen -->
+    <string name="emergency_title">Emerxencia</string>
+    <string name="emergency_call">Chamar ao %1$s</string>
+    <string name="emergency_position_title">A túa posición</string>
+    <string name="emergency_accuracy">Precisión duns %1$d m</string>
+    <string name="emergency_waiting">Agardando unha posición…</string>
+    <string name="emergency_no_permission">Fai falta o permiso de localización para amosar a túa posición.</string>
+    <string name="emergency_grant">Permitir a localización</string>
+    <string name="emergency_no_provider">Este dispositivo non ten provedor de localización.</string>
+    <string name="emergency_share">Compartir a miña posición</string>
+    <string name="emergency_share_header">A miña posición (emerxencia):</string>
+    <string name="emergency_dial_failed">Non se atopou ningunha aplicación de teléfono para facer a chamada.</string>
+    <string name="emergency_privacy_note">O botón de chamada abre o teu marcador; alí premes chamar. A túa posición só se amosa nesta pantalla e non se garda, rexistra nin envía, salvo que toques Compartir e escollas unha aplicación.</string>
+</resources>

@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Route panel: fourth travel mode -->
+    <string name="route_profile_transit">Garraioa</string>
+    <string name="transit_group_departure">Irteera</string>
+    <string name="transit_depart_now">Irten orain</string>
+    <string name="transit_depart_later">Irten ordu honetan</string>
+    <string name="transit_time_earlier">15 minutu lehenago</string>
+    <string name="transit_time_later">15 minutu geroago</string>
+    <string name="transit_day_earlier">Aurreko eguna</string>
+    <string name="transit_day_later">Hurrengo eguna</string>
+
+    <string name="transit_computing">Konexioak bilatzen…</string>
+    <string name="transit_needs_origin">Zure kokapenaren zain. Aukeratu abiapuntu bat edo aktibatu kokapena.</string>
+    <string name="transit_err_no_data">Ez dago garraio publikoaren daturik instalatuta eta mapa-zerbitzariak ez du bat ere zerrendatzen. Ireki Mapak bilatzeko.</string>
+    <string name="transit_err_not_downloaded">%1$s-ko ordutegiak ez daude oraindik deskargatuta. Deskargatu itzazu Mapak atalean, Garraio publikoan.</string>
+    <string name="transit_err_across">Bidaia hau %1$s eta %2$s artekoa da, ordutegi bereiziak dituztenak. Haien arteko bidaiak ez dira planifikatzen; planifikatu zati bakoitza bereizita.</string>
+    <string name="transit_err_outside">Garraio publikoaren ordutegiek ez dute bidaia hau estaltzen.</string>
+    <string name="transit_err_expired">Ordutegiak %1$s egunean iraungi ziren, beraz data horren ondorengo bidaiak ez dira planifikatzen. Aukeratu data lehenago bat edo eguneratu datuak Mapak atalean.</string>
+    <string name="transit_err_not_yet">Ordutegiak %1$s egunean hasten dira. Aukeratu data berriago bat.</string>
+    <string name="transit_err_no_route">Ez da konexiorik aurkitu ordu horretan. Saiatu beste ordu batekin.</string>
+    <string name="transit_err_internal">Ezin izan da ordutegi-fitxategia irakurri. Ezabatu eta deskargatu berriro Mapak atalean.</string>
+
+    <!-- Itinerary list -->
+    <string name="transit_direct">Zuzena</string>
+    <plurals name="transit_transfers">
+        <item quantity="one">aldaketa %d</item>
+        <item quantity="other">%d aldaketa</item>
+    </plurals>
+    <string name="transit_walk_only">Oinez soilik</string>
+    <string name="transit_walking">%1$s oinez</string>
+    <string name="transit_option_description">%1$d. aukera: %2$s, iristea %3$s, %4$s, %5$s</string>
+    <string name="transit_chip_walk">Oinez</string>
+    <string name="transit_walk_pill">%1$d min</string>
+    <string name="transit_walk_only_pill">Oinez · %1$d min</string>
+    <plurals name="transit_walk_description">
+        <item quantity="one">Ibili minutu %d oinez</item>
+        <item quantity="other">Ibili %d minutu oinez</item>
+    </plurals>
+
+    <!-- Itinerary card -->
+    <string name="transit_back">Itzuli aukeretara</string>
+    <string name="transit_card_summary">%1$s, irteera %2$s, iristea %3$s</string>
+    <string name="transit_place_destination">zure helmuga</string>
+    <string name="transit_leg_walk">Ibili %1$s oinez %2$s arte</string>
+    <string name="transit_leg_towards">Norabidea: %1$s</string>
+    <string name="transit_leg_board">Igo hemen: %1$s</string>
+    <string name="transit_leg_alight">Jaitsi hemen: %1$s</string>
+    <plurals name="transit_leg_stops">
+        <item quantity="one">geldialdi %d</item>
+        <item quantity="other">%d geldialdi</item>
+    </plurals>
+
+    <!-- Honesty and data -->
+    <string name="transit_theoretical_note">Orduak teorikoak dira, argitaratutako ordutegietatik hartuak. Ez dituzte atzerapenak, bertan behera uztea edo denbora errealeko informazioa barne hartzen.</string>
+    <string name="transit_valid_range">Ordutegiak baliozkoak: %1$s - %2$s.</string>
+    <string name="transit_projected_note">Metroaren ordutegiak 2025ekoak dira (ez da datu berriagorik argitaratu): orduak desberdinak izan daitezke.</string>
+    <string name="transit_unverified">Datu hauen zati bat ezin izan da bere egutegiarekin egiaztatu.</string>
+    <string name="transit_link_description">Ireki %1$s</string>
+
+    <!-- About -->
+    <string name="transit_about_title">Garraio publikoaren datuak</string>
+
+    <!-- Maps screen: section -->
+    <string name="transit_maps_title">Garraio publikoa</string>
+    <string name="transit_maps_intro">Ibilbide teorikoetarako ordutegiak. Hiri edo eskualde bakoitza deskarga bereizi bat da, Deskargatu sakatzen duzunean bakarrik egiten dena; planifikazio guztia zure telefonoan egiten da eta ez da kokapenik bidaltzen.</string>
+    <string name="transit_maps_none">Katalogoak oraindik ez du garraio publikodun hiririk eskaintzen.</string>
+    <string name="transit_maps_size">Deskargaren tamaina: %1$s</string>
+    <string name="transit_maps_valid">Baliozkoa: %1$s - %2$s</string>
+    <string name="transit_maps_expired">Iraungita: %1$s. Argitaratutako datuak zaharkituta daude</string>
+    <string name="transit_maps_update_available">Fitxategi berriago bat dago eskuragarri</string>
+    <string name="transit_maps_installed">Instalatuta</string>
+    <string name="transit_maps_download">Deskargatu</string>
+    <string name="transit_maps_update">Eguneratu</string>
+    <string name="transit_maps_delete">Ezabatu</string>
+    <string name="transit_maps_downloading">Deskargatzen…</string>
+    <string name="transit_fail_offline">Lineaz kanpoko modua aktibo dago: ez da ezer deskargatu.</string>
+    <string name="transit_fail_not_allowed">Zerbitzari hau ez dago baimenduta konexio-zerrendan.</string>
+    <string name="transit_fail_network">Deskargak huts egin du. Saiatu berriro geroago.</string>
+    <string name="transit_fail_integrity">Fitxategia ez zetorren bat katalogoarekin eta baztertu da.</string>
+    <string name="transit_fail_invalid">Fitxategia ez da baliozko ordutegi-indize bat.</string>
+    <string name="transit_fail_expired">Argitaratutako ordutegiak iraungita daude jada.</string>
+    <string name="transit_fail_cancelled">Deskarga bertan behera utzi da.</string>
+    <!-- Spoken form of a line badge: the mode comes first because short names are shared between modes -->
+    <string name="transit_line_bus">%1$s autobus-linea</string>
+    <string name="transit_line_tram">%1$s tranbia-linea</string>
+    <string name="transit_line_train">%1$s tren-linea</string>
+    <string name="transit_line_metro">%1$s metro-linea</string>
+    <string name="transit_line_ferry">%1$s ferry-linea</string>
+    <string name="transit_line_other">%1$s linea</string>
+</resources>

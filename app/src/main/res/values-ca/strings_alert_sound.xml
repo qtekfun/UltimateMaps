@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- How camera and incident alerts are announced: a chime, the spoken sentence, or only the on-screen alert -->
+    <string name="alert_mode_cam_title">Avisos de radars</string>
+    <string name="alert_mode_incident_title">Avisos d\'incidents</string>
+    <string name="alert_mode_sound">So (un senyal curt)</string>
+    <string name="alert_mode_voice">Veu (avís parlat)</string>
+    <string name="alert_mode_silent">Silenci (només avís a la pantalla)</string>
+    <string name="alert_mode_note">L\'avís a la pantalla es mostra sempre. Silencia (navegació) i Silencia els avisos desactiven el so i la veu.</string>
+</resources>

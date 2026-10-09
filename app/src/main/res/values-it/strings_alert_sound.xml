@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- How camera and incident alerts are announced: a chime, the spoken sentence, or only the on-screen alert -->
+    <string name="alert_mode_cam_title">Avvisi autovelox</string>
+    <string name="alert_mode_incident_title">Avvisi di incidenti</string>
+    <string name="alert_mode_sound">Suono (un breve segnale)</string>
+    <string name="alert_mode_voice">Voce (avviso parlato)</string>
+    <string name="alert_mode_silent">Silenzioso (solo avviso sullo schermo)</string>
+    <string name="alert_mode_note">L\'avviso sullo schermo viene sempre mostrato. Silenzia (navigazione) e Silenzia avvisi disattivano suono e voce.</string>
+</resources>

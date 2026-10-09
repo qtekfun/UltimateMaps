@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Hiking and cycling routes: Settings group (inside the Navigation category), map card and attribution -->
+    <string name="trail_group_title">Rutes de senderisme i ciclisme</string>
+    <string name="trail_switch_title">Mostra les rutes de senderisme i ciclisme</string>
+    <string name="trail_switch_body">Dibuixa al mapa les rutes senyalitzades de senderisme, ciclisme i bicicleta de muntanya d\'OpenStreetMap. Descarrega un fitxer de dades de diversos MB del teu servidor de mapes (el mateix que els mapes); la teva posició no s\'envia mai.</string>
+    <string name="trail_kinds_title">Tipus de ruta</string>
+    <string name="trail_kind_hiking">Rutes de senderisme (guions continus)</string>
+    <string name="trail_kind_cycling">Rutes de ciclisme i bicicleta de muntanya (punts)</string>
+    <string name="trail_legend">El color indica l\'abast de la ruta: porpra local, verd regional, taronja nacional, vermell internacional.</string>
+    <string name="trail_data_title">Dades de les rutes</string>
+    <string name="trail_data_count">%1$d rutes, dades del %2$s</string>
+    <string name="trail_data_never">Encara no s\'han descarregat dades de les rutes.</string>
+    <string name="trail_attribution">Rutes de senderisme i ciclisme de les relacions de ruta d\'OpenStreetMap, © col·laboradors d\'OpenStreetMap (ODbL), simplificades.</string>
+
+    <!-- Card of a tapped route -->
+    <string name="trail_category">Ruta</string>
+    <string name="trail_card_title_unknown">Ruta sense nom</string>
+    <string name="trail_card_ref">Referència: %1$s</string>
+    <string name="trail_kind_label_hiking">Ruta de senderisme</string>
+    <string name="trail_kind_label_cycling">Ruta ciclista</string>
+    <string name="trail_kind_label_mtb">Ruta de bicicleta de muntanya</string>
+    <string name="trail_level_local">Local</string>
+    <string name="trail_level_regional">Regional</string>
+    <string name="trail_level_national">Nacional</string>
+    <string name="trail_level_international">Internacional</string>
+    <string name="trail_card_operator">Mantinguda per: %1$s</string>
+    <string name="trail_card_length">Longitud: %1$s</string>
+    <string name="trail_card_length_measured">Longitud: uns %1$s (mesurada al mapa, pot ser incompleta)</string>
+    <string name="trail_card_note">Dades de la comunitat: la ruta pot ser incompleta, estar tancada o mal senyalitzada. Comprova-ho abans de fiar-te\'n.</string>
+    <string name="trail_card_data_date">Dades del %1$s</string>
+    <string name="trail_card_close">Tanca</string>
+    <string name="trail_go_start">Ruta a l\'inici</string>
+
+    <!-- Backup and restore -->
+    <string name="backup_item_trails">Rutes de senderisme i ciclisme</string>
+    <string name="backup_group_trails">Rutes de senderisme i ciclisme</string>
+</resources>

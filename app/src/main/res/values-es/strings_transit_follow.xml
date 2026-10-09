@@ -67,7 +67,6 @@
 
     <!-- Notification -->
     <string name="trip_channel_name">Viaje en transporte público</string>
-    <string name="trip_notification_text">%1$s · %2$s</string>
     <string name="trip_resumed">Viaje en transporte público</string>
 
     <!-- Status-bar chip (about 7 characters fit) -->

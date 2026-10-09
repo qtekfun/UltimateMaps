@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Bike: prefer or require cycle infrastructure -->
+    <string name="bike_cycleways_title">Bizikleta-azpiegitura</string>
+    <string name="bike_cycleways_settings_body">Bizikleta-ibilbideen lehenespena: bizikleta-bideei eta bizikleta-erreiei zenbat lehentasun eman. OpenStreetMap-eko etiketetan oinarritzen da, eta eremu batzuetan beste batzuetan baino osoagoak dira.</string>
+    <string name="bike_cycleways_off">Desaktibatuta</string>
+    <string name="bike_cycleways_prefer">Lehenetsi</string>
+    <string name="bike_cycleways_strong">Oso lehenetsi</string>
+    <string name="bike_cycleways_only">Soilik</string>
+    <string name="bike_cycleways_full_off">Desaktibatuta (estandarra)</string>
+    <string name="bike_cycleways_full_prefer">Lehenetsi</string>
+    <string name="bike_cycleways_full_strong">Oso lehenetsi</string>
+    <string name="bike_cycleways_full_only">Bizikleta-azpiegitura soilik</string>
+    <string name="bike_cycleways_caption_off">Bizikleta-ibilbide estandarra, bizikleta-bideak eta seinaleztatutako bizikleta-erreiak lehenesten dituena jada.</string>
+    <string name="bike_cycleways_caption_prefer">Bizikleta-bideak eta bizikleta-erreiak lehenesten ditu, bidehuts batzuekin.</string>
+    <string name="bike_cycleways_caption_strong">Bizikleta-bideak eta bizikleta-erreiak oso lehenesten ditu, bidehuts luzeekin ere.</string>
+    <string name="bike_cycleways_caption_only">Bizikleta-bideak eta bizikletentzat seinaleztatutako errepideak soilik erabiltzen ditu. Askotan ez du ibilbiderik aurkitzen.</string>
+    <string name="bike_err_no_cycle_route">Ez da ibilbiderik aurkitu bizikleta-azpiegitura soilik erabiliz. Saiatu Lehenetsi aukerarekin.</string>
+</resources>

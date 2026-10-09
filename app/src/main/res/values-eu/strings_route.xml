@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Route preview (M4) -->
+    <string name="route_to">Helmuga: %1$s</string>
+    <string name="route_close">Itxi</string>
+    <string name="route_from_current">Hemendik: zure kokapena</string>
+    <string name="route_from_point">Hemendik: hautatutako puntua</string>
+    <string name="route_from_named">Hemendik: %1$s</string>
+    <string name="route_change_origin">Aldatu abiapuntua</string>
+    <string name="route_use_location">Erabili nire kokapena</string>
+    <string name="route_pick_hint">Bilatu abiapuntua edo sakatu mapa.</string>
+    <string name="route_pick_cancel">Utzi</string>
+    <string name="route_profile_car">Autoa</string>
+    <string name="route_profile_foot">Oinez</string>
+    <string name="route_profile_bike">Bizikleta</string>
+    <string name="route_avoid_motorways">Autobiderik ez</string>
+    <string name="route_avoid_tolls">Ordainpekorik ez</string>
+    <string name="route_avoid_ferries">Ferryrik ez</string>
+    <string name="route_avoid_unpaved">Pistarik ez</string>
+    <string name="route_computing">Ibilbidea kalkulatzen…</string>
+    <string name="route_elevation_toggle_cd">%1$d metroko igoera, %2$d metroko jaitsiera. Erakutsi edo ezkutatu garaiera-profila.</string>
+    <string name="route_elevation_chart_cd">Garaiera-profila: minimoa %1$d metro, maximoa %2$d metro, igoera aldapatsuena ehuneko %3$d.</string>
+    <string name="route_elevation_grade">Aldapatsuena: ↑ %% %1$d  ↓ %% %2$d</string>
+    <string name="route_needs_origin">Zure kokapena ez dago eskuragarri. Baimendu kokapena edo aukeratu beste abiapuntu bat bilaketaren bidez edo mapa sakatuz.</string>
+    <string name="route_err_no_regions">Ez dago eskualderik instalatuta. Deskargatu eskualde bat ibilbideak lineaz kanpo kalkulatzeko.</string>
+    <string name="route_err_need_more_maps">Mapak falta dira ibilbide honetarako. Deskargatu zeharkatzen dituen eskualdeak.</string>
+    <string name="route_err_start">Hasiera ez dago deskargatutako mapetako errepide batean. Aukeratu beste abiapuntu bat.</string>
+    <string name="route_err_end">Helmuga ez dago deskargatutako mapetako errepide batean.</string>
+    <string name="route_err_not_found">Ez da ibilbiderik aurkitu aukera hauekin. Saiatu profila edo saihesteko aukerak aldatzen.</string>
+    <string name="route_err_timeout">Ibilbidea kalkulatzeak denbora gehiegi hartu du. Saiatu berriro edo aukeratu puntu hurbilago bat.</string>
+    <string name="route_err_internal">Ezin izan da ibilbidea kalkulatu.</string>
+    <string name="route_err_unexpected">Zerbait gaizki atera da ibilbidea kalkulatzean. Saiatu berriro, edo aukeratu beste helmuga edo beste aukera batzuk.</string>
+    <string name="route_change_short">Aldatu</string>
+    <string name="route_profile_group">Joan-etorri modua</string>
+    <string name="route_options_title">Ibilbide-aukerak</string>
+    <string name="route_options_none">Bat ere ez</string>
+    <string name="route_options_avoiding">Saihestu: %1$s</string>
+    <string name="route_avoid_short_motorways">autobideak</string>
+    <string name="route_avoid_short_tolls">ordainpekoak</string>
+    <string name="route_avoid_short_ferries">ferryak</string>
+    <string name="route_avoid_short_unpaved">pistak</string>
+</resources>

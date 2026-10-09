@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Itinerary card -->
+    <string name="trip_start">Inicia</string>
+    <string name="trip_start_description">Segueix aquest viatge pas a pas</string>
+
+    <!-- Banner: what to do now -->
+    <string name="trip_walk_to">Camina fins a %1$s</string>
+    <string name="trip_walk_to_destination">Camina fins a la teva destinació</string>
+    <string name="trip_walk_detail">%1$s · %2$d min</string>
+    <string name="trip_then_board">Després la línia %1$s a les %2$s</string>
+    <string name="trip_board_title">Puja a la línia %1$s direcció %2$s</string>
+    <string name="trip_board_title_plain">Puja a la línia %1$s</string>
+    <string name="trip_wait_detail">Surt a les %1$s, d\'aquí a %2$d min</string>
+    <string name="trip_wait_now">Surt a les %1$s, ara</string>
+    <string name="trip_wait_passed">Estava previst a les %1$s</string>
+    <string name="trip_next_stop">Propera parada: %1$s</string>
+    <plurals name="trip_get_off_in">
+        <item quantity="one">Baixa a %2$s d\'aquí a %1$d parada</item>
+        <item quantity="many">Baixa a %2$s d\'aquí a %1$d parades</item>
+        <item quantity="other">Baixa a %2$s d\'aquí a %1$d parades</item>
+    </plurals>
+    <string name="trip_get_off_next">Baixa a la propera parada: %1$s</string>
+    <string name="trip_get_off_detail">Previst a les %1$s</string>
+    <string name="trip_change_title">Canvia aquí: línia %1$s direcció %2$s</string>
+    <string name="trip_change_title_plain">Canvia aquí: línia %1$s</string>
+    <string name="trip_change_detail">Camina fins a %1$s · %2$s · %3$d min · surt %4$s</string>
+    <string name="trip_change_detail_here">%1$s · surt %2$s</string>
+    <string name="trip_off_plan_title">Estàs fora del pla</string>
+    <string name="trip_off_plan_detail">Planifica un viatge nou des d\'on ets</string>
+    <string name="trip_arrived_title">Has arribat</string>
+
+    <!-- Status strip -->
+    <string name="trip_no_gps">Esperant el senyal GPS</string>
+    <string name="trip_estimated">Sense GPS: posició estimada a partir de l\'horari</string>
+    <string name="trip_plan_on">Segons el pla</string>
+    <string name="trip_plan_on_estimated">Segons el pla (estimat)</string>
+    <plurals name="trip_plan_behind">
+        <item quantity="one">Uns %d min de retard respecte al pla</item>
+        <item quantity="many">Uns %d min de retard respecte al pla</item>
+        <item quantity="other">Uns %d min de retard respecte al pla</item>
+    </plurals>
+    <plurals name="trip_plan_ahead">
+        <item quantity="one">Uns %d min d\'avanç respecte al pla</item>
+        <item quantity="many">Uns %d min d\'avanç respecte al pla</item>
+        <item quantity="other">Uns %d min d\'avanç respecte al pla</item>
+    </plurals>
+    <string name="trip_connection_risk">Connexió amb la línia %1$s en risc</string>
+    <string name="trip_connection_missed">Pot ser que hagis perdut la línia %1$s</string>
+    <string name="trip_replan">Replanifica</string>
+    <string name="trip_replan_description">Planifica un viatge nou des d\'on ets</string>
+    <string name="trip_replanning">Planificant un viatge nou…</string>
+    <string name="trip_replan_failed">No s\'ha trobat cap viatge nou des d\'aquí</string>
+
+    <!-- Bottom panel -->
+    <string name="trip_stop">Atura el viatge</string>
+    <string name="trip_done">Fet</string>
+    <string name="trip_stop_description">Deixa de seguir aquest viatge</string>
+    <string name="trip_arrive_at">Arribada %1$s</string>
+    <string name="trip_scheduled_note">Horaris previstos, sense dades en temps real</string>
+    <string name="trip_stop_passed">passada</string>
+    <string name="trip_stop_next">propera parada</string>
+    <string name="trip_stop_row_description">%1$s, %2$s, previst a les %3$s</string>
+    <string name="trip_stops_description">Parades de la línia actual</string>
+
+    <!-- Resume after the app was closed -->
+    <string name="trip_resume_title">Vols reprendre el viatge en transport públic?</string>
+    <string name="trip_resume">Reprèn</string>
+    <string name="trip_discard">Descarta</string>
+
+    <!-- Notification -->
+    <string name="trip_channel_name">Viatge en transport públic</string>
+    <string name="trip_resumed">Viatge en transport públic</string>
+
+    <!-- Status-bar chip (about 7 characters fit) -->
+    <plurals name="trip_chip_stops">
+        <item quantity="one">%d parada</item>
+        <item quantity="many">%d parades</item>
+        <item quantity="other">%d parades</item>
+    </plurals>
+    <string name="trip_chip_get_off">Baixa</string>
+    <string name="trip_chip_minutes">%d min</string>
+    <string name="trip_chip_no_gps">Sense GPS</string>
+    <string name="trip_chip_replan">Replanifica</string>
+
+    <!-- Settings > Navigation -->
+    <string name="trip_prompts_title">Indicacions del viatge en transport públic</string>
+    <string name="trip_prompts_body">Com et diu un viatge en transport públic pas a pas quan has de pujar, canviar i baixar.</string>
+    <string name="trip_prompts_note">El bàner de la pantalla es mostra sempre. El Silencia de la navegació desactiva el so i la veu.</string>
+</resources>

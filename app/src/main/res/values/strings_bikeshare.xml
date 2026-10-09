@@ -14,7 +14,7 @@
     <!-- Card of a tapped station -->
     <string name="bike_category">Bike-share station</string>
     <string name="bike_card_title_unknown">Bike-share station</string>
-    <string name="bike_card_system">%1$s</string>
+    <string name="bike_card_system" translatable="false">%1$s</string>
     <string name="bike_card_capacity">Docks: %1$d</string>
     <string name="bike_card_capacity_unknown">Docks: not specified</string>
     <string name="bike_card_availability">%1$d bikes, %2$d free docks (updated %3$s)</string>

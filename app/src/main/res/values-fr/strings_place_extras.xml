@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Place card extras (OSM tags, shown only when the data has them) -->
+    <string name="place_plus_code">Plus Code : %1$s</string>
+    <string name="place_call_description">Appeler %1$s</string>
+    <string name="place_website_label">Site web</string>
+    <string name="place_website_description">Ouvrir le site web dans votre navigateur</string>
+    <string name="place_wheelchair_yes">Accessible en fauteuil roulant</string>
+    <string name="place_wheelchair_limited">Partiellement accessible en fauteuil roulant</string>
+    <string name="place_wheelchair_no">Non accessible en fauteuil roulant</string>
+    <string name="place_hours">Horaires : %1$s</string>
+    <string name="place_open_now">Ouvert maintenant</string>
+    <string name="place_closed_now">Fermé maintenant</string>
+    <string name="place_open_unknown">Ouvert maintenant : inconnu</string>
+    <string name="place_open_closes_at">Ouvert · Ferme à %1$s</string>
+    <string name="place_open_closes_on">Ouvert · Ferme %1$s à %2$s</string>
+    <string name="place_closed_opens_at">Fermé · Ouvre à %1$s</string>
+    <string name="place_closed_opens_tomorrow">Fermé · Ouvre demain à %1$s</string>
+    <string name="place_closed_opens_on">Fermé · Ouvre %1$s à %2$s</string>
+    <string name="place_hours_holidays_note">Les jours fériés ne sont pas pris en compte.</string>
+    <string name="place_no_dialer">Aucune application de téléphone trouvée</string>
+    <string name="place_no_browser">Aucun navigateur trouvé</string>
+
+    <!-- Search by coordinates and Plus Codes -->
+    <string name="search_result_coordinates">Coordonnées</string>
+    <string name="search_result_plus_code">Plus Code</string>
+
+    <!-- Sharing -->
+    <string name="nav_share_eta_action">Partager l\'heure d\'arrivée</string>
+    <string name="nav_share_eta_description">Partager votre heure d\'arrivée estimée sous forme de texte</string>
+    <string name="nav_share_eta_text">J\'arriverai vers %1$s (%2$s, encore %3$s).</string>
+
+    <!-- Map scale bar -->
+    <string name="map_scale_description">Échelle de la carte : %1$s</string>
+</resources>

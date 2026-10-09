@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Mode chips of the public-transport route panel -->
+    <string name="transit_mode_bus">Autobus</string>
+    <string name="transit_mode_metro">Metropolitana</string>
+    <string name="transit_mode_tram">Tram</string>
+    <string name="transit_mode_train">Treno</string>
+    <string name="transit_mode_ferry">Traghetto</string>
+    <string name="transit_mode_other">Altro</string>
+    <string name="transit_modes_reset">Ripristina</string>
+    <string name="transit_err_no_route_modes">Nessun percorso con i mezzi selezionati</string>
+    <string name="transit_note_walk_as_fast">Andare a piedi è quasi altrettanto veloce</string>
+    <string name="transit_note_less_walking">Meno a piedi</string>
+    <string name="transit_note_fewer_changes">Meno cambi</string>
+    <string name="transit_note_walk_the_rest">Il resto a piedi</string>
+    <string name="transit_note_long_walk_to_station">Camminata più lunga fino alla stazione</string>
+
+    <!-- Settings: public-transport planning -->
+    <string name="transit_plan_title">Pianificazione del trasporto pubblico</string>
+    <string name="transit_plan_minutes">%1$d min</string>
+    <string name="transit_plan_walk_title">Mostra il percorso a piedi quando richiede meno di</string>
+    <string name="transit_plan_walk_body">L\'opzione a piedi è sempre elencata accanto alle opzioni di trasporto pubblico quando la camminata richiede meno di questo valore.</string>
+    <string name="transit_plan_saving_title">Preferisci a piedi se il trasporto pubblico fa risparmiare meno di</string>
+    <string name="transit_plan_saving_body">Un\'opzione di trasporto pubblico che fa risparmiare meno tempo di questo valore (o meno del 20% del percorso a piedi) viene omessa quando è elencato il percorso a piedi.</string>
+    <string name="transit_plan_maxwalk_title">Massimo a piedi per viaggio</string>
+    <string name="transit_plan_maxwalk_body">Le opzioni di trasporto pubblico che richiedono in totale più camminata di questo valore vengono omesse.</string>
+    <string name="transit_plan_maxwalk_none">Nessun limite</string>
+</resources>

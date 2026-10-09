@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Hiking and cycling routes: Settings group (inside the Navigation category), map card and attribution -->
+    <string name="trail_group_title">Wander- und Radrouten</string>
+    <string name="trail_switch_title">Wander- und Radrouten anzeigen</string>
+    <string name="trail_switch_body">Zeichnet markierte Wander-, Rad- und Mountainbike-Routen aus OpenStreetMap auf die Karte. Es wird eine Datendatei von mehreren MB von deinem Kartenserver geladen (demselben wie für die Karten); dein Standort wird nie gesendet.</string>
+    <string name="trail_kinds_title">Routenarten</string>
+    <string name="trail_kind_hiking">Wanderrouten (durchgezogene Striche)</string>
+    <string name="trail_kind_cycling">Rad- und Mountainbike-Routen (Punkte)</string>
+    <string name="trail_legend">Die Farbe zeigt die Reichweite der Route: lila lokal, grün regional, orange national, rot international.</string>
+    <string name="trail_data_title">Routendaten</string>
+    <string name="trail_data_count">%1$d Routen, Daten vom %2$s</string>
+    <string name="trail_data_never">Noch keine Routendaten heruntergeladen.</string>
+    <string name="trail_attribution">Wander- und Radrouten aus OpenStreetMap-Routenrelationen, © OpenStreetMap-Mitwirkende (ODbL), vereinfacht.</string>
+
+    <!-- Card of a tapped route -->
+    <string name="trail_category">Route</string>
+    <string name="trail_card_title_unknown">Unbenannte Route</string>
+    <string name="trail_card_ref">Kennung: %1$s</string>
+    <string name="trail_kind_label_hiking">Wanderroute</string>
+    <string name="trail_kind_label_cycling">Radroute</string>
+    <string name="trail_kind_label_mtb">Mountainbike-Route</string>
+    <string name="trail_level_local">Lokal</string>
+    <string name="trail_level_regional">Regional</string>
+    <string name="trail_level_national">National</string>
+    <string name="trail_level_international">International</string>
+    <string name="trail_card_operator">Betreut von: %1$s</string>
+    <string name="trail_card_length">Länge: %1$s</string>
+    <string name="trail_card_length_measured">Länge: etwa %1$s (auf der Karte gemessen, möglicherweise unvollständig)</string>
+    <string name="trail_card_note">Community-Daten: Die Route kann unvollständig, gesperrt oder schlecht markiert sein. Prüfe es, bevor du dich darauf verlässt.</string>
+    <string name="trail_card_data_date">Daten vom %1$s</string>
+    <string name="trail_card_close">Schließen</string>
+    <string name="trail_go_start">Route zum Start</string>
+
+    <!-- Backup and restore -->
+    <string name="backup_item_trails">Wander- und Radrouten</string>
+    <string name="backup_group_trails">Wander- und Radrouten</string>
+</resources>

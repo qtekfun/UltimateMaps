@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Hub rows: title, words the search also matches, and the one-line summary of the current state -->
+    <string name="hub_navigation_title">Navigation und Sprache</string>
+    <string name="hub_navigation_keywords">sprache stimme einheiten route vermeiden autobahnen maut fähren 3d gebäude fahrrad radwege statusleiste entfernung chip live-update ton lautstärke kilometer meilen wandern radfahren wanderwege routen mountainbike</string>
+    <string name="hub_navigation_voice_on">Sprache: %1$s, %2$d %%</string>
+    <string name="hub_navigation_voice_off">Sprache: aus</string>
+    <string name="hub_alerts_title">Warnungen</string>
+    <string name="hub_alerts_keywords">radar kameras verkehr störungen baustellen warnungen ton lautlos umweltzone ZBE</string>
+    <string name="hub_alerts_summary">Kameras: %1$s · Verkehr: %2$s</string>
+    <string name="hub_fuel_keywords">benzin diesel kraftstoff preise tankstellen elektro e-auto ladestation laden stecker</string>
+    <string name="hub_fuel_off">Aus</string>
+    <string name="hub_fuel_no_fuel">An, kein Kraftstoff gewählt</string>
+    <plurals name="hub_fuel_count">
+        <item quantity="one">%d Kraftstoff</item>
+        <item quantity="other">%d Kraftstoffe</item>
+    </plurals>
+    <string name="hub_fuel_summary">%1$s, %2$s auf der Karte</string>
+    <string name="hub_network_title">Karten und Netzwerk</string>
+    <string name="hub_network_keywords">offline datenschutz verbindungen internet katalog server regionen download</string>
+    <string name="hub_network_summary">Offline-Modus: %1$s</string>
+    <string name="hub_data_title">Daten</string>
+    <string name="hub_data_keywords">verlauf letzte suchen track-aufzeichnung sicherung wiederherstellen export import löschen</string>
+    <string name="hub_data_searches">Suchen: %1$s</string>
+    <string name="hub_data_recording">Aufzeichnung: %1$s</string>
+    <string name="hub_about_title">Über</string>
+    <string name="hub_about_keywords">version lizenz namensnennung openstreetmap quellcode danksagung</string>
+    <string name="hub_about_summary">Version %1$s</string>
+    <string name="hub_about_summary_plain">Lizenz und Quellenangaben</string>
+    <string name="hub_on">an</string>
+    <string name="hub_off">aus</string>
+
+    <string name="hub_search_hint">Einstellungen durchsuchen</string>
+    <string name="hub_search_none">Keine Einstellung passt.</string>
+
+    <!-- Group headings inside the category screens -->
+    <string name="hub_group_voice">Sprache</string>
+    <string name="hub_group_display">Einheiten und Kartenansicht</string>
+    <string name="hub_group_route">Routen-Standards</string>
+    <string name="hub_group_cameras">Radarkameras</string>
+    <string name="hub_group_incidents">Verkehrsstörungen</string>
+    <string name="hub_group_maps">Karten</string>
+    <string name="hub_advanced">Erweitert</string>
+    <string name="hub_advanced_open">Ausgeklappt</string>
+    <string name="hub_advanced_closed">Eingeklappt</string>
+
+    <string name="hub_privacy_note">Diese App hat weder Analyse noch Absturzberichte. Alle möglichen Verbindungen sind unten aufgelistet, und der Offline-Modus blockiert sie alle.</string>
+
+    <!-- About -->
+    <string name="hub_about_version_title">Version</string>
+    <string name="hub_about_license_title">Lizenz</string>
+    <string name="hub_about_license_body">Freie Software unter der GNU General Public License v3 (GPLv3).</string>
+    <string name="about_notice_title">Hinweise zu Drittanbietern</string>
+    <string name="about_notice_show">Lizenzen der enthaltenen Software anzeigen</string>
+    <string name="about_notice_hide">Lizenzen ausblenden</string>
+    <string name="about_notice_unavailable">Die Hinweisdatei ist in diesem Build nicht verfügbar.</string>
+    <string name="about_diag_title">Diagnose</string>
+    <string name="about_diag_body">Nur auf diesem Telefon gespeicherte Notizen zu Fehlern, etwa wie App-Prozesse beendet wurden, und zu unerwarteten Fehlern. Sie enthalten keine Orte oder Positionen. Nichts wird irgendwohin gesendet; kopiere sie in einen Fehlerbericht, wenn du möchtest.</string>
+    <string name="about_diag_show">Diagnosenotizen anzeigen</string>
+    <string name="about_diag_hide">Diagnosenotizen ausblenden</string>
+    <string name="about_diag_empty">Noch nichts notiert.</string>
+    <string name="about_diag_copy">Kopieren</string>
+    <string name="about_diag_clear">Notizen löschen</string>
+    <string name="hub_about_source">Quellcode: github.com/qtekfun/UltimateMaps</string>
+</resources>

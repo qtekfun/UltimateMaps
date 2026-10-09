@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Visual alert ahead (chip on the map and on the navigation screen) -->
+    <string name="camalert_fixed">Radar finkoa aurrean</string>
+    <string name="camalert_section">Batez besteko abiaduraren kontrol-tartea aurrean</string>
+    <string name="camalert_zone">Radar mugikorrak egon daitezke aurrean</string>
+    <string name="camalert_v16">Ibilgailu geldirik aurrean (V16)</string>
+    <string name="camalert_accident">Istripua aurrean</string>
+    <string name="camalert_closure">Errepidea moztuta aurrean</string>
+    <string name="camalert_congestion">Trafiko mantsoa aurrean</string>
+    <string name="camalert_obstacle">Oztopoa aurrean</string>
+    <string name="camalert_description">%1$s, %2$s barru</string>
+    <string name="camalert_description_limit">%1$s, %2$s barru, muga %3$d km/h</string>
+</resources>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Category chips under the search field -->
+    <string name="category_pharmacy">Apotheke</string>
+    <string name="category_supermarket">Supermarkt</string>
+    <string name="category_restaurant">Restaurant</string>
+    <string name="category_cafe">Café</string>
+    <string name="category_fuel">Tankstelle</string>
+    <string name="category_atm">Geldautomat</string>
+    <string name="category_hospital">Krankenhaus</string>
+    <string name="category_parking">Parkplatz</string>
+    <string name="category_lodging">Unterkunft</string>
+    <string name="category_toilets">Toiletten</string>
+    <string name="category_drinking_water">Trinkwasser</string>
+
+    <!-- The category name the search core looks for (not shown to the user; must be a name from its category list) -->
+    <string name="category_query_pharmacy">Apotheke</string>
+    <string name="category_query_supermarket">Supermarkt</string>
+    <string name="category_query_restaurant">Restaurant</string>
+    <string name="category_query_cafe">Café</string>
+    <string name="category_query_fuel">Tankstelle</string>
+    <string name="category_query_atm">Geldautomat</string>
+    <string name="category_query_hospital">Krankenhaus</string>
+    <string name="category_query_parking">Parkplatz</string>
+    <string name="category_query_lodging">Hotel</string>
+    <string name="category_query_toilets">Toilette</string>
+    <string name="category_query_drinking_water">Trinkwasser</string>
+
+    <string name="category_distance_note">Entfernungen gelten in Luftlinie von deinem Standort oder der Kartenmitte.</string>
+    <string name="category_none">In den heruntergeladenen Karten wurde in der Nähe nichts gefunden.</string>
+    <string name="category_chip_description">%1$s in der Nähe durchsuchen</string>
+</resources>

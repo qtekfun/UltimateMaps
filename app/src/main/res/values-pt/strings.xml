@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="network_mode_offline">Modo offline: sem ligações de rede</string>
+    <string name="network_connections_title">Ligações possíveis</string>
+    <string name="link_short_needs_resolve">Esta ligação curta precisa de um pedido de rede à Google para encontrar o destino. A resolução de ligações curtas está desativada, por isso nada foi enviado.</string>
+    <string name="link_not_recognized">Esta ligação não é uma ligação de mapa reconhecida.</string>
+
+    <string name="about_title">Dados do mapa</string>
+    <string name="about_osm_body">Dados do mapa © colaboradores do OpenStreetMap, disponíveis sob a Open Database License (ODbL). Estilo de mapa base e mosaicos da Protomaps.</string>
+    <string name="close">Fechar</string>
+
+    <string name="map_locate">A minha localização</string>
+    <string name="map_compass">Orientar o mapa para norte</string>
+
+    <string name="sheet_description">Painel de informação</string>
+    <string name="sheet_expand">Alterar o tamanho do painel</string>
+    <string name="sheet_state_collapsed">Recolhido</string>
+    <string name="sheet_state_medium">Metade</string>
+    <string name="sheet_state_full">Completo</string>
+
+    <string name="search_placeholder">Pesquisar (brevemente)</string>
+    <string name="no_maps_title">Ainda sem mapas</string>
+    <string name="no_maps_body">Transfere uma região em Mapas para ver o mapa. Até lá, só é mostrado o fundo.</string>
+
+    <string name="notice_link_title">Ligação de mapa</string>
+    <string name="notice_search_title">Pesquisa: %1$s</string>
+    <string name="notice_search_body">Não há mapas offline instalados, por isso esta ligação só pôde mover o mapa.</string>
+    <string name="notice_location_title">Localização</string>
+    <string name="location_permission_denied">A permissão de localização foi recusada. Ativa-a nas definições do sistema para veres onde estás.</string>
+    <string name="location_unavailable">Não há nenhum fornecedor de localização disponível neste dispositivo.</string>
+
+    <!-- Maps screen (regions) -->
+    <string name="regions_title">Mapas</string>
+    <string name="regions_tab_maps">Mapas</string>
+    <string name="regions_tab_transit">Transportes públicos</string>
+    <string name="regions_tab_settings">Transferências</string>
+    <string name="regions_tabs_group">Secções dos mapas</string>
+    <string name="regions_installed_title">Instalados</string>
+    <string name="regions_all_title">Todos os mapas</string>
+    <string name="regions_search_hint">Pesquisar mapas (por ex. Catalunha)</string>
+    <string name="regions_search_clear">Limpar pesquisa</string>
+    <string name="regions_search_empty">Nenhum mapa corresponde a “%1$s”.</string>
+    <string name="sheet_action_expand">Expandir painel</string>
+    <string name="sheet_action_collapse">Recolher painel</string>
+    <string name="maps_entry_title">Mapas</string>
+    <string name="maps_entry_body">Transferir e gerir regiões</string>
+    <string name="offline_title">Modo offline</string>
+    <string name="offline_body">Nenhuma ligação, nem sequer para transferências.</string>
+    <string name="server_title">Servidor de mapas</string>
+    <string name="server_use_default">Usar o servidor predefinido</string>
+    <string name="search_restart_needed">Um mapa que eliminaste pode continuar a aparecer na pesquisa até reiniciares a aplicação.</string>
+    <string name="search_link_problem">Alguns mapas transferidos não puderam ser disponibilizados para pesquisa neste armazenamento.</string>
+    <string name="server_save">Guardar e atualizar</string>
+    <string name="server_invalid">Introduz um endereço https:// válido.</string>
+    <string name="server_none_title">Nenhum servidor de mapas configurado</string>
+    <string name="server_none_body">Os mapas só são transferidos de um servidor à tua escolha. Introduz acima o endereço de um catálogo. Nada é contactado até o fazeres.</string>
+    <string name="storage_title">Armazenamento</string>
+    <string name="storage_internal">Armazenamento interno</string>
+    <string name="storage_card">Cartão SD</string>
+    <string name="storage_free">%1$s livres de %2$s</string>
+    <string name="storage_card_warning">Os mapas num cartão podem não ser desenhados em alguns dispositivos.</string>
+    <string name="catalog_loading">A carregar o catálogo…</string>
+    <string name="catalog_error_offline">O modo offline está ativo, por isso o catálogo não foi pedido. Desativa-o para atualizar.</string>
+    <string name="catalog_error_denied">Este servidor não é permitido para transferências.</string>
+    <string name="catalog_error_network">Não foi possível carregar o catálogo. Verifica a tua ligação.</string>
+    <string name="catalog_error_invalid">O servidor devolveu um catálogo inválido.</string>
+    <string name="catalog_stale">A mostrar a lista guardada. Não foi possível atualizá-la.</string>
+    <string name="catalog_empty">O catálogo não tem regiões.</string>
+    <string name="region_download">Transferir</string>
+    <string name="region_pause">Pausar</string>
+    <string name="region_resume">Retomar</string>
+    <string name="region_cancel">Cancelar</string>
+    <string name="region_delete">Eliminar</string>
+    <string name="region_update">Atualizar</string>
+    <string name="region_retry">Tentar novamente</string>
+    <string name="region_unavailable">Ainda não disponível</string>
+    <string name="region_queued">A aguardar…</string>
+    <string name="region_progress">%1$d %% de %2$s</string>
+    <string name="region_paused">Em pausa a %1$d %%</string>
+    <string name="region_group_summary">%1$d de %2$d instalados · %3$s</string>
+    <string name="region_installed_size">Instalado · %1$s</string>
+    <string name="region_update_available">Atualização disponível · %1$s</string>
+    <string name="regions_installed_other">Instalados (fora da lista)</string>
+    <string name="fail_offline">O modo offline está ativo: nada foi transferido.</string>
+    <string name="fail_not_allowed">Este servidor não é permitido para transferências.</string>
+    <string name="fail_no_space">Espaço insuficiente: são precisos %1$s, há %2$s livres.</string>
+    <string name="fail_network">Transferência interrompida. Tenta novamente para continuar de onde parou.</string>
+    <string name="fail_corrupt">O ficheiro falhou a verificação e foi descartado. Tenta novamente.</string>
+    <string name="delete_title">Eliminar %1$s?</string>
+    <string name="delete_body">Isto liberta %1$s. Podes voltar a transferi-lo mais tarde.</string>
+    <string name="regions_channel_name">Transferências de mapas</string>
+    <string name="regions_notification_title">A transferir mapas</string>
+    <string name="regions_notification_progress">%1$d %% de %2$s</string>
+    <string name="regions_notification_waiting">A iniciar…</string>
+    <string name="regions_notification_queued">Mais %1$d em espera</string>
+    <string name="regions_pause">Pausar</string>
+</resources>

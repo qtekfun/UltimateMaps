@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Place card extras (OSM tags, shown only when the data has them) -->
+    <string name="place_plus_code">Plus Code: %1$s</string>
+    <string name="place_call_description">%1$s anrufen</string>
+    <string name="place_website_label">Website</string>
+    <string name="place_website_description">Website im Browser öffnen</string>
+    <string name="place_wheelchair_yes">Rollstuhlgerecht</string>
+    <string name="place_wheelchair_limited">Teilweise rollstuhlgerecht</string>
+    <string name="place_wheelchair_no">Nicht rollstuhlgerecht</string>
+    <string name="place_hours">Öffnungszeiten: %1$s</string>
+    <string name="place_open_now">Jetzt geöffnet</string>
+    <string name="place_closed_now">Jetzt geschlossen</string>
+    <string name="place_open_unknown">Jetzt geöffnet: unbekannt</string>
+    <string name="place_open_closes_at">Jetzt geöffnet · Schließt um %1$s</string>
+    <string name="place_open_closes_on">Jetzt geöffnet · Schließt %1$s um %2$s</string>
+    <string name="place_closed_opens_at">Geschlossen · Öffnet um %1$s</string>
+    <string name="place_closed_opens_tomorrow">Geschlossen · Öffnet morgen um %1$s</string>
+    <string name="place_closed_opens_on">Geschlossen · Öffnet %1$s um %2$s</string>
+    <string name="place_hours_holidays_note">Feiertage werden nicht berücksichtigt.</string>
+    <string name="place_no_dialer">Keine Telefon-App gefunden</string>
+    <string name="place_no_browser">Kein Browser gefunden</string>
+
+    <!-- Search by coordinates and Plus Codes -->
+    <string name="search_result_coordinates">Koordinaten</string>
+    <string name="search_result_plus_code">Plus Code</string>
+
+    <!-- Sharing -->
+    <string name="nav_share_eta_action">Ankunftszeit teilen</string>
+    <string name="nav_share_eta_description">Deine voraussichtliche Ankunft als Text teilen</string>
+    <string name="nav_share_eta_text">Ich komme gegen %1$s an (%2$s, noch %3$s).</string>
+
+    <!-- Map scale bar -->
+    <string name="map_scale_description">Kartenmaßstab: %1$s</string>
+</resources>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Category chips under the search field -->
+    <string name="category_pharmacy">Farmácia</string>
+    <string name="category_supermarket">Supermercado</string>
+    <string name="category_restaurant">Restaurante</string>
+    <string name="category_cafe">Café</string>
+    <string name="category_fuel">Combustível</string>
+    <string name="category_atm">Multibanco</string>
+    <string name="category_hospital">Hospital</string>
+    <string name="category_parking">Estacionamento</string>
+    <string name="category_lodging">Alojamento</string>
+    <string name="category_toilets">Casas de banho</string>
+    <string name="category_drinking_water">Água potável</string>
+
+    <!-- The category name the search core looks for (not shown to the user; must be a name from its category list) -->
+    <string name="category_query_pharmacy">farmácia</string>
+    <string name="category_query_supermarket">supermercado</string>
+    <string name="category_query_restaurant">restaurante</string>
+    <string name="category_query_cafe">café</string>
+    <string name="category_query_fuel">combustível</string>
+    <string name="category_query_atm">multibanco</string>
+    <string name="category_query_hospital">hospital</string>
+    <string name="category_query_parking">estacionamento</string>
+    <string name="category_query_lodging">hotel</string>
+    <string name="category_query_toilets">casa de banho</string>
+    <string name="category_query_drinking_water">água potável</string>
+
+    <string name="category_distance_note">As distâncias são em linha reta a partir da tua localização ou do centro do mapa.</string>
+    <string name="category_none">Nada encontrado nas proximidades nos mapas transferidos.</string>
+    <string name="category_chip_description">Explorar %1$s nas proximidades</string>
+</resources>

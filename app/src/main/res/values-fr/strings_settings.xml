@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_title">Réglages</string>
+    <string name="settings_open">Réglages</string>
+    <string name="settings_back">Retour</string>
+
+    <string name="settings_privacy_title">Confidentialité</string>
+    <string name="settings_offline_title">Mode hors ligne</string>
+    <string name="settings_offline_body">L\'application n\'établit aucune connexion, pas même pour les téléchargements. Même réglage que dans Cartes.</string>
+    <string name="settings_regions_title">Catalogue de régions</string>
+    <string name="settings_regions_body">Adresse du catalogue : %1$s</string>
+    <string name="settings_regions_none">Aucune adresse de catalogue n\'est définie.</string>
+    <string name="settings_regions_open">Ouvrir Cartes</string>
+    <string name="settings_connections_title">Connexions possibles</string>
+    <string name="settings_connections_none">Aucune connexion n\'est possible pour le moment.</string>
+    <string name="conn_status_active">Autorisée</string>
+    <string name="conn_status_disabled">Désactivée</string>
+    <string name="conn_status_blocked_offline">Bloquée par le mode hors ligne</string>
+    <string name="conn_purpose_tiles">Tuiles en ligne</string>
+    <string name="conn_purpose_short_link">Liens courts</string>
+    <string name="conn_purpose_map_download">Téléchargement de cartes</string>
+    <string name="conn_purpose_sync">Synchronisation</string>
+    <string name="conn_purpose_other">Autre (prix des carburants)</string>
+
+    <string name="fuel_title">Stations-service</string>
+    <string name="fuel_switch_title">Afficher les stations-service et les prix</string>
+    <string name="fuel_switch_body">Désactivé par défaut. Rien n\'est téléchargé tant qu\'il est désactivé.</string>
+    <string name="fuel_fuels_title">Carburants à télécharger</string>
+    <string name="fuel_fuels_body">Un fichier est demandé pour chaque carburant coché.</string>
+    <string name="fuel_fuels_none">Cochez au moins un carburant pour télécharger ses prix.</string>
+    <string name="fuel_map_title">Carburant affiché sur la carte</string>
+    <string name="fuel_map_none">Cochez un carburant ci-dessus pour le choisir ici.</string>
+    <string name="fuel_refresh_title">Fréquence de mise à jour</string>
+    <string name="fuel_refresh_minutes">Toutes les %1$d min</string>
+    <string name="fuel_refresh_hours">Toutes les %1$d h</string>
+    <string name="fuel_refresh_days">Une fois par jour</string>
+    <string name="fuel_url_title">Adresse de la source</string>
+    <string name="fuel_url_save">Enregistrer</string>
+    <string name="fuel_url_reset">Réinitialiser</string>
+    <string name="fuel_url_invalid">Adresse https non valide.</string>
+    <string name="fuel_url_saved">Enregistrée.</string>
+    <string name="fuel_last_update">Dernière mise à jour : %1$s</string>
+    <string name="fuel_last_update_never">Pas encore téléchargé.</string>
+    <string name="fuel_update_now">Mettre à jour maintenant</string>
+    <string name="fuel_update_running">Téléchargement de %1$d sur %2$d (%3$s)…</string>
+    <string name="fuel_update_ok">Prix mis à jour.</string>
+    <string name="fuel_update_kept">Les dernières données valides sont conservées.</string>
+    <string name="fuel_attribution">Données : Ministerio para la Transición Ecológica y el Reto Demográfico (Geoportal de Hidrocarburos), réutilisées en vertu de la loi 37/2007. Informations non officielles ; vérifiez le prix à la pompe.</string>
+
+    <string name="fuel_err_offline">Le mode hors ligne est activé : aucune connexion n\'a été établie.</string>
+    <string name="fuel_err_not_allowed">Connexion non autorisée (adresse non autorisée ou redirection vers un autre serveur).</string>
+    <string name="fuel_err_network">Connexion impossible.</string>
+    <string name="fuel_err_timeout">Délai dépassé.</string>
+    <string name="fuel_err_server">Le serveur a renvoyé une erreur.</string>
+    <string name="fuel_err_too_large">La réponse est trop volumineuse.</string>
+    <string name="fuel_err_invalid">Données non valides ou incomplètes.</string>
+
+    <string name="fuel_confirm_title">Activer les stations-service ?</string>
+    <string name="fuel_confirm_body">Ce qui est demandé : un fichier de prix pour chaque carburant que vous choisissez (rien tant que vous n\'en choisissez pas).\n\nAuprès de quel serveur : %1$s.\n\nCe que ce serveur voit : votre adresse IP et les carburants que vous téléchargez. Votre position n\'est jamais envoyée : les fichiers sont nationaux et sont filtrés sur votre téléphone.\n\nLa connexion n\'a lieu que lorsque vous l\'activez, appuyez sur Mettre à jour maintenant ou ouvrez l\'application avec des données plus anciennes que la fréquence de mise à jour.</string>
+    <string name="fuel_confirm_offline">Le mode hors ligne est activé, aucune connexion n\'aura donc lieu tant que vous ne le désactivez pas.</string>
+    <string name="fuel_confirm_yes">Activer</string>
+    <string name="fuel_confirm_no">Annuler</string>
+</resources>

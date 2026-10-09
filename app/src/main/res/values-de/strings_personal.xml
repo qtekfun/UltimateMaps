@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Home, Work and parked car -->
+    <string name="quick_home">Zuhause</string>
+    <string name="quick_work">Arbeit</string>
+    <string name="quick_park">Parken</string>
+    <string name="quick_parked">Geparktes Auto</string>
+    <string name="quick_sos">SOS</string>
+    <string name="quick_park_again">Hier erneut markieren</string>
+    <string name="quick_park_clear">Geparktes Auto löschen</string>
+    <string name="parking_name">Geparktes Auto</string>
+    <string name="quick_msg_home_set">Zuhause festgelegt.</string>
+    <string name="quick_msg_work_set">Arbeit festgelegt.</string>
+    <string name="quick_msg_parking_set">Geparktes Auto auf der Karte markiert.</string>
+    <string name="quick_msg_parking_cleared">Geparktes Auto gelöscht.</string>
+    <string name="quick_msg_waiting">Warten auf deinen Standort …</string>
+    <string name="quick_msg_home_unset">Öffne einen Ort und tippe auf „Als Zuhause festlegen“.</string>
+    <string name="quick_msg_work_unset">Öffne einen Ort und tippe auf „Als Arbeit festlegen“.</string>
+    <string name="place_set_home">Als Zuhause festlegen</string>
+    <string name="place_set_work">Als Arbeit festlegen</string>
+
+    <!-- Recent searches -->
+    <string name="recent_title">Letzte Suchen</string>
+    <string name="recent_clear">Löschen</string>
+    <string name="history_title">Suchverlauf</string>
+    <string name="history_switch_title">Letzte Suchen merken</string>
+    <string name="history_switch_body">Merkt sich nur auf diesem Gerät, wonach du gesucht hast, um es erneut vorzuschlagen. Beim Ausschalten wird es auch gelöscht.</string>
+    <string name="history_clear">Letzte Suchen löschen</string>
+    <string name="history_cleared">Letzte Suchen gelöscht.</string>
+
+    <!-- List customisation -->
+    <string name="list_customize">Anpassen</string>
+    <string name="list_edit_name_hint">Name</string>
+    <string name="list_edit_emoji_hint">Emoji</string>
+    <string name="list_edit_notes_hint">Notizen</string>
+    <string name="list_edit_color">Farbe</string>
+    <string name="list_edit_color_none">Keine Farbe</string>
+    <string name="list_edit_color_swatch">Farbe</string>
+    <string name="list_edit_save">Speichern</string>
+    <string name="list_edit_cancel">Abbrechen</string>
+
+    <!-- Launcher shortcuts -->
+    <string name="shortcut_search_short">Suche</string>
+    <string name="shortcut_search_long">Orte suchen</string>
+    <string name="shortcut_saved_short">Gespeichert</string>
+    <string name="shortcut_saved_long">Gespeicherte Orte</string>
+    <string name="shortcut_maps_short">Karten</string>
+    <string name="shortcut_maps_long">Heruntergeladene Karten</string>
+    <string name="shortcut_emergency_short">Notfall</string>
+    <string name="shortcut_emergency_long">Notfall</string>
+
+    <!-- Emergency screen -->
+    <string name="emergency_title">Notfall</string>
+    <string name="emergency_call">%1$s anrufen</string>
+    <string name="emergency_position_title">Dein Standort</string>
+    <string name="emergency_accuracy">Genauigkeit etwa %1$d m</string>
+    <string name="emergency_waiting">Warten auf eine Position …</string>
+    <string name="emergency_no_permission">Zum Anzeigen deines Standorts ist die Standortberechtigung nötig.</string>
+    <string name="emergency_grant">Standort erlauben</string>
+    <string name="emergency_no_provider">Dieses Gerät hat keinen Standortanbieter.</string>
+    <string name="emergency_share">Meinen Standort teilen</string>
+    <string name="emergency_share_header">Mein Standort (Notfall):</string>
+    <string name="emergency_dial_failed">Keine Telefon-App zum Anrufen gefunden.</string>
+    <string name="emergency_privacy_note">Die Anruftaste öffnet deine Telefon-App; dort drückst du auf Anrufen. Dein Standort wird nur auf diesem Bildschirm angezeigt und weder gespeichert noch protokolliert noch gesendet, es sei denn, du tippst auf Teilen und wählst eine App.</string>
+</resources>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Hiking and cycling routes: Settings group (inside the Navigation category), map card and attribution -->
+    <string name="trail_group_title">Rutas de sendeirismo e ciclismo</string>
+    <string name="trail_switch_title">Amosar as rutas de sendeirismo e ciclismo</string>
+    <string name="trail_switch_body">Debuxa no mapa as rutas sinalizadas de sendeirismo, ciclismo e bicicleta de montaña de OpenStreetMap. Descarga un ficheiro de datos de varios MB do teu servidor de mapas (o mesmo ca os mapas); a túa posición nunca se envía.</string>
+    <string name="trail_kinds_title">Tipos de ruta</string>
+    <string name="trail_kind_hiking">Rutas de sendeirismo (trazos continuos)</string>
+    <string name="trail_kind_cycling">Rutas de ciclismo e bicicleta de montaña (puntos)</string>
+    <string name="trail_legend">A cor indica o alcance da ruta: púrpura local, verde rexional, laranxa nacional, vermello internacional.</string>
+    <string name="trail_data_title">Datos das rutas</string>
+    <string name="trail_data_count">%1$d rutas, datos do %2$s</string>
+    <string name="trail_data_never">Aínda non se descargaron datos das rutas.</string>
+    <string name="trail_attribution">Rutas de sendeirismo e ciclismo das relacións de ruta de OpenStreetMap, © colaboradores de OpenStreetMap (ODbL), simplificadas.</string>
+
+    <!-- Card of a tapped route -->
+    <string name="trail_category">Ruta</string>
+    <string name="trail_card_title_unknown">Ruta sen nome</string>
+    <string name="trail_card_ref">Referencia: %1$s</string>
+    <string name="trail_kind_label_hiking">Ruta de sendeirismo</string>
+    <string name="trail_kind_label_cycling">Ruta ciclista</string>
+    <string name="trail_kind_label_mtb">Ruta de bicicleta de montaña</string>
+    <string name="trail_level_local">Local</string>
+    <string name="trail_level_regional">Rexional</string>
+    <string name="trail_level_national">Nacional</string>
+    <string name="trail_level_international">Internacional</string>
+    <string name="trail_card_operator">Mantida por: %1$s</string>
+    <string name="trail_card_length">Lonxitude: %1$s</string>
+    <string name="trail_card_length_measured">Lonxitude: uns %1$s (medida no mapa, pode ser incompleta)</string>
+    <string name="trail_card_note">Datos da comunidade: a ruta pode ser incompleta, estar pechada ou mal sinalizada. Comproba antes de fiarte.</string>
+    <string name="trail_card_data_date">Datos do %1$s</string>
+    <string name="trail_card_close">Pechar</string>
+    <string name="trail_go_start">Ruta ao inicio</string>
+
+    <!-- Backup and restore -->
+    <string name="backup_item_trails">Rutas de sendeirismo e ciclismo</string>
+    <string name="backup_group_trails">Rutas de sendeirismo e ciclismo</string>
+</resources>

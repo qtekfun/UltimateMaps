@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Temporary banner for a traffic incident on the route ahead (navigation screen) -->
+    <string name="incident_banner_v16">Vehicle aturat més endavant (V16)</string>
+    <string name="incident_banner_accident">Accident més endavant</string>
+    <string name="incident_banner_closure">Carretera tallada més endavant</string>
+    <string name="incident_banner_congestion">Trànsit lent més endavant</string>
+    <string name="incident_banner_obstacle">Obstacle més endavant</string>
+    <string name="incident_banner_weather">Mal temps més endavant</string>
+    <string name="incident_banner_roadworks">Obres més endavant</string>
+    <string name="incident_banner_description">%1$s, d\'aquí a %2$s</string>
+    <string name="incident_banner_dismiss">Ignora</string>
+</resources>

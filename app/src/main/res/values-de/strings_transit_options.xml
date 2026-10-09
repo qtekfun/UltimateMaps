@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Mode chips of the public-transport route panel -->
+    <string name="transit_mode_bus">Bus</string>
+    <string name="transit_mode_metro">U-Bahn</string>
+    <string name="transit_mode_tram">Straßenbahn</string>
+    <string name="transit_mode_train">Zug</string>
+    <string name="transit_mode_ferry">Fähre</string>
+    <string name="transit_mode_other">Sonstige</string>
+    <string name="transit_modes_reset">Zurücksetzen</string>
+    <string name="transit_err_no_route_modes">Keine Route mit den ausgewählten Verkehrsmitteln</string>
+    <string name="transit_note_walk_as_fast">Zu Fuß ist etwa genauso schnell</string>
+    <string name="transit_note_less_walking">Weniger zu Fuß</string>
+    <string name="transit_note_fewer_changes">Weniger Umstiege</string>
+    <string name="transit_note_walk_the_rest">Den Rest zu Fuß</string>
+    <string name="transit_note_long_walk_to_station">Längerer Fußweg zur Haltestelle</string>
+
+    <!-- Settings: public-transport planning -->
+    <string name="transit_plan_title">Planung des öffentlichen Verkehrs</string>
+    <string name="transit_plan_minutes">%1$d Min.</string>
+    <string name="transit_plan_walk_title">Fußweg anzeigen, wenn er weniger dauert als</string>
+    <string name="transit_plan_walk_body">Die Option zu Fuß wird immer neben den ÖPNV-Optionen aufgeführt, wenn der Fußweg kürzer als dieser Wert dauert.</string>
+    <string name="transit_plan_saving_title">Zu Fuß bevorzugen, wenn der ÖPNV weniger spart als</string>
+    <string name="transit_plan_saving_body">Eine ÖPNV-Option, die weniger Zeit spart als dieser Wert (oder weniger als 20 % des Fußwegs), wird weggelassen, wenn der Fußweg aufgeführt ist.</string>
+    <string name="transit_plan_maxwalk_title">Maximaler Fußweg pro Fahrt</string>
+    <string name="transit_plan_maxwalk_body">ÖPNV-Optionen, die insgesamt mehr Fußweg erfordern als dieser Wert, werden weggelassen.</string>
+    <string name="transit_plan_maxwalk_none">Keine Begrenzung</string>
+</resources>

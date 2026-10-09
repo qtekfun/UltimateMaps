@@ -28,7 +28,6 @@
         <item quantity="other">%d transbordos</item>
     </plurals>
     <string name="transit_walk_only">Solo a pie</string>
-    <string name="transit_times">%1$s – %2$s</string>
     <string name="transit_walking">%1$s a pie</string>
     <string name="transit_option_description">Opción %1$d: %2$s, llegada %3$s, %4$s, %5$s</string>
     <string name="transit_chip_walk">A pie</string>

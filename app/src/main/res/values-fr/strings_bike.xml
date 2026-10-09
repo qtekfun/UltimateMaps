@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Bike: prefer or require cycle infrastructure -->
+    <string name="bike_cycleways_title">Infrastructures cyclables</string>
+    <string name="bike_cycleways_settings_body">Valeur par défaut pour les itinéraires à vélo : degré de préférence pour les pistes et bandes cyclables. Elle repose sur les balises OpenStreetMap, plus complètes dans certaines zones que dans d\'autres.</string>
+    <string name="bike_cycleways_off">Désactivé</string>
+    <string name="bike_cycleways_prefer">Préférer</string>
+    <string name="bike_cycleways_strong">Préférer fortement</string>
+    <string name="bike_cycleways_only">Uniquement</string>
+    <string name="bike_cycleways_full_off">Désactivé (standard)</string>
+    <string name="bike_cycleways_full_prefer">Préférer</string>
+    <string name="bike_cycleways_full_strong">Préférer fortement</string>
+    <string name="bike_cycleways_full_only">Uniquement les infrastructures cyclables</string>
+    <string name="bike_cycleways_caption_off">Calcul d\'itinéraire vélo standard, qui privilégie déjà les pistes et les bandes cyclables balisées.</string>
+    <string name="bike_cycleways_caption_prefer">Privilégie les pistes et les bandes cyclables, avec quelques détours.</string>
+    <string name="bike_cycleways_caption_strong">Privilégie fortement les pistes et les bandes cyclables, même avec de longs détours.</string>
+    <string name="bike_cycleways_caption_only">N\'utilise que les pistes cyclables et les routes balisées pour les vélos. Ne trouve souvent aucun itinéraire.</string>
+    <string name="bike_err_no_cycle_route">Aucun itinéraire trouvé en n\'utilisant que des infrastructures cyclables. Essayez Préférer.</string>
+</resources>

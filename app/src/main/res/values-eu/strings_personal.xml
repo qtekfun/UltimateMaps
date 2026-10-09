@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Home, Work and parked car -->
+    <string name="quick_home">Etxea</string>
+    <string name="quick_work">Lana</string>
+    <string name="quick_park">Aparkalekua</string>
+    <string name="quick_parked">Aparkatutako autoa</string>
+    <string name="quick_sos">SOS</string>
+    <string name="quick_park_again">Markatu hemen berriro</string>
+    <string name="quick_park_clear">Garbitu aparkatutako autoa</string>
+    <string name="parking_name">Aparkatutako autoa</string>
+    <string name="quick_msg_home_set">Etxea ezarrita.</string>
+    <string name="quick_msg_work_set">Lana ezarrita.</string>
+    <string name="quick_msg_parking_set">Aparkatutako autoa mapan markatuta.</string>
+    <string name="quick_msg_parking_cleared">Aparkatutako autoa garbituta.</string>
+    <string name="quick_msg_waiting">Zure kokapenaren zain…</string>
+    <string name="quick_msg_home_unset">Ireki leku bat eta sakatu “Ezarri etxe gisa”.</string>
+    <string name="quick_msg_work_unset">Ireki leku bat eta sakatu “Ezarri lan gisa”.</string>
+    <string name="place_set_home">Ezarri etxe gisa</string>
+    <string name="place_set_work">Ezarri lan gisa</string>
+
+    <!-- Recent searches -->
+    <string name="recent_title">Azken bilaketak</string>
+    <string name="recent_clear">Garbitu</string>
+    <string name="history_title">Bilaketa-historia</string>
+    <string name="history_switch_title">Gorde azken bilaketak</string>
+    <string name="history_switch_body">Bilatu duzuna gailu honetan bakarrik gogoratzen du, berriro iradokitzeko. Desaktibatzean ere ezabatu egiten da.</string>
+    <string name="history_clear">Garbitu azken bilaketak</string>
+    <string name="history_cleared">Azken bilaketak garbituta.</string>
+
+    <!-- List customisation -->
+    <string name="list_customize">Pertsonalizatu</string>
+    <string name="list_edit_name_hint">Izena</string>
+    <string name="list_edit_emoji_hint">Emojia</string>
+    <string name="list_edit_notes_hint">Oharrak</string>
+    <string name="list_edit_color">Kolorea</string>
+    <string name="list_edit_color_none">Kolorerik ez</string>
+    <string name="list_edit_color_swatch">Kolorea</string>
+    <string name="list_edit_save">Gorde</string>
+    <string name="list_edit_cancel">Utzi</string>
+
+    <!-- Launcher shortcuts -->
+    <string name="shortcut_search_short">Bilatu</string>
+    <string name="shortcut_search_long">Bilatu lekuak</string>
+    <string name="shortcut_saved_short">Gordeak</string>
+    <string name="shortcut_saved_long">Gordetako lekuak</string>
+    <string name="shortcut_maps_short">Mapak</string>
+    <string name="shortcut_maps_long">Deskargatutako mapak</string>
+    <string name="shortcut_emergency_short">Larrialdia</string>
+    <string name="shortcut_emergency_long">Larrialdia</string>
+
+    <!-- Emergency screen -->
+    <string name="emergency_title">Larrialdia</string>
+    <string name="emergency_call">Deitu %1$s zenbakira</string>
+    <string name="emergency_position_title">Zure kokapena</string>
+    <string name="emergency_accuracy">%1$d m inguruko zehaztasuna</string>
+    <string name="emergency_waiting">Kokapenaren zain…</string>
+    <string name="emergency_no_permission">Kokapen-baimena behar da zure kokapena erakusteko.</string>
+    <string name="emergency_grant">Baimendu kokapena</string>
+    <string name="emergency_no_provider">Gailu honek ez du kokapen-hornitzailerik.</string>
+    <string name="emergency_share">Partekatu nire kokapena</string>
+    <string name="emergency_share_header">Nire kokapena (larrialdia):</string>
+    <string name="emergency_dial_failed">Ez da telefono-aplikaziorik aurkitu deia egiteko.</string>
+    <string name="emergency_privacy_note">Dei-botoiak zure markatzailea irekitzen du; hor sakatzen duzu deitu. Zure kokapena pantaila honetan bakarrik erakusten da eta ez da gordetzen, erregistratzen edo bidaltzen, Partekatu sakatu eta aplikazio bat aukeratzen ez baduzu.</string>
+</resources>

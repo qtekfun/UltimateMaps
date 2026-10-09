@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Low-emission zones: Settings group (inside the Alerts category), route warning, navigation prompt, backup. The data is OpenStreetMap and says only "zone": nothing here claims a vehicle is allowed or banned. -->
+    <string name="zbe_group_title">Umweltzonen</string>
+    <string name="zbe_switch_title">Umweltzonen</string>
+    <string name="zbe_switch_body">Zeigt die Zonen auf der Karte, warnt, wenn eine Autoroute in eine hineinführt, und weist einmal darauf hin, bevor du in eine hineinfährst. Es wird eine kleine Datendatei von deinem Kartenserver geladen (demselben wie für die Karten); dein Standort wird nie gesendet. Die Daten beruhen auf OpenStreetMap und können unvollständig oder veraltet sein: Es gelten die offiziellen Regeln der Stadt.</string>
+    <string name="zbe_map_title">Zonen auf der Karte anzeigen</string>
+    <string name="zbe_map_body">Eine durchscheinende bernsteinfarbene Fläche mit gestrichelter Umrandung.</string>
+    <string name="zbe_prompt_title">Hinweis vor dem Einfahren in eine Zone</string>
+    <string name="zbe_data_title">Zonendaten</string>
+    <string name="zbe_data_count">%1$d Zonen, Daten vom %2$s</string>
+    <string name="zbe_data_never">Noch keine Zonendaten heruntergeladen.</string>
+    <string name="zbe_data_notice">Beruht auf OpenStreetMap, kann unvollständig oder veraltet sein; es gelten die offiziellen Regeln der Stadt. Die App weiß nicht, welche Fahrzeuge betroffen sind.</string>
+
+    <!-- Route summary (car routes) -->
+    <string name="zbe_route_warning">Diese Route führt in eine Umweltzone: Prüfe die Zufahrtsregeln der Stadt</string>
+    <string name="zbe_route_zones">Zone: %1$s</string>
+    <string name="zbe_route_tagged">In OpenStreetMap markiert: %1$s</string>
+
+    <!-- Navigation prompt -->
+    <string name="zbe_ahead_title">Umweltzone voraus</string>
+    <string name="zbe_ahead_hint">Prüfe die Zufahrtsregeln</string>
+    <string name="zbe_ahead_description">%1$s in %2$s. %3$s.</string>
+
+    <!-- Backup and restore -->
+    <string name="backup_item_zbe">Umweltzonen</string>
+    <string name="backup_group_zbe">Umweltzonen</string>
+</resources>

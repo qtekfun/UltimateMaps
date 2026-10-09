@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Electric chargers: Settings group (inside the Fuel stations category), map card and attribution -->
+    <string name="ev_group_title">Colonnine di ricarica elettrica</string>
+    <string name="ev_switch_title">Mostra le colonnine di ricarica</string>
+    <string name="ev_switch_body">Mostra sulla mappa le stazioni di ricarica di OpenStreetMap. Scarica un piccolo file di dati dal tuo server delle mappe (lo stesso delle mappe); la tua posizione non viene mai inviata.</string>
+    <string name="ev_sockets_title">Tipi di presa</string>
+    <string name="ev_sockets_body">Con tutti e quattro selezionati vengono mostrate tutte le stazioni, comprese quelle senza informazioni sulle prese. Selezionane meno per mostrare solo le stazioni che ne indicano una.</string>
+    <string name="ev_socket_type2">Tipo 2</string>
+    <string name="ev_socket_schuko">Schuko (presa domestica)</string>
+    <string name="ev_socket_type1">Tipo 1</string>
+    <string name="ev_socket_other">Altra presa</string>
+    <string name="ev_power_title">Potenza minima</string>
+    <string name="ev_power_body">Le stazioni di cui non si conosce la potenza vengono nascoste quando è impostato un minimo.</string>
+    <string name="ev_power_any">Qualsiasi</string>
+    <string name="ev_power_22">22 kW o più</string>
+    <string name="ev_power_50">50 kW o più</string>
+    <string name="ev_power_100">100 kW o più</string>
+    <string name="ev_data_title">Dati delle colonnine</string>
+    <string name="ev_data_count">%1$d stazioni, dati del %2$s</string>
+    <string name="ev_data_never">Nessun dato delle colonnine ancora scaricato.</string>
+    <string name="ev_attribution">Stazioni di ricarica elettrica da OpenStreetMap, © collaboratori di OpenStreetMap (ODbL).</string>
+
+    <!-- Card of a tapped charger -->
+    <string name="ev_category">Colonnina di ricarica</string>
+    <string name="ev_card_title_unknown">Stazione di ricarica elettrica</string>
+    <string name="ev_card_network">Rete: %1$s</string>
+    <string name="ev_card_capacity">Punti di ricarica: %1$d</string>
+    <string name="ev_card_sockets">Prese</string>
+    <string name="ev_card_sockets_unknown">Prese: non specificate in OpenStreetMap</string>
+    <string name="ev_card_fee_paid">Tariffa: sì</string>
+    <string name="ev_card_fee_free">Tariffa: gratuito</string>
+    <string name="ev_card_fee_unknown">Tariffa: non specificata</string>
+    <string name="ev_card_hours">Orari: %1$s</string>
+    <string name="ev_card_access_customers">Accesso: solo clienti</string>
+    <string name="ev_card_access_private">Accesso: privato o limitato</string>
+    <string name="ev_card_access_public">Accesso: pubblico</string>
+    <string name="ev_card_auth">Avvio con: %1$s</string>
+    <string name="ev_auth_none">nessun account necessario</string>
+    <string name="ev_auth_app">app</string>
+    <string name="ev_auth_card">tessera associativa</string>
+    <string name="ev_auth_nfc">contactless</string>
+    <string name="ev_card_note">Dati della comunità: disponibilità, prezzo e funzionamento non sono noti. Verifica prima di fare affidamento.</string>
+    <string name="ev_card_data_date">Dati del %1$s</string>
+    <string name="ev_card_close">Chiudi</string>
+    <string name="ev_go">Vai</string>
+    <string name="ev_add_stop">Aggiungi tappa</string>
+
+    <!-- Backup and restore -->
+    <string name="backup_item_chargers">Colonnine di ricarica</string>
+    <string name="backup_group_chargers">Colonnine di ricarica</string>
+</resources>

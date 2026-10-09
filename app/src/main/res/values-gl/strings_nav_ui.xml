@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Route card buttons -->
+    <string name="nav_ui_start">Iniciar</string>
+    <string name="nav_ui_simulate">Simular</string>
+    <string name="nav_ui_computing">Calculando a ruta guiada…</string>
+    <!-- Navigation screen -->
+    <string name="nav_ui_stop">Parar</string>
+    <string name="nav_ui_stop_description">Parar a navegación</string>
+    <string name="nav_ui_recenter">Recentrar</string>
+    <string name="nav_ui_then">Despois</string>
+    <string name="nav_ui_follow_route">Segue a ruta</string>
+    <string name="nav_ui_roundabout_exit">Na rotonda, colle a saída %1$d</string>
+    <string name="nav_ui_arrive_at">Chegada %1$s</string>
+    <string name="nav_ui_phase_off_route">Saíches da ruta</string>
+    <string name="nav_ui_phase_no_signal">Sinal GPS perdido. Posición estimada</string>
+    <string name="nav_ui_phase_in_tunnel">GPS perdido no túnel. Posición estimada</string>
+    <string name="nav_ui_phase_stop_reached">Parada alcanzada. Continúa cara ao destino</string>
+    <string name="nav_ui_limit_description">Límite de velocidade %1$d</string>
+    <string name="nav_ui_speed_description">Velocidade actual %1$d km/h</string>
+    <string name="nav_ui_over_limit">Por riba do límite de velocidade</string>
+    <string name="nav_ui_lanes_description">Carrís</string>
+    <string name="nav_ui_lane_recommended">carril recomendado</string>
+    <string name="nav_ui_lane_other">outro carril</string>
+    <string name="nav_ui_glove">Luvas</string>
+    <string name="nav_ui_glove_on_description">Modo luvas activado. Toca para desactivalo</string>
+    <string name="nav_ui_glove_off_description">Modo luvas desactivado. Toca para activalo</string>
+    <!-- Simulation -->
+    <string name="nav_ui_simulating">Simulación</string>
+    <string name="nav_ui_sim_faster">Máis rápido</string>
+    <string name="nav_ui_sim_slower">Máis lento</string>
+    <!-- 3D view, overview -->
+    <string name="nav_ui_view3d_on_description">Vista 3D activada. Cambiar á vista 2D plana</string>
+    <string name="nav_ui_view2d_on_description">Vista 2D plana activada. Cambiar á vista 3D</string>
+    <string name="nav_ui_overview">Ruta</string>
+    <string name="nav_ui_overview_description">Amosar un momento toda a ruta restante</string>
+    <!-- Arrival summary -->
+    <string name="nav_ui_summary_title">Chegaches</string>
+    <string name="nav_ui_summary_body">%1$s en %2$s</string>
+    <string name="nav_ui_summary_simulated">Ruta simulada. Non se gardou nada.</string>
+    <string name="nav_ui_exit">Feito</string>
+    <!-- Resume after the process died -->
+    <string name="nav_ui_resume_title">Navegación interrompida</string>
+    <string name="nav_ui_resume_body">A aplicación pechouse mentres navegabas. Queres continuar?</string>
+    <string name="nav_ui_resume">Retomar</string>
+    <string name="nav_ui_discard">Descartar</string>
+    <!-- Icons (accessibility) -->
+    <string name="nav_ui_icon_turn">Próxima manobra: %1$s</string>
+    <string name="nav_ui_mute">Silenciar</string>
+    <string name="nav_ui_unmute">Activar son</string>
+    <string name="nav_ui_mute_description">Voz activada. Toca para silenciar a guía por voz</string>
+    <string name="nav_ui_unmute_description">Voz silenciada. Toca para volver activar a guía por voz</string>
+</resources>
