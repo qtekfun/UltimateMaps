@@ -56,25 +56,49 @@ object RegionsModel {
         return out
     }
 
-    /** Flat, ranked rows for a search [query] (see [RegionSearch.filter]); each carries its parent path. */
+    /**
+     * Flat, ranked rows for a search [query] (see [RegionSearch.filter]); each carries its parent path. A matching
+     * group that is in [expanded] shows its whole subtree right below it (children do not have to match the query:
+     * "Spain" matches, "Andalusia" does not contain it), and a result already inside such a subtree is not repeated.
+     */
     fun searchRows(
         index: RegionSearch.Index,
         query: String,
         installedVersions: Map<String, String>,
         downloads: Map<String, DownloadState>,
-    ): List<RegionRow> = RegionSearch.filter(index, query).map { e ->
-        val r = e.region
-        val iv = installedVersions[r.id]
-        RegionRow(
-            region = r, depth = 0, isGroup = e.isGroup, expanded = false,
-            downloadableCount = e.leaves.size,
-            installedCount = e.leaves.count { it.id in installedVersions },
-            totalBytes = e.leaves.sumOf { it.totalBytes },
-            installedVersion = iv,
-            updateAvailable = iv != null && r.isDownloadable && iv != r.version,
-            download = downloads[r.id],
-            path = e.path,
-        )
+        expanded: Set<String> = emptySet(),
+    ): List<RegionRow> {
+        val catalog = index.catalog
+        val hits = RegionSearch.filter(index, query)
+        val openHits = hits.mapTo(HashSet()) { it.region.id }.filterTo(HashSet()) { it in expanded }
+        val out = ArrayList<RegionRow>()
+        fun row(r: Region, depth: Int, leaves: List<Region>, isGroup: Boolean, path: String?): RegionRow {
+            val iv = installedVersions[r.id]
+            return RegionRow(
+                region = r, depth = depth, isGroup = isGroup, expanded = isGroup && r.id in expanded,
+                downloadableCount = leaves.size,
+                installedCount = leaves.count { it.id in installedVersions },
+                totalBytes = leaves.sumOf { it.totalBytes },
+                installedVersion = iv,
+                updateAvailable = iv != null && r.isDownloadable && iv != r.version,
+                download = downloads[r.id],
+                path = path,
+            )
+        }
+        fun subtree(parentId: String, depth: Int) {
+            for (c in catalog.children(parentId)) {
+                if (c.isBaseFile) continue
+                val isGroup = catalog.children(c.id).isNotEmpty()
+                out += row(c, depth, catalog.downloadableUnder(c.id), isGroup, null)
+                if (isGroup && c.id in expanded) subtree(c.id, depth + 1)
+            }
+        }
+        for (e in hits) {
+            if (openHits.isNotEmpty() && ancestors(catalog, e.region.id).any { it in openHits }) continue
+            out += row(e.region, 0, e.leaves, e.isGroup, e.path)
+            if (e.isGroup && e.region.id in expanded) subtree(e.region.id, 1)
+        }
+        return out
     }
 
     /** Installed leaves the catalog lists, by name: the "Installed" block at the top of the Maps tab. */

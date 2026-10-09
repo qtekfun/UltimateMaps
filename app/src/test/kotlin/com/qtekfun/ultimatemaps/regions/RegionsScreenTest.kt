@@ -312,17 +312,136 @@ class RegionsScreenTest {
         rule.onNodeWithTag("regions_installed_title").assertIsDisplayed()
     }
 
+    // Spain has regions whose names do not contain "Spain"/"España"; madrid is installed: "1 of 4 installed".
+    private val bigCatalog = RegionCatalog(
+        "t",
+        listOf(
+            Region("spain", "Spain", null, "2"), leaf("andalusia"), leaf("aragon"), leaf("madrid"), leaf("galicia"),
+            Region("andorra", "Andorra", null, "2"),
+        ),
+    )
+
+    private fun loadedBig(downloads: Map<String, DownloadState> = emptyMap()) {
+        state = RegionsUiState(
+            CatalogState.Loaded(bigCatalog), storage = listOf(storage()),
+            installed = listOf(installed("madrid", "2")), downloads = downloads,
+        )
+    }
+
+    private fun typeSpain(text: String = "España") {
+        rule.onNodeWithTag("regions_search").performTextInput(text)
+        rule.waitForIdle()
+    }
+
     @Test
-    fun searchHitOnAGroupOpensItInTheTree() {
-        loadedForSearch()
+    fun searchByCountryShowsItWithTheInstalledCount() {
+        loadedBig()
         show()
-        rule.onNodeWithTag("regions_search").performTextInput("spain")
+        typeSpain()
+        scrollTo("region_spain")
+        rule.onNodeWithTag("region_spain").assertIsDisplayed()
+        rule.onNodeWithText("1 of 4 installed", substring = true).assertIsDisplayed()
+        assertEquals(0, rule.onAllNodesWithTagCount("region_andalusia"))
+    }
+
+    @Test
+    fun searchIsAccentAndCaseInsensitive() {
+        loadedBig()
+        show()
+        typeSpain("ESPANA")
+        scrollTo("region_spain")
+        rule.onNodeWithTag("region_spain").assertIsDisplayed()
+    }
+
+    @Test
+    fun expandingAMatchingCountryKeepsTheQueryAndShowsAllItsRegions() {
+        loadedBig()
+        show()
+        typeSpain()
+        scrollTo("region_spain")
+        rule.onNodeWithTag("region_spain").performClick()
+        rule.waitForIdle()
+        rule.onNodeWithTag("regions_search").assertTextEquals("España")
+        for (id in listOf("andalusia", "aragon", "madrid", "galicia")) {
+            scrollTo("region_$id")
+            rule.onNodeWithTag("region_$id").assertIsDisplayed()
+        }
+        rule.onNodeWithText("1 of 4 installed", substring = true).assertIsDisplayed()
+        // A region of the unfolded list can be downloaded and the search and the unfolded state survive the progress.
+        scrollTo("download_aragon")
+        rule.onNodeWithTag("download_aragon").performClick()
+        assertEquals("download=aragon", log.last())
+        loadedBig(mapOf("aragon" to DownloadState.Running(10_000_000, 40_000_000)))
+        rule.waitForIdle()
+        rule.onNodeWithTag("regions_search").assertTextEquals("España")
+        scrollTo("pause_aragon")
+        rule.onNodeWithTag("pause_aragon").assertIsDisplayed()
+        scrollTo("region_galicia")
+        rule.onNodeWithTag("region_galicia").assertIsDisplayed()
+    }
+
+    @Test
+    fun collapsingAndReExpandingKeepsTheQuery() {
+        loadedBig()
+        show()
+        typeSpain()
+        scrollTo("region_spain")
+        rule.onNodeWithTag("region_spain").performClick()
         rule.waitForIdle()
         rule.onNodeWithTag("region_spain").performClick()
         rule.waitForIdle()
+        rule.onNodeWithTag("regions_search").assertTextEquals("España")
+        assertEquals(0, rule.onAllNodesWithTagCount("region_andalusia"))
+        rule.onNodeWithTag("region_spain").performClick()
+        rule.waitForIdle()
+        rule.onNodeWithTag("regions_search").assertTextEquals("España")
+        scrollTo("region_andalusia")
+        rule.onNodeWithTag("region_andalusia").assertIsDisplayed()
+    }
+
+    @Test
+    fun searchByARegionNameShowsItUnderItsCountryPath() {
+        loadedBig()
+        show()
+        typeSpain("aragon")
+        scrollTo("region_aragon")
+        rule.onNodeWithTag("region_aragon").assertIsDisplayed()
+        rule.onNodeWithText("Spain › Aragon").assertIsDisplayed()
+    }
+
+    @Test
+    fun clearingTheQueryRestoresTheFullListKeepingTheUnfoldedCountry() {
+        loadedBig()
+        show()
+        typeSpain()
+        scrollTo("region_spain")
+        rule.onNodeWithTag("region_spain").performClick()
+        rule.waitForIdle()
+        rule.onNodeWithTag("regions_search_clear").performClick()
+        rule.waitForIdle()
         rule.onNodeWithTag("regions_search").assertTextEquals("")
-        scrollTo("region_madrid")
-        rule.onNodeWithTag("region_madrid").assertIsDisplayed()
+        scrollTo("region_andorra")
+        rule.onNodeWithTag("region_andorra").assertIsDisplayed()
+        scrollTo("region_andalusia")
+        rule.onNodeWithTag("region_andalusia").assertIsDisplayed()
+    }
+
+    @OptIn(ExperimentalTestApi::class)
+    @Test
+    fun rotationKeepsTheQueryAndTheUnfoldedCountry() = runComposeUiTest {
+        loadedBig()
+        val restorer = StateRestorationTester(this)
+        restorer.setContent { MapasTheme(darkTheme = false) { RegionsScreen(state, actions) } }
+        onNodeWithTag("regions_search").performTextInput("España")
+        waitForIdle()
+        onNodeWithTag("regions_list").performScrollToNode(hasTestTag("region_spain"))
+        onNodeWithTag("region_spain").performClick()
+        waitForIdle()
+        restorer.emulateSaveAndRestore()
+        waitForIdle()
+        onNodeWithTag("regions_search").assertTextEquals("España")
+        onNodeWithTag("regions_list").performScrollToNode(hasTestTag("region_aragon"))
+        onNodeWithTag("region_aragon").assertIsDisplayed()
     }
 
     @OptIn(ExperimentalTestApi::class)
