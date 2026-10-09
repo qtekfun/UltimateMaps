@@ -2,8 +2,7 @@
 <!--
     Launcher app shortcuts (long-press on the icon). Each one starts MainActivity with a custom action that
     com.qtekfun.ultimatemaps.shortcuts.AppShortcuts maps to a screen. The package name is repeated here because XML
-    resources cannot use the application id; a unit test checks that it still matches. The play flavor has its own copy
-    (app/src/play/res/xml) with its application id.
+    resources cannot use the application id; a unit test checks that it still matches.
 -->
 <shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
     <shortcut
@@ -13,7 +12,7 @@
         android:shortcutLongLabel="@string/shortcut_search_long">
         <intent
             android:action="com.qtekfun.ultimatemaps.action.SEARCH"
-            android:targetPackage="com.qtekfun.ultimatemaps"
+            android:targetPackage="com.qtekfun.ultimatemaps.play"
             android:targetClass="com.qtekfun.ultimatemaps.MainActivity" />
     </shortcut>
     <shortcut
@@ -23,7 +22,7 @@
         android:shortcutLongLabel="@string/shortcut_saved_long">
         <intent
             android:action="com.qtekfun.ultimatemaps.action.SAVED"
-            android:targetPackage="com.qtekfun.ultimatemaps"
+            android:targetPackage="com.qtekfun.ultimatemaps.play"
             android:targetClass="com.qtekfun.ultimatemaps.MainActivity" />
     </shortcut>
     <shortcut
@@ -33,7 +32,7 @@
         android:shortcutLongLabel="@string/shortcut_maps_long">
         <intent
             android:action="com.qtekfun.ultimatemaps.action.MAPS"
-            android:targetPackage="com.qtekfun.ultimatemaps"
+            android:targetPackage="com.qtekfun.ultimatemaps.play"
             android:targetClass="com.qtekfun.ultimatemaps.MainActivity" />
     </shortcut>
     <shortcut
@@ -43,7 +42,7 @@
         android:shortcutLongLabel="@string/shortcut_emergency_long">
         <intent
             android:action="com.qtekfun.ultimatemaps.action.EMERGENCY"
-            android:targetPackage="com.qtekfun.ultimatemaps"
+            android:targetPackage="com.qtekfun.ultimatemaps.play"
             android:targetClass="com.qtekfun.ultimatemaps.MainActivity" />
     </shortcut>
 </shortcuts>

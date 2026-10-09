@@ -48,6 +48,8 @@ class ItineraryFollower(
     snapshot: FollowerSnapshot? = null,
     /** Real time for a ride, when the user switched it on and the train is in the feed; [RideRealTime.NONE] otherwise. */
     private val realTime: RideRealTime = RideRealTime.NONE,
+    /** The system's guess whether the device is in a vehicle (true), on foot or still (false), or unknown (null); weak evidence only. */
+    private val inVehicle: () -> Boolean? = { null },
 ) {
     private val legs = itinerary.legs
 
@@ -252,7 +254,9 @@ class ItineraryFollower(
             }
             // Rail lines curve between stops and the stop-to-stop lines have no shape, so a fast train can stay outside the
             // corridor for a whole hop: a speed no walker or cyclist reaches, sustained along the line, also means "aboard".
-            if (!boarded && !atStop && ride.line.routeType in config.estimateRouteTypes && (speed ?: 0f) >= config.trainSpeedMps) {
+            if (!boarded && !atStop && ride.line.routeType in config.estimateRouteTypes &&
+                ((speed ?: 0f) >= config.trainSpeedMps || (inVehicle() == true && (speed ?: 0f) >= config.ridingSpeedMps))
+            ) {
                 val wide = bestSegment(ride, fix, 0, min(config.lookaheadSegments, n - 2), config.wideCorridorFactor)
                 if (wide != null && ++fastCount >= config.trainConfirmFixes) {
                     boarded = true

@@ -50,7 +50,6 @@ import com.qtekfun.ultimatemaps.core.cameras.IncidentCache
 import com.qtekfun.ultimatemaps.core.cameras.IncidentDataManager
 import com.qtekfun.ultimatemaps.regions.CatalogState
 import com.qtekfun.ultimatemaps.voice.VoiceModule
-import com.qtekfun.ultimatemaps.location.AndroidLocationSource
 import com.qtekfun.ultimatemaps.nav.AndroidNavEnvironment
 import com.qtekfun.ultimatemaps.nav.AndroidNavServiceControl
 import com.qtekfun.ultimatemaps.nav.CoreRouteProvider
@@ -284,7 +283,7 @@ class MapasApp : Application() {
             cameras = cameraData.repository,
             incidents = incidents.repository,
             navigation = navigation,
-            location = { AndroidLocationSource(this) },
+            location = { com.qtekfun.ultimatemaps.platform.PlatformServices.locationSource(this) },
             hasLocationPermission = {
                 checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION) == android.content.pm.PackageManager.PERMISSION_GRANTED ||
                     checkSelfPermission(android.Manifest.permission.ACCESS_COARSE_LOCATION) == android.content.pm.PackageManager.PERMISSION_GRANTED
@@ -357,7 +356,7 @@ class MapasApp : Application() {
     }
 
     /** The navigation's location: the real one, or the simulated walk while a route simulation runs (RF-05). */
-    private val navLocation: SwitchableLocationSource by lazy { SwitchableLocationSource(AndroidLocationSource(this)) }
+    private val navLocation: SwitchableLocationSource by lazy { SwitchableLocationSource(com.qtekfun.ultimatemaps.platform.PlatformServices.locationSource(this)) }
 
     /**
      * The model of the navigation screen (start, stop, simulate, resume, arrival summary). Lives with the application
@@ -405,6 +404,14 @@ class MapasApp : Application() {
      * in the background by [com.qtekfun.ultimatemaps.transit.follow.TransitTripService]. Re-planning only runs when the user presses
      * Re-plan: it asks the installed transit index for a trip from the current position.
      */
+    /** The system's movement hint for the transit trip (activity recognition in the `play` flavor, none in `foss`). */
+    val movementHint: com.qtekfun.ultimatemaps.core.map.MovementHint by lazy { com.qtekfun.ultimatemaps.platform.PlatformServices.movementHint(this) }
+
+    /** The movement permission was just granted while a trip runs: start listening to the hint now. */
+    fun transitTripRestartHint() {
+        if (transitTrip.ui.value.active) movementHint.start()
+    }
+
     val transitTrip: com.qtekfun.ultimatemaps.transit.follow.TransitTripHost by lazy {
         val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
         val replanner = com.qtekfun.ultimatemaps.core.transit.follow.TransitReplanner { from, to, at ->
@@ -417,7 +424,8 @@ class MapasApp : Application() {
         }
         val controller = com.qtekfun.ultimatemaps.core.transit.follow.TransitTripController(
             scope = scope,
-            location = AndroidLocationSource(this),
+            location = com.qtekfun.ultimatemaps.platform.PlatformServices.locationSource(this),
+            movementHint = movementHint,
             store = com.qtekfun.ultimatemaps.core.transit.follow.TransitTripStore(File(noBackupFilesDir, "transit/trip.bin")),
             replanner = replanner,
             realTime = cercaniasRealTime,

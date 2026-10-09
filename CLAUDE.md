@@ -11,7 +11,7 @@
 - Android only. Kotlin + Compose for the UI; C++ (NDK/JNI) for the core.
 - Map, search and routing run on the device. No traffic. No Google, Waze or Apple as providers (only their links are parsed).
 - Zero telemetry. All network access goes through `NetworkPolicy`; no analytics libraries and no remote crash reporting.
-- Works without Google Play Services. `play-services-*`, Firebase and any proprietary SDK are forbidden in the `foss` flavor. If GMS is present it is used only through dependency-free paths (for example `LocationManager.FUSED_PROVIDER`).
+- Works without Google Play Services. `play-services-*`, Firebase and any proprietary SDK are forbidden in the `foss` flavor (F-Droid); the build fails if one reaches its classpath (`verifyFossHasNoGms`, CI). In `foss`, if GMS is present it is used only through dependency-free paths (for example `LocationManager.FUSED_PROVIDER`). The owner (2026-10-10) allowed an extra **`play` flavor** (GitHub only, application id suffix `.play`) that uses Play Services when the phone has it (Fused Location, activity recognition as a weak hint); all that code lives in the `:gms` module and `app/src/play`, nothing else may import it. Zero telemetry still applies to both.
 - GPLv3 license. Before adding a dependency, check that its license is compatible and record it in `LICENSES.md`.
 - OpenStreetMap data with visible attribution (ODbL).
 - Performance: 60/120 fps and a cold start ≤ 1 s are requirements, not wishes. See `docs/mapas-02-requisitos.md`.

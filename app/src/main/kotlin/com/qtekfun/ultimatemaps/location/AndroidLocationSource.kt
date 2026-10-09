@@ -10,6 +10,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Looper
 import com.qtekfun.ultimatemaps.core.geo.LatLon
+import com.qtekfun.ultimatemaps.core.map.AvailableLocationSource
 import com.qtekfun.ultimatemaps.core.map.LocationFix
 import com.qtekfun.ultimatemaps.core.map.LocationSource
 
@@ -38,7 +39,7 @@ class AndroidLocationSource(
     context: Context,
     private val sdkInt: Int = Build.VERSION.SDK_INT,
     private val intervalMillis: Long = 1000L,
-) : LocationSource {
+) : AvailableLocationSource {
     private val lm = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
     private val mainExecutor = androidx.core.content.ContextCompat.getMainExecutor(context)
     private var active: LocationListener? = null
@@ -49,7 +50,7 @@ class AndroidLocationSource(
 
     fun providers(): List<String> = ProviderChoice.choose(sdkInt, ::has)
 
-    val isAvailable: Boolean get() = providers().isNotEmpty()
+    override val isAvailable: Boolean get() = providers().isNotEmpty()
 
     @SuppressLint("MissingPermission")
     override fun lastKnown(): LocationFix? = try {
