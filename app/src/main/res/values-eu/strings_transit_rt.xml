@@ -19,6 +19,14 @@
     <string name="transit_rt_cancelled">Bertan behera</string>
     <string name="transit_rt_alert">Abisua: %1$s</string>
     <string name="transit_rt_skips">Ez da gelditzen hemen: %1$s</string>
+    <plurals name="transit_rt_alerts_count">
+        <item quantity="one">abisu %d</item>
+        <item quantity="other">%d abisu</item>
+    </plurals>
+    <string name="transit_rt_alerts_expand">Erakutsi abisu guztiak</string>
+    <string name="transit_rt_alerts_collapse">Ezkutatu abisuen zerrenda</string>
+    <string name="transit_rt_alerts_dismiss">Ezkutatu</string>
+    <string name="transit_rt_alerts_dismiss_description">Ezkutatu bidaia honetako abisuak</string>
     <string name="transit_rt_note">Orduak teorikoak dira, argitaratutako ordutegietatik hartuak. “Denbora erreala (Renfe)” markatutako tarteek Renfek jakinarazitako atzerapenak ere barne hartzen dituzte; gainerako tarteek ez dute denbora errealeko informaziorik.</string>
 
     <!-- Backup restore list and connection list -->

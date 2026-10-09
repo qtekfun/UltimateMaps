@@ -28,6 +28,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -35,6 +38,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.Role
@@ -93,9 +97,11 @@ fun TransitTripScreen(ui: TransitTripUi, actions: TransitTripActions, dark: Bool
 private fun BoxScope.Following(ui: TransitTripUi, trip: TransitTripState, actions: TransitTripActions) {
     LightStatusBarIcons()
     val s = trip.follow
+    // "Hide alerts" lasts for this trip: the state leaves the composition with the trip (and survives a rotation).
+    var alertsHidden by rememberSaveable { mutableStateOf(false) }
     Column(Modifier.align(Alignment.TopCenter).fillMaxWidth()) {
         Banner(ui, trip)
-        Strips(trip, actions)
+        Strips(trip, actions, alertsHidden) { alertsHidden = true }
     }
     Column(
         Modifier.align(Alignment.BottomStart).fillMaxWidth().windowInsetsPadding(WindowInsets.navigationBars),
@@ -167,7 +173,7 @@ private fun Banner(ui: TransitTripUi, trip: TransitTripState) {
 }
 
 @Composable
-private fun Strips(trip: TransitTripState, actions: TransitTripActions) {
+private fun Strips(trip: TransitTripState, actions: TransitTripActions, alertsHidden: Boolean, onHideAlerts: () -> Unit) {
     val c = NavTheme.colors
     val res = LocalContext.current.resources
     val s = trip.follow
@@ -189,7 +195,7 @@ private fun Strips(trip: TransitTripState, actions: TransitTripActions) {
             }
             Strip(res.getString(R.string.transit_rt_label) + " · " + st.text, bg, "trip_rt_status")
         }
-        RealTimeTexts.details(res, s.realTime).forEachIndexed { k, line -> Strip(line, c.statusWarning, "trip_rt_detail_$k") }
+        if (!alertsHidden) AlertsSummary(RealTimeTexts.details(res, s.realTime), onHideAlerts)
         TransitTripTexts.signal(res, s)?.let { Strip(it, c.statusWarning, "trip_signal") }
         TransitTripTexts.connection(res, s)?.let { Strip(it, c.statusDanger, "trip_connection") }
         if (trip.replanning) Strip(stringResource(R.string.trip_replanning), c.statusInfo, "trip_replanning")
@@ -200,6 +206,79 @@ private fun Strips(trip: TransitTripState, actions: TransitTripActions) {
                 container = Mapas.colors.accent, content = Mapas.colors.onAccent,
                 description = stringResource(R.string.trip_replan_description),
             )
+        }
+    }
+}
+
+/** Largest share of the screen height that the expanded list of alerts may take. */
+internal const val ALERTS_MAX_SCREEN_FRACTION = 0.35f
+
+/**
+ * The real-time alerts ("does not stop at X" first, then Renfe's notices) in the least space: one alert is a single strip;
+ * several are one chip "N alerts" with the first (worst) one as a preview, which opens a bounded scrollable list on tap.
+ * The Hide button drops them all for the rest of this trip (the permanent switch is the Cercanías real-time setting).
+ */
+@Composable
+private fun AlertsSummary(lines: List<String>, onHide: () -> Unit) {
+    if (lines.isEmpty()) return
+    val c = NavTheme.colors
+    var expanded by rememberSaveable { mutableStateOf(false) }
+    val many = lines.size > 1
+    val maxList = (LocalConfiguration.current.screenHeightDp * ALERTS_MAX_SCREEN_FRACTION).dp
+    val expandDescription = stringResource(R.string.transit_rt_alerts_expand)
+    val collapseDescription = stringResource(R.string.transit_rt_alerts_collapse)
+    val dismissDescription = stringResource(R.string.transit_rt_alerts_dismiss_description)
+    val count = pluralStringResource(R.plurals.transit_rt_alerts_count, lines.size, lines.size)
+    Row(
+        Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)).background(c.statusWarning),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Column(
+            Modifier
+                .weight(1f)
+                .let { if (many) it.clickable(role = Role.Button) { expanded = !expanded }.semantics { contentDescription = (if (expanded) collapseDescription else expandDescription) + ": " + count } else it }
+                .padding(horizontal = 14.dp, vertical = 8.dp),
+        ) {
+            if (many) {
+                BasicText(
+                    (if (expanded) "▾ " else "▸ ") + count,
+                    style = Mapas.typography.callout.copy(color = c.onStatus, fontWeight = FontWeight.Bold),
+                    maxLines = 1,
+                    modifier = Modifier.testTag("trip_rt_alerts_chip"),
+                )
+                if (!expanded) {
+                    BasicText(
+                        lines.first(), style = Mapas.typography.callout.copy(color = c.onStatus), maxLines = 1,
+                        modifier = Modifier.testTag("trip_rt_alerts_preview"),
+                    )
+                }
+            } else {
+                BasicText(
+                    lines.first(), style = Mapas.typography.callout.copy(color = c.onStatus, fontWeight = FontWeight.SemiBold), maxLines = 2,
+                    modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite }.testTag("trip_rt_detail_0"),
+                )
+            }
+        }
+        BasicText(
+            stringResource(R.string.transit_rt_alerts_dismiss),
+            style = Mapas.typography.callout.copy(color = c.onStatus, fontWeight = FontWeight.Bold),
+            modifier = Modifier
+                .heightIn(min = NavTheme.dimens.touchTarget)
+                .clickable(role = Role.Button, onClick = onHide)
+                .semantics { contentDescription = dismissDescription }
+                .padding(horizontal = 14.dp, vertical = 12.dp)
+                .testTag("trip_rt_alerts_dismiss"),
+        )
+    }
+    if (many && expanded) {
+        LazyColumn(
+            Modifier.fillMaxWidth().heightIn(max = maxList).clip(RoundedCornerShape(12.dp)).background(c.statusWarning).testTag("trip_rt_alerts_list"),
+            verticalArrangement = Arrangement.spacedBy(6.dp),
+            contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 14.dp, vertical = 8.dp),
+        ) {
+            itemsIndexed(lines) { k, line ->
+                BasicText(line, style = Mapas.typography.callout.copy(color = c.onStatus), modifier = Modifier.testTag("trip_rt_detail_$k"))
+            }
         }
     }
 }

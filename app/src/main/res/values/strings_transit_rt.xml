@@ -19,6 +19,14 @@
     <string name="transit_rt_cancelled">Cancelled</string>
     <string name="transit_rt_alert">Alert: %1$s</string>
     <string name="transit_rt_skips">Does not stop at %1$s</string>
+    <plurals name="transit_rt_alerts_count">
+        <item quantity="one">%d alert</item>
+        <item quantity="other">%d alerts</item>
+    </plurals>
+    <string name="transit_rt_alerts_expand">Show all alerts</string>
+    <string name="transit_rt_alerts_collapse">Hide the list of alerts</string>
+    <string name="transit_rt_alerts_dismiss">Hide</string>
+    <string name="transit_rt_alerts_dismiss_description">Hide the alerts for this trip</string>
     <string name="transit_rt_note">Times are theoretical, taken from the published timetables. Legs marked \"Real time (Renfe)\" also include the delays Renfe reports; every other leg has no real-time information.</string>
 
     <!-- Backup restore list and connection list -->

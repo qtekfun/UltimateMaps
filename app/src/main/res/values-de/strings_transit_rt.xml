@@ -19,6 +19,14 @@
     <string name="transit_rt_cancelled">Ausgefallen</string>
     <string name="transit_rt_alert">Warnung: %1$s</string>
     <string name="transit_rt_skips">Hält nicht in %1$s</string>
+    <plurals name="transit_rt_alerts_count">
+        <item quantity="one">%d Warnung</item>
+        <item quantity="other">%d Warnungen</item>
+    </plurals>
+    <string name="transit_rt_alerts_expand">Alle Warnungen anzeigen</string>
+    <string name="transit_rt_alerts_collapse">Warnungsliste ausblenden</string>
+    <string name="transit_rt_alerts_dismiss">Ausblenden</string>
+    <string name="transit_rt_alerts_dismiss_description">Warnungen für diese Fahrt ausblenden</string>
     <string name="transit_rt_note">Die Zeiten sind theoretisch und stammen aus den veröffentlichten Fahrplänen. Abschnitte mit der Kennzeichnung „Echtzeit (Renfe)“ enthalten auch die von Renfe gemeldeten Verspätungen; alle anderen Abschnitte haben keine Echtzeitinformationen.</string>
 
     <!-- Backup restore list and connection list -->
