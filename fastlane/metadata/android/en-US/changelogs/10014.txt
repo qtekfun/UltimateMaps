@@ -1,0 +1,1 @@
+Release candidate: re-planning on a train starts on the train, an "I'm on board" button, public transport alerts collapse into one chip, and you can choose how many vehicle changes you accept (the planner also offers a direct line from a farther stop). Spain only.
