@@ -98,6 +98,10 @@ scheduled trips are binary-searched; frequency trips are scanned per boarding (a
   `parent_station` platforms take at least 120 s; 60 s safety slack when changing vehicle; GTFS `transfers.txt` type 3
   blocks a pair and a minimum time is respected. A walk-only itinerary is offered when it takes at most 30 min and no transit
   option is faster.
+- Alternatives: `plan` returns a bounded set of trade-offs (fastest, least walking, fewest changes, next fastest; at most 4
+  within the walking cap) plus up to 2 "walk the rest" extras beyond the cap (egress up to `extendedWalkSec` = 60 min of
+  walking), none dominated in (arrival, walking, rides), merged when they board the same lines at the same stops. See
+  `docs/decisions.md` (2026-10-09).
 - Fallback "next departures": `planNextDepartures(count)` restarts the search one minute after the previous itinerary's first
   boarding; returns the best itinerary for each of the next N distinct departures.
 - Not modelled: real time, pickup/drop-off restrictions, route-specific transfers, fares, accessibility, arrive-by queries,

@@ -45,6 +45,15 @@ enum class TransitMode {
 enum class JourneyNote {
     /** Walking is first because every vehicle journey saves too little time compared with it. */
     WALK_ABOUT_AS_FAST,
+
+    /** An alternative that walks clearly less than the fastest option (and arrives a little later). */
+    LESS_WALKING,
+
+    /** An alternative with fewer vehicle changes than the fastest option. */
+    FEWER_CHANGES,
+
+    /** An alternative that rides less and walks the rest, beyond the "maximum walking per trip" setting. */
+    WALK_THE_REST,
 }
 
 /**

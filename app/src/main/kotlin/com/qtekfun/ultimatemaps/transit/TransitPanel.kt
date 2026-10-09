@@ -299,9 +299,16 @@ private fun ItineraryRow(index: Int, it: Itinerary, selected: Boolean, zone: jav
             style = Mapas.typography.callout.copy(color = colors.secondaryLabel),
             modifier = Modifier.testTag("transit_option_${index}_facts"),
         )
-        if (it.note == JourneyNote.WALK_ABOUT_AS_FAST) {
+        val noteText = when (it.note) {
+            JourneyNote.WALK_ABOUT_AS_FAST -> R.string.transit_note_walk_as_fast
+            JourneyNote.LESS_WALKING -> R.string.transit_note_less_walking
+            JourneyNote.FEWER_CHANGES -> R.string.transit_note_fewer_changes
+            JourneyNote.WALK_THE_REST -> R.string.transit_note_walk_the_rest
+            null -> null
+        }
+        if (noteText != null) {
             BasicText(
-                stringResource(R.string.transit_note_walk_as_fast),
+                stringResource(noteText),
                 style = Mapas.typography.callout.copy(color = colors.accent),
                 modifier = Modifier.testTag("transit_option_${index}_note"),
             )
