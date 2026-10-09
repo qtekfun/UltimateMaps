@@ -4,8 +4,8 @@
   "timezone": "Europe/Madrid",
   "bounds": [39.8, -4.6, 41.2, -3.0],
   "feeds": [
-    {"label": "CRTM Metro de Madrid", "file": "crtm_metro.zip", "namespace": "crtm",
-     "attribution": "Powered by CRTM (https://www.crtm.es/). Processed data: timetables converted to a compact index."},
+    {"label": "CRTM Metro de Madrid", "file": "crtm_metro.zip", "namespace": "crtm", "nap": 1134,
+     "attribution": "Powered by CRTM (https://www.crtm.es/). Powered by MITRAMS (https://www.transportes.gob.es/), data from the Spanish National Access Point (https://nap.transportes.gob.es/). Processed data: timetables converted to a compact index."},
     {"label": "CRTM Metro Ligero", "file": "crtm_metroligero.zip", "namespace": "crtm",
      "attribution": "Powered by CRTM (https://www.crtm.es/). Processed data: timetables converted to a compact index."},
     {"label": "CRTM EMT Madrid buses", "file": "crtm_emt.zip", "namespace": "emt",

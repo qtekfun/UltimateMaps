@@ -5,6 +5,7 @@ Usage: nap-fetch.py MANIFEST.json OUTPUT_DIR [--base-url URL]
 
 Every feed that has a `nap` file id is fetched from <base>/api/Fichero/download/<id> with the HTTP header `ApiKey: <key>`;
 the key comes ONLY from the environment variable NAP_API_KEY (the data repo keeps it as a secret) and is never printed.
+A feed whose download fails keeps any file that is already at its destination (Madrid: the CRTM portal copy is the fallback).
 Feeds without a `nap` id are ignored (the workflow downloads those itself, as for Madrid).
 
 Never fails the build: a missing key, an HTTP error or a response that is not a zip is reported and that feed is skipped
@@ -70,9 +71,10 @@ def run(manifest_path, out_dir, key, base=BASE, log=print, summary=None):
         else:
             ok, msg = fetch_one(base, nap_id, key, dest)
         if not ok:
-            for leftover in (dest, dest + ".part"):
-                if os.path.exists(leftover):
-                    os.remove(leftover)
+            # only the partial download goes: a file already in the directory (Madrid's Metro zip fetched from the CRTM portal
+            # by the workflow, before this script runs) stays as the fallback when the NAP copy cannot be fetched
+            if os.path.exists(dest + ".part"):
+                os.remove(dest + ".part")
         log(f"{'OK  ' if ok else 'FAIL'} {manifest['id']}: {feed['label']} (NAP {nap_id}): {msg}")
         if summary is not None:
             summary.append(f"| {manifest['id']} | {feed['label']} | {'fetched' if ok else 'FAILED'} | {msg} |")
