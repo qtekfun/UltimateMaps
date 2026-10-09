@@ -66,9 +66,10 @@ class TransitService(val index: TransitIndex, val zone: ZoneId, config: PlannerC
         val walk = first.firstOrNull { it.rideCount == 0 }
         val journeys = ArrayList<Journey>(first.filter { it.rideCount > 0 })
         // Fewer than the wanted number of distinct options: add the next departures of the best one (same filters).
-        if (journeys.size < maxItineraries) {
+        val fillTo = minOf(maxItineraries, FILL_TO)
+        if (journeys.size < fillTo) {
             val seen = journeys.map { signature(it) }.toHashSet()
-            for (j in planner.planNextDepartures(origin, destination, epochDay, departSec, maxItineraries, options = options)) {
+            for (j in planner.planNextDepartures(origin, destination, epochDay, departSec, fillTo, options = options)) {
                 if (j.rideCount > 0 && seen.add(signature(j))) journeys.add(j)
             }
         }
@@ -77,16 +78,19 @@ class TransitService(val index: TransitIndex, val zone: ZoneId, config: PlannerC
                 planner.plan(origin, destination, epochDay, departSec, options.copy(modes = TransitMode.ALL)).isNotEmpty()
             return if (excludedSomething) TransitPlan.NoRouteWithModes else TransitPlan.NoRoute
         }
-        val sorted = journeys.sortedWith(compareBy({ it.arriveSec }, { it.transfers }, { it.departSec }))
+        // The journeys within the walking limit by arrival; the "walk the rest" extras (beyond the limit) after them.
+        val byArrival = compareBy<Journey>({ it.arriveSec }, { it.transfers }, { it.departSec })
+        val extras = journeys.filter { it.note == JourneyNote.WALK_THE_REST }.sortedWith(byArrival)
+        val sorted = journeys.filter { it.note != JourneyNote.WALK_THE_REST }.sortedWith(byArrival)
         // Walking is always one of the options: first when it explains why no vehicle is offered, else by arrival time.
         val ordered = if (walk == null) {
-            sorted.take(maxItineraries)
+            (sorted + extras).take(maxItineraries)
         } else if (walk.note != null) {
-            (listOf(walk) + sorted).take(maxItineraries)
+            (listOf(walk) + sorted + extras).take(maxItineraries)
         } else {
             val pos = sorted.indexOfFirst { it.arriveSec > walk.arriveSec }.let { if (it < 0) sorted.size else it }
-            val all = sorted.toMutableList().also { it.add(pos, walk) }
-            // too many: drop the slowest vehicle journeys, never the walk
+            val all = sorted.toMutableList().also { it.add(pos, walk) }.also { it.addAll(extras) }
+            // too many: drop the extras and the slowest vehicle journeys first, never the walk
             while (all.size > maxItineraries) all.removeAt(all.indexOfLast { it !== walk })
             all
         }
@@ -128,6 +132,10 @@ class TransitService(val index: TransitIndex, val zone: ZoneId, config: PlannerC
     }
 
     companion object {
-        const val MAX_ITINERARIES = 3
+        /** Alternatives with different trade-offs (see [TransitPlanner.alternativesFor]) plus the walk-only option. */
+        const val MAX_ITINERARIES = 6
+
+        /** When fewer vehicle options than this exist, the next departures of the best one are added. */
+        const val FILL_TO = 3
     }
 }

@@ -58,8 +58,9 @@ class TransitServiceTest {
     @Test
     fun `offers up to three itineraries sorted by arrival`() {
         val found = assertIs<TransitPlan.Found>(service().plan(nearA, nearF, at("2026-10-14T07:55:00")))
-        assertTrue(found.itineraries.size in 2..3)
-        assertEquals(found.itineraries.sortedBy { it.arriveAt }.map { it.arriveAt }, found.itineraries.map { it.arriveAt })
+        assertTrue(found.itineraries.count { it.note != JourneyNote.WALK_THE_REST } in 2..3)
+        val main = found.itineraries.filter { it.note != JourneyNote.WALK_THE_REST }
+        assertEquals(main.sortedBy { it.arriveAt }.map { it.arriveAt }, main.map { it.arriveAt })
         assertEquals(found.itineraries.size, found.itineraries.map { i -> i.rides.map { r -> r.boarding.departAt } }.toSet().size)
     }
 
