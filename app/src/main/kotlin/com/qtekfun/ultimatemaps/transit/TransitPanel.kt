@@ -5,6 +5,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -40,6 +42,8 @@ import androidx.compose.ui.unit.dp
 import com.qtekfun.ultimatemaps.R
 import com.qtekfun.ultimatemaps.core.transit.Itinerary
 import com.qtekfun.ultimatemaps.core.transit.ItineraryLeg
+import com.qtekfun.ultimatemaps.core.transit.JourneyBadge
+import com.qtekfun.ultimatemaps.core.transit.badges
 import com.qtekfun.ultimatemaps.core.transit.JourneyNote
 import com.qtekfun.ultimatemaps.core.transit.LineInfo
 import com.qtekfun.ultimatemaps.core.transit.TransitMode
@@ -260,7 +264,13 @@ private fun ItineraryRow(index: Int, it: Itinerary, selected: Boolean, zone: jav
     else if (it.transfers == 0) stringResource(R.string.transit_direct)
     else context.resources.getQuantityString(R.plurals.transit_transfers, it.transfers, it.transfers)
     val walking = stringResource(R.string.transit_walking, RouteFormat.distance(it.walkMeters.toDouble(), locale))
-    val lines = it.rides.map { r -> stringResource(TransitModeIcons.description(lineMode(r.line)), r.line.shortName) }.joinToString(", ")
+    val badges = it.badges()
+    val lines = badges.map { b ->
+        when (b) {
+            is JourneyBadge.Walk -> context.resources.getQuantityString(R.plurals.transit_walk_description, b.minutes, b.minutes)
+            is JourneyBadge.Line -> stringResource(TransitModeIcons.description(lineMode(b.ride.line)), b.ride.line.shortName)
+        }
+    }.joinToString(", ")
     val description = stringResource(R.string.transit_option_description, index + 1, duration, arrive, changes, walking)
     Column(
         Modifier
@@ -282,16 +292,7 @@ private fun ItineraryRow(index: Int, it: Itinerary, selected: Boolean, zone: jav
             BasicText(duration, style = Mapas.typography.title.copy(color = colors.label), modifier = Modifier.testTag("transit_option_${index}_duration"))
         }
         Spacer(Modifier.height(6.dp))
-        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-            if (it.isWalkOnly) {
-                WalkChip()
-            } else {
-                it.rides.forEachIndexed { k, ride ->
-                    if (k > 0) BasicText("›", style = Mapas.typography.callout.copy(color = colors.secondaryLabel))
-                    LineChip(ride.line, Modifier.testTag("transit_option_${index}_chip_$k"))
-                }
-            }
-        }
+        BadgeRow(index, badges, it.isWalkOnly)
         Spacer(Modifier.height(6.dp))
         BasicText(
             "$changes · $walking",
@@ -351,6 +352,59 @@ internal fun LineChip(line: LineInfo, modifier: Modifier = Modifier) {
         Icon(TransitModeIcons.of(mode), fg, 14.dp, Modifier.clearAndSetSemantics { })
         Spacer(Modifier.width(4.dp))
         BasicText(line.shortName, style = Mapas.typography.callout.copy(color = fg), maxLines = 1)
+    }
+}
+
+/**
+ * The badge row: walking pills and line badges in travel order, wrapping onto the next line instead of cutting when it is long
+ * (narrow screens, large font). Every element after the first carries its own chevron so a chevron never starts a line.
+ */
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+internal fun BadgeRow(index: Int, badges: List<JourneyBadge>, walkOnly: Boolean) {
+    val colors = Mapas.colors
+    FlowRow(
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        verticalArrangement = Arrangement.spacedBy(4.dp),
+        itemVerticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.fillMaxWidth().testTag("transit_option_${index}_badges"),
+    ) {
+        if (badges.isEmpty()) WalkChip()
+        badges.forEachIndexed { k, b ->
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                if (k > 0) BasicText("›", style = Mapas.typography.callout.copy(color = colors.secondaryLabel))
+                when (b) {
+                    is JourneyBadge.Walk -> WalkPill(b.minutes, walkOnly, Modifier.testTag("transit_option_${index}_walk_$k"))
+                    is JourneyBadge.Line -> LineChip(b.ride.line, Modifier.testTag("transit_option_${index}_chip_${b.rideIndex}"))
+                }
+            }
+        }
+    }
+}
+
+/**
+ * A neutral grey pill with a walking person and the minutes, the same height and shape as a [LineChip]; no line colour. Grey is
+ * the secondary label colour at low alpha so it reads in light, dark and glove modes alike.
+ */
+@Composable
+internal fun WalkPill(minutes: Int, walkOnly: Boolean = false, modifier: Modifier = Modifier) {
+    val colors = Mapas.colors
+    val context = LocalContext.current
+    val spoken = context.resources.getQuantityString(R.plurals.transit_walk_description, minutes, minutes)
+    val text = stringResource(if (walkOnly) R.string.transit_walk_only_pill else R.string.transit_walk_pill, minutes)
+    Row(
+        modifier
+            .clip(Mapas.shapes.pill)
+            .background(colors.secondaryLabel.copy(alpha = 0.18f))
+            .padding(horizontal = 8.dp, vertical = 3.dp)
+            .widthIn(min = 28.dp)
+            .semantics { contentDescription = spoken },
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Icon(TransitModeIcons.walk, colors.label, 14.dp, Modifier.clearAndSetSemantics { })
+        Spacer(Modifier.width(4.dp))
+        BasicText(text, style = Mapas.typography.callout.copy(color = colors.label), maxLines = 1)
     }
 }
 
