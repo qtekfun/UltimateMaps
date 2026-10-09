@@ -93,7 +93,7 @@ class RegionsControllerTest {
     fun `the default catalog is the project's data release and only lists hosts, never connects`() {
         val c = controller()
         assertEquals(RegionsController.DEFAULT_CATALOG_URL, c.serverUrl)
-        assertTrue(RegionsController.DEFAULT_CATALOG_URL.startsWith("https://github.com/qtekfun/UltimateMaps-data/releases/latest/download/"))
+        assertTrue(RegionsController.DEFAULT_CATALOG_URL.startsWith("https://github.com/qtekfun/ultimate-maps-data/releases/latest/download/"))
         val listed = policy.possibleConnections().filter { it.purpose == ConnectionPurpose.MAP_DOWNLOAD }
         assertEquals(
             setOf("github.com", "release-assets.githubusercontent.com", "objects.githubusercontent.com"),

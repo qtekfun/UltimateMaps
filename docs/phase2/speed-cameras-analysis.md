@@ -4,7 +4,7 @@ Status: analysis only, 2026-10-07. No code changed. Nothing here is legal advice
 
 ## 0. Summary
 
-- The CoMaps core already has a complete speed-camera subsystem (routing + voice + UI callbacks) driven by a `speedcams` section inside each `.mwm`. It only works if the `.mwm` files were generated with `generator_tool --generate_cameras`. Whether our `UltimateMaps-data` MWMs include that section is **not verified** (the data pipeline is not in this repo). This is the cheapest path: no new data format, no new layer for route warnings.
+- The CoMaps core already has a complete speed-camera subsystem (routing + voice + UI callbacks) driven by a `speedcams` section inside each `.mwm`. It only works if the `.mwm` files were generated with `generator_tool --generate_cameras`. Whether our `ultimate-maps-data` MWMs include that section is **not verified** (the data pipeline is not in this repo). This is the cheapest path: no new data format, no new layer for route warnings.
 - DGT publishes fixed-radar locations as open data (CC-BY, DATEX2 XML, about 2 MB, 737 records). It excludes the Basque Country and Catalonia and municipal radars. It has no speed limit and no real direction.
 - OSM (`highway=speed_camera`) has richer tags (`maxspeed`, `direction`) but uneven completeness; it is ODbL, which we already attribute.
 - Mobile radars: the DGT says revealing the exact position of a mobile speed control would be illegal. Only fixed radars should ship. No crowd-sourced or mobile data.
@@ -17,7 +17,7 @@ Status: analysis only, 2026-10-07. No code changed. Nothing here is legal advice
 - Tag: `highway=speed_camera` on a node ("a fixed road-side or overhead speed camera"). Related tags: `maxspeed` (enforced limit), `direction` (facing, degrees or cardinal), `ref`, `colour`; the `enforcement` relation for complex setups. Status "de facto". Source: https://wiki.openstreetmap.org/wiki/Tag:highway%3Dspeed_camera
 - The wiki page says navigation software should ask during installation whether speed cameras are to be included (some jurisdictions restrict warnings). Same source.
 - The page, as read, says nothing about mobile or average-speed cameras. Average-speed ("tramo") sections are usually mapped with `enforcement=average_speed` on relations/nodes; **not verified** for Spain here.
-- Licence: ODbL 1.0. Compatible with GPLv3 as a separate data work, provided the OSM attribution is visible (the app already shows it). A derived database (e.g. an extracted camera file) must keep attribution and share-alike for the database. We already ship OSM-derived data in `UltimateMaps-data`, so the obligation is the same.
+- Licence: ODbL 1.0. Compatible with GPLv3 as a separate data work, provided the OSM attribution is visible (the app already shows it). A derived database (e.g. an extracted camera file) must keep attribution and share-alike for the database. We already ship OSM-derived data in `ultimate-maps-data`, so the obligation is the same.
 - Coverage/freshness: depends on mappers. Number of Spanish nodes **not verified**: the Overpass servers refused or timed out the query during this analysis (overpass-api.de answered 406 to the scripted request; overpass.private.coffee timed out). It should be measured on our own Spain extract in the data pipeline (a single `osmium tags-filter n/highway=speed_camera` over the `.osm.pbf`).
 - Format/size: a Spain extract is a few thousand nodes at most; tens to a few hundred KB. How to obtain without sending the user's location: the pipeline already processes OSM extracts; add the filter there and publish with the weekly data release. No live Overpass query from the app (it would reveal the area).
 
@@ -76,11 +76,11 @@ Searched `third_party/comaps` (outputs verified by reading the sources):
 - UI bridge (Android sample app, reusable): `android/sdk/.../routing/RoutingInfo.hpp` exposes `isSpeedCamLimitExceeded` and `shouldPlaySignal`; `SpeedCameraMode.java`; `Framework.java/.cpp` set/get the mode; `NavigationService.java` and `VoiceInstructionsSettingsFragment.java` consume them. Upstream telemetry hooks in the manager (`SendNotificationStat`) log to a stats sink; confirm they are inert in our build (zero telemetry rule).
 - Limits of the core's approach: cameras are only known **on the planned route**. There is no "nearby cameras while free-driving" warning and no on-map layer except the camera mark shown near the route. Our own layer would be needed for those.
 - In our repo: `docs/spike/comaps-code.md:96` records "Speed cameras: supported (speed_camera*.cpp)" and `docs/spike/comaps-build.md:108` notes speed limits not tested at runtime. `grep` of `app/`, `core-*`, `native-comaps/` for camera/radar finds nothing: the app does not use it yet.
-- Unknown: whether the MWMs published in `data-261004-20261006` contain the `speedcams` section. Check: run the core's reader over a Spain MWM (or look for the section in the MWM header with the CoMaps `mwm_tool`), or look at the generation command used for `UltimateMaps-data`.
+- Unknown: whether the MWMs published in `data-261004-20261006` contain the `speedcams` section. Check: run the core's reader over a Spain MWM (or look for the section in the MWM header with the CoMaps `mwm_tool`), or look at the generation command used for `ultimate-maps-data`.
 
 ## 4. Proposed design
 
-### 4.1 Data pipeline (in `qtekfun/UltimateMaps-data`, weekly release)
+### 4.1 Data pipeline (in `qtekfun/ultimate-maps-data`, weekly release)
 
 1. MWM generation: add `--generate_cameras` for Spain regions (if not already) so the core can warn on routes. Cost: a few KB per region.
 2. New small asset `speedcams-es.bin` (or `.json`) per release, listed in `catalog.json` with sha256 like the other files:

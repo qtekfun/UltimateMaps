@@ -1,7 +1,7 @@
 # Speed-camera data file and how the weekly data release builds it
 
 Status: 2026-10-07. The converter and the reader are tested on the JVM and with real downloaded data (counts below). The
-weekly workflow of `qtekfun/UltimateMaps-data` now has an optional step for it (added afterwards, outside this repository; it skips itself while `scripts/build-cameras.py` is not on the default branch of this repository): this document is the
+weekly workflow of `qtekfun/ultimate-maps-data` now has an optional step for it (added afterwards, outside this repository; it skips itself while `scripts/build-cameras.py` is not on the default branch of this repository): this document is the
 instruction for whoever changes it. Anything marked "not verified" was not confirmed.
 
 ## 1. What the file is

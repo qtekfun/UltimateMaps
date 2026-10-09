@@ -40,7 +40,7 @@ UltimateMaps is a map and navigation app that works on your device. It has no se
 
 ### Open data
 
-Map data is © OpenStreetMap contributors, under the Open Database License (ODbL). The attribution is always visible on the map. See [`UltimateMaps-data`](https://github.com/qtekfun/UltimateMaps-data) for the origin of each file.
+Map data is © OpenStreetMap contributors, under the Open Database License (ODbL). The attribution is always visible on the map. See [`ultimate-maps-data`](https://github.com/qtekfun/ultimate-maps-data) for the origin of each file.
 
 ### Contact
 
@@ -86,7 +86,7 @@ UltimateMaps es una app de mapas y navegación que funciona en tu dispositivo. N
 
 ### Datos abiertos
 
-Los datos de mapas son © colaboradores de OpenStreetMap, bajo la licencia ODbL. La atribución está siempre visible en el mapa. El origen de cada fichero está en [`UltimateMaps-data`](https://github.com/qtekfun/UltimateMaps-data).
+Los datos de mapas son © colaboradores de OpenStreetMap, bajo la licencia ODbL. La atribución está siempre visible en el mapa. El origen de cada fichero está en [`ultimate-maps-data`](https://github.com/qtekfun/ultimate-maps-data).
 
 ### Contacto
 
