@@ -100,6 +100,11 @@ class IsolatedCore(
     private val config: IsolationConfig = IsolationConfig(),
     private val clock: () -> Long = System::currentTimeMillis,
     private val executor: ExecutorService = Executors.newCachedThreadPool { r -> Thread(r, "core-call").apply { isDaemon = true } },
+    /**
+     * Told, in a few fixed words, when the core process dies or is killed ("died during route", "killed: deadline"). For the
+     * local diagnostic notes only: never a query, a position or an exception message. Must not throw (a throw is ignored).
+     */
+    private val onEvent: (String) -> Unit = {},
 ) : CoreHandle, AutoCloseable {
     private val callLock = ReentrantLock()
     private var connection: CoreConnection? = null
@@ -184,6 +189,10 @@ class IsolatedCore(
                 RouteOutcome(codeFor(e.kind), null, "core_" + e.kind.name.lowercase())
             } catch (e: IOException) {
                 RouteOutcome(RouteCode.CORE_INTERNAL, null, "core_bad_reply")
+            } catch (e: RuntimeException) {
+                // Anything else (a reply that parses into nonsense, an unexpected state): a failed route, never a crash of the caller.
+                event("route: unexpected ${e.javaClass.simpleName}")
+                RouteOutcome(RouteCode.CORE_INTERNAL, null, "core_unexpected")
             }
         }
 
@@ -247,8 +256,16 @@ class IsolatedCore(
         if (now < circuitOpenUntil) throw CoreException(CoreFailureKind.UNAVAILABLE, "the core keeps crashing; try again later")
     }
 
+    private fun event(text: String) {
+        try {
+            onEvent(text)
+        } catch (_: Throwable) {
+        }
+    }
+
     private fun noteDeath() {
         val now = clock()
+        event("core process died (death ${crashes.size + 1} in the window, ${restarts + 1} since start)")
         restarts++
         crashes.addLast(now)
         while (crashes.isNotEmpty() && now - crashes.first() > config.crashWindowMillis) crashes.removeFirst()
@@ -351,6 +368,7 @@ class IsolatedCore(
     }
 
     private fun killLocked(conn: CoreConnection) {
+        event("core process killed by the client (deadline or cancellation)")
         try {
             conn.kill()
         } catch (_: Exception) {
