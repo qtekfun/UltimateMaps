@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Route panel: fourth travel mode -->
+    <string name="route_profile_transit">ÖPNV</string>
+    <string name="transit_group_departure">Abfahrt</string>
+    <string name="transit_depart_now">Jetzt abfahren</string>
+    <string name="transit_depart_later">Abfahrt um</string>
+    <string name="transit_time_earlier">15 Minuten früher</string>
+    <string name="transit_time_later">15 Minuten später</string>
+    <string name="transit_day_earlier">Vorheriger Tag</string>
+    <string name="transit_day_later">Nächster Tag</string>
+
+    <string name="transit_computing">Verbindungen werden gesucht …</string>
+    <string name="transit_needs_origin">Warten auf deinen Standort. Wähle einen Startpunkt oder schalte den Standort ein.</string>
+    <string name="transit_err_no_data">Es sind keine Daten zum öffentlichen Verkehr installiert und der Kartenserver führt keine auf. Öffne Karten, um danach zu suchen.</string>
+    <string name="transit_err_not_downloaded">Die Fahrpläne für %1$s sind noch nicht heruntergeladen. Lade sie unter Karten im Bereich Öffentlicher Verkehr herunter.</string>
+    <string name="transit_err_across">Diese Fahrt führt von %1$s nach %2$s, die getrennte Fahrpläne haben. Fahrten zwischen ihnen werden nicht geplant; plane jeden Teil einzeln.</string>
+    <string name="transit_err_outside">Die Fahrpläne des öffentlichen Verkehrs decken diese Fahrt nicht ab.</string>
+    <string name="transit_err_expired">Die Fahrpläne sind am %1$s abgelaufen, daher werden Fahrten nach diesem Datum nicht geplant. Wähle ein früheres Datum oder aktualisiere die Daten unter Karten.</string>
+    <string name="transit_err_not_yet">Die Fahrpläne beginnen am %1$s. Wähle ein späteres Datum.</string>
+    <string name="transit_err_no_route">Zu dieser Zeit wurde keine Verbindung gefunden. Versuche eine andere Zeit.</string>
+    <string name="transit_err_internal">Die Fahrplandatei konnte nicht gelesen werden. Lösche sie und lade sie unter Karten erneut herunter.</string>
+
+    <!-- Itinerary list -->
+    <string name="transit_direct">Direkt</string>
+    <plurals name="transit_transfers">
+        <item quantity="one">%d Umstieg</item>
+        <item quantity="other">%d Umstiege</item>
+    </plurals>
+    <string name="transit_walk_only">Nur zu Fuß</string>
+    <string name="transit_walking">%1$s zu Fuß</string>
+    <string name="transit_option_description">Option %1$d: %2$s, Ankunft %3$s, %4$s, %5$s</string>
+    <string name="transit_chip_walk">Zu Fuß</string>
+    <string name="transit_walk_pill">%1$d Min.</string>
+    <string name="transit_walk_only_pill">Zu Fuß · %1$d Min.</string>
+    <plurals name="transit_walk_description">
+        <item quantity="one">%d Minute zu Fuß gehen</item>
+        <item quantity="other">%d Minuten zu Fuß gehen</item>
+    </plurals>
+
+    <!-- Itinerary card -->
+    <string name="transit_back">Zurück zu den Optionen</string>
+    <string name="transit_card_summary">%1$s, Abfahrt %2$s, Ankunft %3$s</string>
+    <string name="transit_place_destination">dein Ziel</string>
+    <string name="transit_leg_walk">%1$s zu Fuß bis %2$s</string>
+    <string name="transit_leg_towards">Richtung %1$s</string>
+    <string name="transit_leg_board">Einsteigen bei %1$s</string>
+    <string name="transit_leg_alight">Aussteigen bei %1$s</string>
+    <plurals name="transit_leg_stops">
+        <item quantity="one">%d Haltestelle</item>
+        <item quantity="other">%d Haltestellen</item>
+    </plurals>
+
+    <!-- Honesty and data -->
+    <string name="transit_theoretical_note">Die Zeiten sind theoretisch und stammen aus den veröffentlichten Fahrplänen. Sie enthalten keine Verspätungen, Ausfälle oder Echtzeitinformationen.</string>
+    <string name="transit_valid_range">Fahrpläne gültig vom %1$s bis %2$s.</string>
+    <string name="transit_projected_note">Die U-Bahn-Fahrpläne stammen von 2025 (neuere Daten werden nicht veröffentlicht): Die Zeiten können abweichen.</string>
+    <string name="transit_unverified">Ein Teil dieser Daten konnte nicht mit seinem Kalender abgeglichen werden.</string>
+    <string name="transit_link_description">%1$s öffnen</string>
+
+    <!-- About -->
+    <string name="transit_about_title">Daten zum öffentlichen Verkehr</string>
+
+    <!-- Maps screen: section -->
+    <string name="transit_maps_title">Öffentlicher Verkehr</string>
+    <string name="transit_maps_intro">Fahrpläne für theoretische Routen. Jede Stadt oder Region ist ein eigener Download, der nur beim Tippen auf Herunterladen erfolgt; die gesamte Planung geschieht auf deinem Telefon und es wird keine Position gesendet.</string>
+    <string name="transit_maps_none">Der Katalog bietet noch keine Städte mit öffentlichem Verkehr an.</string>
+    <string name="transit_maps_size">Downloadgröße: %1$s</string>
+    <string name="transit_maps_valid">Gültig vom %1$s bis %2$s</string>
+    <string name="transit_maps_expired">Abgelaufen am %1$s: Die veröffentlichten Daten sind veraltet</string>
+    <string name="transit_maps_update_available">Eine neuere Datei ist verfügbar</string>
+    <string name="transit_maps_installed">Installiert</string>
+    <string name="transit_maps_download">Herunterladen</string>
+    <string name="transit_maps_update">Aktualisieren</string>
+    <string name="transit_maps_delete">Löschen</string>
+    <string name="transit_maps_downloading">Wird heruntergeladen …</string>
+    <string name="transit_fail_offline">Der Offline-Modus ist aktiv: Es wurde nichts heruntergeladen.</string>
+    <string name="transit_fail_not_allowed">Dieser Server ist laut Verbindungsliste nicht zugelassen.</string>
+    <string name="transit_fail_network">Der Download ist fehlgeschlagen. Versuche es später erneut.</string>
+    <string name="transit_fail_integrity">Die Datei stimmte nicht mit dem Katalog überein und wurde verworfen.</string>
+    <string name="transit_fail_invalid">Die Datei ist kein gültiger Fahrplanindex.</string>
+    <string name="transit_fail_expired">Die veröffentlichten Fahrpläne sind bereits abgelaufen.</string>
+    <string name="transit_fail_cancelled">Der Download wurde abgebrochen.</string>
+    <!-- Spoken form of a line badge: the mode comes first because short names are shared between modes -->
+    <string name="transit_line_bus">Buslinie %1$s</string>
+    <string name="transit_line_tram">Straßenbahnlinie %1$s</string>
+    <string name="transit_line_train">Zuglinie %1$s</string>
+    <string name="transit_line_metro">U-Bahn-Linie %1$s</string>
+    <string name="transit_line_ferry">Fährlinie %1$s</string>
+    <string name="transit_line_other">Linie %1$s</string>
+</resources>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="nav_motion_tunnels_title">Utiliser les capteurs de mouvement dans les tunnels</string>
+    <string name="nav_motion_tunnels_body">Uniquement lorsque le GPS est perdu dans un tunnel connu, l\'accéléromètre distingue une voiture à l\'arrêt d\'une voiture en mouvement, afin que l\'estimation de la position ne dérive pas dans un embouteillage. Rien n\'est stocké ni envoyé.</string>
+    <string name="live_update_title">Afficher la distance dans la barre d\'état</string>
+    <string name="live_update_body">Sous Android 16 et versions ultérieures, la distance jusqu\'au prochain virage apparaît sous forme de pastille dans la barre d\'état pendant la navigation. Vous pouvez aussi désactiver les notifications promues pour cette application dans les réglages du système.</string>
+    <!-- Chip texts: the status bar chip fits about 7 characters. -->
+    <string name="live_update_chip_reroute">Recalcul</string>
+    <string name="live_update_chip_no_signal">Pas de GPS</string>
+    <string name="driving_focus_group">Concentration au volant</string>
+    <string name="driving_focus_hide_bar_title">Masquer la barre d\'état pendant la navigation</string>
+    <string name="driving_focus_hide_bar_body">Les icônes de notification des autres applications restent masquées sur l\'écran de navigation. Balayez vers le bas depuis le bord supérieur pour afficher la barre un instant. Désactivé par défaut.</string>
+    <string name="driving_focus_open_dnd">Ouvrir les réglages Ne pas déranger</string>
+    <string name="driving_focus_dnd_note">Android ne permet pas à une application de bloquer les fenêtres contextuelles des autres. Pour les éviter en conduisant, configurez un mode Ne pas déranger qui autorise les appels (Réglages, Ne pas déranger, Personnes, Appels : Tout le monde) et activez-le quand vous conduisez.</string>
+</resources>

@@ -1,0 +1,1 @@
+Release candidate: the app is now available in Catalan, Galician, Basque, French, German, Portuguese and Italian, with spoken guidance in all of them except Basque (English is spoken there). Translations are not reviewed by native speakers yet. Spain only.

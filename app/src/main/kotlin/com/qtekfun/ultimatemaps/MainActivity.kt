@@ -48,7 +48,6 @@ import com.qtekfun.ultimatemaps.search.PanelHost
 import com.qtekfun.ultimatemaps.ui.theme.MapasTheme
 import com.qtekfun.ultimatemaps.cameras.HazardDescriber
 import com.qtekfun.ultimatemaps.cameras.HazardsEnv
-import com.qtekfun.ultimatemaps.core.fuel.FuelTypes
 
 class MainActivity : ComponentActivity() {
     private val state = MapScreenState()
@@ -85,7 +84,7 @@ class MainActivity : ComponentActivity() {
             this, engine, state,
             fuelRepository = app.fuel.repository,
             fuelSettings = app.fuelSettings,
-            fuelName = { id -> FuelTypes.byId(id)?.displayName ?: id },
+            fuelName = { id -> com.qtekfun.ultimatemaps.fuel.FuelNames.name(this, id) },
             hazards = HazardsEnv(
                 app.cameraSettings.settings, app.cameraData.repository, app.incidents.repository,
                 HazardDescriber(this, app.cameraData.repository, app.incidents.repository),

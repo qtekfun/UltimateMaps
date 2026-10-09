@@ -157,4 +157,14 @@ class ZbeAheadTest {
         assertTrue(es.contains("zona de bajas emisiones"), es)
         assertTrue(es.contains("normas de acceso"), es)
     }
+
+    @Test fun phrasesInTheOtherLanguages() {
+        val english = ZbePhrases.ahead(event, DistanceUnits.METRIC, VoiceLanguage.EN)
+        for (l in VoiceLanguage.entries.filter { it != VoiceLanguage.ES && it != VoiceLanguage.EN }) {
+            val text = ZbePhrases.ahead(event, DistanceUnits.METRIC, l)
+            assertTrue(text.isNotBlank() && '{' !in text && '}' !in text && text != english, "$l: $text")
+        }
+        assertTrue(ZbePhrases.ahead(event, DistanceUnits.METRIC, VoiceLanguage.FR).contains("zone à faibles émissions"))
+        assertTrue(ZbePhrases.ahead(event, DistanceUnits.METRIC, VoiceLanguage.DE).contains("Umweltzone"))
+    }
 }

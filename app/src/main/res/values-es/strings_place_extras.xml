@@ -32,6 +32,4 @@
 
     <!-- Escala del mapa -->
     <string name="map_scale_description">Escala del mapa: %1$s</string>
-    <string name="map_scale_meters">%1$d m</string>
-    <string name="map_scale_kilometers">%1$d km</string>
 </resources>

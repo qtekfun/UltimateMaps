@@ -1,0 +1,14 @@
+UltimateMaps est une application de cartes hors ligne et privée. La carte, la recherche et les itinéraires sont calculés sur votre téléphone : pas de trafic en direct, pas de compte, pas de publicité, pas d'analyse d'usage et pas de télémétrie. Elle fonctionne sans les services Google Play.
+
+Il s'agit d'une version candidate d'un MVP, pas d'une application terminée. Ce qui fonctionne aujourd'hui :
+
+• Carte vectorielle hors ligne (MapLibre + PMTiles), thème clair et sombre.
+• Téléchargement de régions depuis l'écran Cartes : reprise possible et vérification SHA-256. Un mode sans réseau bloque toutes les connexions de l'application.
+• Recherche hors ligne de lieux et d'adresses, avec le moteur CoMaps.
+• Aperçu d'itinéraire en voiture, à pied ou à vélo (pas encore de guidage pas à pas).
+• Lieux et listes enregistrés, avec import et export GPX et KML.
+• Ouvre les liens Google Maps, Apple Maps, Waze et geo:.
+
+Pas encore disponible : la navigation vocale pas à pas, le guidage par voie et les limitations de vitesse, un profil moto et les routes sinueuses, l'enregistrement de traces, la synchronisation Nextcloud, l'import Google Takeout, Android Auto.
+
+Seule l'Espagne est disponible pour le moment. Les données cartographiques proviennent d'OpenStreetMap (© contributeurs d'OpenStreetMap, ODbL) et ne sont téléchargées que sur votre demande. Logiciel libre, GPL-3.0-or-later.

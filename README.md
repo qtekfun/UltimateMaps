@@ -12,10 +12,11 @@ An Android maps and navigation app that is **offline and private**: map, search 
 - Route preview by car, on foot or by bike, with up to 5 stops.
 - **Petrol stations (optional, off by default):** choose the fuels in Settings (LPG, petrol, diesel, CNG…), see the price over each station on the map, tap one to go there or add it as a stop. Prices come from the Spanish Ministry for the Ecological Transition (unofficial).
 - **Speed cameras and traffic (optional, off by default, one switch per category):** fixed cameras and average-speed sections, stretches where the DGT says mobile radars may operate (never exact points), live traffic incidents and V16 beacons, on the map and as spoken alerts ahead. Data from the DGT (CC BY) and OpenStreetMap (ODbL); traffic is downloaded only when you turn it on and never with your position. Informational and possibly out of date.
-- **Navigation screen with voice** (new, not yet verified on a device): turn banner, lanes, speed limit, arrival time, night and glove modes, a route simulator, and voice guidance in English and Spanish.
+- **Navigation screen with voice** (new, not yet verified on a device): turn banner, lanes, speed limit, arrival time, night and glove modes, a route simulator, and voice guidance in English, Spanish, Catalan, Galician, French, German, Portuguese and Italian.
 - Saved places and lists, with GPX and KML import and export.
 - **Backup and restore of the settings** (Settings): save your preferences and the list of installed maps to a file (or everything, with your places, in one ZIP) and restore them on a new phone. No locations or credentials in the settings file; switches that start a download are not turned on by a restore.
 - Opens Google Maps, Apple Maps, Waze and `geo:` links.
+- **Languages:** the screens are translated into English, Spanish, Catalan, Galician, Basque, French, German, Portuguese and Italian (Android 13 and later: Settings, System, Languages, App languages). Basque has no spoken guidance yet (English is spoken). The translations of the languages other than Spanish and English have not been reviewed by native speakers; fixes are welcome (see `docs/decisions.md`, 2026-10-09, multilanguage).
 
 ## What it does not do (yet)
 
@@ -23,7 +24,7 @@ Motorcycle profile and curvy routes, track recording, Nextcloud sync, Google Tak
 
 ## Data
 
-Map data (OpenStreetMap, ODbL) is downloaded by region from [`UltimateMaps-data`](https://github.com/qtekfun/UltimateMaps-data). Only Spain for now. The app does not connect to anything until you open "Mapas" ("Maps") or download a region.
+Map data (OpenStreetMap, ODbL) is downloaded by region from [`ultimate-maps-data`](https://github.com/qtekfun/ultimate-maps-data). Only Spain for now. The app does not connect to anything until you open "Mapas" ("Maps") or download a region.
 
 ## Building
 

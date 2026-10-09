@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Route stops and petrol-station card (RF-15) -->
+    <string name="route_stops_title">Zwischenstopps (%1$d von %2$d)</string>
+    <string name="route_stop_up">%1$s nach oben verschieben</string>
+    <string name="route_stop_down">%1$s nach unten verschieben</string>
+    <string name="route_stop_remove">%1$s aus der Route entfernen</string>
+    <string name="route_stops_limit">Bis zu %1$d Zwischenstopps. Entferne einen, um einen weiteren hinzuzufügen.</string>
+    <string name="route_err_stop">Ein Zwischenstopp liegt nicht an einer Straße in den heruntergeladenen Karten. Entferne ihn oder wähle einen anderen.</string>
+    <string name="fuel_category">Tankstelle</string>
+    <string name="fuel_card_close">Schließen</string>
+    <string name="fuel_go">Los</string>
+    <string name="fuel_add_stop">Zwischenstopp hinzufügen</string>
+    <string name="fuel_save">Speichern</string>
+    <string name="fuel_saved">Gespeichert</string>
+    <string name="fuel_schedule">Öffnungszeiten: %1$s</string>
+    <string name="fuel_prices_title">Preise</string>
+    <string name="fuel_price_on_map">%1$s (auf der Karte)</string>
+    <string name="fuel_updated_now">gerade aktualisiert</string>
+    <string name="fuel_updated_min">vor %1$d Min. aktualisiert</string>
+    <string name="fuel_updated_h">vor %1$d Std. aktualisiert</string>
+    <string name="fuel_updated_d">vor %1$d T. aktualisiert</string>
+    <string name="fuel_updated_unknown">Aktualisierungszeit unbekannt</string>
+    <string name="fuel_stop_duplicate">Diese Tankstelle ist bereits ein Zwischenstopp der Route.</string>
+    <string name="fuel_stop_is_destination">Diese Tankstelle ist das Ziel der Route.</string>
+    <string name="fuel_stop_limit">Die Route hat bereits %1$d Zwischenstopps. Entferne zuerst einen.</string>
+    <string name="fuel_stop_no_route">Starte zuerst eine Route, um einen Zwischenstopp hinzuzufügen.</string>
+    <string name="fuel_source">Quelle: Ministerium für den ökologischen Wandel und die demografische Herausforderung</string>
+    <string name="fuel_price_note">Vom Ministerium veröffentlichter Preis; inoffiziell. Prüfe ihn an der Zapfsäule.</string>
+</resources>

@@ -17,7 +17,7 @@
     <string name="trail_category">Route</string>
     <string name="trail_card_title_unknown">Unnamed route</string>
     <string name="trail_card_ref">Reference: %1$s</string>
-    <string name="trail_card_kind">%1$s · %2$s</string>
+    <string name="trail_card_kind" translatable="false">%1$s · %2$s</string>
     <string name="trail_kind_label_hiking">Hiking route</string>
     <string name="trail_kind_label_cycling">Cycling route</string>
     <string name="trail_kind_label_mtb">Mountain-bike route</string>

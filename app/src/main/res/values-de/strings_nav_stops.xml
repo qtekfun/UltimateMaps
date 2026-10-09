@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Adding a stop to the trip in progress -->
+    <string name="nav_stop_adding">Zwischenstopp wird hinzugefügt …</string>
+    <string name="nav_stop_no_route">Über diesen Zwischenstopp wurde keine Route gefunden. Deine Fahrt geht wie bisher weiter.</string>
+    <string name="nav_stop_limit">Die Fahrt hat bereits %1$d Zwischenstopps vor sich. Erreiche zuerst einen.</string>
+    <string name="nav_stop_duplicate">Dieser Ort ist bereits ein Zwischenstopp der Fahrt.</string>
+    <string name="nav_stop_is_destination">Dieser Ort ist das Ziel der Fahrt.</string>
+    <string name="nav_stop_busy">Ein anderer Zwischenstopp wird noch hinzugefügt. Warte einen Moment.</string>
+    <string name="nav_stop_not_navigating">Die Fahrt ist beendet, deshalb wurde der Zwischenstopp nicht hinzugefügt.</string>
+</resources>

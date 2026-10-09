@@ -19,7 +19,6 @@
     <string name="nav_ui_limit_description">Límite de velocidad %1$d</string>
     <string name="nav_ui_speed_description">Velocidad actual %1$d km/h</string>
     <string name="nav_ui_over_limit">Superas el límite de velocidad</string>
-    <string name="nav_ui_speed_unit">km/h</string>
     <string name="nav_ui_lanes_description">Carriles</string>
     <string name="nav_ui_lane_recommended">carril recomendado</string>
     <string name="nav_ui_lane_other">otro carril</string>
@@ -28,12 +27,9 @@
     <string name="nav_ui_glove_off_description">Modo guantes desactivado. Toca para activarlo</string>
     <!-- Simulación -->
     <string name="nav_ui_simulating">Simulación</string>
-    <string name="nav_ui_sim_speed">%1$d km/h</string>
     <string name="nav_ui_sim_faster">Más rápido</string>
     <string name="nav_ui_sim_slower">Más lento</string>
     <!-- Vista 3D, resumen de ruta -->
-    <string name="nav_ui_view_3d">3D</string>
-    <string name="nav_ui_view_2d">2D</string>
     <string name="nav_ui_view3d_on_description">Vista 3D activada. Cambiar a la vista plana 2D</string>
     <string name="nav_ui_view2d_on_description">Vista plana 2D activada. Cambiar a la vista 3D</string>
     <string name="nav_ui_overview">Ruta</string>

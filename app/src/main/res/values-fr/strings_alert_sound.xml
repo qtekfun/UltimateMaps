@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- How camera and incident alerts are announced: a chime, the spoken sentence, or only the on-screen alert -->
+    <string name="alert_mode_cam_title">Alertes de radars</string>
+    <string name="alert_mode_incident_title">Alertes d\'incidents</string>
+    <string name="alert_mode_sound">Son (un court signal)</string>
+    <string name="alert_mode_voice">Voix (avertissement parlé)</string>
+    <string name="alert_mode_silent">Silencieux (alerte à l\'écran uniquement)</string>
+    <string name="alert_mode_note">L\'alerte à l\'écran s\'affiche toujours. Couper le son (navigation) et Couper les alertes désactivent le son et la voix.</string>
+</resources>

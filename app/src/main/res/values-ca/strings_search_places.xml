@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Search (M2) -->
+    <string name="search_hint">Cerca llocs i adreces</string>
+    <string name="search_preparing">Preparant la cerca fora de línia…</string>
+    <string name="search_searching">Cercant…</string>
+    <string name="search_no_results">Cap resultat</string>
+    <string name="search_error">La cerca ha fallat. Torna-ho a provar.</string>
+    <string name="search_no_regions_title">Cap regió instal·lada</string>
+    <string name="search_no_regions_body">Descarrega una regió per cercar fora de línia.</string>
+    <string name="tab_search">Cerca</string>
+    <string name="tab_lists">Llistes</string>
+
+    <!-- Place card -->
+    <string name="place_save">Desa</string>
+    <string name="place_saved">Desat</string>
+    <string name="place_route">Ruta</string>
+    <string name="place_share">Comparteix</string>
+    <string name="place_close">Tanca</string>
+
+    <!-- Saved places (M3) -->
+    <string name="list_favorites">Preferits</string>
+    <string name="lists_title">Llistes</string>
+    <string name="lists_back">Totes les llistes</string>
+    <string name="lists_empty">Encara no hi ha llocs desats</string>
+    <string name="lists_new_hint">Nom de la nova llista</string>
+    <string name="lists_create">Crea</string>
+    <plurals name="lists_place_count">
+        <item quantity="one">%d lloc</item>
+        <item quantity="many">%d llocs</item>
+        <item quantity="other">%d llocs</item>
+    </plurals>
+    <string name="list_filter_hint">Cerca en aquesta llista</string>
+    <string name="list_empty_filter">Cap lloc coincident</string>
+    <string name="list_sort_distance">Per distància</string>
+    <string name="list_sort_name">Per nom</string>
+    <string name="list_import">Importa</string>
+    <string name="list_export_gpx">Exporta GPX</string>
+    <string name="list_export_kml">Exporta KML</string>
+    <string name="list_delete">Suprimeix la llista</string>
+    <string name="msg_saved">Desat a %1$s</string>
+    <string name="msg_removed">Eliminat dels llocs desats</string>
+    <string name="msg_imported">Importats %1$d llocs (%2$d ja hi eren) i %3$d tracks</string>
+    <string name="msg_import_failed">No s\'ha pogut llegir aquest fitxer</string>
+    <string name="msg_exported">Exportats %1$d llocs</string>
+    <string name="msg_export_failed">No s\'ha pogut escriure el fitxer</string>
+</resources>

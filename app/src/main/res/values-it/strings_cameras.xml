@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Settings: section -->
+    <string name="cam_title">Autovelox e traffico</string>
+    <string name="cam_intro">Facoltativo, disattivato per impostazione predefinita. I dati degli autovelox sono un piccolo file della pubblicazione dei dati della mappa; il traffico viene scaricato solo quando lo attivi. La tua posizione non viene mai inviata.</string>
+
+    <string name="cam_fixed_title">Autovelox fissi</string>
+    <string name="cam_fixed_body">Autovelox fissi e tratti con controllo della velocità media, sulla mappa e come avviso in anticipo.</string>
+    <string name="cam_mobile_title">Zone di autovelox mobili</string>
+    <string name="cam_mobile_body">Strade dove la DGT indica che possono operare autovelox mobili. Mostrate come tratti di strada, mai come punti.</string>
+    <string name="cam_incidents_title">Incidenti stradali</string>
+    <string name="cam_incidents_body">Incidenti, chiusure, traffico lento, ostacoli e maltempo (DGT, in tempo reale).</string>
+    <string name="cam_v16_title">Luci V16</string>
+    <string name="cam_v16_body">Veicoli fermi con una luce V16 connessa (DGT, in tempo reale).</string>
+    <string name="cam_roadworks_title">Includi i lavori stradali</string>
+    <string name="cam_roadworks_body">Possono essercene centinaia in qualsiasi momento.</string>
+    <string name="cam_only_speeding_title">Avvisa solo se superi il limite</string>
+    <string name="cam_only_speeding_body">Per gli autovelox con limite noto, resta in silenzio finché sei sotto il limite. Gli autovelox con limite sconosciuto avvisano sempre.</string>
+
+    <!-- Settings: legal note and acknowledgement dialog -->
+    <string name="cam_legal_note">Le zone di autovelox mobili sono i tratti pubblicati dalla DGT; il punto esatto di un controllo mobile non viene mai mostrato. Gli avvisi sono solo informativi e possono essere errati o non aggiornati. Sei responsabile di come guidi.</string>
+    <string name="cam_confirm_title">Dati degli autovelox</string>
+    <string name="cam_confirm_body">Questo attiva gli avvisi degli autovelox.\n\n- Fonti: DGT (CC BY) e OpenStreetMap (ODbL). Un autovelox in elenco potrebbe non essere acceso.\n- Le zone di autovelox mobili sono tratti di strada pubblicati dalla DGT. Nessun dato in tempo reale, controlli della polizia o segnalazioni degli utenti.\n- Il file proviene dal server dei dati della mappa che hai scelto; non viene inviato nulla sulla tua posizione.\n- Solo a scopo informativo: può essere errato o non aggiornato.</string>
+    <string name="cam_confirm_yes">Ho capito, attiva</string>
+    <string name="cam_confirm_no">Annulla</string>
+    <string name="cam_incidents_confirm_title">Dati sul traffico</string>
+    <string name="cam_incidents_confirm_body">Questo scarica il file nazionale del traffico della DGT (circa 200 KB) da nap.dgt.es quando lo attivi, premi Aggiorna ora o apri l\'app con dati vecchi. Viene filtrato sul telefono: la tua posizione e il tuo percorso non vengono mai inviati. La modalità offline lo blocca.</string>
+    <string name="cam_incidents_confirm_offline">La modalità offline è attiva: non viene scaricato nulla finché non la disattivi.</string>
+
+    <!-- Settings: data card -->
+    <string name="cam_data_title">Dati</string>
+    <string name="cam_data_cameras_never">Dati degli autovelox: non ancora scaricati.</string>
+    <string name="cam_data_cameras">Dati degli autovelox: %1$d autovelox fissi, %2$d tratti a velocità media, %3$d zone di autovelox mobili (%4$d disegnabili). File del %5$s.</string>
+    <string name="cam_data_incidents_never">Dati sul traffico: non ancora scaricati.</string>
+    <string name="cam_data_incidents">Dati sul traffico: %1$d record attivi, scaricati %2$s.</string>
+    <string name="cam_refresh_title">Aggiorna i dati sul traffico ogni</string>
+    <string name="cam_refresh_minutes">%1$d minuti</string>
+    <string name="cam_refresh_hour">1 ora</string>
+    <string name="cam_update_now">Aggiorna ora</string>
+    <string name="cam_update_running">Aggiornamento…</string>
+    <string name="cam_update_ok">Aggiornato.</string>
+    <string name="cam_update_error">Impossibile aggiornare (%1$s). I dati precedenti vengono mantenuti.</string>
+    <string name="cam_err_offline">la modalità offline è attiva</string>
+    <string name="cam_err_not_allowed">connessione non consentita</string>
+    <string name="cam_err_network">errore di rete</string>
+    <string name="cam_err_timeout">tempo scaduto</string>
+    <string name="cam_err_server">il server ha avuto un errore</string>
+    <string name="cam_err_too_large">file troppo grande</string>
+    <string name="cam_err_invalid">dati non validi</string>
+    <string name="cam_err_no_catalog">il catalogo delle mappe non contiene un file degli autovelox; apri Mappe e aggiornalo</string>
+
+    <!-- Connection list -->
+    <string name="conn_purpose_traffic">Incidenti stradali (DGT)</string>
+
+    <!-- Map cards -->
+    <string name="cam_card_fixed_title">Possibile autovelox fisso</string>
+    <string name="cam_card_section_title">Tratto a velocità media</string>
+    <string name="cam_card_zone_title">Su questo tratto possono operare autovelox mobili</string>
+    <string name="cam_card_road">Strada: %1$s</string>
+    <string name="cam_card_limit">Limite controllato: %1$d km/h</string>
+    <string name="cam_card_limit_unknown">Limite di velocità: non pubblicato</string>
+    <string name="cam_card_km">Chilometro %1$s a %2$s</string>
+    <string name="cam_card_zone_note">Pubblicato dalla DGT come tratto di strada, non come posizione. Un dispositivo può esserci o no, e la linea disegnata è approssimativa.</string>
+    <string name="cam_card_fixed_note">La fonte indica dove può trovarsi un autovelox, non che sia acceso.</string>
+    <string name="cam_card_data_date">File degli autovelox del %1$s</string>
+    <string name="inc_card_v16">Veicolo fermo con luce V16</string>
+    <string name="inc_card_accident">Incidente</string>
+    <string name="inc_card_closure">Strada o carreggiata chiusa</string>
+    <string name="inc_card_congestion">Traffico lento</string>
+    <string name="inc_card_obstacle">Ostacolo sulla strada</string>
+    <string name="inc_card_weather">Condizioni meteo o della strada</string>
+    <string name="inc_card_roadworks">Lavori stradali</string>
+    <string name="inc_card_since">Dal %1$s</string>
+    <string name="inc_card_until">Fino al %1$s</string>
+    <string name="inc_card_downloaded">Dati sul traffico scaricati %1$s. Potrebbero essere cambiati da allora.</string>
+    <string name="hazard_card_close">Chiudi</string>
+</resources>

@@ -1,7 +1,6 @@
 package com.qtekfun.ultimatemaps.voice
 
 import android.content.Context
-import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -20,13 +19,9 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import com.qtekfun.ultimatemaps.R
 import com.qtekfun.ultimatemaps.core.voice.VoiceFailure
-import com.qtekfun.ultimatemaps.core.voice.VoiceLanguage
 import com.qtekfun.ultimatemaps.core.voice.VoiceStatus
 import com.qtekfun.ultimatemaps.core.voice.isProblem
 import com.qtekfun.ultimatemaps.ui.theme.Mapas
-
-@StringRes
-private fun languageName(l: VoiceLanguage) = if (l == VoiceLanguage.ES) R.string.voice_lang_es else R.string.voice_lang_en
 
 /**
  * The guide shown when the voice cannot speak (nothing is drawn while it can). It is for the Settings screen; the
@@ -44,14 +39,14 @@ fun VoiceProblemNotice(status: VoiceStatus, onRetry: () -> Unit, modifier: Modif
     Column(modifier.fillMaxWidth().testTag("voice_problem_notice")) {
         val title = when (status) {
             is VoiceStatus.NoEngine -> stringResource(R.string.voice_problem_no_engine_title)
-            is VoiceStatus.LanguageMissing -> stringResource(R.string.voice_problem_lang_title, stringResource(languageName(status.language)))
+            is VoiceStatus.LanguageMissing -> stringResource(R.string.voice_problem_lang_title, voiceLanguageName(status.language))
             else -> stringResource(R.string.voice_problem_failed_title)
         }
         BasicText(title, style = Mapas.typography.body.copy(color = Mapas.colors.warning), modifier = Modifier.testTag("voice_problem_title"))
         Spacer(Modifier.height(4.dp))
         val body = when (status) {
             is VoiceStatus.NoEngine -> stringResource(R.string.voice_problem_no_engine_body)
-            is VoiceStatus.LanguageMissing -> stringResource(R.string.voice_problem_lang_body, stringResource(languageName(status.language)))
+            is VoiceStatus.LanguageMissing -> stringResource(R.string.voice_problem_lang_body, voiceLanguageName(status.language))
             is VoiceStatus.Failed -> stringResource(if (status.reason == VoiceFailure.INIT_FAILED) R.string.voice_problem_init_body else R.string.voice_problem_failed_body)
             else -> ""
         }
@@ -98,7 +93,7 @@ fun VoiceProblemBanner(status: VoiceStatus, onClick: () -> Unit, modifier: Modif
     if (!status.isProblem) return
     val text = when (status) {
         is VoiceStatus.NoEngine -> stringResource(R.string.voice_banner_no_engine)
-        is VoiceStatus.LanguageMissing -> stringResource(R.string.voice_banner_lang, stringResource(languageName(status.language)))
+        is VoiceStatus.LanguageMissing -> stringResource(R.string.voice_banner_lang, voiceLanguageName(status.language))
         else -> stringResource(R.string.voice_banner_failed)
     }
     BasicText(

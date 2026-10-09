@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Hiking and cycling routes: Settings group (inside the Navigation category), map card and attribution -->
+    <string name="trail_group_title">Mendi-ibilbideak eta bizikleta-ibilbideak</string>
+    <string name="trail_switch_title">Erakutsi mendi-ibilbideak eta bizikleta-ibilbideak</string>
+    <string name="trail_switch_body">OpenStreetMap-eko seinaleztatutako mendi-, bizikleta- eta mendiko bizikleta-ibilbideak marrazten ditu mapan. Hainbat MB-ko datu-fitxategi bat deskargatzen du zure mapa-zerbitzaritik (mapen berbera); zure kokapena ez da inoiz bidaltzen.</string>
+    <string name="trail_kinds_title">Ibilbide motak</string>
+    <string name="trail_kind_hiking">Mendi-ibilbideak (marra jarraituak)</string>
+    <string name="trail_kind_cycling">Bizikleta- eta mendiko bizikleta-ibilbideak (puntuak)</string>
+    <string name="trail_legend">Koloreak ibilbidearen irismena adierazten du: more tokikoa, berde eskualdekoa, laranja nazionala, gorri nazioartekoa.</string>
+    <string name="trail_data_title">Ibilbideen datuak</string>
+    <string name="trail_data_count">%1$d ibilbide, datuak: %2$s</string>
+    <string name="trail_data_never">Oraindik ez da ibilbideen daturik deskargatu.</string>
+    <string name="trail_attribution">OpenStreetMap-eko ibilbide-erlazioetatik ateratako mendi- eta bizikleta-ibilbideak, © OpenStreetMap-eko laguntzaileak (ODbL), sinplifikatuak.</string>
+
+    <!-- Card of a tapped route -->
+    <string name="trail_category">Ibilbidea</string>
+    <string name="trail_card_title_unknown">Izenik gabeko ibilbidea</string>
+    <string name="trail_card_ref">Erreferentzia: %1$s</string>
+    <string name="trail_kind_label_hiking">Mendi-ibilbidea</string>
+    <string name="trail_kind_label_cycling">Bizikleta-ibilbidea</string>
+    <string name="trail_kind_label_mtb">Mendiko bizikleta-ibilbidea</string>
+    <string name="trail_level_local">Tokikoa</string>
+    <string name="trail_level_regional">Eskualdekoa</string>
+    <string name="trail_level_national">Nazionala</string>
+    <string name="trail_level_international">Nazioartekoa</string>
+    <string name="trail_card_operator">Mantentzailea: %1$s</string>
+    <string name="trail_card_length">Luzera: %1$s</string>
+    <string name="trail_card_length_measured">Luzera: %1$s inguru (mapan neurtua, osatu gabe egon daiteke)</string>
+    <string name="trail_card_note">Komunitateko datuak: ibilbidea osatu gabe, itxita edo gaizki seinaleztatuta egon daiteke. Egiaztatu fidatu aurretik.</string>
+    <string name="trail_card_data_date">Datuak: %1$s</string>
+    <string name="trail_card_close">Itxi</string>
+    <string name="trail_go_start">Ibilbidea hasierara</string>
+
+    <!-- Backup and restore -->
+    <string name="backup_item_trails">Mendi-ibilbideak eta bizikleta-ibilbideak</string>
+    <string name="backup_group_trails">Mendi-ibilbideak eta bizikleta-ibilbideak</string>
+</resources>

@@ -52,7 +52,6 @@ class HazardDescriber(
     private val incidents: IncidentRepository,
     private val locale: () -> Locale = { Locale.getDefault() },
 ) {
-    private fun english() = locale().language != "es"
 
     fun describe(id: String): HazardInfo? = when {
         id.startsWith(HazardIds.CAMERA) -> camera(id.removePrefix(HazardIds.CAMERA))
@@ -67,11 +66,11 @@ class HazardDescriber(
         val lines = buildList {
             if (c.road.isNotBlank()) add(context.getString(R.string.cam_card_road, c.road))
             add(c.maxSpeedKmh?.let { context.getString(R.string.cam_card_limit, it) } ?: context.getString(R.string.cam_card_limit_unknown))
-            cameras.generatedMillis.value?.let { add(context.getString(R.string.cam_card_data_date, CameraAttribution.dateText(it, english()))) }
+            cameras.generatedMillis.value?.let { add(context.getString(R.string.cam_card_data_date, CameraAttribution.dateText(it, locale()))) }
         }
         return HazardInfo(
             context.getString(if (section) R.string.cam_card_section_title else R.string.cam_card_fixed_title), lines,
-            context.getString(R.string.cam_card_fixed_note), CameraAttribution.forCameras(c.sources, english()),
+            context.getString(R.string.cam_card_fixed_note), CameraCredits.cameras(context, c.sources),
         )
     }
 
@@ -80,9 +79,9 @@ class HazardDescriber(
         val lines = buildList {
             add(context.getString(R.string.cam_card_road, z.road + if (z.province.isNotBlank()) " (${z.province})" else ""))
             add(context.getString(R.string.cam_card_km, km(z.kmFromMeters), km(z.kmToMeters)))
-            cameras.generatedMillis.value?.let { add(context.getString(R.string.cam_card_data_date, CameraAttribution.dateText(it, english()))) }
+            cameras.generatedMillis.value?.let { add(context.getString(R.string.cam_card_data_date, CameraAttribution.dateText(it, locale()))) }
         }
-        return HazardInfo(context.getString(R.string.cam_card_zone_title), lines, context.getString(R.string.cam_card_zone_note), CameraAttribution.forCameras(CameraSources.DGT, english()))
+        return HazardInfo(context.getString(R.string.cam_card_zone_title), lines, context.getString(R.string.cam_card_zone_note), CameraCredits.cameras(context, CameraSources.DGT))
     }
 
     private fun km(meters: Int) = String.format(locale(), "%.1f", meters / 1000.0)
@@ -102,11 +101,11 @@ class HazardDescriber(
             if (i.road.isNotBlank()) add(context.getString(R.string.cam_card_road, i.road))
             val place = listOfNotNull(i.municipality, i.province).filter { it.isNotBlank() }
             if (place.size == 2) add(context.getString(R.string.inc_card_place, place[0], place[1])) else place.firstOrNull()?.let(::add)
-            i.startMillis?.let { add(context.getString(R.string.inc_card_since, CameraAttribution.dateText(it, english()))) }
-            i.endMillis?.let { add(context.getString(R.string.inc_card_until, CameraAttribution.dateText(it, english()))) }
+            i.startMillis?.let { add(context.getString(R.string.inc_card_since, CameraAttribution.dateText(it, locale()))) }
+            i.endMillis?.let { add(context.getString(R.string.inc_card_until, CameraAttribution.dateText(it, locale()))) }
         }
-        val downloaded = incidents.lastUpdateMillis.value?.let { context.getString(R.string.inc_card_downloaded, CameraAttribution.dateText(it, english())) }
-        return HazardInfo(context.getString(title), lines, downloaded, CameraAttribution.forIncidents(english()))
+        val downloaded = incidents.lastUpdateMillis.value?.let { context.getString(R.string.inc_card_downloaded, CameraAttribution.dateText(it, locale())) }
+        return HazardInfo(context.getString(title), lines, downloaded, CameraCredits.incidents(context))
     }
 }
 

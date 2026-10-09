@@ -1,0 +1,1 @@
+Release candidate: public transport no longer reports "no route" when a mode is off (walking up to 60 min by default), a failed route never closes the app, the Maps search keeps its query when you expand a country, and saving a place is reliable. Spain only.

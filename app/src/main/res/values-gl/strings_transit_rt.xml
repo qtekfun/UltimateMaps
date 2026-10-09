@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Settings: opt-in switch -->
+    <string name="transit_rt_title">Cercanías en tempo real</string>
+    <string name="transit_rt_body">Pregunta ao servidor de Renfe polos atrasos dos trens mentres usas o transporte público. A túa posición nunca se envía; Renfe ve o teu enderezo IP.</string>
+    <string name="transit_rt_source">Datos: Renfe (CC BY 4.0), data.renfe.com</string>
+
+    <!-- Labels and statuses -->
+    <string name="transit_rt_label">Tempo real (Renfe)</string>
+    <plurals name="transit_rt_delayed">
+        <item quantity="one">Atraso de %d min</item>
+        <item quantity="other">Atraso de %d min</item>
+    </plurals>
+    <plurals name="transit_rt_early">
+        <item quantity="one">%d min de adianto</item>
+        <item quantity="other">%d min de adianto</item>
+    </plurals>
+    <string name="transit_rt_on_time">Puntual</string>
+    <string name="transit_rt_cancelled">Cancelado</string>
+    <string name="transit_rt_alert">Alerta: %1$s</string>
+    <string name="transit_rt_skips">Non para en %1$s</string>
+    <string name="transit_rt_note">Os horarios son teóricos, tomados dos horarios publicados. Os treitos marcados «Tempo real (Renfe)» tamén inclúen os atrasos que informa Renfe; os demais treitos non teñen información en tempo real.</string>
+
+    <!-- Backup restore list and connection list -->
+    <string name="backup_item_cercanias_rt">Cercanías en tempo real</string>
+    <string name="conn_purpose_transit_rt">Atrasos de trens (Renfe)</string>
+</resources>

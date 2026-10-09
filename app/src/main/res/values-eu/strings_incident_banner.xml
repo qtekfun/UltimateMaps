@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Temporary banner for a traffic incident on the route ahead (navigation screen) -->
+    <string name="incident_banner_v16">Ibilgailu geldirik aurrean (V16)</string>
+    <string name="incident_banner_accident">Istripua aurrean</string>
+    <string name="incident_banner_closure">Errepidea moztuta aurrean</string>
+    <string name="incident_banner_congestion">Trafiko mantsoa aurrean</string>
+    <string name="incident_banner_obstacle">Oztopoa aurrean</string>
+    <string name="incident_banner_weather">Eguraldi txarra aurrean</string>
+    <string name="incident_banner_roadworks">Obrak aurrean</string>
+    <string name="incident_banner_description">%1$s, %2$s barru</string>
+    <string name="incident_banner_dismiss">Baztertu</string>
+</resources>

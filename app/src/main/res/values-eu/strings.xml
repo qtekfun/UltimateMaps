@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="network_mode_offline">Lineaz kanpoko modua: sareko konexiorik ez</string>
+    <string name="network_connections_title">Konexio posibleak</string>
+    <string name="link_short_needs_resolve">Esteka labur honek Google-ri sare-eskaera bat egin behar dio helmuga aurkitzeko. Esteka laburrak ebaztea desaktibatuta dago, beraz ez da ezer bidali.</string>
+    <string name="link_not_recognized">Esteka hau ez da ezagutzen den mapa-esteka bat.</string>
+
+    <string name="about_title">Mapa-datuak</string>
+    <string name="about_osm_body">Mapa-datuak © OpenStreetMap-eko laguntzaileak, Open Database License (ODbL) lizentziapean eskuragarri. Oinarrizko mapa-estiloa eta lauzak Protomaps-ek egina.</string>
+    <string name="close">Itxi</string>
+
+    <string name="map_locate">Nire kokapena</string>
+    <string name="map_compass">Orientatu mapa iparralderantz</string>
+
+    <string name="sheet_description">Informazio-panela</string>
+    <string name="sheet_expand">Aldatu panelaren tamaina</string>
+    <string name="sheet_state_collapsed">Tolestuta</string>
+    <string name="sheet_state_medium">Erdia</string>
+    <string name="sheet_state_full">Osoa</string>
+
+    <string name="search_placeholder">Bilatu (laster)</string>
+    <string name="no_maps_title">Oraindik maparik ez</string>
+    <string name="no_maps_body">Deskargatu eskualde bat Mapak atalean mapa ikusteko. Ordura arte atzealdea bakarrik erakusten da.</string>
+
+    <string name="notice_link_title">Mapa-esteka</string>
+    <string name="notice_search_title">Bilaketa: %1$s</string>
+    <string name="notice_search_body">Ez dago lineaz kanpoko maparik instalatuta, beraz esteka honek mapa mugitzea bakarrik lortu du.</string>
+    <string name="notice_location_title">Kokapena</string>
+    <string name="location_permission_denied">Kokapen-baimena ukatu da. Gaitu ezazu sistemaren ezarpenetan non zauden ikusteko.</string>
+    <string name="location_unavailable">Gailu honetan ez dago kokapen-hornitzailerik eskuragarri.</string>
+
+    <!-- Maps screen (regions) -->
+    <string name="regions_title">Mapak</string>
+    <string name="regions_tab_maps">Mapak</string>
+    <string name="regions_tab_transit">Garraio publikoa</string>
+    <string name="regions_tab_settings">Deskargak</string>
+    <string name="regions_tabs_group">Mapen atalak</string>
+    <string name="regions_installed_title">Instalatuta</string>
+    <string name="regions_all_title">Mapa guztiak</string>
+    <string name="regions_search_hint">Bilatu mapak (adib. Katalunia)</string>
+    <string name="regions_search_clear">Garbitu bilaketa</string>
+    <string name="regions_search_empty">Ez dago “%1$s” bilaketarekin bat datorren maparik.</string>
+    <string name="sheet_action_expand">Zabaldu panela</string>
+    <string name="sheet_action_collapse">Tolestu panela</string>
+    <string name="maps_entry_title">Mapak</string>
+    <string name="maps_entry_body">Deskargatu eta kudeatu eskualdeak</string>
+    <string name="offline_title">Lineaz kanpoko modua</string>
+    <string name="offline_body">Konexiorik ez, deskargetarako ere ez.</string>
+    <string name="server_title">Mapen zerbitzaria</string>
+    <string name="server_use_default">Erabili zerbitzari lehenetsia</string>
+    <string name="search_restart_needed">Ezabatu duzun mapa bat bilaketan agertzen jarrai dezake aplikazioa berrabiarazi arte.</string>
+    <string name="search_link_problem">Deskargatutako mapa batzuk ezin izan dira bilaketarako erabilgarri jarri biltegiratze honetan.</string>
+    <string name="server_save">Gorde eta eguneratu</string>
+    <string name="server_invalid">Sartu baliozko https:// helbide bat.</string>
+    <string name="server_none_title">Ez dago mapa-zerbitzaririk konfiguratuta</string>
+    <string name="server_none_body">Mapak zuk aukeratutako zerbitzari batetik bakarrik deskargatzen dira. Sartu goian katalogo baten helbidea. Ez da ezer kontaktatzen hori egin arte.</string>
+    <string name="storage_title">Biltegiratzea</string>
+    <string name="storage_internal">Barne-biltegiratzea</string>
+    <string name="storage_card">SD txartela</string>
+    <string name="storage_free">%1$s libre %2$s-tik</string>
+    <string name="storage_card_warning">Txartel batean dauden mapak gailu batzuetan ez dira marraztu agian.</string>
+    <string name="catalog_loading">Katalogoa kargatzen…</string>
+    <string name="catalog_error_offline">Lineaz kanpoko modua aktibo dago, beraz katalogoa ez da eskatu. Desaktibatu eguneratzeko.</string>
+    <string name="catalog_error_denied">Zerbitzari hau ez dago deskargetarako baimenduta.</string>
+    <string name="catalog_error_network">Ezin izan da katalogoa kargatu. Egiaztatu konexioa.</string>
+    <string name="catalog_error_invalid">Zerbitzariak baliogabeko katalogo bat itzuli du.</string>
+    <string name="catalog_stale">Gordetako zerrenda erakusten da. Ezin izan da eguneratu.</string>
+    <string name="catalog_empty">Katalogoak ez du eskualderik.</string>
+    <string name="region_download">Deskargatu</string>
+    <string name="region_pause">Eten</string>
+    <string name="region_resume">Jarraitu</string>
+    <string name="region_cancel">Utzi</string>
+    <string name="region_delete">Ezabatu</string>
+    <string name="region_update">Eguneratu</string>
+    <string name="region_retry">Saiatu berriro</string>
+    <string name="region_unavailable">Oraindik ez dago eskuragarri</string>
+    <string name="region_queued">Itxaroten…</string>
+    <string name="region_progress">%% %1$d / %2$s</string>
+    <string name="region_paused">Etenda, %% %1$d</string>
+    <string name="region_group_summary">%1$d / %2$d instalatuta · %3$s</string>
+    <string name="region_installed_size">Instalatuta · %1$s</string>
+    <string name="region_update_available">Eguneratzea eskuragarri · %1$s</string>
+    <string name="regions_installed_other">Instalatuta (zerrendan ez daudenak)</string>
+    <string name="fail_offline">Lineaz kanpoko modua aktibo dago: ez da ezer deskargatu.</string>
+    <string name="fail_not_allowed">Zerbitzari hau ez dago deskargetarako baimenduta.</string>
+    <string name="fail_no_space">Ez dago nahikoa leku: %1$s behar dira, %2$s libre.</string>
+    <string name="fail_network">Deskarga eten da. Saiatu berriro gelditu zen tokitik jarraitzeko.</string>
+    <string name="fail_corrupt">Fitxategiak ez du egiaztapena gainditu eta baztertu da. Saiatu berriro.</string>
+    <string name="delete_title">%1$s ezabatu?</string>
+    <string name="delete_body">Honek %1$s askatzen ditu. Geroago berriro deskarga dezakezu.</string>
+    <string name="regions_channel_name">Mapen deskargak</string>
+    <string name="regions_notification_title">Mapak deskargatzen</string>
+    <string name="regions_notification_progress">%% %1$d / %2$s</string>
+    <string name="regions_notification_waiting">Hasten…</string>
+    <string name="regions_notification_queued">%1$d gehiago itxaroten</string>
+    <string name="regions_pause">Eten</string>
+</resources>

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Home, Work and parked car -->
+    <string name="quick_home">Casa</string>
+    <string name="quick_work">Lavoro</string>
+    <string name="quick_park">Parcheggio</string>
+    <string name="quick_parked">Auto parcheggiata</string>
+    <string name="quick_sos">SOS</string>
+    <string name="quick_park_again">Segna di nuovo qui</string>
+    <string name="quick_park_clear">Cancella auto parcheggiata</string>
+    <string name="parking_name">Auto parcheggiata</string>
+    <string name="quick_msg_home_set">Casa impostata.</string>
+    <string name="quick_msg_work_set">Lavoro impostato.</string>
+    <string name="quick_msg_parking_set">Auto parcheggiata segnata sulla mappa.</string>
+    <string name="quick_msg_parking_cleared">Auto parcheggiata cancellata.</string>
+    <string name="quick_msg_waiting">In attesa della tua posizione…</string>
+    <string name="quick_msg_home_unset">Apri un luogo e tocca “Imposta come Casa”.</string>
+    <string name="quick_msg_work_unset">Apri un luogo e tocca “Imposta come Lavoro”.</string>
+    <string name="place_set_home">Imposta come Casa</string>
+    <string name="place_set_work">Imposta come Lavoro</string>
+
+    <!-- Recent searches -->
+    <string name="recent_title">Ricerche recenti</string>
+    <string name="recent_clear">Cancella</string>
+    <string name="history_title">Cronologia delle ricerche</string>
+    <string name="history_switch_title">Conserva le ricerche recenti</string>
+    <string name="history_switch_body">Ricorda cosa hai cercato solo su questo dispositivo, per suggerirlo di nuovo. Disattivandolo viene anche eliminato.</string>
+    <string name="history_clear">Cancella le ricerche recenti</string>
+    <string name="history_cleared">Ricerche recenti cancellate.</string>
+
+    <!-- List customisation -->
+    <string name="list_customize">Personalizza</string>
+    <string name="list_edit_name_hint">Nome</string>
+    <string name="list_edit_emoji_hint">Emoji</string>
+    <string name="list_edit_notes_hint">Note</string>
+    <string name="list_edit_color">Colore</string>
+    <string name="list_edit_color_none">Nessun colore</string>
+    <string name="list_edit_color_swatch">Colore</string>
+    <string name="list_edit_save">Salva</string>
+    <string name="list_edit_cancel">Annulla</string>
+
+    <!-- Launcher shortcuts -->
+    <string name="shortcut_search_short">Cerca</string>
+    <string name="shortcut_search_long">Cerca luoghi</string>
+    <string name="shortcut_saved_short">Salvati</string>
+    <string name="shortcut_saved_long">Luoghi salvati</string>
+    <string name="shortcut_maps_short">Mappe</string>
+    <string name="shortcut_maps_long">Mappe scaricate</string>
+    <string name="shortcut_emergency_short">Emergenza</string>
+    <string name="shortcut_emergency_long">Emergenza</string>
+
+    <!-- Emergency screen -->
+    <string name="emergency_title">Emergenza</string>
+    <string name="emergency_call">Chiama il %1$s</string>
+    <string name="emergency_position_title">La tua posizione</string>
+    <string name="emergency_accuracy">Precisione di circa %1$d m</string>
+    <string name="emergency_waiting">In attesa di una posizione…</string>
+    <string name="emergency_no_permission">Serve il permesso di posizione per mostrare la tua posizione.</string>
+    <string name="emergency_grant">Consenti la posizione</string>
+    <string name="emergency_no_provider">Questo dispositivo non ha un provider di posizione.</string>
+    <string name="emergency_share">Condividi la mia posizione</string>
+    <string name="emergency_share_header">La mia posizione (emergenza):</string>
+    <string name="emergency_dial_failed">Nessuna app telefono trovata per effettuare la chiamata.</string>
+    <string name="emergency_privacy_note">Il pulsante di chiamata apre il tuo dialer; lì premi chiama. La tua posizione viene mostrata solo su questa schermata e non viene memorizzata, registrata né inviata, a meno che tu non tocchi Condividi e scelga un\'app.</string>
+</resources>

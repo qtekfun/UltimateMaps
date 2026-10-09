@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Settings: Navigation section -->
+    <string name="nav_settings_title">Navegació</string>
+    <string name="nav_voice_title">Guia per veu</string>
+    <string name="nav_voice_body">Diu les indicacions de gir mentre navegues.</string>
+    <string name="nav_important_title">Només avisos importants</string>
+    <string name="nav_important_body">Omet «continua recte», els revolts suaus i els avisos llunyans.</string>
+    <string name="nav_volume_title">Volum de la veu</string>
+    <string name="nav_language_title">Idioma de la veu</string>
+    <string name="nav_language_auto">El mateix que l\'aplicació</string>
+    <string name="nav_language_es">Castellà</string>
+    <string name="nav_language_en">Anglès</string>
+    <string name="nav_units_title">Unitats</string>
+    <string name="nav_units_auto">Automàtiques (segons la regió)</string>
+    <string name="nav_units_metric">Quilòmetres i metres</string>
+    <string name="nav_units_imperial">Milles i peus</string>
+    <string name="nav_test_voice">Prova la veu</string>
+    <string name="nav_voice_ready">El motor de veu està preparat.</string>
+    <string name="nav_voice_starting">Iniciant el motor de veu…</string>
+    <string name="nav_view3d_title">Vista 3D</string>
+    <string name="nav_view3d_body">Durant la navegació, inclina el mapa i mira endavant al llarg de la carretera, com la majoria d\'aplicacions de navegació. Desactivat: mapa pla.</string>
+    <string name="nav_buildings3d_title">Edificis en 3D</string>
+    <string name="nav_buildings3d_body">Dibuixa els edificis amb alçada a la vista 3D des del zoom 15. Necessita més potència gràfica; desactiva\'l si el mapa va a batzegades.</string>
+    <string name="nav_avoid_title">Evita per defecte</string>
+    <string name="nav_avoid_body">S\'utilitza quan planifiques una ruta. Ho pots canviar per a cada viatge.</string>
+    <string name="nav_avoid_motorways">Autopistes</string>
+    <string name="nav_avoid_tolls">Carreteres de peatge</string>
+    <string name="nav_avoid_ferries">Transbordadors</string>
+    <string name="nav_avoid_unpaved">Vies sense asfaltar</string>
+
+    <!-- Voice problems -->
+    <string name="voice_lang_es">Castellà</string>
+    <string name="voice_lang_en">Anglès</string>
+    <string name="voice_problem_no_engine_title">No hi ha cap motor de veu instal·lat</string>
+    <string name="voice_problem_no_engine_body">La navegació funciona, però sense veu. Aquest dispositiu no té cap motor de síntesi de veu, cosa habitual sense els serveis de Google.</string>
+    <string name="voice_problem_lang_title">No hi ha veu en %1$s</string>
+    <string name="voice_problem_lang_body">Els motors instal·lats no tenen dades de veu en %1$s. Instal·la-les des de la configuració del motor, o instal·la un altre motor. La navegació continua sense veu.</string>
+    <string name="voice_problem_failed_title">El motor de veu no respon</string>
+    <string name="voice_problem_failed_body">El motor ha deixat de respondre diverses vegades. La navegació continua sense veu. Torna-ho a provar o instal·la un altre motor.</string>
+    <string name="voice_problem_init_body">El motor no s\'ha pogut iniciar. La navegació continua sense veu. Torna-ho a provar o instal·la un altre motor.</string>
+    <string name="voice_install_intro">Motors lliures a F-Droid:</string>
+    <string name="voice_install_engine">Obtén %1$s a F-Droid</string>
+    <string name="voice_install_then">Després d\'instal·lar-ne un, tria\'l a la configuració d\'Android a Sortida de síntesi de veu, torna aquí i toca «Torna-ho a provar».</string>
+    <string name="voice_install_data">Instal·la les dades de veu</string>
+    <string name="voice_open_tts_settings">Obre la configuració de la síntesi de veu</string>
+    <string name="voice_retry">Torna-ho a provar</string>
+    <string name="voice_banner_no_engine">Navegació silenciosa: no hi ha cap motor de veu instal·lat. Toca per obtenir ajuda.</string>
+    <string name="voice_banner_lang">Navegació silenciosa: no hi ha veu en %1$s. Toca per obtenir ajuda.</string>
+    <string name="voice_banner_failed">Navegació silenciosa: el motor de veu no respon. Toca per obtenir ajuda.</string>
+</resources>

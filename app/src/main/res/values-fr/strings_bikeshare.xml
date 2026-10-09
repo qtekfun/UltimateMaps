@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Bike-share stations: Settings group (inside the Navigation category), map card, live availability, attribution and backup -->
+    <string name="bike_group_title">Stations de vélos en libre-service</string>
+    <string name="bike_switch_title">Afficher les stations de vélos en libre-service</string>
+    <string name="bike_switch_body">Affiche sur la carte les stations d\'accueil des systèmes de vélos en libre-service de Barcelone (Bicing) et de Madrid (BiciMAD). Un petit fichier de données est téléchargé depuis votre serveur de cartes (le même que pour les cartes) ; votre position n\'est jamais envoyée.</string>
+    <string name="bike_live_title">Afficher la disponibilité des vélos en direct</string>
+    <string name="bike_live_body">Tant qu\'une fiche de station est ouverte, interroge le flux de données public de ce système pour connaître le nombre de vélos et de bornes libres, au plus une fois toutes les 30 secondes. Cela contacte un serveur tiers (barcelona.publicbikesystem.net ou madrid.publicbikesystem.net), qui peut voir votre adresse IP et que vous consultez son système, mais pas quelle station. Désactivé par défaut.</string>
+    <string name="bike_data_title">Données des stations</string>
+    <string name="bike_data_count">%1$d stations, données du %2$s</string>
+    <string name="bike_data_never">Aucune donnée de station téléchargée pour l\'instant.</string>
+    <string name="bike_attribution_settings">Données des stations : Bicing, Ajuntament de Barcelona (Open Data BCN, CC BY 4.0) ; BiciMAD, Empresa Municipal de Transportes de Madrid (datos.madrid.es, CC BY 4.0).</string>
+
+    <!-- Card of a tapped station -->
+    <string name="bike_category">Station de vélos en libre-service</string>
+    <string name="bike_card_title_unknown">Station de vélos en libre-service</string>
+    <string name="bike_card_capacity">Bornes : %1$d</string>
+    <string name="bike_card_capacity_unknown">Bornes : non précisé</string>
+    <string name="bike_card_availability">%1$d vélos, %2$d bornes libres (mis à jour %3$s)</string>
+    <string name="bike_card_note">Le nombre de bornes provient du fichier de données. La disponibilité d\'un vélo n\'est connue que si vous activez la disponibilité en direct dans les réglages.</string>
+    <string name="bike_card_data_date">Données du %1$s</string>
+    <string name="bike_card_close">Fermer</string>
+    <string name="bike_go">Itinéraire vers la station</string>
+    <string name="bike_add_stop">Ajouter une étape</string>
+    <string name="conn_purpose_bike">Disponibilité des vélos (vélos en libre-service)</string>
+
+    <!-- Backup and restore -->
+    <string name="backup_item_bikeshare">Stations de vélos en libre-service</string>
+    <string name="backup_item_bikeshare_live">Disponibilité des vélos en direct</string>
+    <string name="backup_group_bikeshare">Stations de vélos en libre-service</string>
+</resources>

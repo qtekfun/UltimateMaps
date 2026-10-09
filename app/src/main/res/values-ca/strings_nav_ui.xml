@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Route card buttons -->
+    <string name="nav_ui_start">Inicia</string>
+    <string name="nav_ui_simulate">Simula</string>
+    <string name="nav_ui_computing">Calculant la ruta guiada…</string>
+    <!-- Navigation screen -->
+    <string name="nav_ui_stop">Atura</string>
+    <string name="nav_ui_stop_description">Atura la navegació</string>
+    <string name="nav_ui_recenter">Recentra</string>
+    <string name="nav_ui_then">Després</string>
+    <string name="nav_ui_follow_route">Segueix la ruta</string>
+    <string name="nav_ui_roundabout_exit">A la rotonda, pren la sortida %1$d</string>
+    <string name="nav_ui_arrive_at">Arribada %1$s</string>
+    <string name="nav_ui_phase_off_route">Has sortit de la ruta</string>
+    <string name="nav_ui_phase_no_signal">Senyal GPS perdut. Posició estimada</string>
+    <string name="nav_ui_phase_in_tunnel">GPS perdut al túnel. Posició estimada</string>
+    <string name="nav_ui_phase_stop_reached">Parada assolida. Continua cap a la destinació</string>
+    <string name="nav_ui_limit_description">Límit de velocitat %1$d</string>
+    <string name="nav_ui_speed_description">Velocitat actual %1$d km/h</string>
+    <string name="nav_ui_over_limit">Per sobre del límit de velocitat</string>
+    <string name="nav_ui_lanes_description">Carrils</string>
+    <string name="nav_ui_lane_recommended">carril recomanat</string>
+    <string name="nav_ui_lane_other">altre carril</string>
+    <string name="nav_ui_glove">Guants</string>
+    <string name="nav_ui_glove_on_description">Mode guants activat. Toca per desactivar-lo</string>
+    <string name="nav_ui_glove_off_description">Mode guants desactivat. Toca per activar-lo</string>
+    <!-- Simulation -->
+    <string name="nav_ui_simulating">Simulació</string>
+    <string name="nav_ui_sim_faster">Més ràpid</string>
+    <string name="nav_ui_sim_slower">Més lent</string>
+    <!-- 3D view, overview -->
+    <string name="nav_ui_view3d_on_description">Vista 3D activada. Canvia a la vista 2D plana</string>
+    <string name="nav_ui_view2d_on_description">Vista 2D plana activada. Canvia a la vista 3D</string>
+    <string name="nav_ui_overview">Ruta</string>
+    <string name="nav_ui_overview_description">Mostra un moment tota la ruta restant</string>
+    <!-- Arrival summary -->
+    <string name="nav_ui_summary_title">Has arribat</string>
+    <string name="nav_ui_summary_body">%1$s en %2$s</string>
+    <string name="nav_ui_summary_simulated">Ruta simulada. No s\'ha desat res.</string>
+    <string name="nav_ui_exit">Fet</string>
+    <!-- Resume after the process died -->
+    <string name="nav_ui_resume_title">Navegació interrompuda</string>
+    <string name="nav_ui_resume_body">L\'aplicació s\'ha tancat mentre navegaves. Vols continuar?</string>
+    <string name="nav_ui_resume">Reprèn</string>
+    <string name="nav_ui_discard">Descarta</string>
+    <!-- Icons (accessibility) -->
+    <string name="nav_ui_icon_turn">Propera maniobra: %1$s</string>
+    <string name="nav_ui_mute">Silencia</string>
+    <string name="nav_ui_unmute">Activa el so</string>
+    <string name="nav_ui_mute_description">Veu activada. Toca per silenciar la guia per veu</string>
+    <string name="nav_ui_unmute_description">Veu silenciada. Toca per tornar a activar la guia per veu</string>
+</resources>

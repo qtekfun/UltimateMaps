@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">UltimateMaps</string>
+    <string name="app_name" translatable="false">UltimateMaps</string>
     <string name="network_mode_offline">Offline mode: no network connections</string>
     <string name="network_connections_title">Possible connections</string>
     <string name="link_short_needs_resolve">This short link needs a network request to Google to find its destination. Resolving short links is turned off, so nothing was sent.</string>
     <string name="link_not_recognized">This link is not a recognized map link.</string>
 
-    <string name="attribution_osm">© OpenStreetMap</string>
+    <string name="attribution_osm" translatable="false">© OpenStreetMap</string>
     <string name="about_title">Map data</string>
     <string name="about_osm_body">Map data © OpenStreetMap contributors, available under the Open Database License (ODbL). Base map style and tiles by Protomaps.</string>
     <string name="close">Close</string>
@@ -49,7 +49,7 @@
     <string name="offline_title">Offline mode</string>
     <string name="offline_body">No connections at all, not even for downloads.</string>
     <string name="server_title">Map server</string>
-    <string name="server_hint">https://example.org/maps/catalog.json</string>
+    <string name="server_hint" translatable="false">https://example.org/maps/catalog.json</string>
     <string name="server_use_default">Use the default server</string>
     <string name="search_restart_needed">A map you deleted may still appear in search until you restart the app.</string>
     <string name="search_link_problem">Some downloaded maps could not be made available to search on this storage.</string>

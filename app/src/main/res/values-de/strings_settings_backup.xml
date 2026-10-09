@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="backup_title">Sichern und wiederherstellen</string>
+    <string name="backup_body">Speichere deine Einstellungen in einer Datei oder stelle sie aus einer Datei wieder her, zum Beispiel beim Wechsel auf ein neues Telefon. Die Datei enthält keine Standorte, keine Passwörter und nichts aus deinen Suchen. Sie bleibt dort, wo du sie speicherst.</string>
+    <string name="backup_export">Einstellungen exportieren</string>
+    <string name="backup_import">Einstellungen importieren</string>
+    <string name="backup_all_body">„Alles“ umfasst auch deine gespeicherten Orte, Listen und Tracks in einer ZIP-Datei.</string>
+    <string name="backup_export_all">Alles exportieren</string>
+
+    <string name="backup_exported">Einstellungen in der gewählten Datei gespeichert.</string>
+    <string name="backup_exported_all">Orte und Einstellungen in der gewählten Datei gespeichert.</string>
+    <string name="backup_failed">Das hat nicht funktioniert. Es wurde nichts geändert.</string>
+    <string name="backup_err_not_settings">Dies ist keine Einstellungsdatei dieser App. Es wurde nichts geändert.</string>
+    <string name="backup_err_corrupt">Die Datei ist beschädigt und kann nicht gelesen werden. Es wurde nichts geändert.</string>
+    <string name="backup_err_too_large">Die Datei ist zu groß für eine Einstellungsdatei. Es wurde nichts geändert.</string>
+    <string name="backup_err_newer">Diese Datei wurde mit einer neueren Version der App erstellt (Dateiformat %1$d). Aktualisiere die App, um sie wiederherzustellen. Es wurde nichts geändert.</string>
+
+    <string name="backup_restored">%1$d wiederhergestellt, %2$d übersprungen.</string>
+    <string name="backup_restored_consent">Schalter, die aus bleiben, bis du sie erneut akzeptierst: %1$d.</string>
+    <string name="backup_restored_regions">In der Datei aufgeführte installierte Karten: %1$d. Der Bildschirm Karten bietet an, sie herunterzuladen.</string>
+    <string name="backup_restored_places">Hinzugefügte Orte: %1$d, bereits vorhanden: %2$d, hinzugefügte Tracks: %3$d.</string>
+
+    <string name="backup_confirm_title">Einstellungen importieren?</string>
+    <string name="backup_confirm_body">Einstellungen, die durch die Werte aus der Datei ersetzt werden: %1$d.</string>
+    <string name="backup_confirm_nothing">Die Datei entspricht deinen aktuellen Einstellungen. Es ändert sich nichts.</string>
+    <string name="backup_confirm_consent">Diese waren in der Datei eingeschaltet. Sie werden NICHT eingeschaltet: Du musst ihren Hinweis erneut akzeptieren.</string>
+    <string name="backup_confirm_regions">In der Datei aufgeführte installierte Karten: %1$d. Jetzt wird nichts heruntergeladen; der Bildschirm Karten bietet es an.</string>
+    <string name="backup_confirm_skipped">Nicht verwendbare Einträge in der Datei, die übersprungen werden: %1$d.</string>
+    <string name="backup_confirm_places">Die Datei enthält auch Orte, Listen und Tracks. Sie werden zu deinen hinzugefügt; nichts wird gelöscht.</string>
+    <string name="backup_confirm_yes">Wiederherstellen</string>
+    <string name="backup_confirm_no">Abbrechen</string>
+
+    <string name="backup_pending_title">Erneut einzuschalten</string>
+    <string name="backup_pending_body">Diese waren auf deinem alten Telefon eingeschaltet. Zum Schutz deiner Privatsphäre bleiben sie aus, bis du sie hier einschaltest und ihren Hinweis akzeptierst.</string>
+    <string name="backup_pending_dismiss">Schließen</string>
+
+    <string name="backup_item_cameras_fixed">Radarkameras</string>
+    <string name="backup_item_cameras_mobile">Zonen mobiler Radarkontrollen</string>
+    <string name="backup_item_incidents">Verkehrsstörungen</string>
+    <string name="backup_item_v16">V16-Warnleuchten</string>
+    <string name="backup_item_roadworks">Baustellen</string>
+    <string name="backup_item_fuel">Tankstellen</string>
+    <string name="backup_item_other">Sonstiges</string>
+
+    <string name="backup_group_navigation">Navigation</string>
+    <string name="backup_group_navigation_ui">Navigationsbildschirm</string>
+    <string name="backup_group_fuel">Tankstellen</string>
+    <string name="backup_group_cameras">Radar und Störungen</string>
+    <string name="backup_group_history">Suchverlauf</string>
+    <string name="backup_group_recording">Track-Aufzeichnung</string>
+    <string name="backup_group_regions">Datenschutz und Karten</string>
+
+    <string name="regions_restored_title">Karten aus deiner Sicherung</string>
+    <string name="regions_restored_body">Karten aus deiner Sicherung, die auf diesem Telefon nicht installiert sind: %1$d. Es wird nichts heruntergeladen, bis du es verlangst.</string>
+    <string name="regions_restored_offline">Der Offline-Modus ist aktiv: Schalte ihn aus, um sie herunterzuladen.</string>
+    <string name="regions_restored_unavailable">Nicht im aktuellen Katalog: %1$d.</string>
+    <string name="regions_restored_download">Herunterladen (%1$s)</string>
+    <string name="regions_restored_dismiss">Schließen</string>
+</resources>

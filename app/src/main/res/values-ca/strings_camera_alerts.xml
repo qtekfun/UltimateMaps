@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Visual alert ahead (chip on the map and on the navigation screen) -->
+    <string name="camalert_fixed">Radar fix més endavant</string>
+    <string name="camalert_section">Tram de velocitat mitjana més endavant</string>
+    <string name="camalert_zone">Pot haver-hi radars mòbils més endavant</string>
+    <string name="camalert_v16">Vehicle aturat més endavant (V16)</string>
+    <string name="camalert_accident">Accident més endavant</string>
+    <string name="camalert_closure">Carretera tallada més endavant</string>
+    <string name="camalert_congestion">Trànsit lent més endavant</string>
+    <string name="camalert_obstacle">Obstacle més endavant</string>
+    <string name="camalert_description">%1$s, d\'aquí a %2$s</string>
+    <string name="camalert_description_limit">%1$s, d\'aquí a %2$s, límit %3$d km/h</string>
+</resources>

@@ -138,7 +138,6 @@ fun BikeCard(
 ) {
     val s = state.station ?: return
     val locale = LocalConfiguration.current.locales[0]
-    val english = locale.language != "es"
     val button = Modifier.heightIn(min = TOUCH)
     Column(modifier.fillMaxWidth().verticalScroll(rememberScrollState()).testTag("bike_card")) {
         Row(verticalAlignment = Alignment.Top) {
@@ -184,7 +183,7 @@ fun BikeCard(
         )
         generatedMillis?.let {
             BasicText(
-                stringResource(R.string.bike_card_data_date, CameraAttribution.dateText(it, english)),
+                stringResource(R.string.bike_card_data_date, CameraAttribution.dateText(it, locale)),
                 style = Mapas.typography.caption.copy(color = Mapas.colors.secondaryLabel), modifier = Modifier.testTag("bike_data_date"),
             )
         }

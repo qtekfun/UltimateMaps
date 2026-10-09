@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Category chips under the search field -->
+    <string name="category_pharmacy">Pharmacie</string>
+    <string name="category_supermarket">Supermarché</string>
+    <string name="category_restaurant">Restaurant</string>
+    <string name="category_cafe">Café</string>
+    <string name="category_fuel">Carburant</string>
+    <string name="category_atm">Distributeur</string>
+    <string name="category_hospital">Hôpital</string>
+    <string name="category_parking">Parking</string>
+    <string name="category_lodging">Hébergement</string>
+    <string name="category_toilets">Toilettes</string>
+    <string name="category_drinking_water">Eau potable</string>
+
+    <!-- The category name the search core looks for (not shown to the user; must be a name from its category list) -->
+    <string name="category_query_pharmacy">pharmacie</string>
+    <string name="category_query_supermarket">supermarché</string>
+    <string name="category_query_restaurant">restaurant</string>
+    <string name="category_query_cafe">café</string>
+    <string name="category_query_fuel">carburant</string>
+    <string name="category_query_atm">distributeur</string>
+    <string name="category_query_hospital">hôpital</string>
+    <string name="category_query_parking">parking</string>
+    <string name="category_query_lodging">hôtel</string>
+    <string name="category_query_toilets">toilettes</string>
+    <string name="category_query_drinking_water">eau potable</string>
+
+    <string name="category_distance_note">Les distances sont à vol d\'oiseau depuis votre position ou le centre de la carte.</string>
+    <string name="category_none">Rien trouvé à proximité dans les cartes téléchargées.</string>
+    <string name="category_chip_description">Parcourir : %1$s à proximité</string>
+</resources>

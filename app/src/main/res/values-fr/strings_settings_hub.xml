@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Hub rows: title, words the search also matches, and the one-line summary of the current state -->
+    <string name="hub_navigation_title">Navigation et voix</string>
+    <string name="hub_navigation_keywords">voix unités itinéraire éviter autoroutes péages ferries 3d bâtiments vélo pistes cyclables barre d\'état distance pastille mise à jour en direct son volume langue kilomètres miles randonnée cyclisme sentiers itinéraires vtt</string>
+    <string name="hub_navigation_voice_on">Voix : %1$s, %2$d %%</string>
+    <string name="hub_navigation_voice_off">Voix : désactivée</string>
+    <string name="hub_alerts_title">Alertes</string>
+    <string name="hub_alerts_keywords">radars circulation incidents travaux avertissements son silencieux zone à faibles émissions ZFE ZBE</string>
+    <string name="hub_alerts_summary">Radars : %1$s · Circulation : %2$s</string>
+    <string name="hub_fuel_keywords">essence gazole diesel carburant prix stations électrique véhicule électrique borne recharge prise</string>
+    <string name="hub_fuel_off">Désactivé</string>
+    <string name="hub_fuel_no_fuel">Activé, aucun carburant choisi</string>
+    <plurals name="hub_fuel_count">
+        <item quantity="one">%d carburant</item>
+        <item quantity="many">%d carburants</item>
+        <item quantity="other">%d carburants</item>
+    </plurals>
+    <string name="hub_fuel_summary">%1$s, %2$s sur la carte</string>
+    <string name="hub_network_title">Cartes et réseau</string>
+    <string name="hub_network_keywords">hors ligne confidentialité connexions internet catalogue serveur régions téléchargement</string>
+    <string name="hub_network_summary">Mode hors ligne : %1$s</string>
+    <string name="hub_data_title">Données</string>
+    <string name="hub_data_keywords">historique recherches récentes enregistrement de traces sauvegarde restauration exporter importer supprimer effacer</string>
+    <string name="hub_data_searches">Recherches : %1$s</string>
+    <string name="hub_data_recording">Enregistrement : %1$s</string>
+    <string name="hub_about_title">À propos</string>
+    <string name="hub_about_keywords">version licence attribution openstreetmap code source crédits</string>
+    <string name="hub_about_summary">Version %1$s</string>
+    <string name="hub_about_summary_plain">Licence et attributions</string>
+    <string name="hub_on">activé</string>
+    <string name="hub_off">désactivé</string>
+
+    <string name="hub_search_hint">Rechercher dans les réglages</string>
+    <string name="hub_search_none">Aucun réglage ne correspond.</string>
+
+    <!-- Group headings inside the category screens -->
+    <string name="hub_group_voice">Voix</string>
+    <string name="hub_group_display">Unités et affichage de la carte</string>
+    <string name="hub_group_route">Valeurs par défaut des itinéraires</string>
+    <string name="hub_group_cameras">Radars</string>
+    <string name="hub_group_incidents">Incidents de circulation</string>
+    <string name="hub_group_maps">Cartes</string>
+    <string name="hub_advanced">Avancé</string>
+    <string name="hub_advanced_open">Développé</string>
+    <string name="hub_advanced_closed">Réduit</string>
+
+    <string name="hub_privacy_note">Cette application n\'a ni analyse d\'usage ni rapport de plantage. Toutes les connexions possibles sont listées ci-dessous, et le mode hors ligne les bloque toutes.</string>
+
+    <!-- About -->
+    <string name="hub_about_version_title">Version</string>
+    <string name="hub_about_license_title">Licence</string>
+    <string name="hub_about_license_body">Logiciel libre sous licence publique générale GNU v3 (GPLv3).</string>
+    <string name="about_notice_title">Mentions de tiers</string>
+    <string name="about_notice_show">Afficher les licences des logiciels inclus</string>
+    <string name="about_notice_hide">Masquer les licences</string>
+    <string name="about_notice_unavailable">Le fichier de mentions n\'est pas disponible dans cette version.</string>
+    <string name="about_diag_title">Diagnostic</string>
+    <string name="about_diag_body">Notes conservées uniquement sur ce téléphone à propos des défaillances, comme la fin des processus de l\'application et les erreurs inattendues. Elles ne contiennent ni lieux ni positions. Rien n\'est envoyé ; copiez-les dans un rapport de bogue si vous le souhaitez.</string>
+    <string name="about_diag_show">Afficher les notes de diagnostic</string>
+    <string name="about_diag_hide">Masquer les notes de diagnostic</string>
+    <string name="about_diag_empty">Rien de noté pour l\'instant.</string>
+    <string name="about_diag_copy">Copier</string>
+    <string name="about_diag_clear">Effacer les notes</string>
+    <string name="hub_about_source">Code source : github.com/qtekfun/UltimateMaps</string>
+</resources>

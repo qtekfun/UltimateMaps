@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Bike-share stations: Settings group (inside the Navigation category), map card, live availability, attribution and backup -->
+    <string name="bike_group_title">Estações de bicicletas partilhadas</string>
+    <string name="bike_switch_title">Mostrar estações de bicicletas partilhadas</string>
+    <string name="bike_switch_body">Mostra no mapa as estações dos sistemas de bicicletas partilhadas de Barcelona (Bicing) e Madrid (BiciMAD). Transfere um pequeno ficheiro de dados do teu servidor de mapas (o mesmo dos mapas); a tua posição nunca é enviada.</string>
+    <string name="bike_live_title">Mostrar disponibilidade de bicicletas em direto</string>
+    <string name="bike_live_body">Enquanto um cartão de estação estiver aberto, consulta o feed de dados público desse sistema para saber quantas bicicletas e docas livres tem, no máximo uma vez a cada 30 segundos. Isto contacta um servidor de terceiros (barcelona.publicbikesystem.net ou madrid.publicbikesystem.net), que pode ver o teu endereço IP e que consultas o seu sistema, mas não que estação. Desativado por predefinição.</string>
+    <string name="bike_data_title">Dados das estações</string>
+    <string name="bike_data_count">%1$d estações, dados de %2$s</string>
+    <string name="bike_data_never">Ainda não foram transferidos dados das estações.</string>
+    <string name="bike_attribution_settings">Dados das estações: Bicing, Ajuntament de Barcelona (Open Data BCN, CC BY 4.0); BiciMAD, Empresa Municipal de Transportes de Madrid (datos.madrid.es, CC BY 4.0).</string>
+
+    <!-- Card of a tapped station -->
+    <string name="bike_category">Estação de bicicletas partilhadas</string>
+    <string name="bike_card_title_unknown">Estação de bicicletas partilhadas</string>
+    <string name="bike_card_capacity">Docas: %1$d</string>
+    <string name="bike_card_capacity_unknown">Docas: não indicado</string>
+    <string name="bike_card_availability">%1$d bicicletas, %2$d docas livres (atualizado %3$s)</string>
+    <string name="bike_card_note">O número de docas vem do ficheiro de dados. Só se sabe se há bicicleta disponível se ativares a disponibilidade em direto nas Definições.</string>
+    <string name="bike_card_data_date">Dados de %1$s</string>
+    <string name="bike_card_close">Fechar</string>
+    <string name="bike_go">Rota até à estação</string>
+    <string name="bike_add_stop">Adicionar paragem</string>
+    <string name="conn_purpose_bike">Disponibilidade de bicicletas (sistemas de bicicletas partilhadas)</string>
+
+    <!-- Backup and restore -->
+    <string name="backup_item_bikeshare">Estações de bicicletas partilhadas</string>
+    <string name="backup_item_bikeshare_live">Disponibilidade de bicicletas em direto</string>
+    <string name="backup_group_bikeshare">Estações de bicicletas partilhadas</string>
+</resources>

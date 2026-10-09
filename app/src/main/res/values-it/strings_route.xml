@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Route preview (M4) -->
+    <string name="route_to">Verso %1$s</string>
+    <string name="route_close">Chiudi</string>
+    <string name="route_from_current">Da: la tua posizione</string>
+    <string name="route_from_point">Da: punto selezionato</string>
+    <string name="route_from_named">Da: %1$s</string>
+    <string name="route_change_origin">Cambia partenza</string>
+    <string name="route_use_location">Usa la mia posizione</string>
+    <string name="route_pick_hint">Cerca il luogo di partenza o tocca la mappa.</string>
+    <string name="route_pick_cancel">Annulla</string>
+    <string name="route_profile_car">Auto</string>
+    <string name="route_profile_foot">A piedi</string>
+    <string name="route_profile_bike">Bici</string>
+    <string name="route_avoid_motorways">No autostrade</string>
+    <string name="route_avoid_tolls">No pedaggi</string>
+    <string name="route_avoid_ferries">No traghetti</string>
+    <string name="route_avoid_unpaved">No sterrate</string>
+    <string name="route_computing">Calcolo del percorso…</string>
+    <string name="route_elevation_toggle_cd">Salita di %1$d metri, discesa di %2$d metri. Mostra o nascondi il profilo altimetrico.</string>
+    <string name="route_elevation_chart_cd">Profilo altimetrico: minimo %1$d metri, massimo %2$d metri, salita più ripida %3$d percento.</string>
+    <string name="route_elevation_grade">Più ripida: ↑ %1$d %%  ↓ %2$d %%</string>
+    <string name="route_needs_origin">La tua posizione non è disponibile. Consenti la posizione o scegli un altro punto di partenza con la ricerca o toccando la mappa.</string>
+    <string name="route_err_no_regions">Nessuna regione installata. Scarica una regione per calcolare percorsi offline.</string>
+    <string name="route_err_need_more_maps">Mancano delle mappe per questo percorso. Scarica le regioni che attraversa.</string>
+    <string name="route_err_start">La partenza non è su una strada delle mappe scaricate. Scegli un altro punto di partenza.</string>
+    <string name="route_err_end">La destinazione non è su una strada delle mappe scaricate.</string>
+    <string name="route_err_not_found">Nessun percorso trovato con queste opzioni. Prova a cambiare il profilo o le opzioni da evitare.</string>
+    <string name="route_err_timeout">Il calcolo del percorso ha richiesto troppo tempo. Riprova o scegli un punto più vicino.</string>
+    <string name="route_err_internal">Impossibile calcolare il percorso.</string>
+    <string name="route_err_unexpected">Qualcosa è andato storto nel calcolo del percorso. Riprova o scegli un\'altra destinazione o altre opzioni.</string>
+    <string name="route_change_short">Cambia</string>
+    <string name="route_profile_group">Modalità di spostamento</string>
+    <string name="route_options_title">Opzioni del percorso</string>
+    <string name="route_options_none">Nessuna</string>
+    <string name="route_options_avoiding">Da evitare: %1$s</string>
+    <string name="route_avoid_short_motorways">autostrade</string>
+    <string name="route_avoid_short_tolls">pedaggi</string>
+    <string name="route_avoid_short_ferries">traghetti</string>
+    <string name="route_avoid_short_unpaved">sterrate</string>
+</resources>

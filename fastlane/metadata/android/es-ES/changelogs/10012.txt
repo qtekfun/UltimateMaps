@@ -1,0 +1,1 @@
+Versión candidata: el transporte público ya no dice "sin ruta" cuando se desactiva un medio (andando hasta 60 min por defecto), una ruta fallida nunca cierra la app, la búsqueda de mapas conserva el texto al desplegar un país y guardar un lugar es fiable. Solo España.

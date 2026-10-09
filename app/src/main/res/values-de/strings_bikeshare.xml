@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Bike-share stations: Settings group (inside the Navigation category), map card, live availability, attribution and backup -->
+    <string name="bike_group_title">Leihfahrrad-Stationen</string>
+    <string name="bike_switch_title">Leihfahrrad-Stationen anzeigen</string>
+    <string name="bike_switch_body">Zeigt die Docking-Stationen der Leihfahrradsysteme von Barcelona (Bicing) und Madrid (BiciMAD) auf der Karte. Es wird eine kleine Datendatei von deinem Kartenserver geladen (demselben wie für die Karten); dein Standort wird nie gesendet.</string>
+    <string name="bike_live_title">Live-Verfügbarkeit der Fahrräder anzeigen</string>
+    <string name="bike_live_body">Solange eine Stationskarte geöffnet ist, wird der öffentliche Datenfeed dieses Systems abgefragt, wie viele Fahrräder und freie Stellplätze es gibt, höchstens alle 30 Sekunden. Dabei wird ein Server eines Drittanbieters kontaktiert (barcelona.publicbikesystem.net oder madrid.publicbikesystem.net), der deine IP-Adresse sehen kann und dass du dir sein System ansiehst, aber nicht, welche Station. Standardmäßig aus.</string>
+    <string name="bike_data_title">Stationsdaten</string>
+    <string name="bike_data_count">%1$d Stationen, Daten vom %2$s</string>
+    <string name="bike_data_never">Noch keine Stationsdaten heruntergeladen.</string>
+    <string name="bike_attribution_settings">Stationsdaten: Bicing, Ajuntament de Barcelona (Open Data BCN, CC BY 4.0); BiciMAD, Empresa Municipal de Transportes de Madrid (datos.madrid.es, CC BY 4.0).</string>
+
+    <!-- Card of a tapped station -->
+    <string name="bike_category">Leihfahrrad-Station</string>
+    <string name="bike_card_title_unknown">Leihfahrrad-Station</string>
+    <string name="bike_card_capacity">Stellplätze: %1$d</string>
+    <string name="bike_card_capacity_unknown">Stellplätze: nicht angegeben</string>
+    <string name="bike_card_availability">%1$d Fahrräder, %2$d freie Stellplätze (aktualisiert %3$s)</string>
+    <string name="bike_card_note">Die Zahl der Stellplätze stammt aus der Datendatei. Ob ein Fahrrad verfügbar ist, ist nur bekannt, wenn du in den Einstellungen die Live-Verfügbarkeit einschaltest.</string>
+    <string name="bike_card_data_date">Daten vom %1$s</string>
+    <string name="bike_card_close">Schließen</string>
+    <string name="bike_go">Route zur Station</string>
+    <string name="bike_add_stop">Zwischenstopp hinzufügen</string>
+    <string name="conn_purpose_bike">Fahrradverfügbarkeit (Leihfahrradsysteme)</string>
+
+    <!-- Backup and restore -->
+    <string name="backup_item_bikeshare">Leihfahrrad-Stationen</string>
+    <string name="backup_item_bikeshare_live">Live-Verfügbarkeit der Fahrräder</string>
+    <string name="backup_group_bikeshare">Leihfahrrad-Stationen</string>
+</resources>

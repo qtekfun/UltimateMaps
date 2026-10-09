@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Route stops and petrol-station card (RF-15) -->
+    <string name="route_stops_title">Parades (%1$d de %2$d)</string>
+    <string name="route_stop_up">Mou %1$s amunt</string>
+    <string name="route_stop_down">Mou %1$s avall</string>
+    <string name="route_stop_remove">Treu %1$s de la ruta</string>
+    <string name="route_stops_limit">Fins a %1$d parades. Treu-ne una per afegir-ne una altra.</string>
+    <string name="route_err_stop">Una parada no és en una via dels mapes descarregats. Treu-la o tria\'n una altra.</string>
+    <string name="fuel_category">Gasolinera</string>
+    <string name="fuel_card_close">Tanca</string>
+    <string name="fuel_go">Vés-hi</string>
+    <string name="fuel_add_stop">Afegeix parada</string>
+    <string name="fuel_save">Desa</string>
+    <string name="fuel_saved">Desat</string>
+    <string name="fuel_schedule">Horari: %1$s</string>
+    <string name="fuel_prices_title">Preus</string>
+    <string name="fuel_price_on_map">%1$s (al mapa)</string>
+    <string name="fuel_updated_now">actualitzat ara mateix</string>
+    <string name="fuel_updated_min">actualitzat fa %1$d min</string>
+    <string name="fuel_updated_h">actualitzat fa %1$d h</string>
+    <string name="fuel_updated_d">actualitzat fa %1$d d</string>
+    <string name="fuel_updated_unknown">hora d\'actualització desconeguda</string>
+    <string name="fuel_stop_duplicate">Aquesta gasolinera ja és una parada de la ruta.</string>
+    <string name="fuel_stop_is_destination">Aquesta gasolinera és la destinació de la ruta.</string>
+    <string name="fuel_stop_limit">La ruta ja té %1$d parades. Treu-ne una primer.</string>
+    <string name="fuel_stop_no_route">Inicia primer una ruta per afegir una parada.</string>
+    <string name="fuel_source">Font: Ministeri per a la Transició Ecològica i el Repte Demogràfic</string>
+    <string name="fuel_price_note">Preu publicat pel Ministeri; no oficial. Comprova\'l al sortidor.</string>
+</resources>

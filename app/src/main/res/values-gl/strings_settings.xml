@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_title">Configuración</string>
+    <string name="settings_open">Configuración</string>
+    <string name="settings_back">Atrás</string>
+
+    <string name="settings_privacy_title">Privacidade</string>
+    <string name="settings_offline_title">Modo sen conexión</string>
+    <string name="settings_offline_body">A aplicación non fai ningunha conexión, nin sequera para as descargas. É a mesma opción ca en Mapas.</string>
+    <string name="settings_regions_title">Catálogo de rexións</string>
+    <string name="settings_regions_body">Enderezo do catálogo: %1$s</string>
+    <string name="settings_regions_none">Non se definiu ningún enderezo de catálogo.</string>
+    <string name="settings_regions_open">Abrir Mapas</string>
+    <string name="settings_connections_title">Conexións posibles</string>
+    <string name="settings_connections_none">Agora mesmo non é posible ningunha conexión.</string>
+    <string name="conn_status_active">Permitida</string>
+    <string name="conn_status_disabled">Desactivada</string>
+    <string name="conn_status_blocked_offline">Bloqueada polo modo sen conexión</string>
+    <string name="conn_purpose_tiles">Teselas en liña</string>
+    <string name="conn_purpose_short_link">Ligazóns curtas</string>
+    <string name="conn_purpose_map_download">Descarga de mapas</string>
+    <string name="conn_purpose_sync">Sincronización</string>
+    <string name="conn_purpose_other">Outros (prezos de combustible)</string>
+
+    <string name="fuel_title">Gasolineiras</string>
+    <string name="fuel_switch_title">Amosar gasolineiras e prezos</string>
+    <string name="fuel_switch_body">Desactivado por defecto. Non se descarga nada mentres estea desactivado.</string>
+    <string name="fuel_fuels_title">Combustibles a descargar</string>
+    <string name="fuel_fuels_body">Solicítase un ficheiro por cada combustible marcado.</string>
+    <string name="fuel_fuels_none">Marca polo menos un combustible para descargar os seus prezos.</string>
+    <string name="fuel_map_title">Combustible amosado no mapa</string>
+    <string name="fuel_map_none">Marca un combustible arriba para escollelo aquí.</string>
+    <string name="fuel_refresh_title">Frecuencia de actualización</string>
+    <string name="fuel_refresh_minutes">Cada %1$d min</string>
+    <string name="fuel_refresh_hours">Cada %1$d h</string>
+    <string name="fuel_refresh_days">Unha vez ao día</string>
+    <string name="fuel_url_title">Enderezo da fonte</string>
+    <string name="fuel_url_save">Gardar</string>
+    <string name="fuel_url_reset">Restablecer</string>
+    <string name="fuel_url_invalid">Enderezo https non válido.</string>
+    <string name="fuel_url_saved">Gardado.</string>
+    <string name="fuel_last_update">Última actualización: %1$s</string>
+    <string name="fuel_last_update_never">Aínda non descargado.</string>
+    <string name="fuel_update_now">Actualizar agora</string>
+    <string name="fuel_update_running">Descargando %1$d de %2$d (%3$s)…</string>
+    <string name="fuel_update_ok">Prezos actualizados.</string>
+    <string name="fuel_update_kept">Consérvanse os últimos datos válidos.</string>
+    <string name="fuel_attribution">Datos: Ministerio para la Transición Ecológica y el Reto Demográfico (Geoportal de Hidrocarburos), reutilizados segundo a Lei 37/2007. Información non oficial; comproba o prezo no xerador.</string>
+
+    <string name="fuel_err_offline">O modo sen conexión está activado: non se fixo ningunha conexión.</string>
+    <string name="fuel_err_not_allowed">Conexión non permitida (enderezo non autorizado ou redirixido a outro servidor).</string>
+    <string name="fuel_err_network">Non se puido conectar.</string>
+    <string name="fuel_err_timeout">Tempo de espera esgotado.</string>
+    <string name="fuel_err_server">O servidor devolveu un erro.</string>
+    <string name="fuel_err_too_large">A resposta é demasiado grande.</string>
+    <string name="fuel_err_invalid">Datos non válidos ou incompletos.</string>
+
+    <string name="fuel_confirm_title">Activar as gasolineiras?</string>
+    <string name="fuel_confirm_body">Que se solicita: un ficheiro de prezos por cada combustible que escollas (nada ata que escollas algún).\n\nA que servidor: %1$s.\n\nQue ve ese servidor: o teu enderezo IP e que combustibles descargas. A túa localización nunca se envía: os ficheiros son nacionais e fíltranse no teu teléfono.\n\nSó se conecta cando o activas, premes Actualizar agora ou abres a aplicación con datos máis antigos ca a frecuencia de actualización.</string>
+    <string name="fuel_confirm_offline">O modo sen conexión está activado, así que non se conectará nada ata que o desactives.</string>
+    <string name="fuel_confirm_yes">Activar</string>
+    <string name="fuel_confirm_no">Cancelar</string>
+</resources>
