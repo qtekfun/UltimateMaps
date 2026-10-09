@@ -87,9 +87,16 @@
     <string name="trip_prompts_title">Indicazioni del viaggio in trasporto pubblico</string>
     <string name="trip_prompts_body">Come un viaggio in trasporto pubblico passo dopo passo ti dice quando salire, cambiare e scendere.</string>
     <string name="trip_prompts_note">Il banner sullo schermo viene sempre mostrato. Il Silenzia della navigazione disattiva suono e voce.</string>
+<<<<<<< HEAD
     <string name="transit_changes_any">Qualsiasi cambio</string>
     <string name="transit_changes_one">Max 1 cambio</string>
     <string name="transit_changes_none">Nessun cambio</string>
     <string name="transit_plan_changes_title">Cambi</string>
     <string name="transit_plan_changes_body">Quanti cambi di mezzo può avere un viaggio. Con «Nessun cambio» il pianificatore cerca anche fermate più lontane con linea diretta, anche se si cammina di più.</string>
+=======
+    <string name="trip_on_board">Sono a bordo</string>
+    <string name="trip_not_on_board">Non sono a bordo</string>
+    <string name="trip_on_board_description">Indica all\'app che sei sul veicolo</string>
+    <string name="trip_not_on_board_description">Indica all\'app che non sei sul veicolo</string>
+>>>>>>> origin/master
 </resources>

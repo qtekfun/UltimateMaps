@@ -83,9 +83,16 @@
     <string name="trip_prompts_title">Garraio publikoko bidaiaren jakinarazpenak</string>
     <string name="trip_prompts_body">Urratsez urratseko garraio publikoko bidaia batek noiz igo, aldatu eta jaitsi behar duzun nola esaten dizun.</string>
     <string name="trip_prompts_note">Pantailako bannerra beti erakusten da. Nabigazioko Mututu aukerak soinua eta ahotsa desaktibatzen ditu.</string>
+<<<<<<< HEAD
     <string name="transit_changes_any">Edozein trasbordo</string>
     <string name="transit_changes_one">Gehienez trasbordo 1</string>
     <string name="transit_changes_none">Trasbordorik gabe</string>
     <string name="transit_plan_changes_title">Trasbordoak</string>
     <string name="transit_plan_changes_body">Bidaiak zenbat trasbordo izan ditzakeen. «Trasbordorik gabe» aukerarekin, planifikatzaileak zuzeneko linea duten geltoki urrunagoak ere bilatzen ditu, oinez gehiago ibili behar bada ere.</string>
+=======
+    <string name="trip_on_board">Barruan nago</string>
+    <string name="trip_not_on_board">Ez nago barruan</string>
+    <string name="trip_on_board_description">Esan aplikazioari ibilgailuan zaudela</string>
+    <string name="trip_not_on_board_description">Esan aplikazioari ez zaudela ibilgailuan</string>
+>>>>>>> origin/master
 </resources>

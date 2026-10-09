@@ -18,6 +18,8 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.time.Instant
+import kotlin.math.floor
+import kotlin.math.max
 
 /** Plans a new itinerary from [from] to [to] leaving at [at]; null when none is found. Blocking work belongs to the implementer. */
 fun interface TransitReplanner {
@@ -172,24 +174,47 @@ class TransitTripController(
     }
 
     /**
-     * Plans again from the current position to the same destination, leaving now, and switches to the new itinerary. Only
-     * called by the Re-plan button. Returns false when there is no trip, no position, no planner or one is already running;
-     * the outcome (found or not) shows in the state.
+     * The traveller says whether they are on the vehicle; it wins over what the fixes inferred and decides how [replan]
+     * starts. False when there is no trip (or, for "on board", no ride left).
+     */
+    fun setOnBoard(onBoard: Boolean): Boolean = synchronized(lock) {
+        val f = follower ?: return false
+        if (onBoard) {
+            if (!f.assumeBoarded()) return false
+        } else {
+            f.assumeNotBoarded()
+        }
+        apply(FollowUpdate(f.state, emptyList()))
+        true
+    }
+
+    /**
+     * Plans again to the same destination, leaving now, and switches to the new itinerary. Only called by the Re-plan button.
+     * Returns false when there is no trip, no position, no planner or one is already running; the outcome (found or not)
+     * shows in the state.
+     *
+     * Aboard a vehicle the position is not where the traveller can start walking: the new trip starts on the vehicle, getting
+     * off at each of the next few stops (and at the planned one) and planning from there at the time the vehicle gets there,
+     * and the earliest arrival wins. Staying on the same vehicle through a stop is merged into one ride, so the answer is never
+     * "take the next train" to someone already on it.
      */
     fun replan(): Boolean {
         val planner = replanner ?: return false
         val from: LatLon
         val destination: LatLon
+        val onboard: BoardedRide?
         synchronized(lock) {
             val f = follower ?: return false
             if (replanJob?.isActive == true) return false
             from = location.lastKnown()?.point ?: return false
             destination = destinationOf(f.itinerary)
+            onboard = f.boardedRide()
             _state.value = _state.value?.copy(replanning = true, replanFailed = false)
             val atMillis = clock()
             replanJob = scope.launch {
                 val found = try {
-                    planner.replan(from, destination, Instant.ofEpochMilli(atMillis))
+                    if (onboard != null) replanAboard(planner, onboard, destination, atMillis) else
+                        planner.replan(from, destination, Instant.ofEpochMilli(atMillis))?.let { Replanned(it, null) }
                 } catch (e: CancellationException) {
                     throw e
                 } catch (_: Exception) {
@@ -197,12 +222,12 @@ class TransitTripController(
                 }
                 synchronized(lock) {
                     if (follower !== f) return@launch // the trip ended or changed meanwhile
-                    if (found == null || found.isWalkOnly) {
+                    if (found == null || found.itinerary.isWalkOnly) {
                         _state.value = _state.value?.copy(replanning = false, replanFailed = true)
                     } else {
-                        val nf = ItineraryFollower(found, config, clock, realTime = realTime)
+                        val nf = ItineraryFollower(found.itinerary, config, clock, found.snapshot, realTime = realTime)
                         follower = nf
-                        _state.value = TransitTripState(found, nf.state, zoneId)
+                        _state.value = TransitTripState(found.itinerary, nf.state, zoneId)
                         saveLocked(force = true)
                         location.lastKnown()?.let { onFixLocked(nf, it) }
                     }
@@ -212,9 +237,46 @@ class TransitTripController(
         return true
     }
 
+    private class Replanned(val itinerary: Itinerary, val snapshot: FollowerSnapshot?)
+
+    private suspend fun replanAboard(planner: TransitReplanner, on: BoardedRide, destination: LatLon, atMillis: Long): Replanned? {
+        val ride = on.ride
+        val start = floor(on.progress).toInt().coerceIn(0, ride.stops.size - 2)
+        val first = floor(on.progress).toInt() + 1
+        val candidates = ((first until minOf(first + ALIGHT_CANDIDATES, ride.stops.size)) + (ride.stops.size - 1)).distinct()
+        val nowSec = atMillis / 1000
+        var best: Itinerary? = null
+        for (k in candidates) {
+            val stop = ride.stops[k]
+            val reach = max(stop.arriveAt + max(on.delaySec, 0), nowSec)
+            val rest = planner.replan(stop.point, destination, Instant.ofEpochSecond(reach)) ?: continue
+            val head = ride.copy(stops = ride.stops.subList(start, k + 1))
+            val combined = join(head, rest, ride)
+            if (best == null || combined.arriveAt < best.arriveAt) best = combined
+        }
+        val itinerary = best ?: return null
+        return Replanned(itinerary, FollowerSnapshot(0, true, on.progress - start, on.delaySec))
+    }
+
+    /** [head] (the vehicle up to a stop) followed by [rest]; when [rest] starts on the same vehicle the two rides are one. */
+    private fun join(head: ItineraryLeg.Ride, rest: Itinerary, original: ItineraryLeg.Ride): Itinerary {
+        val next = rest.legs.firstOrNull() as? ItineraryLeg.Ride
+        val sameVehicle = next != null && ((original.tripId != null && next.tripId == original.tripId) ||
+            (next.line == original.line && next.headsign == original.headsign && next.boarding.departAt == head.alighting.departAt))
+        val legs = if (sameVehicle && next != null) {
+            listOf<ItineraryLeg>(head.copy(stops = head.stops + next.stops.drop(1), shape = null)) + rest.legs.drop(1)
+        } else {
+            listOf<ItineraryLeg>(head) + rest.legs
+        }
+        return Itinerary(legs, rest.note)
+    }
+
     private fun onFixLocked(f: ItineraryFollower, fix: LocationFix) = apply(f.onFix(fix))
 
     companion object {
+        /** How many of the next stops are tried as the place to get off when re-planning aboard (the planned one is always tried). */
+        const val ALIGHT_CANDIDATES = 5
+
         fun destinationOf(itinerary: Itinerary): LatLon = when (val last = itinerary.legs.last()) {
             is ItineraryLeg.Walk -> last.to
             is ItineraryLeg.Ride -> last.alighting.point

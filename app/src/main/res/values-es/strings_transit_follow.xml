@@ -87,9 +87,16 @@
     <string name="trip_prompts_title">Avisos del viaje en transporte público</string>
     <string name="trip_prompts_body">Cómo te avisa el viaje paso a paso de que subas, cambies y bajes.</string>
     <string name="trip_prompts_note">El aviso en pantalla se muestra siempre. El silencio de la navegación apaga el sonido y la voz.</string>
+<<<<<<< HEAD
     <string name="transit_changes_any">Cualquier transbordo</string>
     <string name="transit_changes_one">Máx. 1 transbordo</string>
     <string name="transit_changes_none">Sin transbordos</string>
     <string name="transit_plan_changes_title">Transbordos</string>
     <string name="transit_plan_changes_body">Cuántos transbordos puede tener un viaje. Con «Sin transbordos» el planificador también busca paradas más lejanas con línea directa, aunque se ande más.</string>
+=======
+    <string name="trip_on_board">Voy a bordo</string>
+    <string name="trip_not_on_board">No voy a bordo</string>
+    <string name="trip_on_board_description">Indica a la app que vas en el vehículo</string>
+    <string name="trip_not_on_board_description">Indica a la app que no vas en el vehículo</string>
+>>>>>>> origin/master
 </resources>
