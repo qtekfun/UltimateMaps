@@ -77,6 +77,18 @@ object RegionsModel {
         )
     }
 
+    /** Installed leaves the catalog lists, by name: the "Installed" block at the top of the Maps tab. */
+    fun installedRows(catalog: RegionCatalog, installedVersions: Map<String, String>, downloads: Map<String, DownloadState>): List<RegionRow> =
+        installedVersions.mapNotNull { (id, iv) ->
+            val r = catalog[id]?.takeIf { !it.isBaseFile } ?: return@mapNotNull null
+            RegionRow(
+                region = r, depth = 0, isGroup = false, expanded = false,
+                downloadableCount = if (r.isDownloadable) 1 else 0, installedCount = 1,
+                totalBytes = r.totalBytes, installedVersion = iv,
+                updateAvailable = r.isDownloadable && iv != r.version, download = downloads[r.id],
+            )
+        }.sortedBy { it.region.name.lowercase() }
+
     /** Ids of the ancestors of [id], root first (to reveal a search result in the tree). */
     fun ancestors(catalog: RegionCatalog, id: String): List<String> {
         val out = ArrayList<String>()

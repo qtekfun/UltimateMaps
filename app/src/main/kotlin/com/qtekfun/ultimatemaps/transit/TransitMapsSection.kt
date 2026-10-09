@@ -30,12 +30,14 @@ import java.time.LocalDate
  * Delete actions. Nothing is downloaded until the user presses Download. An expired entry says so and cannot be installed.
  */
 @Composable
-fun TransitMapsSection(rows: List<TransitCityRow>, offline: Boolean, onDownload: (String) -> Unit, onDelete: (String) -> Unit) {
+fun TransitMapsSection(rows: List<TransitCityRow>, offline: Boolean, onDownload: (String) -> Unit, onDelete: (String) -> Unit, showTitle: Boolean = true) {
     if (rows.isEmpty()) return
     val locale = LocalConfiguration.current.locales[0]
     Column(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp).testTag("transit_maps")) {
-        BasicText(stringResource(R.string.transit_maps_title), style = Mapas.typography.title.copy(color = Mapas.colors.label))
-        Spacer(Modifier.height(4.dp))
+        if (showTitle) {
+            BasicText(stringResource(R.string.transit_maps_title), style = Mapas.typography.title.copy(color = Mapas.colors.label))
+            Spacer(Modifier.height(4.dp))
+        }
         BasicText(
             stringResource(R.string.transit_maps_intro),
             style = Mapas.typography.callout.copy(color = Mapas.colors.secondaryLabel),
