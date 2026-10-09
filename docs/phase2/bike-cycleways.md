@@ -16,7 +16,7 @@ The generator (`generator/osm2type.cpp`, highway block around line 1160) turns O
 | `bicycle=no` | `hwtag-nobicycle` | Road is not routable by bike (`IsRoad` false). |
 | `oneway:bicycle`, `cycleway=opposite` | `hwtag-bidir_bicycle` / `hwtag-onedir_bicycle` | Direction only. |
 
-Consequence 1: the earlier note in `next-plan.md` that the core "cannot distinguish painted cycle lanes" is only half right. A lane or track on a normal road IS visible, as `hwtag-yesbicycle`, but merged with "bicycle=yes" (permission without infrastructure) and with cycle streets. There is no way to separate a protected track from a painted lane or a shared lane from the data in the `.mwm`; that would need a generator change and a new data pipeline (`UltimateMaps-data`), out of scope here.
+Consequence 1: the earlier note in `next-plan.md` that the core "cannot distinguish painted cycle lanes" is only half right. A lane or track on a normal road IS visible, as `hwtag-yesbicycle`, but merged with "bicycle=yes" (permission without infrastructure) and with cycle streets. There is no way to separate a protected track from a painted lane or a shared lane from the data in the `.mwm`; that would need a generator change and a new data pipeline (`ultimate-maps-data`), out of scope here.
 
 Consequence 2: `bicycle=designated` on `path` or `footway` with foot allowed is stored as `yesbicycle` (not as `cycleway`), so it counts as cycle infrastructure through the same type.
 

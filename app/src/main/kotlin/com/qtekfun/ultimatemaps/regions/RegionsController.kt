@@ -342,7 +342,7 @@ class RegionsController(
 
     companion object {
         /** Latest data release of the project's data repository (GitHub Releases; each asset redirects to GitHub's storage). */
-        const val DEFAULT_CATALOG_URL = "https://github.com/qtekfun/UltimateMaps-data/releases/latest/download/catalog.json"
+        const val DEFAULT_CATALOG_URL = "https://github.com/qtekfun/ultimate-maps-data/releases/latest/download/catalog.json"
 
         /**
          * Hosts of a GitHub release download: `github.com` (the catalog, `/releases/latest/download/` and

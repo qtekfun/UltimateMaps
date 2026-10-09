@@ -4,6 +4,19 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 
 ## [Unreleased]
 
+## [0.1.0-rc.12] - 2026-10-09
+
+### Changed
+
+- **The data repository is now `qtekfun/ultimate-maps-data`.** The default catalog URL points to it (the old name redirects).
+
+### Fixed
+
+- **Public transport with a mode switched off.** The planner now applies the mode filter before choosing the nearest stops, so turning Bus off no longer ends in "no route" when a train or a walk exists; the stop search radius is wider and the default maximum walking is 60 minutes.
+- **A failed route never closes the app.** Routing errors (for example a route from your location to Motril without tolls) are contained: the app shows a message instead of closing, and a core that dies quietly is restarted. Settings, About, Diagnostics keeps a local-only note of the last problems (nothing leaves the phone). The native crash handler has not been verified on a device.
+- **Maps search survives expanding a country.** Searching "españa" and opening the country to add more regions keeps the query and shows all its regions.
+- **Saving a place right after opening its card** could be undone by the late "is it saved?" answer; Save now waits for it.
+
 ## [0.1.0-rc.11] - 2026-10-09
 
 ### Added
@@ -153,7 +166,7 @@ First release candidate (`rc.1` to `rc.3` only existed as test pre-releases): an
 ### Added
 
 - Offline vector map (MapLibre Native + PMTiles) with light and dark themes, labels and icons, and an always-visible OpenStreetMap attribution.
-- Region downloads from "Maps": hierarchical list, resumable downloads verified with SHA-256, pause, resume, delete and update, foreground service and an offline mode. The default catalog lives in `UltimateMaps-data`.
+- Region downloads from "Maps": hierarchical list, resumable downloads verified with SHA-256, pause, resume, delete and update, foreground service and an offline mode. The default catalog lives in `ultimate-maps-data`.
 - Offline search for places and addresses with the CoMaps core, with a place card (save, route, share).
 - Route preview by car, on foot or by bike, with options to avoid motorways, tolls, ferries and unpaved roads, and intermediate stops (up to 5).
 - Saved places and lists, with GPX and KML import and export and a full backup.
