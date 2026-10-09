@@ -87,6 +87,19 @@ class RegionSearchTest {
     }
 
     @Test
+    fun anExpandedMatchingGroupShowsItsWholeSubtreeOnceAndNothingIsRepeated() {
+        val closed = RegionsModel.searchRows(index, "spain", emptyMap(), emptyMap())
+        assertTrue(closed.none { it.expanded })
+        val open = RegionsModel.searchRows(index, "spain", emptyMap(), emptyMap(), setOf("spain"))
+        val ids = open.map { it.region.id }
+        assertEquals(ids.size, ids.toSet().size)
+        assertTrue(open.first { it.region.id == "spain" }.expanded)
+        val child = open.first { it.region.parentId == "spain" }
+        assertEquals(1, child.depth)
+        assertEquals(null, child.path)
+    }
+
+    @Test
     fun filteringThirteenHundredNodesIsInstantaneous() {
         val big = ArrayList<Region>()
         for (c in 0 until 40) {
