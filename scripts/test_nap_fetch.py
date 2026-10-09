@@ -109,6 +109,26 @@ class NapFetchTest(unittest.TestCase):
                 self.assertIsInstance(feed["nap"], int)
                 self.assertIn("Powered by MITRAMS", feed["attribution"])
 
+    def test_madrid_metro_comes_from_nap_file_1134_and_only_that_feed(self):
+        with open(os.path.join(HERE, "transit", "madrid.json"), encoding="utf-8") as f:
+            m = json.load(f)
+        napped = [x for x in m["feeds"] if "nap" in x]
+        self.assertEqual(["crtm_metro.zip"], [x["file"] for x in napped])
+        self.assertEqual(1134, napped[0]["nap"])
+        self.assertIn("Powered by MITRAMS", napped[0]["attribution"])
+        self.assertIn("Powered by CRTM", napped[0]["attribution"])
+
+    def test_a_failed_fetch_keeps_a_file_that_was_already_there(self):
+        m = os.path.join(self.tmp.name, "m.json")
+        with open(m, "w") as f:
+            json.dump({"id": "x", "feeds": [{"label": "A", "file": "a.zip", "nap": 1}]}, f)
+        out = os.path.join(self.tmp.name, "keep")
+        os.makedirs(out)
+        with open(os.path.join(out, "a.zip"), "wb") as f:
+            f.write(b"old")
+        self.assertEqual((0, 1), nf.run(m, out, "wrong", self.base, log=lambda s: None))
+        self.assertEqual(["a.zip"], os.listdir(out))
+
 
 if __name__ == "__main__":
     unittest.main()
