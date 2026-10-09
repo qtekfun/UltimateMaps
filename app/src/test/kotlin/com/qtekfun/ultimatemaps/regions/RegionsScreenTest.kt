@@ -3,6 +3,17 @@ package com.qtekfun.ultimatemaps.regions
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.SemanticsActions
+import androidx.compose.ui.semantics.SemanticsProperties
+import androidx.compose.ui.test.SemanticsMatcher
+import androidx.compose.ui.test.assert
+import androidx.compose.ui.test.assertIsNotSelected
+import androidx.compose.ui.test.assertIsSelected
+import androidx.compose.ui.text.TextLayoutResult
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasAnyAncestor
 import androidx.compose.ui.test.hasTestTag
@@ -83,6 +94,11 @@ class RegionsScreenTest {
         rule.setContent { MapasTheme(darkTheme = false) { RegionsScreen(state, actions) } }
     }
 
+    private fun openSettingsTab() {
+        rule.onNodeWithTag("regions_tab_settings").performClick()
+        rule.waitForIdle()
+    }
+
     private fun scrollTo(tag: String) {
         rule.onNodeWithTag("regions_list").performScrollToNode(hasTestTag(tag))
     }
@@ -96,6 +112,7 @@ class RegionsScreenTest {
     fun noServerShowsTheEmptyStateAndNothingToDownload() {
         show()
         rule.onNodeWithTag("status_no_server").assertIsDisplayed()
+        openSettingsTab()
         rule.onNodeWithTag("offline_card").assertIsDisplayed()
         assertTrue(rule.onAllNodesWithTagCount("region_spain") == 0)
     }
@@ -104,6 +121,7 @@ class RegionsScreenTest {
     fun serverFieldValidatesAndRefreshesOnlyWhenValid() {
         serverResult = false
         show()
+        openSettingsTab()
         rule.onNodeWithTag("server_save").performClick()
         rule.onNodeWithTag("server_invalid").assertIsDisplayed()
         assertFalse("refresh" in log)
@@ -129,6 +147,7 @@ class RegionsScreenTest {
         state = RegionsUiState(CatalogState.Failed(CatalogError.OFFLINE_MODE), offline = true)
         show()
         rule.onNodeWithText("Offline mode is on, so the catalog was not requested. Turn it off to refresh.").assertIsDisplayed()
+        openSettingsTab()
         rule.onNodeWithTag("offline_switch").performClick()
         assertEquals("offline=false", log.last())
     }
@@ -231,6 +250,7 @@ class RegionsScreenTest {
         val card = StorageInfo(StorageLocation("card1", "SD card", File("/sd"), true), 2_000_000_000, 32_000_000_000)
         state = RegionsUiState(CatalogState.NoServer, storage = listOf(storage(), card))
         show()
+        openSettingsTab()
         rule.onNodeWithText("5.00 GB free of 64.00 GB").assertIsDisplayed()
         rule.onNodeWithTag("storage_card1").performClick()
         assertEquals("loc=card1", log.last())
@@ -288,8 +308,8 @@ class RegionsScreenTest {
         rule.onNodeWithTag("regions_search_clear").performClick()
         rule.waitForIdle()
         assertEquals(0, rule.onAllNodesWithTagCount("regions_search_empty"))
-        rule.onNodeWithTag("offline_card").assertIsDisplayed()
         rule.onNodeWithTag("regions_search").assertTextEquals("")
+        rule.onNodeWithTag("regions_installed_title").assertIsDisplayed()
     }
 
     @Test
@@ -320,6 +340,157 @@ class RegionsScreenTest {
         onNodeWithTag("region_madrid").assertIsDisplayed()
         assertEquals(0, onAllNodes(hasTestTag("offline_card")).fetchSemanticsNodes().size)
     }
+
+    // --- Sections (tabs) ---
+
+    private fun transitRow(id: String) = com.qtekfun.ultimatemaps.transit.TransitCityRow(id, "City $id", "2026-10-07", "2099-01-01", 3_000_000, false, false, false, false, null, listOf("Powered by Test"))
+
+    private fun loadedWithTransit() {
+        loadedForSearch()
+        state = state.copy(transit = listOf(transitRow("a"), transitRow("b")))
+    }
+
+    @Test
+    fun opensOnTheMapsTabWithSearchAndNoOtherSection() {
+        loadedWithTransit()
+        show()
+        rule.onNodeWithTag("regions_tab_maps").assertIsSelected()
+        rule.onNodeWithTag("regions_tab_transit").assertIsNotSelected()
+        rule.onNodeWithTag("regions_search").assertIsDisplayed()
+        assertEquals(0, rule.onAllNodesWithTagCount("transit_maps"))
+        assertEquals(0, rule.onAllNodesWithTagCount("offline_card"))
+    }
+
+    @Test
+    fun tabsHaveTheTabRoleAndSelectedState() {
+        loadedWithTransit()
+        show()
+        for (tag in listOf("regions_tab_maps", "regions_tab_transit", "regions_tab_settings")) {
+            rule.onNodeWithTag(tag).assert(SemanticsMatcher.expectValue(SemanticsProperties.Role, Role.Tab))
+        }
+        rule.onNodeWithTag("regions_tab_transit").performClick()
+        rule.onNodeWithTag("regions_tab_transit").assertIsSelected()
+        rule.onNodeWithTag("regions_tab_maps").assertIsNotSelected()
+    }
+
+    @Test
+    fun switchingTabsShowsOnlyThatSection() {
+        loadedWithTransit()
+        show()
+        rule.onNodeWithTag("regions_tab_transit").performClick()
+        rule.waitForIdle()
+        rule.onNodeWithTag("transit_city_a").assertIsDisplayed()
+        rule.onNodeWithTag("transit_city_b").assertIsDisplayed()
+        assertEquals(0, rule.onAllNodesWithTagCount("regions_search"))
+        assertEquals(0, rule.onAllNodesWithTagCount("region_spain"))
+        assertEquals(0, rule.onAllNodesWithTagCount("offline_card"))
+        rule.onNodeWithTag("regions_tab_settings").performClick()
+        rule.waitForIdle()
+        rule.onNodeWithTag("offline_card").assertIsDisplayed()
+        rule.onNodeWithTag("server_card").assertIsDisplayed()
+        rule.onNodeWithTag("storage_card").assertIsDisplayed()
+        assertEquals(0, rule.onAllNodesWithTagCount("transit_city_a"))
+        rule.onNodeWithTag("regions_tab_maps").performClick()
+        rule.waitForIdle()
+        rule.onNodeWithTag("regions_search").assertIsDisplayed()
+        assertEquals(0, rule.onAllNodesWithTagCount("transit_city_a"))
+    }
+
+    @Test
+    fun transitTabWithoutCitiesSaysSo() {
+        loadedForSearch()
+        show()
+        rule.onNodeWithTag("regions_tab_transit").performClick()
+        rule.waitForIdle()
+        rule.onNodeWithTag("transit_maps_empty").assertIsDisplayed()
+    }
+
+    @Test
+    fun searchFiltersOnlyTheMapsTabAndIsKeptWhenComingBack() {
+        loadedWithTransit()
+        show()
+        rule.onNodeWithTag("regions_search").performTextInput("madrid")
+        rule.waitForIdle()
+        rule.onNodeWithTag("regions_tab_transit").performClick()
+        rule.waitForIdle()
+        // Both cities stay: the Maps search never filters the transport list.
+        rule.onNodeWithTag("transit_city_a").assertIsDisplayed()
+        rule.onNodeWithTag("transit_city_b").assertIsDisplayed()
+        assertEquals(0, rule.onAllNodesWithTagCount("regions_search"))
+        rule.onNodeWithTag("regions_tab_maps").performClick()
+        rule.waitForIdle()
+        rule.onNodeWithTag("regions_search").assertTextEquals("madrid")
+        scrollTo("region_madrid")
+        rule.onNodeWithTag("region_madrid").assertIsDisplayed()
+    }
+
+    @Test
+    fun installedMapsComeFirstWithTheirOwnActions() {
+        state = RegionsUiState(CatalogState.Loaded(catalog), installed = listOf(installed("madrid", "1"), installed("galicia", "2")))
+        show()
+        rule.onNodeWithTag("regions_installed_title").assertIsDisplayed()
+        rule.onNodeWithTag("installed_region_galicia").assertIsDisplayed()
+        rule.onNodeWithTag("installed_update_madrid").performClick()
+        assertEquals("download=madrid", log.last())
+        rule.onNodeWithTag("installed_delete_galicia").performClick()
+        rule.onNodeWithTag("delete_yes").performClick()
+        assertEquals("delete=galicia", log.last())
+        scrollTo("regions_all_title")
+        rule.onNodeWithTag("regions_all_title").assertIsDisplayed()
+    }
+
+    @OptIn(ExperimentalTestApi::class)
+    @Test
+    fun selectedTabSurvivesRecreation() = runComposeUiTest {
+        loadedWithTransit()
+        val restorer = StateRestorationTester(this)
+        restorer.setContent { MapasTheme(darkTheme = false) { RegionsScreen(state, actions) } }
+        onNodeWithTag("regions_tab_transit").performClick()
+        waitForIdle()
+        restorer.emulateSaveAndRestore()
+        waitForIdle()
+        onNodeWithTag("regions_tab_transit").assertIsSelected()
+        onNodeWithTag("transit_city_a").assertIsDisplayed()
+        assertEquals(0, onAllNodes(hasTestTag("regions_search")).fetchSemanticsNodes().size)
+    }
+
+    private fun assertTabLabelsFullyShown(fontScale: Float, expected: List<String>) {
+        loadedWithTransit()
+        rule.setContent {
+            val d = LocalDensity.current
+            CompositionLocalProvider(LocalDensity provides Density(d.density, fontScale)) {
+                MapasTheme(darkTheme = false) { RegionsScreen(state, actions) }
+            }
+        }
+        listOf("regions_tab_maps", "regions_tab_transit", "regions_tab_settings").forEachIndexed { i, tag ->
+            rule.onNodeWithTag(tag).assertIsDisplayed()
+            val node = rule.onNodeWithTag(tag + "_label", useUnmergedTree = true)
+            node.assertIsDisplayed()
+            val results = mutableListOf<TextLayoutResult>()
+            node.fetchSemanticsNode().config[SemanticsActions.GetTextLayoutResult].action?.invoke(results)
+            val layout = results.single()
+            assertEquals(expected[i], layout.layoutInput.text.text)
+            val box = node.fetchSemanticsNode().boundsInRoot
+            assertTrue(box.width >= layout.multiParagraph.maxIntrinsicWidth - 0.5f, "${expected[i]} box ${box.width} is narrower than its text")
+            assertFalse(layout.didOverflowHeight, "${expected[i]} is cut vertically")
+            assertTrue(layout.lineCount <= 2, "${expected[i]} wraps in ${layout.lineCount} lines")
+            // No word is split: every line break falls on a space.
+            val text = layout.layoutInput.text.text
+            for (line in 0 until layout.lineCount - 1) {
+                val end = layout.getLineEnd(line)
+                assertTrue(text.getOrNull(end - 1) == ' ', "${expected[i]} is broken inside a word")
+            }
+        }
+    }
+
+    @Test @Config(qualifiers = "w320dp-h640dp-xhdpi")
+    fun englishTabLabelsAreNotCutAt320WithLargeFont() = assertTabLabelsFullyShown(1.3f, listOf("Maps", "Public transport", "Downloads"))
+
+    @Test @Config(qualifiers = "es-w320dp-h640dp-xhdpi")
+    fun spanishTabLabelsAreNotCutAt320WithLargeFont() = assertTabLabelsFullyShown(1.3f, listOf("Mapas", "Transporte público", "Descargas"))
+
+    @Test @Config(qualifiers = "w411dp-h891dp-xxhdpi")
+    fun englishTabLabelsFitAt411() = assertTabLabelsFullyShown(1f, listOf("Maps", "Public transport", "Downloads"))
 
     private fun androidx.compose.ui.test.junit4.ComposeTestRule.onAllNodesWithTagCount(tag: String) =
         onAllNodes(hasTestTag(tag)).fetchSemanticsNodes().size

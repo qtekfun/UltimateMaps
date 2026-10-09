@@ -25,6 +25,14 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.selection.selectableGroup
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.semantics.contentDescription
@@ -115,7 +123,23 @@ fun RegionsScreen(state: RegionsUiState, actions: RegionsActions, modifier: Modi
         val tokens = RegionSearch.normalize(query).split(' ')
         allOrphans.filter { e -> RegionSearch.normalize(e.region.id).let { k -> tokens.all { it in k } } }
     } else allOrphans
+    // Installed maps come first (outside the search): one row per installed region the catalog lists.
+    val installedRows = remember(catalog, state.installed, state.downloads, nameLanguage) {
+        if (catalog == null) emptyList() else RegionsModel.installedRows(catalog, installedVersions, state.downloads).map { r ->
+            val names = (RegionsModel.ancestors(catalog, r.region.id) + r.region.id).mapNotNull { catalog[it]?.displayName(nameLanguage) }
+            r.copy(path = names.joinToString(" › "))
+        }
+    }
+    var tab by rememberSaveable { mutableStateOf(RegionsTab.MAPS) }
     val listState = rememberLazyListState()
+    // A new tab starts at the top.
+    var shownTab by rememberSaveable { mutableStateOf(tab) }
+    LaunchedEffect(tab) {
+        if (tab != shownTab) {
+            shownTab = tab
+            listState.scrollToItem(0)
+        }
+    }
     // A new query starts at the top; a restored one (same text as before the recreation) keeps its scroll.
     var shownQuery by rememberSaveable { mutableStateOf(query) }
     LaunchedEffect(query) {
@@ -136,47 +160,27 @@ fun RegionsScreen(state: RegionsUiState, actions: RegionsActions, modifier: Modi
             BasicText(stringResource(R.string.regions_title), Modifier.weight(1f), style = Mapas.typography.largeTitle.copy(color = Mapas.colors.label))
             TextButton(stringResource(R.string.close), "regions_close", onClick = actions.onClose)
         }
-        if (catalog != null) SearchField(query, { query = it })
+        RegionsTabs(tab) { tab = it }
+        // The search field filters the map regions only, so it lives on the Maps tab.
+        if (tab == RegionsTab.MAPS && catalog != null) SearchField(query, { query = it })
         LazyColumn(Modifier.fillMaxSize().testTag("regions_list"), state = listState, verticalArrangement = Arrangement.spacedBy(0.dp)) {
-            if (!searching) item(key = "settings") { SettingsSection(state, actions) }
-            if (!searching) item(key = "restored") { RestoredRegionsOffer(state, catalog, actions) }
-            if (!searching && state.transit.isNotEmpty()) item(key = "transit") {
-                com.qtekfun.ultimatemaps.transit.TransitMapsSection(state.transit, state.offline, actions.onTransitDownload, actions.onTransitDelete)
-            }
-            item(key = "status") { CatalogStatus(state, catalog, actions) }
-            if (searching && rows.isEmpty() && orphans.isEmpty()) item(key = "search-empty") {
-                BasicText(
-                    stringResource(R.string.regions_search_empty, query.trim()),
-                    Modifier.padding(16.dp).testTag("regions_search_empty"),
-                    style = Mapas.typography.body.copy(color = Mapas.colors.secondaryLabel),
-                )
-            }
-            items(rows, key = { it.region.id }) { row ->
-                RegionRowView(
-                    row, actions, nameLanguage,
-                    onToggle = {
-                        if (row.path != null) {
-                            // A group found by search: leave the search and open it in the tree.
-                            expanded = (expanded + RegionsModel.ancestors(catalog!!, row.region.id) + row.region.id).distinct()
-                            query = ""
-                        } else {
-                            expanded = if (row.region.id in expanded) expanded - row.region.id else expanded + row.region.id
-                        }
-                    },
-                    onAskDelete = { confirmDelete = row.region.id to row.region.displayName(nameLanguage) },
-                )
-            }
-            if (orphans.isNotEmpty()) {
-                item(key = "orphans-title") {
-                    BasicText(
-                        stringResource(R.string.regions_installed_other),
-                        Modifier.padding(16.dp, 16.dp, 16.dp, 4.dp),
-                        style = Mapas.typography.callout.copy(color = Mapas.colors.secondaryLabel),
-                    )
+            when (tab) {
+                RegionsTab.SETTINGS -> item(key = "settings") { SettingsSection(state, actions) }
+                RegionsTab.TRANSIT -> item(key = "transit") {
+                    if (state.transit.isEmpty()) {
+                        BasicText(
+                            stringResource(R.string.transit_maps_none),
+                            Modifier.padding(16.dp).testTag("transit_maps_empty"),
+                            style = Mapas.typography.body.copy(color = Mapas.colors.secondaryLabel),
+                        )
+                    } else {
+                        com.qtekfun.ultimatemaps.transit.TransitMapsSection(state.transit, state.offline, actions.onTransitDownload, actions.onTransitDelete, showTitle = false)
+                    }
                 }
-                items(orphans, key = { "orphan-" + it.region.id }) { e ->
-                    OrphanRow(e) { confirmDelete = e.region.id to e.region.id }
-                }
+                RegionsTab.MAPS -> mapsItems(
+                    state, actions, catalog, nameLanguage, query, searching, rows, installedRows, orphans,
+                    expanded, { expanded = it }, { query = "" }, { confirmDelete = it },
+                )
             }
             item(key = "end") { Spacer(Modifier.height(24.dp)) }
         }
@@ -185,6 +189,134 @@ fun RegionsScreen(state: RegionsUiState, actions: RegionsActions, modifier: Modi
     confirmDelete?.let { (id, name) ->
         val bytes = state.installed.firstOrNull { it.region.id == id }?.bytes ?: 0L
         DeleteDialog(name, RegionsModel.formatBytes(bytes), onConfirm = { actions.onDelete(id); confirmDelete = null }, onDismiss = { confirmDelete = null })
+    }
+}
+
+/** The Maps tab: restore offer and catalog status, then installed maps first, then every other map. */
+private fun LazyListScope.mapsItems(
+    state: RegionsUiState,
+    actions: RegionsActions,
+    catalog: RegionCatalog?,
+    nameLanguage: String,
+    query: String,
+    searching: Boolean,
+    rows: List<RegionRow>,
+    installedRows: List<RegionRow>,
+    orphans: List<InstalledEntry>,
+    expanded: List<String>,
+    setExpanded: (List<String>) -> Unit,
+    clearQuery: () -> Unit,
+    askDelete: (Pair<String, String>) -> Unit,
+) {
+    if (!searching) item(key = "restored") { RestoredRegionsOffer(state, catalog, actions) }
+    item(key = "status") { CatalogStatus(state, catalog, actions) }
+    if (searching && rows.isEmpty() && orphans.isEmpty()) item(key = "search-empty") {
+        BasicText(
+            stringResource(R.string.regions_search_empty, query.trim()),
+            Modifier.padding(16.dp).testTag("regions_search_empty"),
+            style = Mapas.typography.body.copy(color = Mapas.colors.secondaryLabel),
+        )
+    }
+    val installedFirst = !searching && (installedRows.isNotEmpty() || orphans.isNotEmpty())
+    if (installedFirst) {
+        item(key = "installed-title") { SectionTitle(stringResource(R.string.regions_installed_title), "regions_installed_title") }
+        items(installedRows, key = { "installed-" + it.region.id }) { row ->
+            RegionRowView(
+                row, actions, nameLanguage, onToggle = {}, tagPrefix = "installed_",
+                onAskDelete = { askDelete(row.region.id to row.region.displayName(nameLanguage)) },
+            )
+        }
+    }
+    if (orphans.isNotEmpty() && !searching) orphanItems(orphans, askDelete)
+    if (installedFirst && rows.isNotEmpty()) item(key = "all-title") { SectionTitle(stringResource(R.string.regions_all_title), "regions_all_title") }
+    items(rows, key = { it.region.id }) { row ->
+        RegionRowView(
+            row, actions, nameLanguage,
+            onToggle = {
+                if (row.path != null) {
+                    // A group found by search: leave the search and open it in the tree.
+                    setExpanded((expanded + RegionsModel.ancestors(catalog!!, row.region.id) + row.region.id).distinct())
+                    clearQuery()
+                } else {
+                    setExpanded(if (row.region.id in expanded) expanded - row.region.id else expanded + row.region.id)
+                }
+            },
+            onAskDelete = { askDelete(row.region.id to row.region.displayName(nameLanguage)) },
+        )
+    }
+    if (orphans.isNotEmpty() && searching) orphanItems(orphans, askDelete)
+}
+
+private fun LazyListScope.orphanItems(orphans: List<InstalledEntry>, askDelete: (Pair<String, String>) -> Unit) {
+    item(key = "orphans-title") {
+        BasicText(
+            stringResource(R.string.regions_installed_other),
+            Modifier.padding(16.dp, 16.dp, 16.dp, 4.dp),
+            style = Mapas.typography.callout.copy(color = Mapas.colors.secondaryLabel),
+        )
+    }
+    items(orphans, key = { "orphan-" + it.region.id }) { e ->
+        OrphanRow(e) { askDelete(e.region.id to e.region.id) }
+    }
+}
+
+@Composable
+private fun SectionTitle(text: String, tag: String) {
+    BasicText(text, Modifier.fillMaxWidth().padding(16.dp, 16.dp, 16.dp, 4.dp).testTag(tag), style = Mapas.typography.title.copy(color = Mapas.colors.label))
+}
+
+/** The sections of the Maps screen; each has one purpose. */
+enum class RegionsTab(val tag: String) { MAPS("regions_tab_maps"), TRANSIT("regions_tab_transit"), SETTINGS("regions_tab_settings") }
+
+/**
+ * Segmented control with the screen's sections. Equal-width segments whose label may wrap to a second line (never cut or
+ * ellipsized) at large font sizes; at least 48 dp tall, more in glove mode.
+ */
+@Composable
+private fun RegionsTabs(selected: RegionsTab, onSelect: (RegionsTab) -> Unit) {
+    val colors = Mapas.colors
+    val height = maxOf(48.dp, Mapas.dimens.touchTarget)
+    val group = stringResource(R.string.regions_tabs_group)
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 4.dp)
+            .clip(Mapas.shapes.control)
+            .background(colors.field)
+            .padding(2.dp)
+            .selectableGroup()
+            .semantics { contentDescription = group }
+            .height(IntrinsicSize.Min),
+        horizontalArrangement = Arrangement.spacedBy(2.dp),
+    ) {
+        RegionsTab.entries.forEach { t ->
+            val label = stringResource(
+                when (t) {
+                    RegionsTab.MAPS -> R.string.regions_tab_maps
+                    RegionsTab.TRANSIT -> R.string.regions_tab_transit
+                    RegionsTab.SETTINGS -> R.string.regions_tab_settings
+                },
+            )
+            val on = t == selected
+            Box(
+                Modifier
+                    .weight(1f)
+                    .fillMaxHeight()
+                    .heightIn(min = height)
+                    .clip(Mapas.shapes.field)
+                    .background(if (on) colors.segmentThumb else Color.Transparent)
+                    .selectable(selected = on, role = Role.Tab) { onSelect(t) }
+                    .padding(horizontal = 4.dp, vertical = 6.dp)
+                    .testTag(t.tag),
+                contentAlignment = Alignment.Center,
+            ) {
+                BasicText(
+                    label,
+                    style = Mapas.typography.callout.copy(color = if (on) colors.label else colors.secondaryLabel, textAlign = TextAlign.Center),
+                    modifier = Modifier.testTag(t.tag + "_label"),
+                )
+            }
+        }
     }
 }
 
@@ -400,7 +532,7 @@ private fun catalogErrorText(e: CatalogError) = stringResource(
 )
 
 @Composable
-private fun RegionRowView(row: RegionRow, actions: RegionsActions, nameLanguage: String, onToggle: () -> Unit, onAskDelete: () -> Unit) {
+private fun RegionRowView(row: RegionRow, actions: RegionsActions, nameLanguage: String, onToggle: () -> Unit, onAskDelete: () -> Unit, tagPrefix: String = "") {
     val r = row.region
     val dl = row.download
     val shown = r.displayName(nameLanguage)
@@ -409,20 +541,20 @@ private fun RegionRowView(row: RegionRow, actions: RegionsActions, nameLanguage:
             .fillMaxWidth()
             .then(if (row.isGroup) Modifier.clickable(onClick = onToggle) else Modifier)
             .padding(start = 16.dp + 18.dp * row.depth, end = 16.dp, top = 8.dp, bottom = 8.dp)
-            .testTag("region_" + r.id),
+            .testTag(tagPrefix + "region_" + r.id),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             if (row.isGroup) BasicText(if (row.expanded) "▾" else "▸", Modifier.width(22.dp), style = Mapas.typography.body.copy(color = Mapas.colors.secondaryLabel))
             Column(Modifier.weight(1f)) {
                 BasicText(if (row.path != null) RegionSearch.segments(shown).last() else shown, style = Mapas.typography.body.copy(color = Mapas.colors.label))
-                if (row.path != null && row.path != RegionSearch.segments(shown).last()) BasicText(row.path, Modifier.testTag("path_" + r.id), style = Mapas.typography.callout.copy(color = Mapas.colors.secondaryLabel))
+                if (row.path != null && row.path != RegionSearch.segments(shown).last()) BasicText(row.path, Modifier.testTag(tagPrefix + "path_" + r.id), style = Mapas.typography.callout.copy(color = Mapas.colors.secondaryLabel))
                 BasicText(subtitle(row), style = Mapas.typography.callout.copy(color = Mapas.colors.secondaryLabel))
             }
-            if (!row.isGroup) RowActions(row, actions, onAskDelete)
+            if (!row.isGroup) RowActions(row, actions, onAskDelete, tagPrefix)
         }
         when (dl) {
-            is DownloadState.Running -> Progress(RegionsModel.percent(dl.done, dl.total))
-            is DownloadState.Paused -> Progress(RegionsModel.percent(dl.done, dl.total))
+            is DownloadState.Running -> Progress(RegionsModel.percent(dl.done, dl.total), tagPrefix)
+            is DownloadState.Paused -> Progress(RegionsModel.percent(dl.done, dl.total), tagPrefix)
             else -> Unit
         }
     }
@@ -458,29 +590,30 @@ private fun failureText(d: DownloadState.Failed) = when (d.reason) {
 }
 
 @Composable
-private fun RowActions(row: RegionRow, actions: RegionsActions, onAskDelete: () -> Unit) {
+private fun RowActions(row: RegionRow, actions: RegionsActions, onAskDelete: () -> Unit, tagPrefix: String = "") {
     val id = row.region.id
+    fun tag(base: String) = "$tagPrefix${base}_$id"
     Row {
         when (val d = row.download) {
             is DownloadState.Queued, is DownloadState.Running -> {
-                TextButton(stringResource(R.string.region_pause), "pause_$id") { actions.onPause(id) }
-                TextButton(stringResource(R.string.region_cancel), "cancel_$id") { actions.onCancel(id) }
+                TextButton(stringResource(R.string.region_pause), tag("pause")) { actions.onPause(id) }
+                TextButton(stringResource(R.string.region_cancel), tag("cancel")) { actions.onCancel(id) }
             }
             is DownloadState.Paused -> {
-                TextButton(stringResource(R.string.region_resume), "resume_$id") { actions.onDownload(row.region) }
-                TextButton(stringResource(R.string.region_cancel), "cancel_$id") { actions.onCancel(id) }
+                TextButton(stringResource(R.string.region_resume), tag("resume")) { actions.onDownload(row.region) }
+                TextButton(stringResource(R.string.region_cancel), tag("cancel")) { actions.onCancel(id) }
             }
             is DownloadState.Failed -> {
-                TextButton(stringResource(R.string.region_retry), "retry_$id") { actions.onDownload(row.region) }
-                TextButton(stringResource(R.string.close), "dismiss_$id") { actions.onDismissFailure(id) }
+                TextButton(stringResource(R.string.region_retry), tag("retry")) { actions.onDownload(row.region) }
+                TextButton(stringResource(R.string.close), tag("dismiss")) { actions.onDismissFailure(id) }
             }
             null -> when {
                 row.updateAvailable -> {
-                    TextButton(stringResource(R.string.region_update), "update_$id") { actions.onDownload(row.region) }
-                    TextButton(stringResource(R.string.region_delete), "delete_$id", onClick = onAskDelete)
+                    TextButton(stringResource(R.string.region_update), tag("update")) { actions.onDownload(row.region) }
+                    TextButton(stringResource(R.string.region_delete), tag("delete"), onClick = onAskDelete)
                 }
-                row.installedVersion != null -> TextButton(stringResource(R.string.region_delete), "delete_$id", onClick = onAskDelete)
-                row.region.isDownloadable -> TextButton(stringResource(R.string.region_download), "download_$id") { actions.onDownload(row.region) }
+                row.installedVersion != null -> TextButton(stringResource(R.string.region_delete), tag("delete"), onClick = onAskDelete)
+                row.region.isDownloadable -> TextButton(stringResource(R.string.region_download), tag("download")) { actions.onDownload(row.region) }
                 else -> Unit
             }
         }
@@ -499,8 +632,8 @@ private fun OrphanRow(e: InstalledEntry, onAskDelete: () -> Unit) {
 }
 
 @Composable
-private fun Progress(percent: Int) {
-    Box(Modifier.fillMaxWidth().padding(top = 6.dp).height(4.dp).clip(CircleShape).background(Mapas.colors.field).testTag("progress")) {
+private fun Progress(percent: Int, tagPrefix: String = "") {
+    Box(Modifier.fillMaxWidth().padding(top = 6.dp).height(4.dp).clip(CircleShape).background(Mapas.colors.field).testTag(tagPrefix + "progress")) {
         Box(Modifier.fillMaxWidth(percent / 100f).height(4.dp).background(Mapas.colors.accent))
     }
 }

@@ -33,6 +33,12 @@
 
     <!-- Maps screen (regions) -->
     <string name="regions_title">Maps</string>
+    <string name="regions_tab_maps">Maps</string>
+    <string name="regions_tab_transit">Public transport</string>
+    <string name="regions_tab_settings">Downloads</string>
+    <string name="regions_tabs_group">Maps sections</string>
+    <string name="regions_installed_title">Installed</string>
+    <string name="regions_all_title">All maps</string>
     <string name="regions_search_hint">Search maps (e.g. Catalonia)</string>
     <string name="regions_search_clear">Clear search</string>
     <string name="regions_search_empty">No maps match “%1$s”.</string>
