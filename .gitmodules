@@ -2,3 +2,6 @@
 	path = third_party/comaps
 	url = https://codeberg.org/comaps/comaps.git
 	ignore = untracked
+[submodule "ultimate-mapcore"]
+	path = ultimate-mapcore
+	url = https://github.com/qtekfun/ultimate-mapcore

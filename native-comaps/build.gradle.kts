@@ -114,8 +114,8 @@ dependencies {
     api(project(":core-geo"))
     api(project(":core-search"))
     api(project(":core-routing"))
-    testImplementation(platform(libs.junit.bom))
-    testImplementation(libs.junit.jupiter)
+    testImplementation(platform(libs.junit5.bom))
+    testImplementation(libs.junit5.jupiter)
     testImplementation(libs.kotlin.test.junit5)
-    testRuntimeOnly(libs.junit.platform.launcher)
+    testRuntimeOnly(libs.junit5.launcher)
 }

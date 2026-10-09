@@ -20,3 +20,5 @@ include(":app",":core-geo", ":core-data", ":core-net", ":core-regions", ":core-m
 include(":core-bikeshare") // bike-share stations (GBFS static) and optional live availability
 include(":core-zbe") // low-emission zones (OSM polygons, route check)
 include(":core-weather") // AEMET weather warnings (opt-in, user-supplied API key, national bundle filtered on the device)
+include(":mapcore") // shared MapLibre + PMTiles map viewer (git submodule, AGPL-3.0; see docs/decisions.md)
+project(":mapcore").projectDir = file("ultimate-mapcore/mapcore")

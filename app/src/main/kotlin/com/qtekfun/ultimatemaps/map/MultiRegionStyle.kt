@@ -21,6 +21,9 @@ object MultiRegionStyle {
     /** Hard cap on sources (Spain has 25 regions); extra regions are not drawn and the result says so. */
     const val MAX_SOURCES = 25
     const val SOURCE_PREFIX = "protomaps-"
+
+    /** Written into every generated style so the host can tell it from the viewer's own packaged style. */
+    const val STYLE_NAME = "ultimatemaps-generated-style"
     private const val TEMPLATE_SOURCE = "protomaps"
 
     data class Result(
@@ -61,6 +64,7 @@ object MultiRegionStyle {
                 layers.put(copy)
             }
         }
+        style.put("name", STYLE_NAME)
         style.put("sources", sources)
         style.put("layers", layers)
         return Result(style.toString(), paths.size, layers.length(), distinct.size - paths.size, templateLayers.length())

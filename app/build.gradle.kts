@@ -125,6 +125,7 @@ dependencies {
     implementation(project(":core-geo"))
     implementation(project(":core-net"))
     implementation(project(":core-map"))
+    implementation(project(":mapcore")) // shared map viewer (ultimate-mapcore, AGPL-3.0); MapLibre comes from it as `api`
     implementation(project(":core-search"))
     implementation(project(":core-routing"))
     implementation(project(":core-fuel")) // gas stations: data contract (RF-15)
@@ -147,7 +148,6 @@ dependencies {
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.foundation)
     implementation(libs.androidx.activity.compose)
-    implementation(libs.maplibre.android)
 
     testImplementation(libs.junit4)
     testImplementation(libs.robolectric)
