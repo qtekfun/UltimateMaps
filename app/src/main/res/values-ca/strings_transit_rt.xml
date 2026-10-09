@@ -21,6 +21,15 @@
     <string name="transit_rt_cancelled">Cancel·lat</string>
     <string name="transit_rt_alert">Alerta: %1$s</string>
     <string name="transit_rt_skips">No para a %1$s</string>
+    <plurals name="transit_rt_alerts_count">
+        <item quantity="one">%d avís</item>
+        <item quantity="many">%d avisos</item>
+        <item quantity="other">%d avisos</item>
+    </plurals>
+    <string name="transit_rt_alerts_expand">Mostra tots els avisos</string>
+    <string name="transit_rt_alerts_collapse">Amaga la llista d\'avisos</string>
+    <string name="transit_rt_alerts_dismiss">Amaga</string>
+    <string name="transit_rt_alerts_dismiss_description">Amaga els avisos d\'aquest viatge</string>
     <string name="transit_rt_note">Els horaris són teòrics, extrets dels horaris publicats. Els trams marcats «Temps real (Renfe)» també inclouen els retards que informa Renfe; la resta de trams no té informació en temps real.</string>
 
     <!-- Backup restore list and connection list -->
