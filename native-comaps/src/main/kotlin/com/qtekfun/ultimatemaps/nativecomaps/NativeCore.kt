@@ -7,6 +7,9 @@ package com.qtekfun.ultimatemaps.nativecomaps
 internal class NativeCore : NativeBridge {
     external fun nativeInit(apk: String, writableDir: String, tmpDir: String, locale: String): String
     external fun nativeRefreshMaps(): Int
+
+    /** Isolated core process only: native crashes end the process quietly and append a note to [path] (`um_crash.hpp`). */
+    external fun nativeInstallCrashNote(path: String)
     external fun nativeSearch(
         query: String, hasPos: Boolean, lat: Double, lon: Double, limit: Int, timeoutMs: Int, locale: String, categorial: Boolean,
     ): Array<String>
@@ -20,6 +23,14 @@ internal class NativeCore : NativeBridge {
         nativeInit(apk, writableDir, tmpDir, locale)
 
     override fun refreshMaps(): Int = nativeRefreshMaps()
+
+    override fun installCrashNote(path: String) {
+        try {
+            nativeInstallCrashNote(path)
+        } catch (_: UnsatisfiedLinkError) {
+            // An older library without the function: the system's own crash handling stays in place.
+        }
+    }
 
     override fun search(
         query: String, hasPos: Boolean, lat: Double, lon: Double, limit: Int, timeoutMs: Int, locale: String,
@@ -55,6 +66,9 @@ internal interface NativeBridge {
     /** Returns "" if all is well, or the error message. */
     fun init(apk: String, writableDir: String, tmpDir: String, locale: String): String
     fun refreshMaps(): Int
+
+    /** See [NativeCore.installCrashNote]; nothing to do for a fake. */
+    fun installCrashNote(path: String) = Unit
 
     /** 5 strings per result: name, address, category, lat, lon. */
     fun search(

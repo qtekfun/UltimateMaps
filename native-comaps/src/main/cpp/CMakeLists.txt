@@ -99,6 +99,7 @@ endforeach()
 add_library(umcomaps SHARED
   um_platform.cpp
   um_core.cpp
+  um_crash.cpp
   um_jni.cpp)
 target_include_directories(umcomaps PRIVATE ${UM_ROOT})
 target_compile_options(umcomaps PRIVATE ${OMIM_WARNING_FLAGS})

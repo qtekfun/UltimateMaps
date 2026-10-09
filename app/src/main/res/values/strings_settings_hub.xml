@@ -54,5 +54,12 @@
     <string name="about_notice_show">Show licences of the included software</string>
     <string name="about_notice_hide">Hide licences</string>
     <string name="about_notice_unavailable">The notices file is not available in this build.</string>
+    <string name="about_diag_title">Diagnostics</string>
+    <string name="about_diag_body">Notes kept only on this phone about failures, such as how the app processes ended and unexpected errors. They contain no places or positions. Nothing is sent anywhere; copy them into a bug report if you want to.</string>
+    <string name="about_diag_show">Show diagnostic notes</string>
+    <string name="about_diag_hide">Hide diagnostic notes</string>
+    <string name="about_diag_empty">Nothing noted yet.</string>
+    <string name="about_diag_copy">Copy</string>
+    <string name="about_diag_clear">Clear notes</string>
     <string name="hub_about_source">Source code: github.com/qtekfun/UltimateMaps</string>
 </resources>

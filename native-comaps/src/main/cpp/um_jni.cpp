@@ -1,5 +1,6 @@
 // JNI of com.qtekfun.ultimatemaps.nativecomaps.NativeCore. It only translates types; the logic is in um_core.cpp.
 #include "um_core.hpp"
+#include "um_crash.hpp"
 
 #include <jni.h>
 
@@ -87,6 +88,14 @@ JNIEXPORT jstring JNICALL Java_com_qtekfun_ultimatemaps_nativecomaps_NativeCore_
   p.tmpDir = ToStd(env, tmp);
   p.locale = ToStd(env, locale);
   return env->NewStringUTF(um::Core::Instance().Init(p).c_str());
+}
+
+// Only for the isolated core process: native crashes there end the process quietly and leave a note at |path| (um_crash.hpp).
+JNIEXPORT void JNICALL Java_com_qtekfun_ultimatemaps_nativecomaps_NativeCore_nativeInstallCrashNote(JNIEnv * env, jobject,
+                                                                                                    jstring path)
+{
+  std::string const p = ToStd(env, path);
+  um::InstallQuietCrashExit(p.c_str());
 }
 
 JNIEXPORT jint JNICALL Java_com_qtekfun_ultimatemaps_nativecomaps_NativeCore_nativeRefreshMaps(JNIEnv *, jobject)

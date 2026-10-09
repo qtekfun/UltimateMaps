@@ -32,6 +32,12 @@ class CoreHost(private val core: CoreHandle, private val maxParked: Int = 4) {
         error(CoreProtocol.ERR_BAD_REQUEST, "bad request")
     } catch (e: Exception) {
         error(CoreProtocol.ERR_INTERNAL, e.javaClass.simpleName) // never the message: it could echo a query
+    } catch (e: OutOfMemoryError) {
+        // A huge route or a big map set: answer with an error instead of letting the Binder thread die and take the process.
+        synchronized(lock) { parked.clear() }
+        error(CoreProtocol.ERR_INTERNAL, e.javaClass.simpleName)
+    } catch (e: StackOverflowError) {
+        error(CoreProtocol.ERR_INTERNAL, e.javaClass.simpleName)
     }
 
     private fun error(kind: Int, message: String) =

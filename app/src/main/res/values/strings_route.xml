@@ -32,6 +32,7 @@
     <string name="route_err_not_found">No route found with these options. Try changing the profile or the avoid options.</string>
     <string name="route_err_timeout">The route took too long to calculate. Try again or choose a closer point.</string>
     <string name="route_err_internal">The route could not be calculated.</string>
+    <string name="route_err_unexpected">Something went wrong computing the route. Try again, or choose another destination or different options.</string>
     <string name="route_change_short">Change</string>
     <string name="route_profile_group">Travel mode</string>
     <string name="route_options_title">Route options</string>
