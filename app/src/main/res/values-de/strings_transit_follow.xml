@@ -83,16 +83,13 @@
     <string name="trip_prompts_title">Hinweise der ÖPNV-Fahrt</string>
     <string name="trip_prompts_body">Wie dir eine ÖPNV-Fahrt Schritt für Schritt sagt, wann du einsteigen, umsteigen und aussteigen sollst.</string>
     <string name="trip_prompts_note">Das Banner auf dem Bildschirm wird immer angezeigt. Stumm der Navigation schaltet Ton und Sprache aus.</string>
-<<<<<<< HEAD
     <string name="transit_changes_any">Beliebig viele Umstiege</string>
     <string name="transit_changes_one">Höchstens 1 Umstieg</string>
     <string name="transit_changes_none">Keine Umstiege</string>
     <string name="transit_plan_changes_title">Umstiege</string>
     <string name="transit_plan_changes_body">Wie viele Umstiege eine Fahrt haben darf. Mit „Keine Umstiege“ sucht die Planung auch weiter entfernte Haltestellen mit direkter Linie, selbst wenn der Fußweg länger ist.</string>
-=======
     <string name="trip_on_board">Ich bin an Bord</string>
     <string name="trip_not_on_board">Ich bin nicht an Bord</string>
     <string name="trip_on_board_description">Der App mitteilen, dass Sie im Fahrzeug sind</string>
     <string name="trip_not_on_board_description">Der App mitteilen, dass Sie nicht im Fahrzeug sind</string>
->>>>>>> origin/master
 </resources>
