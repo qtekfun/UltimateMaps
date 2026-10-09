@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_title">Configuració</string>
+    <string name="settings_open">Configuració</string>
+    <string name="settings_back">Enrere</string>
+
+    <string name="settings_privacy_title">Privadesa</string>
+    <string name="settings_offline_title">Mode fora de línia</string>
+    <string name="settings_offline_body">L\'aplicació no fa cap connexió, ni tan sols per a les baixades. És la mateixa opció que a Mapes.</string>
+    <string name="settings_regions_title">Catàleg de regions</string>
+    <string name="settings_regions_body">Adreça del catàleg: %1$s</string>
+    <string name="settings_regions_none">No s\'ha definit cap adreça de catàleg.</string>
+    <string name="settings_regions_open">Obre Mapes</string>
+    <string name="settings_connections_title">Connexions possibles</string>
+    <string name="settings_connections_none">Ara mateix no és possible cap connexió.</string>
+    <string name="conn_status_active">Permesa</string>
+    <string name="conn_status_disabled">Desactivada</string>
+    <string name="conn_status_blocked_offline">Bloquejada pel mode fora de línia</string>
+    <string name="conn_purpose_tiles">Tessel·les en línia</string>
+    <string name="conn_purpose_short_link">Enllaços curts</string>
+    <string name="conn_purpose_map_download">Baixada de mapes</string>
+    <string name="conn_purpose_sync">Sincronització</string>
+    <string name="conn_purpose_other">Altres (preus de combustible)</string>
+
+    <string name="fuel_title">Gasolineres</string>
+    <string name="fuel_switch_title">Mostra gasolineres i preus</string>
+    <string name="fuel_switch_body">Desactivat per defecte. No es descarrega res mentre estigui desactivat.</string>
+    <string name="fuel_fuels_title">Combustibles a descarregar</string>
+    <string name="fuel_fuels_body">Es demana un fitxer per cada combustible marcat.</string>
+    <string name="fuel_fuels_none">Marca almenys un combustible per descarregar-ne els preus.</string>
+    <string name="fuel_map_title">Combustible mostrat al mapa</string>
+    <string name="fuel_map_none">Marca un combustible a dalt per triar-lo aquí.</string>
+    <string name="fuel_refresh_title">Freqüència d\'actualització</string>
+    <string name="fuel_refresh_minutes">Cada %1$d min</string>
+    <string name="fuel_refresh_hours">Cada %1$d h</string>
+    <string name="fuel_refresh_days">Un cop al dia</string>
+    <string name="fuel_url_title">Adreça de la font</string>
+    <string name="fuel_url_save">Desa</string>
+    <string name="fuel_url_reset">Restableix</string>
+    <string name="fuel_url_invalid">Adreça https no vàlida.</string>
+    <string name="fuel_url_saved">Desat.</string>
+    <string name="fuel_last_update">Última actualització: %1$s</string>
+    <string name="fuel_last_update_never">Encara no descarregat.</string>
+    <string name="fuel_update_now">Actualitza ara</string>
+    <string name="fuel_update_running">Descarregant %1$d de %2$d (%3$s)…</string>
+    <string name="fuel_update_ok">Preus actualitzats.</string>
+    <string name="fuel_update_kept">Es conserven les últimes dades vàlides.</string>
+    <string name="fuel_attribution">Dades: Ministerio para la Transición Ecológica y el Reto Demográfico (Geoportal de Hidrocarburos), reutilitzades segons la Llei 37/2007. Informació no oficial; comprova el preu al sortidor.</string>
+
+    <string name="fuel_err_offline">El mode fora de línia està activat: no s\'ha fet cap connexió.</string>
+    <string name="fuel_err_not_allowed">Connexió no permesa (adreça no autoritzada o redirigida a un altre servidor).</string>
+    <string name="fuel_err_network">No s\'ha pogut connectar.</string>
+    <string name="fuel_err_timeout">Temps d\'espera esgotat.</string>
+    <string name="fuel_err_server">El servidor ha retornat un error.</string>
+    <string name="fuel_err_too_large">La resposta és massa gran.</string>
+    <string name="fuel_err_invalid">Dades no vàlides o incompletes.</string>
+
+    <string name="fuel_confirm_title">Vols activar les gasolineres?</string>
+    <string name="fuel_confirm_body">Què se sol·licita: un fitxer de preus per cada combustible que triïs (res fins que en triïs).\n\nA quin servidor: %1$s.\n\nQuè veu aquest servidor: la teva adreça IP i quins combustibles descarregues. La teva ubicació no s\'envia mai: els fitxers són nacionals i es filtren al teu telèfon.\n\nNomés es connecta quan ho actives, prems Actualitza ara o obres l\'aplicació amb dades més antigues que la freqüència d\'actualització.</string>
+    <string name="fuel_confirm_offline">El mode fora de línia està activat, així que no es connectarà res fins que el desactivis.</string>
+    <string name="fuel_confirm_yes">Activa</string>
+    <string name="fuel_confirm_no">Cancel·la</string>
+</resources>

@@ -6,22 +6,30 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import java.util.Locale
 
-/** Languages the spoken instructions exist in. [tag] is the BCP 47 language the TTS engine is asked for. */
+/**
+ * Languages the spoken instructions exist in. [tag] is the BCP 47 language the TTS engine is asked for. Spanish and English
+ * are written as code, the others are [VoicePacks]; Basque has no spoken guidance yet.
+ */
 enum class VoiceLanguage(val tag: String) {
-    ES("es"), EN("en");
+    ES("es"), EN("en"), CA("ca"), GL("gl"), FR("fr"), DE("de"), PT("pt"), IT("it");
 
     val locale: Locale get() = Locale.forLanguageTag(tag)
+
+    companion object {
+        /** The voice language for the language of the app; English when there is no guidance in it (Basque, Dutch, ...). */
+        fun forAppLocale(appLocale: Locale): VoiceLanguage =
+            entries.firstOrNull { it.tag.equals(appLocale.language, ignoreCase = true) } ?: EN
+    }
 }
 
 /** What the user chose for the voice language; [AUTO] follows the language of the app (the system locale). */
 enum class VoiceLanguagePref {
-    AUTO, ES, EN;
+    AUTO, ES, EN, CA, GL, FR, DE, PT, IT;
 
-    fun resolve(appLocale: Locale): VoiceLanguage = when (this) {
-        ES -> VoiceLanguage.ES
-        EN -> VoiceLanguage.EN
-        AUTO -> if (appLocale.language.equals("es", ignoreCase = true)) VoiceLanguage.ES else VoiceLanguage.EN
-    }
+    /** The language this choice names, or null for [AUTO]. */
+    val language: VoiceLanguage? get() = if (this == AUTO) null else VoiceLanguage.valueOf(name)
+
+    fun resolve(appLocale: Locale): VoiceLanguage = language ?: VoiceLanguage.forAppLocale(appLocale)
 }
 
 enum class DistanceUnits { METRIC, IMPERIAL }

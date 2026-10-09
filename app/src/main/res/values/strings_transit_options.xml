@@ -21,7 +21,7 @@
     <string name="transit_plan_walk_title">Show walking when it takes under</string>
     <string name="transit_plan_walk_body">The walking option is always listed next to the transit options when the walk takes less than this.</string>
     <string name="transit_plan_saving_title">Prefer walking if transit saves less than</string>
-    <string name="transit_plan_saving_body">A transit option that saves less time than this (or less than 20% of the walk) is left out when walking is listed.</string>
+    <string name="transit_plan_saving_body" formatted="false">A transit option that saves less time than this (or less than 20% of the walk) is left out when walking is listed.</string>
     <string name="transit_plan_maxwalk_title">Max walking per trip</string>
     <string name="transit_plan_maxwalk_body">Transit options that need more walking in total than this are left out.</string>
     <string name="transit_plan_maxwalk_none">No limit</string>

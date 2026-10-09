@@ -44,7 +44,7 @@
     <string name="fuel_update_now">Update now</string>
     <string name="fuel_update_running">Downloading %1$d of %2$d (%3$s)…</string>
     <string name="fuel_update_ok">Prices updated.</string>
-    <string name="fuel_update_error">%1$s: %2$s</string>
+    <string name="fuel_update_error" translatable="false">%1$s: %2$s</string>
     <string name="fuel_update_kept">The last good data is kept.</string>
     <string name="fuel_attribution">Data: Ministerio para la Transición Ecológica y el Reto Demográfico (Geoportal de Hidrocarburos), reused under Law 37/2007. Unofficial information; check the price at the pump.</string>
 

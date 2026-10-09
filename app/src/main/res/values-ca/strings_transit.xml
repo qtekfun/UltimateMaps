@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Route panel: fourth travel mode -->
+    <string name="route_profile_transit">Transport públic</string>
+    <string name="transit_group_departure">Sortida</string>
+    <string name="transit_depart_now">Surt ara</string>
+    <string name="transit_depart_later">Surt a les</string>
+    <string name="transit_time_earlier">15 minuts abans</string>
+    <string name="transit_time_later">15 minuts després</string>
+    <string name="transit_day_earlier">Dia anterior</string>
+    <string name="transit_day_later">Dia següent</string>
+
+    <string name="transit_computing">Cercant connexions…</string>
+    <string name="transit_needs_origin">Esperant la teva ubicació. Tria un punt de partida o activa la ubicació.</string>
+    <string name="transit_err_no_data">No hi ha dades de transport públic instal·lades i el servidor de mapes no en llista cap. Obre Mapes per cercar-ne.</string>
+    <string name="transit_err_not_downloaded">Els horaris de %1$s encara no estan descarregats. Descarrega\'ls a Mapes, a Transport públic.</string>
+    <string name="transit_err_across">Aquest viatge va de %1$s a %2$s, que tenen horaris separats. No es planifiquen viatges entre ells; planifica cada part per separat.</string>
+    <string name="transit_err_outside">Els horaris del transport públic no cobreixen aquest viatge.</string>
+    <string name="transit_err_expired">Els horaris van caducar el %1$s, així que no es planifiquen viatges posteriors a aquesta data. Tria una data anterior o actualitza les dades a Mapes.</string>
+    <string name="transit_err_not_yet">Els horaris comencen el %1$s. Tria una data posterior.</string>
+    <string name="transit_err_no_route">No s\'ha trobat cap connexió a aquesta hora. Prova una altra hora.</string>
+    <string name="transit_err_internal">No s\'ha pogut llegir el fitxer d\'horaris. Suprimeix-lo i torna\'l a descarregar a Mapes.</string>
+
+    <!-- Itinerary list -->
+    <string name="transit_direct">Directe</string>
+    <plurals name="transit_transfers">
+        <item quantity="one">%d transbordament</item>
+        <item quantity="many">%d transbordaments</item>
+        <item quantity="other">%d transbordaments</item>
+    </plurals>
+    <string name="transit_walk_only">Només a peu</string>
+    <string name="transit_walking">%1$s a peu</string>
+    <string name="transit_option_description">Opció %1$d: %2$s, arribada %3$s, %4$s, %5$s</string>
+    <string name="transit_chip_walk">A peu</string>
+    <string name="transit_walk_pill">%1$d min</string>
+    <string name="transit_walk_only_pill">A peu · %1$d min</string>
+    <plurals name="transit_walk_description">
+        <item quantity="one">Camina %d minut</item>
+        <item quantity="many">Camina %d minuts</item>
+        <item quantity="other">Camina %d minuts</item>
+    </plurals>
+
+    <!-- Itinerary card -->
+    <string name="transit_back">Torna a les opcions</string>
+    <string name="transit_card_summary">%1$s, sortida %2$s, arribada %3$s</string>
+    <string name="transit_place_destination">la teva destinació</string>
+    <string name="transit_leg_walk">Camina %1$s fins a %2$s</string>
+    <string name="transit_leg_towards">Direcció %1$s</string>
+    <string name="transit_leg_board">Puja a %1$s</string>
+    <string name="transit_leg_alight">Baixa a %1$s</string>
+    <plurals name="transit_leg_stops">
+        <item quantity="one">%d parada</item>
+        <item quantity="many">%d parades</item>
+        <item quantity="other">%d parades</item>
+    </plurals>
+
+    <!-- Honesty and data -->
+    <string name="transit_theoretical_note">Els horaris són teòrics, extrets dels horaris publicats. No inclouen retards, cancel·lacions ni informació en temps real.</string>
+    <string name="transit_valid_range">Horaris vàlids del %1$s al %2$s.</string>
+    <string name="transit_projected_note">Els horaris del metro són del 2025 (no es publiquen dades més noves): els horaris poden diferir.</string>
+    <string name="transit_unverified">Una part d\'aquestes dades no s\'ha pogut comprovar amb el seu calendari.</string>
+    <string name="transit_link_description">Obre %1$s</string>
+
+    <!-- About -->
+    <string name="transit_about_title">Dades de transport públic</string>
+
+    <!-- Maps screen: section -->
+    <string name="transit_maps_title">Transport públic</string>
+    <string name="transit_maps_intro">Horaris per a rutes teòriques. Cada ciutat o regió és una baixada independent, que només es fa quan prems Descarrega; tota la planificació es fa al teu telèfon i no s\'envia cap posició.</string>
+    <string name="transit_maps_none">El catàleg encara no ofereix cap ciutat amb transport públic.</string>
+    <string name="transit_maps_size">Mida de la baixada: %1$s</string>
+    <string name="transit_maps_valid">Vàlid del %1$s al %2$s</string>
+    <string name="transit_maps_expired">Caducat el %1$s: les dades publicades estan desactualitzades</string>
+    <string name="transit_maps_update_available">Hi ha un fitxer més nou disponible</string>
+    <string name="transit_maps_installed">Instal·lat</string>
+    <string name="transit_maps_download">Descarrega</string>
+    <string name="transit_maps_update">Actualitza</string>
+    <string name="transit_maps_delete">Suprimeix</string>
+    <string name="transit_maps_downloading">Descarregant…</string>
+    <string name="transit_fail_offline">El mode fora de línia està activat: no s\'ha descarregat res.</string>
+    <string name="transit_fail_not_allowed">Aquest servidor no està permès per la llista de connexions.</string>
+    <string name="transit_fail_network">La baixada ha fallat. Torna-ho a provar més tard.</string>
+    <string name="transit_fail_integrity">El fitxer no coincidia amb el catàleg i s\'ha descartat.</string>
+    <string name="transit_fail_invalid">El fitxer no és un índex d\'horaris vàlid.</string>
+    <string name="transit_fail_expired">Els horaris publicats ja han caducat.</string>
+    <string name="transit_fail_cancelled">La baixada s\'ha cancel·lat.</string>
+    <!-- Spoken form of a line badge: the mode comes first because short names are shared between modes -->
+    <string name="transit_line_bus">Línia d\'autobús %1$s</string>
+    <string name="transit_line_tram">Línia de tramvia %1$s</string>
+    <string name="transit_line_train">Línia de tren %1$s</string>
+    <string name="transit_line_metro">Línia de metro %1$s</string>
+    <string name="transit_line_ferry">Línia de ferri %1$s</string>
+    <string name="transit_line_other">Línia %1$s</string>
+</resources>

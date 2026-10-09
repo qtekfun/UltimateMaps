@@ -1,5 +1,6 @@
 package com.qtekfun.ultimatemaps.settings
 
+import com.qtekfun.ultimatemaps.voice.voiceLanguagePrefLabel
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.text.BasicText
@@ -83,12 +84,7 @@ fun NavigationSection(env: NavigationSettingsEnv) {
         Card("nav_language_card") {
             BasicText(stringResource(R.string.nav_language_title), style = Mapas.typography.body.copy(color = Mapas.colors.label))
             VoiceLanguagePref.entries.forEach { l ->
-                val label = when (l) {
-                    VoiceLanguagePref.AUTO -> R.string.nav_language_auto
-                    VoiceLanguagePref.ES -> R.string.nav_language_es
-                    VoiceLanguagePref.EN -> R.string.nav_language_en
-                }
-                ChoiceRow(stringResource(label), s.voiceLanguage == l, radio = true, tag = "nav_language_${l.name.lowercase()}") {
+                ChoiceRow(voiceLanguagePrefLabel(l), s.voiceLanguage == l, radio = true, tag = "nav_language_${l.name.lowercase()}") {
                     env.store.update { it.copy(voiceLanguage = l) }
                     env.guide.prepare(l.resolve(env.locale())) // checks that this language has a voice
                 }

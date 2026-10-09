@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Quick mute of the camera and incident alerts (sound and voice) on the navigation screen -->
+    <string name="nav_ui_alerts_mute">Silencia els avisos</string>
+    <string name="nav_ui_alerts_unmute">Reactiva els avisos</string>
+    <string name="nav_ui_alerts_mute_description">Avisos de radars i incidents activats. Toca per silenciar-ne el so i la veu</string>
+    <string name="nav_ui_alerts_unmute_description">Avisos de radars i incidents silenciats. Toca per reactivar-ne el so i la veu</string>
+</resources>

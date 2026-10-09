@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Electric chargers: Settings group (inside the Fuel stations category), map card and attribution -->
+    <string name="ev_group_title">Carregadores elétricos</string>
+    <string name="ev_switch_title">Mostrar carregadores elétricos</string>
+    <string name="ev_switch_body">Mostra no mapa os postos de carregamento do OpenStreetMap. Transfere um pequeno ficheiro de dados do teu servidor de mapas (o mesmo dos mapas); a tua posição nunca é enviada.</string>
+    <string name="ev_sockets_title">Tipos de ficha</string>
+    <string name="ev_sockets_body">Com os quatro selecionados, são mostradas todas as estações, incluindo as sem informação de fichas. Seleciona menos para mostrar só as estações que indicam uma delas.</string>
+    <string name="ev_socket_type2">Tipo 2</string>
+    <string name="ev_socket_schuko">Schuko (tomada doméstica)</string>
+    <string name="ev_socket_type1">Tipo 1</string>
+    <string name="ev_socket_other">Outra ficha</string>
+    <string name="ev_power_title">Potência mínima</string>
+    <string name="ev_power_body">As estações de potência desconhecida ficam ocultas quando se define um mínimo.</string>
+    <string name="ev_power_any">Qualquer</string>
+    <string name="ev_power_22">22 kW ou mais</string>
+    <string name="ev_power_50">50 kW ou mais</string>
+    <string name="ev_power_100">100 kW ou mais</string>
+    <string name="ev_data_title">Dados dos carregadores</string>
+    <string name="ev_data_count">%1$d estações, dados de %2$s</string>
+    <string name="ev_data_never">Ainda não foram transferidos dados dos carregadores.</string>
+    <string name="ev_attribution">Postos de carregamento elétrico do OpenStreetMap, © colaboradores do OpenStreetMap (ODbL).</string>
+
+    <!-- Card of a tapped charger -->
+    <string name="ev_category">Carregador elétrico</string>
+    <string name="ev_card_title_unknown">Posto de carregamento elétrico</string>
+    <string name="ev_card_network">Rede: %1$s</string>
+    <string name="ev_card_capacity">Pontos de carregamento: %1$d</string>
+    <string name="ev_card_sockets">Fichas</string>
+    <string name="ev_card_sockets_unknown">Fichas: não indicadas no OpenStreetMap</string>
+    <string name="ev_card_fee_paid">Tarifa: sim</string>
+    <string name="ev_card_fee_free">Tarifa: gratuito</string>
+    <string name="ev_card_fee_unknown">Tarifa: não indicada</string>
+    <string name="ev_card_hours">Horário: %1$s</string>
+    <string name="ev_card_access_customers">Acesso: apenas clientes</string>
+    <string name="ev_card_access_private">Acesso: privado ou restrito</string>
+    <string name="ev_card_access_public">Acesso: público</string>
+    <string name="ev_card_auth">Iniciar com: %1$s</string>
+    <string name="ev_auth_none">não é preciso conta</string>
+    <string name="ev_auth_app">aplicação</string>
+    <string name="ev_auth_card">cartão de associado</string>
+    <string name="ev_auth_nfc">sem contacto</string>
+    <string name="ev_card_note">Dados da comunidade: não se sabe a disponibilidade, o preço nem o estado de funcionamento. Verifica antes de confiares neles.</string>
+    <string name="ev_card_data_date">Dados de %1$s</string>
+    <string name="ev_card_close">Fechar</string>
+    <string name="ev_go">Ir</string>
+    <string name="ev_add_stop">Adicionar paragem</string>
+
+    <!-- Backup and restore -->
+    <string name="backup_item_chargers">Carregadores elétricos</string>
+    <string name="backup_group_chargers">Carregadores elétricos</string>
+</resources>

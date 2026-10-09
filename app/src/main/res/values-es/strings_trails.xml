@@ -17,7 +17,6 @@
     <string name="trail_category">Ruta</string>
     <string name="trail_card_title_unknown">Ruta sin nombre</string>
     <string name="trail_card_ref">Referencia: %1$s</string>
-    <string name="trail_card_kind">%1$s · %2$s</string>
     <string name="trail_kind_label_hiking">Ruta de senderismo</string>
     <string name="trail_kind_label_cycling">Ruta ciclista</string>
     <string name="trail_kind_label_mtb">Ruta de BTT</string>

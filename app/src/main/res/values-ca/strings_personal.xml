@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Home, Work and parked car -->
+    <string name="quick_home">Casa</string>
+    <string name="quick_work">Feina</string>
+    <string name="quick_park">Aparcament</string>
+    <string name="quick_parked">Cotxe aparcat</string>
+    <string name="quick_sos">SOS</string>
+    <string name="quick_park_again">Marca aquí de nou</string>
+    <string name="quick_park_clear">Esborra el cotxe aparcat</string>
+    <string name="parking_name">Cotxe aparcat</string>
+    <string name="quick_msg_home_set">Casa definida.</string>
+    <string name="quick_msg_work_set">Feina definida.</string>
+    <string name="quick_msg_parking_set">Cotxe aparcat marcat al mapa.</string>
+    <string name="quick_msg_parking_cleared">Cotxe aparcat esborrat.</string>
+    <string name="quick_msg_waiting">Esperant la teva posició…</string>
+    <string name="quick_msg_home_unset">Obre un lloc i toca «Defineix com a Casa».</string>
+    <string name="quick_msg_work_unset">Obre un lloc i toca «Defineix com a Feina».</string>
+    <string name="place_set_home">Defineix com a Casa</string>
+    <string name="place_set_work">Defineix com a Feina</string>
+
+    <!-- Recent searches -->
+    <string name="recent_title">Cerques recents</string>
+    <string name="recent_clear">Esborra</string>
+    <string name="history_title">Historial de cerques</string>
+    <string name="history_switch_title">Conserva les cerques recents</string>
+    <string name="history_switch_body">Recorda el que has cercat només en aquest dispositiu, per tornar-ho a suggerir. En desactivar-ho també s\'esborra.</string>
+    <string name="history_clear">Esborra les cerques recents</string>
+    <string name="history_cleared">Cerques recents esborrades.</string>
+
+    <!-- List customisation -->
+    <string name="list_customize">Personalitza</string>
+    <string name="list_edit_name_hint">Nom</string>
+    <string name="list_edit_emoji_hint">Emoji</string>
+    <string name="list_edit_notes_hint">Notes</string>
+    <string name="list_edit_color">Color</string>
+    <string name="list_edit_color_none">Sense color</string>
+    <string name="list_edit_color_swatch">Color</string>
+    <string name="list_edit_save">Desa</string>
+    <string name="list_edit_cancel">Cancel·la</string>
+
+    <!-- Launcher shortcuts -->
+    <string name="shortcut_search_short">Cerca</string>
+    <string name="shortcut_search_long">Cerca llocs</string>
+    <string name="shortcut_saved_short">Desats</string>
+    <string name="shortcut_saved_long">Llocs desats</string>
+    <string name="shortcut_maps_short">Mapes</string>
+    <string name="shortcut_maps_long">Mapes descarregats</string>
+    <string name="shortcut_emergency_short">Emergència</string>
+    <string name="shortcut_emergency_long">Emergència</string>
+
+    <!-- Emergency screen -->
+    <string name="emergency_title">Emergència</string>
+    <string name="emergency_call">Truca al %1$s</string>
+    <string name="emergency_position_title">La teva posició</string>
+    <string name="emergency_accuracy">Precisió d\'uns %1$d m</string>
+    <string name="emergency_waiting">Esperant una posició…</string>
+    <string name="emergency_no_permission">Cal el permís d\'ubicació per mostrar la teva posició.</string>
+    <string name="emergency_grant">Permet la ubicació</string>
+    <string name="emergency_no_provider">Aquest dispositiu no té proveïdor d\'ubicació.</string>
+    <string name="emergency_share">Comparteix la meva posició</string>
+    <string name="emergency_share_header">La meva posició (emergència):</string>
+    <string name="emergency_dial_failed">No s\'ha trobat cap aplicació de telèfon per fer la trucada.</string>
+    <string name="emergency_privacy_note">El botó de trucada obre el teu marcador; allà premes trucar. La teva posició només es mostra en aquesta pantalla i no es desa, no es registra ni s\'envia, tret que toquis Comparteix i triïs una aplicació.</string>
+</resources>

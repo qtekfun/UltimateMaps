@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Bike-share stations: Settings group (inside the Navigation category), map card, live availability, attribution and backup -->
+    <string name="bike_group_title">Bizikleta partekatuen geltokiak</string>
+    <string name="bike_switch_title">Erakutsi bizikleta partekatuen geltokiak</string>
+    <string name="bike_switch_body">Bartzelonako (Bicing) eta Madrilgo (BiciMAD) bizikleta partekatuen sistemen geltokiak erakusten ditu mapan. Datu-fitxategi txiki bat deskargatzen du zure mapa-zerbitzaritik (mapen berbera); zure kokapena ez da inoiz bidaltzen.</string>
+    <string name="bike_live_title">Erakutsi bizikleten eskuragarritasuna denbora errealean</string>
+    <string name="bike_live_body">Geltoki-fitxa irekita dagoen bitartean, sistema horren datu-jario publikoari galdetzen dio zenbat bizikleta eta toki libre dauden, 30 segundoan behin gehienez. Honek hirugarren baten zerbitzari bat kontaktatzen du (barcelona.publicbikesystem.net edo madrid.publicbikesystem.net), eta horrek zure IP helbidea ikus dezake eta bere sistema kontsultatzen duzula, baina ez zein geltoki. Lehenespenez desaktibatuta.</string>
+    <string name="bike_data_title">Geltokien datuak</string>
+    <string name="bike_data_count">%1$d geltoki, datuak: %2$s</string>
+    <string name="bike_data_never">Oraindik ez da geltokien daturik deskargatu.</string>
+    <string name="bike_attribution_settings">Geltokien datuak: Bicing, Ajuntament de Barcelona (Open Data BCN, CC BY 4.0); BiciMAD, Empresa Municipal de Transportes de Madrid (datos.madrid.es, CC BY 4.0).</string>
+
+    <!-- Card of a tapped station -->
+    <string name="bike_category">Bizikleta partekatuen geltokia</string>
+    <string name="bike_card_title_unknown">Bizikleta partekatuen geltokia</string>
+    <string name="bike_card_capacity">Tokiak: %1$d</string>
+    <string name="bike_card_capacity_unknown">Tokiak: zehaztu gabe</string>
+    <string name="bike_card_availability">%1$d bizikleta, %2$d toki libre (eguneratuta: %3$s)</string>
+    <string name="bike_card_note">Toki kopurua datu-fitxategitik dator. Bizikleta bat eskuragarri dagoen ala ez Ezarpenetan denbora errealeko eskuragarritasuna aktibatzen baduzu bakarrik jakin daiteke.</string>
+    <string name="bike_card_data_date">Datuak: %1$s</string>
+    <string name="bike_card_close">Itxi</string>
+    <string name="bike_go">Ibilbidea geltokira</string>
+    <string name="bike_add_stop">Gehitu geldialdia</string>
+    <string name="conn_purpose_bike">Bizikleten eskuragarritasuna (bizikleta partekatuen sistemak)</string>
+
+    <!-- Backup and restore -->
+    <string name="backup_item_bikeshare">Bizikleta partekatuen geltokiak</string>
+    <string name="backup_item_bikeshare_live">Bizikleten eskuragarritasuna denbora errealean</string>
+    <string name="backup_group_bikeshare">Bizikleta partekatuen geltokiak</string>
+</resources>

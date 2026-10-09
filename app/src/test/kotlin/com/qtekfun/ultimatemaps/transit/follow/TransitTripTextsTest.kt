@@ -148,7 +148,7 @@ class TransitTripTextsTest {
     }
 
     @Test fun stringsExistInBothLanguagesWithTheSameFormatArguments() {
-        fun entries(f: String) = Regex("<(string|plurals) name=\"([^\"]+)\"").findAll(File(f).readText()).map { it.groupValues[2] }.toSet()
+        fun entries(f: String) = Regex("<(string|plurals) name=\"([^\"]+)\"(?![^>]*translatable=\"false\")").findAll(File(f).readText()).map { it.groupValues[2] }.toSet()
         assertEquals(entries("src/main/res/values/strings_transit_follow.xml"), entries("src/main/res/values-es/strings_transit_follow.xml"))
         fun args(f: String) = Regex("<string name=\"([^\"]+)\">([^<]*)</string>").findAll(File(f).readText())
             .associate { it.groupValues[1] to Regex("%\\d\\$[sd]").findAll(it.groupValues[2]).map { m -> m.value }.toSortedSet() }

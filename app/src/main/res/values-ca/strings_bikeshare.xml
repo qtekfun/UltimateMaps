@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Bike-share stations: Settings group (inside the Navigation category), map card, live availability, attribution and backup -->
+    <string name="bike_group_title">Estacions de bicicletes compartides</string>
+    <string name="bike_switch_title">Mostra les estacions de bicicletes compartides</string>
+    <string name="bike_switch_body">Mostra al mapa les estacions dels sistemes de bicicletes compartides de Barcelona (Bicing) i Madrid (BiciMAD). Descarrega un petit fitxer de dades del teu servidor de mapes (el mateix que els mapes); la teva posició no s\'envia mai.</string>
+    <string name="bike_live_title">Mostra la disponibilitat de bicicletes en directe</string>
+    <string name="bike_live_body">Mentre hi ha una fitxa d\'estació oberta, consulta el canal de dades públic d\'aquell sistema per saber quantes bicicletes i places lliures hi ha, com a màxim una vegada cada 30 segons. Això contacta amb un servidor de tercers (barcelona.publicbikesystem.net o madrid.publicbikesystem.net), que pot veure la teva adreça IP i que consultes el seu sistema, però no quina estació. Desactivat per defecte.</string>
+    <string name="bike_data_title">Dades de les estacions</string>
+    <string name="bike_data_count">%1$d estacions, dades del %2$s</string>
+    <string name="bike_data_never">Encara no s\'han descarregat dades de les estacions.</string>
+    <string name="bike_attribution_settings">Dades de les estacions: Bicing, Ajuntament de Barcelona (Open Data BCN, CC BY 4.0); BiciMAD, Empresa Municipal de Transportes de Madrid (datos.madrid.es, CC BY 4.0).</string>
+
+    <!-- Card of a tapped station -->
+    <string name="bike_category">Estació de bicicletes compartides</string>
+    <string name="bike_card_title_unknown">Estació de bicicletes compartides</string>
+    <string name="bike_card_capacity">Places: %1$d</string>
+    <string name="bike_card_capacity_unknown">Places: no especificat</string>
+    <string name="bike_card_availability">%1$d bicicletes, %2$d places lliures (actualitzat %3$s)</string>
+    <string name="bike_card_note">El nombre de places ve del fitxer de dades. Només se sap si hi ha una bicicleta disponible si actives la disponibilitat en directe a la configuració.</string>
+    <string name="bike_card_data_date">Dades del %1$s</string>
+    <string name="bike_card_close">Tanca</string>
+    <string name="bike_go">Ruta a l\'estació</string>
+    <string name="bike_add_stop">Afegeix parada</string>
+    <string name="conn_purpose_bike">Disponibilitat de bicicletes (sistemes de bicicletes compartides)</string>
+
+    <!-- Backup and restore -->
+    <string name="backup_item_bikeshare">Estacions de bicicletes compartides</string>
+    <string name="backup_item_bikeshare_live">Disponibilitat de bicicletes en directe</string>
+    <string name="backup_group_bikeshare">Estacions de bicicletes compartides</string>
+</resources>

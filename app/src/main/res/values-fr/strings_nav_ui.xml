@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Route card buttons -->
+    <string name="nav_ui_start">Démarrer</string>
+    <string name="nav_ui_simulate">Simuler</string>
+    <string name="nav_ui_computing">Calcul de l\'itinéraire guidé…</string>
+    <!-- Navigation screen -->
+    <string name="nav_ui_stop">Arrêter</string>
+    <string name="nav_ui_stop_description">Arrêter la navigation</string>
+    <string name="nav_ui_recenter">Recentrer</string>
+    <string name="nav_ui_then">Ensuite</string>
+    <string name="nav_ui_follow_route">Suivez l\'itinéraire</string>
+    <string name="nav_ui_roundabout_exit">Au rond-point, prenez la sortie %1$d</string>
+    <string name="nav_ui_arrive_at">Arrivée %1$s</string>
+    <string name="nav_ui_phase_off_route">Vous avez quitté l\'itinéraire</string>
+    <string name="nav_ui_phase_no_signal">Signal GPS perdu. Position estimée</string>
+    <string name="nav_ui_phase_in_tunnel">GPS perdu dans un tunnel. Position estimée</string>
+    <string name="nav_ui_phase_stop_reached">Étape atteinte. Continuez vers la destination</string>
+    <string name="nav_ui_limit_description">Limitation de vitesse %1$d</string>
+    <string name="nav_ui_speed_description">Vitesse actuelle %1$d km/h</string>
+    <string name="nav_ui_over_limit">Au-dessus de la limitation de vitesse</string>
+    <string name="nav_ui_lanes_description">Voies</string>
+    <string name="nav_ui_lane_recommended">voie recommandée</string>
+    <string name="nav_ui_lane_other">autre voie</string>
+    <string name="nav_ui_glove">Gants</string>
+    <string name="nav_ui_glove_on_description">Mode gants activé. Touchez pour le désactiver</string>
+    <string name="nav_ui_glove_off_description">Mode gants désactivé. Touchez pour l\'activer</string>
+    <!-- Simulation -->
+    <string name="nav_ui_simulating">Simulation</string>
+    <string name="nav_ui_sim_faster">Plus vite</string>
+    <string name="nav_ui_sim_slower">Plus lentement</string>
+    <!-- 3D view, overview -->
+    <string name="nav_ui_view3d_on_description">Vue 3D activée. Passer à la vue 2D à plat</string>
+    <string name="nav_ui_view2d_on_description">Vue 2D à plat activée. Passer à la vue 3D</string>
+    <string name="nav_ui_overview">Itinéraire</string>
+    <string name="nav_ui_overview_description">Afficher un instant tout le reste de l\'itinéraire</string>
+    <!-- Arrival summary -->
+    <string name="nav_ui_summary_title">Vous êtes arrivé</string>
+    <string name="nav_ui_summary_body">%1$s en %2$s</string>
+    <string name="nav_ui_summary_simulated">Itinéraire simulé. Rien n\'a été enregistré.</string>
+    <string name="nav_ui_exit">Terminé</string>
+    <!-- Resume after the process died -->
+    <string name="nav_ui_resume_title">Navigation interrompue</string>
+    <string name="nav_ui_resume_body">L\'application a été fermée pendant que vous naviguiez. Voulez-vous continuer ?</string>
+    <string name="nav_ui_resume">Reprendre</string>
+    <string name="nav_ui_discard">Abandonner</string>
+    <!-- Icons (accessibility) -->
+    <string name="nav_ui_icon_turn">Prochaine manœuvre : %1$s</string>
+    <string name="nav_ui_mute">Couper le son</string>
+    <string name="nav_ui_unmute">Réactiver le son</string>
+    <string name="nav_ui_mute_description">Voix activée. Touchez pour couper le guidage vocal</string>
+    <string name="nav_ui_unmute_description">Voix coupée. Touchez pour réactiver le guidage vocal</string>
+</resources>

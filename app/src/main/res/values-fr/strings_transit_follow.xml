@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Itinerary card -->
+    <string name="trip_start">Démarrer</string>
+    <string name="trip_start_description">Suivre ce trajet pas à pas</string>
+
+    <!-- Banner: what to do now -->
+    <string name="trip_walk_to">Marcher jusqu\'à %1$s</string>
+    <string name="trip_walk_to_destination">Marcher jusqu\'à votre destination</string>
+    <string name="trip_walk_detail">%1$s · %2$d min</string>
+    <string name="trip_then_board">Puis ligne %1$s à %2$s</string>
+    <string name="trip_board_title">Monter dans la ligne %1$s direction %2$s</string>
+    <string name="trip_board_title_plain">Monter dans la ligne %1$s</string>
+    <string name="trip_wait_detail">Départ à %1$s, dans %2$d min</string>
+    <string name="trip_wait_now">Départ à %1$s, maintenant</string>
+    <string name="trip_wait_passed">Était prévu à %1$s</string>
+    <string name="trip_next_stop">Prochain arrêt : %1$s</string>
+    <plurals name="trip_get_off_in">
+        <item quantity="one">Descendre à %2$s dans %1$d arrêt</item>
+        <item quantity="many">Descendre à %2$s dans %1$d arrêts</item>
+        <item quantity="other">Descendre à %2$s dans %1$d arrêts</item>
+    </plurals>
+    <string name="trip_get_off_next">Descendre au prochain arrêt : %1$s</string>
+    <string name="trip_get_off_detail">Prévu à %1$s</string>
+    <string name="trip_change_title">Changer ici : ligne %1$s direction %2$s</string>
+    <string name="trip_change_title_plain">Changer ici : ligne %1$s</string>
+    <string name="trip_change_detail">Marcher jusqu\'à %1$s · %2$s · %3$d min · départ %4$s</string>
+    <string name="trip_change_detail_here">%1$s · départ %2$s</string>
+    <string name="trip_off_plan_title">Vous êtes hors du plan</string>
+    <string name="trip_off_plan_detail">Planifier un nouveau trajet depuis votre position</string>
+    <string name="trip_arrived_title">Vous êtes arrivé</string>
+
+    <!-- Status strip -->
+    <string name="trip_no_gps">En attente du signal GPS</string>
+    <string name="trip_estimated">Pas de GPS : position estimée d\'après l\'horaire</string>
+    <string name="trip_plan_on">Conforme au plan</string>
+    <string name="trip_plan_on_estimated">Conforme au plan (estimation)</string>
+    <plurals name="trip_plan_behind">
+        <item quantity="one">Environ %d min de retard sur le plan</item>
+        <item quantity="many">Environ %d min de retard sur le plan</item>
+        <item quantity="other">Environ %d min de retard sur le plan</item>
+    </plurals>
+    <plurals name="trip_plan_ahead">
+        <item quantity="one">Environ %d min d\'avance sur le plan</item>
+        <item quantity="many">Environ %d min d\'avance sur le plan</item>
+        <item quantity="other">Environ %d min d\'avance sur le plan</item>
+    </plurals>
+    <string name="trip_connection_risk">Correspondance avec la ligne %1$s en danger</string>
+    <string name="trip_connection_missed">La ligne %1$s est peut-être manquée</string>
+    <string name="trip_replan">Replanifier</string>
+    <string name="trip_replan_description">Planifier un nouveau trajet depuis votre position</string>
+    <string name="trip_replanning">Planification d\'un nouveau trajet…</string>
+    <string name="trip_replan_failed">Aucun nouveau trajet trouvé d\'ici</string>
+
+    <!-- Bottom panel -->
+    <string name="trip_stop">Arrêter le trajet</string>
+    <string name="trip_done">Terminé</string>
+    <string name="trip_stop_description">Arrêter de suivre ce trajet</string>
+    <string name="trip_arrive_at">Arrivée %1$s</string>
+    <string name="trip_scheduled_note">Horaires prévus, sans données en temps réel</string>
+    <string name="trip_stop_passed">passé</string>
+    <string name="trip_stop_next">prochain arrêt</string>
+    <string name="trip_stop_row_description">%1$s, %2$s, prévu à %3$s</string>
+    <string name="trip_stops_description">Arrêts de la ligne actuelle</string>
+
+    <!-- Resume after the app was closed -->
+    <string name="trip_resume_title">Reprendre votre trajet en transports ?</string>
+    <string name="trip_resume">Reprendre</string>
+    <string name="trip_discard">Abandonner</string>
+
+    <!-- Notification -->
+    <string name="trip_channel_name">Trajet en transports</string>
+    <string name="trip_resumed">Trajet en transports</string>
+
+    <!-- Status-bar chip (about 7 characters fit) -->
+    <plurals name="trip_chip_stops">
+        <item quantity="one">%d arrêt</item>
+        <item quantity="many">%d arrêts</item>
+        <item quantity="other">%d arrêts</item>
+    </plurals>
+    <string name="trip_chip_get_off">Descendre</string>
+    <string name="trip_chip_minutes">%d min</string>
+    <string name="trip_chip_no_gps">Pas de GPS</string>
+    <string name="trip_chip_replan">Replanifier</string>
+
+    <!-- Settings > Navigation -->
+    <string name="trip_prompts_title">Consignes du trajet en transports</string>
+    <string name="trip_prompts_body">La façon dont un trajet en transports pas à pas vous indique quand monter, changer et descendre.</string>
+    <string name="trip_prompts_note">La bannière à l\'écran s\'affiche toujours. Le bouton Couper le son de la navigation coupe le son et la voix.</string>
+</resources>

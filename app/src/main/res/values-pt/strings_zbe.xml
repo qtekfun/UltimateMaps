@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Low-emission zones: Settings group (inside the Alerts category), route warning, navigation prompt, backup. The data is OpenStreetMap and says only "zone": nothing here claims a vehicle is allowed or banned. -->
+    <string name="zbe_group_title">Zonas de baixas emissões</string>
+    <string name="zbe_switch_title">Zonas de baixas emissões</string>
+    <string name="zbe_switch_body">Mostra as zonas no mapa, avisa quando uma rota de carro entra numa e alerta uma vez antes de entrares. Transfere um pequeno ficheiro de dados do teu servidor de mapas (o mesmo dos mapas); a tua posição nunca é enviada. Os dados baseiam-se no OpenStreetMap e podem estar incompletos ou desatualizados: aplicam-se as regras oficiais da cidade.</string>
+    <string name="zbe_map_title">Mostrar zonas no mapa</string>
+    <string name="zbe_map_body">Uma área âmbar translúcida com contorno tracejado.</string>
+    <string name="zbe_prompt_title">Avisar antes de entrar numa zona</string>
+    <string name="zbe_data_title">Dados das zonas</string>
+    <string name="zbe_data_count">%1$d zonas, dados de %2$s</string>
+    <string name="zbe_data_never">Ainda não foram transferidos dados das zonas.</string>
+    <string name="zbe_data_notice">Baseado no OpenStreetMap, pode estar incompleto ou desatualizado; aplicam-se as regras oficiais da cidade. A aplicação não sabe quais os veículos afetados.</string>
+
+    <!-- Route summary (car routes) -->
+    <string name="zbe_route_warning">Esta rota entra numa zona de baixas emissões: verifica as regras de acesso da cidade</string>
+    <string name="zbe_route_zones">Zona: %1$s</string>
+    <string name="zbe_route_tagged">Etiquetado no OpenStreetMap: %1$s</string>
+
+    <!-- Navigation prompt -->
+    <string name="zbe_ahead_title">Zona de baixas emissões adiante</string>
+    <string name="zbe_ahead_hint">Verifica as regras de acesso</string>
+    <string name="zbe_ahead_description">%1$s em %2$s. %3$s.</string>
+
+    <!-- Backup and restore -->
+    <string name="backup_item_zbe">Zonas de baixas emissões</string>
+    <string name="backup_group_zbe">Zonas de baixas emissões</string>
+</resources>

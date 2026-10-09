@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Route stops and petrol-station card (RF-15) -->
+    <string name="route_stops_title">Étapes (%1$d sur %2$d)</string>
+    <string name="route_stop_up">Monter %1$s</string>
+    <string name="route_stop_down">Descendre %1$s</string>
+    <string name="route_stop_remove">Retirer %1$s de l\'itinéraire</string>
+    <string name="route_stops_limit">Jusqu\'à %1$d étapes. Retirez-en une pour en ajouter une autre.</string>
+    <string name="route_err_stop">Une étape ne se trouve pas sur une route des cartes téléchargées. Retirez-la ou choisissez-en une autre.</string>
+    <string name="fuel_category">Station-service</string>
+    <string name="fuel_card_close">Fermer</string>
+    <string name="fuel_go">Y aller</string>
+    <string name="fuel_add_stop">Ajouter une étape</string>
+    <string name="fuel_save">Enregistrer</string>
+    <string name="fuel_saved">Enregistrée</string>
+    <string name="fuel_schedule">Horaires : %1$s</string>
+    <string name="fuel_prices_title">Prix</string>
+    <string name="fuel_price_on_map">%1$s (sur la carte)</string>
+    <string name="fuel_updated_now">mis à jour à l\'instant</string>
+    <string name="fuel_updated_min">mis à jour il y a %1$d min</string>
+    <string name="fuel_updated_h">mis à jour il y a %1$d h</string>
+    <string name="fuel_updated_d">mis à jour il y a %1$d j</string>
+    <string name="fuel_updated_unknown">heure de mise à jour inconnue</string>
+    <string name="fuel_stop_duplicate">Cette station est déjà une étape de l\'itinéraire.</string>
+    <string name="fuel_stop_is_destination">Cette station est la destination de l\'itinéraire.</string>
+    <string name="fuel_stop_limit">L\'itinéraire compte déjà %1$d étapes. Retirez-en une d\'abord.</string>
+    <string name="fuel_stop_no_route">Démarrez d\'abord un itinéraire pour ajouter une étape.</string>
+    <string name="fuel_source">Source : ministère de la Transition écologique et du Défi démographique</string>
+    <string name="fuel_price_note">Prix publié par le ministère ; non officiel. Vérifiez-le à la pompe.</string>
+</resources>

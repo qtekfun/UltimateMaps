@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Low-emission zones: Settings group (inside the Alerts category), route warning, navigation prompt, backup. The data is OpenStreetMap and says only "zone": nothing here claims a vehicle is allowed or banned. -->
+    <string name="zbe_group_title">Zones à faibles émissions</string>
+    <string name="zbe_switch_title">Zones à faibles émissions</string>
+    <string name="zbe_switch_body">Affiche les zones sur la carte, avertit lorsqu\'un itinéraire en voiture en traverse une et prévient une fois avant que vous n\'y entriez. Un petit fichier de données est téléchargé depuis votre serveur de cartes (le même que pour les cartes) ; votre position n\'est jamais envoyée. Les données reposent sur OpenStreetMap et peuvent être incomplètes ou périmées : les règles officielles de la ville s\'appliquent.</string>
+    <string name="zbe_map_title">Afficher les zones sur la carte</string>
+    <string name="zbe_map_body">Une zone ambre translucide avec un contour en pointillés.</string>
+    <string name="zbe_prompt_title">Prévenir avant d\'entrer dans une zone</string>
+    <string name="zbe_data_title">Données des zones</string>
+    <string name="zbe_data_count">%1$d zones, données du %2$s</string>
+    <string name="zbe_data_never">Aucune donnée de zones téléchargée pour l\'instant.</string>
+    <string name="zbe_data_notice">Basé sur OpenStreetMap, peut être incomplet ou périmé ; les règles officielles de la ville s\'appliquent. L\'application ne sait pas quels véhicules sont concernés.</string>
+
+    <!-- Route summary (car routes) -->
+    <string name="zbe_route_warning">Cet itinéraire entre dans une zone à faibles émissions : vérifiez les règles d\'accès de la ville</string>
+    <string name="zbe_route_zones">Zone : %1$s</string>
+    <string name="zbe_route_tagged">Balisé dans OpenStreetMap : %1$s</string>
+
+    <!-- Navigation prompt -->
+    <string name="zbe_ahead_title">Zone à faibles émissions en approche</string>
+    <string name="zbe_ahead_hint">Vérifiez les règles d\'accès</string>
+    <string name="zbe_ahead_description">%1$s dans %2$s. %3$s.</string>
+
+    <!-- Backup and restore -->
+    <string name="backup_item_zbe">Zones à faibles émissions</string>
+    <string name="backup_group_zbe">Zones à faibles émissions</string>
+</resources>

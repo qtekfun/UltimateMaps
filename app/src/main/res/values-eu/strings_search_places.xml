@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Search (M2) -->
+    <string name="search_hint">Bilatu lekuak eta helbideak</string>
+    <string name="search_preparing">Lineaz kanpoko bilaketa prestatzen…</string>
+    <string name="search_searching">Bilatzen…</string>
+    <string name="search_no_results">Emaitzarik ez</string>
+    <string name="search_error">Bilaketak huts egin du. Saiatu berriro.</string>
+    <string name="search_no_regions_title">Ez dago eskualderik instalatuta</string>
+    <string name="search_no_regions_body">Deskargatu eskualde bat lineaz kanpo bilatzeko.</string>
+    <string name="tab_search">Bilatu</string>
+    <string name="tab_lists">Zerrendak</string>
+
+    <!-- Place card -->
+    <string name="place_save">Gorde</string>
+    <string name="place_saved">Gordeta</string>
+    <string name="place_route">Ibilbidea</string>
+    <string name="place_share">Partekatu</string>
+    <string name="place_close">Itxi</string>
+
+    <!-- Saved places (M3) -->
+    <string name="list_favorites">Gogokoak</string>
+    <string name="lists_title">Zerrendak</string>
+    <string name="lists_back">Zerrenda guztiak</string>
+    <string name="lists_empty">Oraindik ez dago gordetako lekurik</string>
+    <string name="lists_new_hint">Zerrenda berriaren izena</string>
+    <string name="lists_create">Sortu</string>
+    <plurals name="lists_place_count">
+        <item quantity="one">leku %d</item>
+        <item quantity="other">%d leku</item>
+    </plurals>
+    <string name="list_filter_hint">Bilatu zerrenda honetan</string>
+    <string name="list_empty_filter">Bat datorren lekurik ez</string>
+    <string name="list_sort_distance">Distantziaren arabera</string>
+    <string name="list_sort_name">Izenaren arabera</string>
+    <string name="list_import">Inportatu</string>
+    <string name="list_export_gpx">Esportatu GPX</string>
+    <string name="list_export_kml">Esportatu KML</string>
+    <string name="list_delete">Ezabatu zerrenda</string>
+    <string name="msg_saved">Hemen gordeta: %1$s</string>
+    <string name="msg_removed">Gordetako lekuetatik kenduta</string>
+    <string name="msg_imported">%1$d leku inportatu dira (%2$d bazeuden) eta %3$d ibilbide-grabaketa</string>
+    <string name="msg_import_failed">Ezin izan da fitxategi hori irakurri</string>
+    <string name="msg_exported">%1$d leku esportatu dira</string>
+    <string name="msg_export_failed">Ezin izan da fitxategia idatzi</string>
+</resources>

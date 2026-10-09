@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Itinerary card -->
+    <string name="trip_start">Hasi</string>
+    <string name="trip_start_description">Jarraitu bidaia hau urratsez urrats</string>
+
+    <!-- Banner: what to do now -->
+    <string name="trip_walk_to">Ibili oinez %1$s arte</string>
+    <string name="trip_walk_to_destination">Ibili oinez helmugara arte</string>
+    <string name="trip_walk_detail">%1$s · %2$d min</string>
+    <string name="trip_then_board">Gero %1$s linea, %2$s</string>
+    <string name="trip_board_title">Igo %1$s lineara, norabidea: %2$s</string>
+    <string name="trip_board_title_plain">Igo %1$s lineara</string>
+    <string name="trip_wait_detail">Irteera: %1$s, %2$d min barru</string>
+    <string name="trip_wait_now">Irteera: %1$s, orain</string>
+    <string name="trip_wait_passed">Aurreikusita zegoen: %1$s</string>
+    <string name="trip_next_stop">Hurrengo geldialdia: %1$s</string>
+    <plurals name="trip_get_off_in">
+        <item quantity="one">Jaitsi hemen: %2$s, geldialdi %1$d barru</item>
+        <item quantity="other">Jaitsi hemen: %2$s, %1$d geldialdi barru</item>
+    </plurals>
+    <string name="trip_get_off_next">Jaitsi hurrengo geldialdian: %1$s</string>
+    <string name="trip_get_off_detail">Aurreikusita: %1$s</string>
+    <string name="trip_change_title">Aldatu hemen: %1$s linea, norabidea: %2$s</string>
+    <string name="trip_change_title_plain">Aldatu hemen: %1$s linea</string>
+    <string name="trip_change_detail">Ibili oinez %1$s arte · %2$s · %3$d min · irteera %4$s</string>
+    <string name="trip_change_detail_here">%1$s · irteera %2$s</string>
+    <string name="trip_off_plan_title">Planetik kanpo zaude</string>
+    <string name="trip_off_plan_detail">Planifikatu bidaia berri bat zauden tokitik</string>
+    <string name="trip_arrived_title">Iritsi zara</string>
+
+    <!-- Status strip -->
+    <string name="trip_no_gps">GPS seinalearen zain</string>
+    <string name="trip_estimated">GPSrik ez: kokapena ordutegitik estimatua</string>
+    <string name="trip_plan_on">Planean</string>
+    <string name="trip_plan_on_estimated">Planean (estimazioa)</string>
+    <plurals name="trip_plan_behind">
+        <item quantity="one">Planetik %d min atzera inguru</item>
+        <item quantity="other">Planetik %d min atzera inguru</item>
+    </plurals>
+    <plurals name="trip_plan_ahead">
+        <item quantity="one">Planetik %d min aurrera inguru</item>
+        <item quantity="other">Planetik %d min aurrera inguru</item>
+    </plurals>
+    <string name="trip_connection_risk">%1$s linearekiko konexioa arriskuan</string>
+    <string name="trip_connection_missed">%1$s linea galdu duzu agian</string>
+    <string name="trip_replan">Birplanifikatu</string>
+    <string name="trip_replan_description">Planifikatu bidaia berri bat zauden tokitik</string>
+    <string name="trip_replanning">Bidaia berri bat planifikatzen…</string>
+    <string name="trip_replan_failed">Ez da bidaia berririk aurkitu hemendik</string>
+
+    <!-- Bottom panel -->
+    <string name="trip_stop">Gelditu bidaia</string>
+    <string name="trip_done">Eginda</string>
+    <string name="trip_stop_description">Utzi bidaia hau jarraitzeari</string>
+    <string name="trip_arrive_at">Iristea: %1$s</string>
+    <string name="trip_scheduled_note">Aurreikusitako orduak, denbora errealeko daturik gabe</string>
+    <string name="trip_stop_passed">igaro da</string>
+    <string name="trip_stop_next">hurrengo geldialdia</string>
+    <string name="trip_stop_row_description">%1$s, %2$s, aurreikusita: %3$s</string>
+    <string name="trip_stops_description">Uneko lineako geldialdiak</string>
+
+    <!-- Resume after the app was closed -->
+    <string name="trip_resume_title">Garraio publikoko bidaiarekin jarraitu?</string>
+    <string name="trip_resume">Jarraitu</string>
+    <string name="trip_discard">Baztertu</string>
+
+    <!-- Notification -->
+    <string name="trip_channel_name">Garraio publikoko bidaia</string>
+    <string name="trip_resumed">Garraio publikoko bidaia</string>
+
+    <!-- Status-bar chip (about 7 characters fit) -->
+    <plurals name="trip_chip_stops">
+        <item quantity="one">geldialdi %d</item>
+        <item quantity="other">%d geldialdi</item>
+    </plurals>
+    <string name="trip_chip_get_off">Jaitsi</string>
+    <string name="trip_chip_minutes">%d min</string>
+    <string name="trip_chip_no_gps">GPSrik ez</string>
+    <string name="trip_chip_replan">Birplanifikatu</string>
+
+    <!-- Settings > Navigation -->
+    <string name="trip_prompts_title">Garraio publikoko bidaiaren jakinarazpenak</string>
+    <string name="trip_prompts_body">Urratsez urratseko garraio publikoko bidaia batek noiz igo, aldatu eta jaitsi behar duzun nola esaten dizun.</string>
+    <string name="trip_prompts_note">Pantailako bannerra beti erakusten da. Nabigazioko Mututu aukerak soinua eta ahotsa desaktibatzen ditu.</string>
+</resources>

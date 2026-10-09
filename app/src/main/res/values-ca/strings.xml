@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="network_mode_offline">Mode fora de línia: cap connexió de xarxa</string>
+    <string name="network_connections_title">Connexions possibles</string>
+    <string name="link_short_needs_resolve">Aquest enllaç curt necessita una petició de xarxa a Google per trobar la destinació. La resolució d\'enllaços curts està desactivada, així que no s\'ha enviat res.</string>
+    <string name="link_not_recognized">Aquest enllaç no és un enllaç de mapa reconegut.</string>
+
+    <string name="about_title">Dades del mapa</string>
+    <string name="about_osm_body">Dades del mapa © col·laboradors d\'OpenStreetMap, disponibles amb la llicència Open Database License (ODbL). Estil del mapa base i tessel·les de Protomaps.</string>
+    <string name="close">Tanca</string>
+
+    <string name="map_locate">La meva ubicació</string>
+    <string name="map_compass">Orienta el mapa al nord</string>
+
+    <string name="sheet_description">Tauler d\'informació</string>
+    <string name="sheet_expand">Canvia la mida del tauler</string>
+    <string name="sheet_state_collapsed">Plegat</string>
+    <string name="sheet_state_medium">Meitat</string>
+    <string name="sheet_state_full">Complet</string>
+
+    <string name="search_placeholder">Cerca (aviat)</string>
+    <string name="no_maps_title">Encara no hi ha mapes</string>
+    <string name="no_maps_body">Descarrega una regió des de Mapes per veure el mapa. Fins llavors només es mostra el fons.</string>
+
+    <string name="notice_link_title">Enllaç de mapa</string>
+    <string name="notice_search_title">Cerca: %1$s</string>
+    <string name="notice_search_body">No hi ha mapes fora de línia instal·lats, així que aquest enllaç només ha pogut moure el mapa.</string>
+    <string name="notice_location_title">Ubicació</string>
+    <string name="location_permission_denied">S\'ha denegat el permís d\'ubicació. Activa\'l a la configuració del sistema per veure on ets.</string>
+    <string name="location_unavailable">Aquest dispositiu no té cap proveïdor d\'ubicació disponible.</string>
+
+    <!-- Maps screen (regions) -->
+    <string name="regions_title">Mapes</string>
+    <string name="regions_tab_maps">Mapes</string>
+    <string name="regions_tab_transit">Transport públic</string>
+    <string name="regions_tab_settings">Baixades</string>
+    <string name="regions_tabs_group">Seccions dels mapes</string>
+    <string name="regions_installed_title">Instal·lats</string>
+    <string name="regions_all_title">Tots els mapes</string>
+    <string name="regions_search_hint">Cerca mapes (p. ex. Catalunya)</string>
+    <string name="regions_search_clear">Esborra la cerca</string>
+    <string name="regions_search_empty">Cap mapa coincideix amb «%1$s».</string>
+    <string name="sheet_action_expand">Expandeix el tauler</string>
+    <string name="sheet_action_collapse">Plega el tauler</string>
+    <string name="maps_entry_title">Mapes</string>
+    <string name="maps_entry_body">Descarrega i gestiona regions</string>
+    <string name="offline_title">Mode fora de línia</string>
+    <string name="offline_body">Cap connexió, ni tan sols per a les baixades.</string>
+    <string name="server_title">Servidor de mapes</string>
+    <string name="server_use_default">Utilitza el servidor per defecte</string>
+    <string name="search_restart_needed">Un mapa que has suprimit pot continuar apareixent a la cerca fins que reiniciïs l\'aplicació.</string>
+    <string name="search_link_problem">Alguns mapes descarregats no s\'han pogut posar a disposició de la cerca en aquest emmagatzematge.</string>
+    <string name="server_save">Desa i actualitza</string>
+    <string name="server_invalid">Introdueix una adreça https:// vàlida.</string>
+    <string name="server_none_title">Cap servidor de mapes configurat</string>
+    <string name="server_none_body">Els mapes només es descarreguen d\'un servidor que tu triïs. Introdueix a dalt l\'adreça d\'un catàleg. No es contacta amb res fins que ho facis.</string>
+    <string name="storage_title">Emmagatzematge</string>
+    <string name="storage_internal">Emmagatzematge intern</string>
+    <string name="storage_card">Targeta SD</string>
+    <string name="storage_free">%1$s lliures de %2$s</string>
+    <string name="storage_card_warning">És possible que els mapes en una targeta no es dibuixin en alguns dispositius.</string>
+    <string name="catalog_loading">Carregant el catàleg…</string>
+    <string name="catalog_error_offline">El mode fora de línia està activat, així que no s\'ha sol·licitat el catàleg. Desactiva\'l per actualitzar.</string>
+    <string name="catalog_error_denied">Aquest servidor no està permès per a les baixades.</string>
+    <string name="catalog_error_network">No s\'ha pogut carregar el catàleg. Comprova la connexió.</string>
+    <string name="catalog_error_invalid">El servidor ha retornat un catàleg no vàlid.</string>
+    <string name="catalog_stale">Es mostra la llista desada. No s\'ha pogut actualitzar.</string>
+    <string name="catalog_empty">El catàleg no té cap regió.</string>
+    <string name="region_download">Descarrega</string>
+    <string name="region_pause">Pausa</string>
+    <string name="region_resume">Reprèn</string>
+    <string name="region_cancel">Cancel·la</string>
+    <string name="region_delete">Suprimeix</string>
+    <string name="region_update">Actualitza</string>
+    <string name="region_retry">Torna-ho a provar</string>
+    <string name="region_unavailable">Encara no disponible</string>
+    <string name="region_queued">En espera…</string>
+    <string name="region_progress">%1$d %% de %2$s</string>
+    <string name="region_paused">En pausa al %1$d %%</string>
+    <string name="region_group_summary">%1$d de %2$d instal·lats · %3$s</string>
+    <string name="region_installed_size">Instal·lat · %1$s</string>
+    <string name="region_update_available">Actualització disponible · %1$s</string>
+    <string name="regions_installed_other">Instal·lats (fora de la llista)</string>
+    <string name="fail_offline">El mode fora de línia està activat: no s\'ha descarregat res.</string>
+    <string name="fail_not_allowed">Aquest servidor no està permès per a les baixades.</string>
+    <string name="fail_no_space">No hi ha prou espai: calen %1$s, hi ha %2$s lliures.</string>
+    <string name="fail_network">Baixada interrompuda. Torna-ho a provar per continuar des d\'on s\'havia aturat.</string>
+    <string name="fail_corrupt">El fitxer no ha superat la verificació i s\'ha descartat. Torna-ho a provar.</string>
+    <string name="delete_title">Vols suprimir %1$s?</string>
+    <string name="delete_body">Això allibera %1$s. Podràs tornar-lo a descarregar més endavant.</string>
+    <string name="regions_channel_name">Baixades de mapes</string>
+    <string name="regions_notification_title">Descarregant mapes</string>
+    <string name="regions_notification_progress">%1$d %% de %2$s</string>
+    <string name="regions_notification_waiting">Iniciant…</string>
+    <string name="regions_notification_queued">%1$d més en espera</string>
+    <string name="regions_pause">Pausa</string>
+</resources>

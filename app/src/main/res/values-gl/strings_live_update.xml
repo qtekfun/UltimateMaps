@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="nav_motion_tunnels_title">Usar sensores de movemento nos túneles</string>
+    <string name="nav_motion_tunnels_body">Só mentres o GPS se perde nun túnel coñecido, o acelerómetro distingue un coche parado dun en movemento, para que a estimación da posición non derive nunha cola. Non se garda nin se envía nada.</string>
+    <string name="live_update_title">Amosar a distancia na barra de estado</string>
+    <string name="live_update_body">En Android 16 e posteriores, a distancia ao próximo xiro aparece como un chip na barra de estado mentres navegas. Tamén podes desactivar as notificacións promovidas desta aplicación na configuración do sistema.</string>
+    <!-- Chip texts: the status bar chip fits about 7 characters. -->
+    <string name="live_update_chip_reroute">Nova ruta</string>
+    <string name="live_update_chip_no_signal">Sen GPS</string>
+    <string name="driving_focus_group">Concentración ao volante</string>
+    <string name="driving_focus_hide_bar_title">Agochar a barra de estado durante a navegación</string>
+    <string name="driving_focus_hide_bar_body">As iconas de notificación doutras aplicacións quedan fóra da vista na pantalla de navegación. Desliza cara abaixo desde o bordo superior para ver a barra un momento. Desactivado por defecto.</string>
+    <string name="driving_focus_open_dnd">Abrir a configuración de Non molestar</string>
+    <string name="driving_focus_dnd_note">Android non permite que unha aplicación bloquee as xanelas emerxentes doutras. Para evitalas mentres conduces, configura un modo Non molestar que permita chamadas (Configuración, Non molestar, Persoas, Chamadas: Todos) e actívao cando conduzas.</string>
+</resources>

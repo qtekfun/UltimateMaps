@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Navigation service notification -->
+    <string name="nav_channel_name">Nabigazioa</string>
+    <string name="nav_notification_stop">Gelditu</string>
+    <string name="nav_notification_open">Ireki</string>
+    <string name="nav_in_distance">%1$s: %2$s</string>
+    <string name="nav_onto_street">%1$s, %2$s-(e)ra</string>
+    <string name="nav_exit_badge">Irteera %1$s</string>
+    <string name="nav_exit_toward">%1$s, %2$s aldera</string>
+    <string name="nav_waiting_gps">GPS seinalearen zain…</string>
+    <string name="nav_recalculating">Ibilbidea berriro kalkulatzen…</string>
+    <string name="nav_arrived">Iritsi zara</string>
+    <string name="nav_stop_reached">Geldialdira iritsi zara</string>
+    <string name="nav_problem_permission">Kokapen-baimena kendu da. Eman ezazu nabigatzen jarraitzeko.</string>
+    <string name="nav_problem_gps_off">Kokapena desaktibatuta dago. Aktiba ezazu nabigatzen jarraitzeko.</string>
+    <string name="nav_resumed">Nabigazioa berrhasi da</string>
+    <string name="nav_turn_depart">Hasiera</string>
+    <string name="nav_turn_straight">Jarraitu zuzen</string>
+    <string name="nav_turn_slight_right">Mantendu eskuinera</string>
+    <string name="nav_turn_right">Biratu eskuinera</string>
+    <string name="nav_turn_sharp_right">Bira itxia eskuinera</string>
+    <string name="nav_turn_slight_left">Mantendu ezkerrera</string>
+    <string name="nav_turn_left">Biratu ezkerrera</string>
+    <string name="nav_turn_sharp_left">Bira itxia ezkerrera</string>
+    <string name="nav_turn_u_turn">Egin buelta</string>
+    <string name="nav_turn_roundabout_enter">Sartu biribilgunean</string>
+    <string name="nav_turn_roundabout_leave">Atera biribilgunetik</string>
+    <string name="nav_turn_exit_left">Hartu ezkerreko irteera</string>
+    <string name="nav_turn_exit_right">Hartu eskuineko irteera</string>
+    <string name="nav_turn_merge">Txertatu</string>
+    <string name="nav_turn_arrive">Iritsi helmugara</string>
+    <string name="nav_turn_arrive_left">Helmuga ezkerrean dago</string>
+    <string name="nav_turn_arrive_right">Helmuga eskuinean dago</string>
+    <!-- Failed routes (policy in RouteFailurePolicy) -->
+    <string name="nav_route_err_no_regions">Ez dago eskualderik instalatuta. Deskargatu eskualde bat ibilbideak lineaz kanpo kalkulatzeko.</string>
+    <string name="nav_route_err_need_maps">Mapak falta dira ibilbide honetarako. Deskargatu itzazu Mapak atalean eta saiatu berriro.</string>
+    <string name="nav_route_err_need_maps_named">Mapak falta dira ibilbide honetarako: %1$s. Deskargatu itzazu Mapak atalean eta saiatu berriro.</string>
+    <string name="nav_route_err_start">Hasiera ez dago deskargatutako mapetako errepide batean. Aukeratu beste abiapuntu bat.</string>
+    <string name="nav_route_err_end">Helmuga ez dago deskargatutako mapetako errepide batean.</string>
+    <string name="nav_route_err_stop">Geldialdietako bat ez dago deskargatutako mapetako errepide batean. Mugitu edo kendu.</string>
+    <string name="nav_route_err_not_found">Ez da ibilbiderik aurkitu aukera hauekin. Saiatu beste profil batekin, saihesteko beste aukera batzuekin edo beste puntu batzuekin.</string>
+    <string name="nav_route_err_timeout">Ibilbidea kalkulatzeak denbora gehiegi hartu du. Saiatu berriro edo aukeratu puntu hurbilago bat.</string>
+    <string name="nav_route_err_core">Ibilbide-motorrak arazo bat izan du eta berrabiarazi da. Saiatu berriro.</string>
+    <string name="nav_route_err_core_unavailable">Ibilbide-motorrak huts egiten jarraitzen du. Saiatu berriro une batean.</string>
+    <string name="nav_route_err_internal">Ezin izan da ibilbidea kalkulatu.</string>
+</resources>

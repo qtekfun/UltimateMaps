@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="nav_motion_tunnels_title">Utilitza els sensors de moviment als túnels</string>
+    <string name="nav_motion_tunnels_body">Només mentre el GPS es perd en un túnel conegut, l\'acceleròmetre distingeix un cotxe aturat d\'un en moviment, perquè l\'estimació de la posició no es desviï en una cua. No es desa ni s\'envia res.</string>
+    <string name="live_update_title">Mostra la distància a la barra d\'estat</string>
+    <string name="live_update_body">A Android 16 i posteriors, la distància al proper gir apareix com a xip a la barra d\'estat mentre navegues. També pots desactivar les notificacions destacades d\'aquesta aplicació a la configuració del sistema.</string>
+    <!-- Chip texts: the status bar chip fits about 7 characters. -->
+    <string name="live_update_chip_reroute">Nova ruta</string>
+    <string name="live_update_chip_no_signal">Sense GPS</string>
+    <string name="driving_focus_group">Concentració en la conducció</string>
+    <string name="driving_focus_hide_bar_title">Amaga la barra d\'estat durant la navegació</string>
+    <string name="driving_focus_hide_bar_body">Les icones de notificació d\'altres aplicacions queden fora de vista a la pantalla de navegació. Llisca cap avall des de la vora superior per veure la barra un moment. Desactivat per defecte.</string>
+    <string name="driving_focus_open_dnd">Obre la configuració de No molestar</string>
+    <string name="driving_focus_dnd_note">Android no permet que una aplicació bloquegi les finestres emergents d\'altres aplicacions. Per evitar-les mentre condueixes, configura un mode No molestar que permeti trucades (Configuració, No molestar, Persones, Trucades: Tothom) i activa\'l quan condueixis.</string>
+</resources>

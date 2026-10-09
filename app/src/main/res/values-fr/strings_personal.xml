@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Home, Work and parked car -->
+    <string name="quick_home">Domicile</string>
+    <string name="quick_work">Travail</string>
+    <string name="quick_park">Parking</string>
+    <string name="quick_parked">Voiture garée</string>
+    <string name="quick_sos">SOS</string>
+    <string name="quick_park_again">Marquer ici de nouveau</string>
+    <string name="quick_park_clear">Effacer la voiture garée</string>
+    <string name="parking_name">Voiture garée</string>
+    <string name="quick_msg_home_set">Domicile défini.</string>
+    <string name="quick_msg_work_set">Travail défini.</string>
+    <string name="quick_msg_parking_set">Voiture garée marquée sur la carte.</string>
+    <string name="quick_msg_parking_cleared">Voiture garée effacée.</string>
+    <string name="quick_msg_waiting">En attente de votre position…</string>
+    <string name="quick_msg_home_unset">Ouvrez un lieu et touchez « Définir comme domicile ».</string>
+    <string name="quick_msg_work_unset">Ouvrez un lieu et touchez « Définir comme travail ».</string>
+    <string name="place_set_home">Définir comme domicile</string>
+    <string name="place_set_work">Définir comme travail</string>
+
+    <!-- Recent searches -->
+    <string name="recent_title">Recherches récentes</string>
+    <string name="recent_clear">Effacer</string>
+    <string name="history_title">Historique de recherche</string>
+    <string name="history_switch_title">Conserver les recherches récentes</string>
+    <string name="history_switch_body">Mémorise vos recherches uniquement sur cet appareil, pour vous les suggérer de nouveau. La désactivation les supprime aussi.</string>
+    <string name="history_clear">Effacer les recherches récentes</string>
+    <string name="history_cleared">Recherches récentes effacées.</string>
+
+    <!-- List customisation -->
+    <string name="list_customize">Personnaliser</string>
+    <string name="list_edit_name_hint">Nom</string>
+    <string name="list_edit_emoji_hint">Émoji</string>
+    <string name="list_edit_notes_hint">Notes</string>
+    <string name="list_edit_color">Couleur</string>
+    <string name="list_edit_color_none">Aucune couleur</string>
+    <string name="list_edit_color_swatch">Couleur</string>
+    <string name="list_edit_save">Enregistrer</string>
+    <string name="list_edit_cancel">Annuler</string>
+
+    <!-- Launcher shortcuts -->
+    <string name="shortcut_search_short">Recherche</string>
+    <string name="shortcut_search_long">Rechercher des lieux</string>
+    <string name="shortcut_saved_short">Enregistrés</string>
+    <string name="shortcut_saved_long">Lieux enregistrés</string>
+    <string name="shortcut_maps_short">Cartes</string>
+    <string name="shortcut_maps_long">Cartes téléchargées</string>
+    <string name="shortcut_emergency_short">Urgence</string>
+    <string name="shortcut_emergency_long">Urgence</string>
+
+    <!-- Emergency screen -->
+    <string name="emergency_title">Urgence</string>
+    <string name="emergency_call">Appeler le %1$s</string>
+    <string name="emergency_position_title">Votre position</string>
+    <string name="emergency_accuracy">Précision d\'environ %1$d m</string>
+    <string name="emergency_waiting">En attente d\'une position…</string>
+    <string name="emergency_no_permission">L\'autorisation de localisation est nécessaire pour afficher votre position.</string>
+    <string name="emergency_grant">Autoriser la localisation</string>
+    <string name="emergency_no_provider">Cet appareil n\'a aucun fournisseur de localisation.</string>
+    <string name="emergency_share">Partager ma position</string>
+    <string name="emergency_share_header">Ma position (urgence) :</string>
+    <string name="emergency_dial_failed">Aucune application de téléphone n\'a été trouvée pour passer l\'appel.</string>
+    <string name="emergency_privacy_note">Le bouton d\'appel ouvre votre composeur ; vous appuyez sur appeler à cet endroit. Votre position n\'est affichée que sur cet écran et n\'est ni stockée, ni consignée, ni envoyée, sauf si vous touchez Partager et choisissez une application.</string>
+</resources>

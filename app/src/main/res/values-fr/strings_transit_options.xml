@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Mode chips of the public-transport route panel -->
+    <string name="transit_mode_bus">Bus</string>
+    <string name="transit_mode_metro">Métro</string>
+    <string name="transit_mode_tram">Tramway</string>
+    <string name="transit_mode_train">Train</string>
+    <string name="transit_mode_ferry">Ferry</string>
+    <string name="transit_mode_other">Autre</string>
+    <string name="transit_modes_reset">Réinitialiser</string>
+    <string name="transit_err_no_route_modes">Aucun itinéraire avec les transports sélectionnés</string>
+    <string name="transit_note_walk_as_fast">La marche est à peu près aussi rapide</string>
+    <string name="transit_note_less_walking">Moins de marche</string>
+    <string name="transit_note_fewer_changes">Moins de changements</string>
+    <string name="transit_note_walk_the_rest">Finir à pied</string>
+    <string name="transit_note_long_walk_to_station">Marche plus longue jusqu\'à la gare</string>
+
+    <!-- Settings: public-transport planning -->
+    <string name="transit_plan_title">Planification des transports en commun</string>
+    <string name="transit_plan_minutes">%1$d min</string>
+    <string name="transit_plan_walk_title">Afficher la marche quand elle dure moins de</string>
+    <string name="transit_plan_walk_body">L\'option à pied est toujours listée à côté des options en transports en commun lorsque la marche dure moins que cela.</string>
+    <string name="transit_plan_saving_title">Préférer la marche si les transports font gagner moins de</string>
+    <string name="transit_plan_saving_body" formatted="false">Une option en transports en commun qui fait gagner moins de temps que cela (ou moins de 20 % du trajet à pied) est écartée lorsque la marche est listée.</string>
+    <string name="transit_plan_maxwalk_title">Marche maximale par trajet</string>
+    <string name="transit_plan_maxwalk_body">Les options en transports en commun qui exigent au total plus de marche que cela sont écartées.</string>
+    <string name="transit_plan_maxwalk_none">Sans limite</string>
+</resources>

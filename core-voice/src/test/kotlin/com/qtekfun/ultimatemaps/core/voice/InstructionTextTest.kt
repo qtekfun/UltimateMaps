@@ -113,7 +113,7 @@ class InstructionTextTest {
     }
 
     @Test fun nowPromptsOfEveryTurnTypeStartWithNowExceptRoundaboutsAndDeparture() {
-        for (lang in VoiceLanguage.entries) for (type in TurnType.entries) {
+        for (lang in listOf(es, en)) for (type in TurnType.entries) { // the other languages: VoicePacksTest
             val text = say(type, AnnouncementKind.NOW, 10, "X", exit = 1, lang = lang)
             val now = if (lang == es) "Ahora, " else "Now, "
             val noNow = type == TurnType.DEPART || type == TurnType.ROUNDABOUT_ENTER || type.name.startsWith("ARRIVE")
@@ -276,7 +276,8 @@ class InstructionTextTest {
         val french = java.util.Locale.FRANCE
         assertEquals(es, VoiceLanguagePref.AUTO.resolve(spain))
         assertEquals(en, VoiceLanguagePref.AUTO.resolve(java.util.Locale.US))
-        assertEquals(en, VoiceLanguagePref.AUTO.resolve(french), "languages without voice prompts fall back to English")
+        assertEquals(VoiceLanguage.FR, VoiceLanguagePref.AUTO.resolve(french))
+        assertEquals(en, VoiceLanguagePref.AUTO.resolve(java.util.Locale.forLanguageTag("nl-NL")), "languages without voice prompts fall back to English")
         assertEquals(en, VoiceLanguagePref.EN.resolve(spain))
         assertEquals(es, VoiceLanguagePref.ES.resolve(french))
     }

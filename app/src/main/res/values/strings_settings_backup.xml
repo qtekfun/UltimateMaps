@@ -23,7 +23,7 @@
     <string name="backup_confirm_title">Import settings?</string>
     <string name="backup_confirm_body">Settings that will be replaced with the values in the file: %1$d.</string>
     <string name="backup_confirm_nothing">The file matches your current settings. Nothing will change.</string>
-    <string name="backup_confirm_group">%1$s: %2$d</string>
+    <string name="backup_confirm_group" translatable="false">%1$s: %2$d</string>
     <string name="backup_confirm_consent">These were on in the file. They are NOT turned on: you will have to accept their notice again.</string>
     <string name="backup_confirm_regions">Installed maps listed in the file: %1$d. Nothing is downloaded now; the Maps screen will offer it.</string>
     <string name="backup_confirm_skipped">Entries in the file that cannot be used and will be skipped: %1$d.</string>

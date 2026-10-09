@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="network_mode_offline">Modalità offline: nessuna connessione di rete</string>
+    <string name="network_connections_title">Connessioni possibili</string>
+    <string name="link_short_needs_resolve">Questo link breve richiede una richiesta di rete a Google per trovare la destinazione. La risoluzione dei link brevi è disattivata, quindi non è stato inviato nulla.</string>
+    <string name="link_not_recognized">Questo link non è un link di mappa riconosciuto.</string>
+
+    <string name="about_title">Dati della mappa</string>
+    <string name="about_osm_body">Dati della mappa © collaboratori di OpenStreetMap, disponibili con licenza Open Database License (ODbL). Stile della mappa di base e tile di Protomaps.</string>
+    <string name="close">Chiudi</string>
+
+    <string name="map_locate">La mia posizione</string>
+    <string name="map_compass">Riorienta la mappa a nord</string>
+
+    <string name="sheet_description">Pannello informazioni</string>
+    <string name="sheet_expand">Cambia dimensione del pannello</string>
+    <string name="sheet_state_collapsed">Compresso</string>
+    <string name="sheet_state_medium">Metà</string>
+    <string name="sheet_state_full">Completo</string>
+
+    <string name="search_placeholder">Cerca (prossimamente)</string>
+    <string name="no_maps_title">Ancora nessuna mappa</string>
+    <string name="no_maps_body">Scarica una regione da Mappe per vedere la mappa. Fino ad allora viene mostrato solo lo sfondo.</string>
+
+    <string name="notice_link_title">Link di mappa</string>
+    <string name="notice_search_title">Ricerca: %1$s</string>
+    <string name="notice_search_body">Non sono installate mappe offline, quindi questo link ha potuto solo spostare la mappa.</string>
+    <string name="notice_location_title">Posizione</string>
+    <string name="location_permission_denied">Il permesso di posizione è stato negato. Attivalo nelle impostazioni di sistema per vedere dove ti trovi.</string>
+    <string name="location_unavailable">Su questo dispositivo non è disponibile alcun provider di posizione.</string>
+
+    <!-- Maps screen (regions) -->
+    <string name="regions_title">Mappe</string>
+    <string name="regions_tab_maps">Mappe</string>
+    <string name="regions_tab_transit">Trasporto pubblico</string>
+    <string name="regions_tab_settings">Download</string>
+    <string name="regions_tabs_group">Sezioni delle mappe</string>
+    <string name="regions_installed_title">Installate</string>
+    <string name="regions_all_title">Tutte le mappe</string>
+    <string name="regions_search_hint">Cerca mappe (es. Catalogna)</string>
+    <string name="regions_search_clear">Cancella ricerca</string>
+    <string name="regions_search_empty">Nessuna mappa corrisponde a “%1$s”.</string>
+    <string name="sheet_action_expand">Espandi pannello</string>
+    <string name="sheet_action_collapse">Comprimi pannello</string>
+    <string name="maps_entry_title">Mappe</string>
+    <string name="maps_entry_body">Scarica e gestisci le regioni</string>
+    <string name="offline_title">Modalità offline</string>
+    <string name="offline_body">Nessuna connessione, nemmeno per i download.</string>
+    <string name="server_title">Server delle mappe</string>
+    <string name="server_use_default">Usa il server predefinito</string>
+    <string name="search_restart_needed">Una mappa eliminata può continuare ad apparire nella ricerca fino al riavvio dell\'app.</string>
+    <string name="search_link_problem">Alcune mappe scaricate non hanno potuto essere rese disponibili alla ricerca su questa memoria.</string>
+    <string name="server_save">Salva e aggiorna</string>
+    <string name="server_invalid">Inserisci un indirizzo https:// valido.</string>
+    <string name="server_none_title">Nessun server delle mappe configurato</string>
+    <string name="server_none_body">Le mappe vengono scaricate solo da un server di tua scelta. Inserisci qui sopra l\'indirizzo di un catalogo. Non viene contattato nulla finché non lo fai.</string>
+    <string name="storage_title">Archiviazione</string>
+    <string name="storage_internal">Memoria interna</string>
+    <string name="storage_card">Scheda SD</string>
+    <string name="storage_free">%1$s liberi su %2$s</string>
+    <string name="storage_card_warning">Le mappe su una scheda potrebbero non essere disegnate su alcuni dispositivi.</string>
+    <string name="catalog_loading">Caricamento del catalogo…</string>
+    <string name="catalog_error_offline">La modalità offline è attiva, quindi il catalogo non è stato richiesto. Disattivala per aggiornare.</string>
+    <string name="catalog_error_denied">Questo server non è consentito per i download.</string>
+    <string name="catalog_error_network">Impossibile caricare il catalogo. Controlla la connessione.</string>
+    <string name="catalog_error_invalid">Il server ha restituito un catalogo non valido.</string>
+    <string name="catalog_stale">Viene mostrato l\'elenco salvato. Non è stato possibile aggiornarlo.</string>
+    <string name="catalog_empty">Il catalogo non contiene regioni.</string>
+    <string name="region_download">Scarica</string>
+    <string name="region_pause">Pausa</string>
+    <string name="region_resume">Riprendi</string>
+    <string name="region_cancel">Annulla</string>
+    <string name="region_delete">Elimina</string>
+    <string name="region_update">Aggiorna</string>
+    <string name="region_retry">Riprova</string>
+    <string name="region_unavailable">Non ancora disponibile</string>
+    <string name="region_queued">In attesa…</string>
+    <string name="region_progress">%1$d %% di %2$s</string>
+    <string name="region_paused">In pausa al %1$d %%</string>
+    <string name="region_group_summary">%1$d di %2$d installate · %3$s</string>
+    <string name="region_installed_size">Installata · %1$s</string>
+    <string name="region_update_available">Aggiornamento disponibile · %1$s</string>
+    <string name="regions_installed_other">Installate (non nell\'elenco)</string>
+    <string name="fail_offline">La modalità offline è attiva: non è stato scaricato nulla.</string>
+    <string name="fail_not_allowed">Questo server non è consentito per i download.</string>
+    <string name="fail_no_space">Spazio insufficiente: servono %1$s, liberi %2$s.</string>
+    <string name="fail_network">Download interrotto. Riprova per continuare da dove si era fermato.</string>
+    <string name="fail_corrupt">La verifica del file è fallita e il file è stato scartato. Riprova.</string>
+    <string name="delete_title">Eliminare %1$s?</string>
+    <string name="delete_body">Questo libera %1$s. Potrai scaricarla di nuovo più tardi.</string>
+    <string name="regions_channel_name">Download delle mappe</string>
+    <string name="regions_notification_title">Download delle mappe</string>
+    <string name="regions_notification_progress">%1$d %% di %2$s</string>
+    <string name="regions_notification_waiting">Avvio…</string>
+    <string name="regions_notification_queued">%1$d altri in attesa</string>
+    <string name="regions_pause">Pausa</string>
+</resources>

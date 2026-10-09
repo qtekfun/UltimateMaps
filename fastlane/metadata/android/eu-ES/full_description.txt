@@ -1,0 +1,14 @@
+UltimateMaps lineaz kanpoko mapa-aplikazio pribatua da. Mapa, bilaketa eta ibilbideak zure telefonoan kalkulatzen dira: denbora errealeko trafikorik gabe, konturik gabe, iragarkirik gabe, analitikarik gabe eta telemetriarik gabe. Google Play Services gabe funtzionatzen du.
+
+Hau MVP baten bertsio hautagaia da, ez amaitutako aplikazioa. Gaur egun funtzionatzen duena:
+
+• Lineaz kanpoko mapa bektoriala (MapLibre + PMTiles), gai argiarekin eta ilunarekin.
+• Eskualdeen deskarga Mapak pantailatik: berrekin daiteke eta SHA-256-rekin egiaztatzen da. Sarerik gabeko modu batek aplikazioaren konexio guztiak blokeatzen ditu.
+• Lekuen eta helbideen bilaketa lineaz kanpo, CoMaps motorrarekin.
+• Ibilbidearen aurrebista autoz, oinez edo bizikletaz (oraindik biraz birako gidaritzarik gabe).
+• Gordetako lekuak eta zerrendak, GPX eta KML inportazio eta esportazioarekin.
+• Google Maps, Apple Maps, Waze eta geo: estekak irekitzen ditu.
+
+Oraindik ez dago: biraz birako ahots-nabigazioa, erreien gidaritza eta abiadura-mugak, motorrerako profila eta bihurguneko ibilbideak, ibilbide-grabaketa, Nextcloud sinkronizazioa, Google Takeout inportazioa, Android Auto.
+
+Oraingoz Espainia bakarrik dago eskuragarri. Mapa-datuak OpenStreetMap-etik datoz (© OpenStreetMap-eko laguntzaileak, ODbL) eta zuk eskatzean bakarrik deskargatzen dira. Software librea, GPL-3.0-or-later.

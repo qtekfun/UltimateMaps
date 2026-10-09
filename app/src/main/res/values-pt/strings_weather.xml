@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Weather alerts (AEMET): Settings group (inside the Alerts category), map chip, detail card, route summary, backup -->
+    <string name="weather_group_title">Alertas meteorológicos (AEMET)</string>
+    <string name="weather_switch_title">Alertas meteorológicos (AEMET)</string>
+    <string name="weather_switch_body">Mostra no mapa e nas rotas os avisos meteorológicos laranja e vermelhos do serviço meteorológico de Espanha (AEMET). Pergunta ao servidor da AEMET (opendata.aemet.es) pelo seu pacote nacional de avisos, no máximo a cada 15 minutos, e compara-o com a tua posição no telemóvel: nenhuma posição nem área é alguma vez enviada. Precisa da tua própria chave de API gratuita da AEMET, que te identifica perante a AEMET. Desativado por predefinição.</string>
+    <string name="weather_honesty">Um aviso é informação, não um conselho. Os dados podem chegar tarde ou incompletos: consulta a AEMET (aemet.es) para o texto oficial.</string>
+    <string name="weather_key_title">Chave de API</string>
+    <string name="weather_key_hint">Cola a tua chave de API da AEMET</string>
+    <string name="weather_key_saved">Há uma chave guardada neste telemóvel.</string>
+    <string name="weather_key_none">Nenhuma chave guardada. Os alertas meteorológicos ficam inativos até adicionares uma.</string>
+    <string name="weather_key_privacy">A chave é guardada cifrada no Android Keystore, nunca é escrita em registos e nunca é incluída em cópias de segurança nem em ficheiros de definições. Identifica-te perante a AEMET: a AEMET (e a tua rede) pode ver, a partir do teu endereço IP, que esta chave pede avisos.</string>
+    <string name="weather_key_save">Guardar chave</string>
+    <string name="weather_key_remove">Remover chave</string>
+    <string name="weather_key_invalid">Isso não parece uma chave de API da AEMET. Cola-a novamente, sem texto adicional.</string>
+    <string name="weather_key_help">Como obter uma chave</string>
+    <string name="weather_key_help_body">A AEMET dá uma chave gratuita a quem a pedir com um endereço de e-mail (abre no teu navegador).</string>
+    <string name="weather_yellow_title">Mostrar avisos amarelos</string>
+    <string name="weather_yellow_body">Os avisos amarelos só são listados nos detalhes dos avisos no centro do mapa. Nunca há um banner para eles.</string>
+    <string name="weather_check_now">Verificar agora</string>
+    <string name="weather_checking">A verificar…</string>
+    <string name="weather_status_never">Ainda não verificado.</string>
+    <string name="weather_status_ok">Verificado às %1$s.</string>
+    <string name="weather_status_too_soon">Verificado há instantes. A AEMET é consultada no máximo a cada 15 minutos.</string>
+    <string name="weather_status_fresh">Os avisos são recentes. São renovados no máximo a cada 30 minutos.</string>
+    <string name="weather_status_rejected">A AEMET não aceitou esta chave. Verifica-a ou pede uma nova.</string>
+    <string name="weather_status_failed">Não foi possível obter os avisos da AEMET. Nada foi alterado.</string>
+    <string name="weather_attribution">Fonte: AEMET</string>
+    <string name="conn_purpose_weather">Avisos meteorológicos (AEMET)</string>
+
+    <!-- Level names (used mid-sentence) -->
+    <string name="weather_level_yellow">Amarelo</string>
+    <string name="weather_level_orange">Laranja</string>
+    <string name="weather_level_red">Vermelho</string>
+
+    <!-- One warning in a line: level, event, time -->
+    <string name="weather_line_until">Aviso %1$s: %2$s até %3$s (AEMET)</string>
+    <string name="weather_line_from">Aviso %1$s: %2$s a partir de %3$s (AEMET)</string>
+    <string name="weather_line_open">Aviso %1$s: %2$s (AEMET)</string>
+    <string name="weather_chip_description">Aviso meteorológico. Toca para ver detalhes.</string>
+
+    <!-- Detail card -->
+    <string name="weather_card_title">Avisos meteorológicos</string>
+    <string name="weather_card_area">Zona: %1$s</string>
+    <string name="weather_card_valid">Válido %1$s</string>
+    <string name="weather_card_valid_range">de %1$s até %2$s</string>
+    <string name="weather_card_valid_until">até %1$s</string>
+    <string name="weather_card_valid_from">a partir de %1$s</string>
+    <string name="weather_card_instruction">AEMET: %1$s</string>
+    <string name="weather_card_issued">Emitido %1$s</string>
+    <string name="weather_card_close">Fechar</string>
+    <string name="weather_card_empty">Sem avisos para este local.</string>
+
+    <!-- Route summary -->
+    <string name="weather_route_title">Avisos meteorológicos nesta rota</string>
+
+    <!-- Backup and restore -->
+    <string name="backup_item_weather">Alertas meteorológicos (AEMET)</string>
+    <string name="backup_item_weather_yellow">Mostrar avisos amarelos</string>
+    <string name="backup_group_weather">Alertas meteorológicos</string>
+</resources>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Quick mute of the camera and incident alerts (sound and voice) on the navigation screen -->
+    <string name="nav_ui_alerts_mute">Warnungen stummschalten</string>
+    <string name="nav_ui_alerts_unmute">Warnungen einschalten</string>
+    <string name="nav_ui_alerts_mute_description">Radar- und Störungswarnungen sind an. Tippen, um Ton und Sprache stummzuschalten</string>
+    <string name="nav_ui_alerts_unmute_description">Radar- und Störungswarnungen sind stummgeschaltet. Tippen, um Ton und Sprache wieder einzuschalten</string>
+</resources>

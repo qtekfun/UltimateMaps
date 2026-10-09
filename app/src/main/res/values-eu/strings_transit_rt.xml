@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Settings: opt-in switch -->
+    <string name="transit_rt_title">Cercanías denbora errealean</string>
+    <string name="transit_rt_body">Renferen zerbitzariari trenen atzerapenak galdetzen dizkio garraio publikoa erabiltzen duzun bitartean. Zure kokapena ez da inoiz bidaltzen; Renfek zure IP helbidea ikusten du.</string>
+    <string name="transit_rt_source">Datuak: Renfe (CC BY 4.0), data.renfe.com</string>
+
+    <!-- Labels and statuses -->
+    <string name="transit_rt_label">Denbora erreala (Renfe)</string>
+    <plurals name="transit_rt_delayed">
+        <item quantity="one">%d min atzeratuta</item>
+        <item quantity="other">%d min atzeratuta</item>
+    </plurals>
+    <plurals name="transit_rt_early">
+        <item quantity="one">%d min aurreratuta</item>
+        <item quantity="other">%d min aurreratuta</item>
+    </plurals>
+    <string name="transit_rt_on_time">Orduan</string>
+    <string name="transit_rt_cancelled">Bertan behera</string>
+    <string name="transit_rt_alert">Abisua: %1$s</string>
+    <string name="transit_rt_skips">Ez da gelditzen hemen: %1$s</string>
+    <string name="transit_rt_note">Orduak teorikoak dira, argitaratutako ordutegietatik hartuak. “Denbora erreala (Renfe)” markatutako tarteek Renfek jakinarazitako atzerapenak ere barne hartzen dituzte; gainerako tarteek ez dute denbora errealeko informaziorik.</string>
+
+    <!-- Backup restore list and connection list -->
+    <string name="backup_item_cercanias_rt">Cercanías denbora errealean</string>
+    <string name="conn_purpose_transit_rt">Trenen atzerapenak (Renfe)</string>
+</resources>

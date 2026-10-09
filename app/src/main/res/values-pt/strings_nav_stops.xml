@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Adding a stop to the trip in progress -->
+    <string name="nav_stop_adding">A adicionar paragem…</string>
+    <string name="nav_stop_no_route">Não foi encontrada rota por esta paragem. A tua viagem continua como antes.</string>
+    <string name="nav_stop_limit">A viagem já tem %1$d paragens pela frente. Alcança uma primeiro.</string>
+    <string name="nav_stop_duplicate">Este local já é uma paragem da viagem.</string>
+    <string name="nav_stop_is_destination">Este local é o destino da viagem.</string>
+    <string name="nav_stop_busy">Outra paragem ainda está a ser adicionada. Aguarda um momento.</string>
+    <string name="nav_stop_not_navigating">A viagem terminou, por isso a paragem não foi adicionada.</string>
+</resources>

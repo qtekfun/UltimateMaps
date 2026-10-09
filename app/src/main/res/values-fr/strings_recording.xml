@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Track recording -->
+    <string name="recording_title">Enregistrement de traces</string>
+    <string name="recording_switch_title">Autoriser l\'enregistrement de traces</string>
+    <string name="recording_switch_body">Ajoute un bouton Démarrer l\'enregistrement à la liste des traces. Le trajet est enregistré comme une trace sur cet appareil uniquement et rien n\'est envoyé. Les points sont conservés tant que l\'application est ouverte ou pendant que vous naviguez.</string>
+    <string name="recording_delete_all">Supprimer les traces enregistrées</string>
+    <string name="recording_deleted">Traces enregistrées supprimées.</string>
+    <string name="recording_idle">Pas d\'enregistrement</string>
+    <string name="recording_start">Démarrer l\'enregistrement</string>
+    <string name="recording_stop">Arrêter et enregistrer</string>
+    <string name="recording_status_on">Enregistrement · %1$d points · %2$s</string>
+    <string name="recording_status_paused">En pause, vous êtes à l\'arrêt · %1$d points · %2$s</string>
+    <string name="recording_note">L\'enregistrement se poursuit tant que l\'application est ouverte ou pendant que vous naviguez, et se met en pause tout seul quand vous cessez de bouger.</string>
+    <string name="recording_saved">Trace enregistrée. Vous pouvez l\'afficher sur la carte ou l\'exporter en GPX.</string>
+    <string name="recording_too_short">Rien à enregistrer : l\'enregistrement était trop court.</string>
+    <string name="recording_failed">La trace n\'a pas pu être enregistrée. Les points sont conservés et enregistrés au prochain démarrage.</string>
+    <string name="recording_could_not_start">Démarrage impossible : un enregistrement précédent attend encore d\'être enregistré.</string>
+    <string name="recording_track_name">Enregistré le %1$s</string>
+    <string name="track_delete">Supprimer</string>
+</resources>

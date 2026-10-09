@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="nav_motion_tunnels_title">Bewegungssensoren in Tunneln verwenden</string>
+    <string name="nav_motion_tunnels_body">Nur wenn das GPS in einem bekannten Tunnel ausfällt, unterscheidet der Beschleunigungssensor ein stehendes von einem fahrenden Auto, damit die Positionsschätzung im Stau nicht abdriftet. Nichts wird gespeichert oder gesendet.</string>
+    <string name="live_update_title">Entfernung in der Statusleiste anzeigen</string>
+    <string name="live_update_body">Ab Android 16 erscheint die Entfernung bis zur nächsten Abbiegung während der Navigation als Chip in der Statusleiste. Du kannst hervorgehobene Benachrichtigungen für diese App auch in den Systemeinstellungen ausschalten.</string>
+    <!-- Chip texts: the status bar chip fits about 7 characters. -->
+    <string name="live_update_chip_reroute">Neue Route</string>
+    <string name="live_update_chip_no_signal">Kein GPS</string>
+    <string name="driving_focus_group">Fahrfokus</string>
+    <string name="driving_focus_hide_bar_title">Statusleiste während der Navigation ausblenden</string>
+    <string name="driving_focus_hide_bar_body">Die Benachrichtigungssymbole anderer Apps bleiben auf dem Navigationsbildschirm verborgen. Wische vom oberen Rand nach unten, um die Leiste kurz einzublenden. Standardmäßig aus.</string>
+    <string name="driving_focus_open_dnd">Einstellungen für „Nicht stören“ öffnen</string>
+    <string name="driving_focus_dnd_note">Android erlaubt es einer App nicht, Pop-ups anderer Apps zu blockieren. Um sie beim Fahren zu vermeiden, richte einen „Nicht stören“-Modus ein, der Anrufe zulässt (Einstellungen, Nicht stören, Personen, Anrufe: Alle), und schalte ihn beim Fahren ein.</string>
+</resources>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Visual alert ahead (chip on the map and on the navigation screen) -->
+    <string name="camalert_fixed">Autovelox fisso più avanti</string>
+    <string name="camalert_section">Tratto con controllo della velocità media più avanti</string>
+    <string name="camalert_zone">Possibili autovelox mobili più avanti</string>
+    <string name="camalert_v16">Veicolo fermo più avanti (V16)</string>
+    <string name="camalert_accident">Incidente più avanti</string>
+    <string name="camalert_closure">Strada chiusa più avanti</string>
+    <string name="camalert_congestion">Traffico lento più avanti</string>
+    <string name="camalert_obstacle">Ostacolo più avanti</string>
+    <string name="camalert_description">%1$s, tra %2$s</string>
+    <string name="camalert_description_limit">%1$s, tra %2$s, limite %3$d km/h</string>
+</resources>

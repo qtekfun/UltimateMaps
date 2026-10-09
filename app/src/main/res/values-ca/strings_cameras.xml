@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Settings: section -->
+    <string name="cam_title">Radars i trànsit</string>
+    <string name="cam_intro">Opcional, desactivat per defecte. Les dades dels radars són un petit fitxer de la publicació de dades del mapa; el trànsit només es descarrega quan l\'actives. La teva posició no s\'envia mai.</string>
+
+    <string name="cam_fixed_title">Radars fixos</string>
+    <string name="cam_fixed_body">Radars fixos i trams de velocitat mitjana, al mapa i com a avís anticipat.</string>
+    <string name="cam_mobile_title">Zones de radars mòbils</string>
+    <string name="cam_mobile_body">Carreteres on la DGT indica que poden operar radars mòbils. Es mostren com a trams de carretera, mai com a punts.</string>
+    <string name="cam_incidents_title">Incidències de trànsit</string>
+    <string name="cam_incidents_body">Accidents, talls, trànsit lent, obstacles i mal temps (DGT, en directe).</string>
+    <string name="cam_v16_title">Balises V16</string>
+    <string name="cam_v16_body">Vehicles aturats amb una balisa V16 connectada (DGT, en directe).</string>
+    <string name="cam_roadworks_title">Inclou obres</string>
+    <string name="cam_roadworks_body">En pot haver centenars en qualsevol moment.</string>
+    <string name="cam_only_speeding_title">Avisa només si excedeixes la velocitat</string>
+    <string name="cam_only_speeding_body">Als radars amb límit conegut, es manté en silenci mentre estiguis per sota. Els radars amb límit desconegut sempre avisen.</string>
+
+    <!-- Settings: legal note and acknowledgement dialog -->
+    <string name="cam_legal_note">Les zones de radars mòbils són els trams que publica la DGT; mai es mostra el lloc exacte d\'un control mòbil. Els avisos són informatius i poden ser erronis o estar desactualitzats. Ets responsable de com condueixes.</string>
+    <string name="cam_confirm_title">Dades de radars</string>
+    <string name="cam_confirm_body">Això activa els avisos de radars.\n\n- Fonts: DGT (CC BY) i OpenStreetMap (ODbL). Un radar de la llista pot no estar en funcionament.\n- Les zones de radars mòbils són trams de carretera publicats per la DGT. Sense dades en directe, controls policials ni informes d\'usuaris.\n- El fitxer prové del servidor de dades de mapa que has triat; no s\'envia res sobre la teva posició.\n- Només informatiu: pot ser erroni o estar desactualitzat.</string>
+    <string name="cam_confirm_yes">Ho entenc, activa</string>
+    <string name="cam_confirm_no">Cancel·la</string>
+    <string name="cam_incidents_confirm_title">Dades de trànsit</string>
+    <string name="cam_incidents_confirm_body">Això descarrega el fitxer nacional de trànsit de la DGT (uns 200 KB) de nap.dgt.es quan l\'actives, prems Actualitza ara o obres l\'aplicació amb dades antigues. Es filtra al teu telèfon: la teva posició i la ruta no s\'envien mai. El mode fora de línia el bloqueja.</string>
+    <string name="cam_incidents_confirm_offline">El mode fora de línia està activat: no es descarrega res fins que el desactivis.</string>
+
+    <!-- Settings: data card -->
+    <string name="cam_data_title">Dades</string>
+    <string name="cam_data_cameras_never">Dades de radars: encara no descarregades.</string>
+    <string name="cam_data_cameras">Dades de radars: %1$d radars fixos, %2$d trams de velocitat mitjana, %3$d zones de radars mòbils (%4$d dibuixables). Fitxer del %5$s.</string>
+    <string name="cam_data_incidents_never">Dades de trànsit: encara no descarregades.</string>
+    <string name="cam_data_incidents">Dades de trànsit: %1$d registres actius, descarregades %2$s.</string>
+    <string name="cam_refresh_title">Actualitza les dades de trànsit cada</string>
+    <string name="cam_refresh_minutes">%1$d minuts</string>
+    <string name="cam_refresh_hour">1 hora</string>
+    <string name="cam_update_now">Actualitza ara</string>
+    <string name="cam_update_running">Actualitzant…</string>
+    <string name="cam_update_ok">Actualitzat.</string>
+    <string name="cam_update_error">No s\'ha pogut actualitzar (%1$s). Es conserven les dades anteriors.</string>
+    <string name="cam_err_offline">el mode fora de línia està activat</string>
+    <string name="cam_err_not_allowed">connexió no permesa</string>
+    <string name="cam_err_network">error de xarxa</string>
+    <string name="cam_err_timeout">temps d\'espera esgotat</string>
+    <string name="cam_err_server">el servidor ha fallat</string>
+    <string name="cam_err_too_large">fitxer massa gran</string>
+    <string name="cam_err_invalid">dades no vàlides</string>
+    <string name="cam_err_no_catalog">el catàleg de mapes no té fitxer de radars; obre Mapes i actualitza\'l</string>
+
+    <!-- Connection list -->
+    <string name="conn_purpose_traffic">Incidències de trànsit (DGT)</string>
+
+    <!-- Map cards -->
+    <string name="cam_card_fixed_title">Possible radar fix</string>
+    <string name="cam_card_section_title">Tram de velocitat mitjana</string>
+    <string name="cam_card_zone_title">En aquest tram poden operar radars mòbils</string>
+    <string name="cam_card_road">Carretera: %1$s</string>
+    <string name="cam_card_limit">Límit controlat: %1$d km/h</string>
+    <string name="cam_card_limit_unknown">Límit de velocitat: no publicat</string>
+    <string name="cam_card_km">Quilòmetre %1$s a %2$s</string>
+    <string name="cam_card_zone_note">Publicat per la DGT com a tram de carretera, no com a posició. Pot haver-hi o no un aparell, i la línia dibuixada és aproximada.</string>
+    <string name="cam_card_fixed_note">La font indica on pot haver-hi un radar, no que estigui en funcionament.</string>
+    <string name="cam_card_data_date">Fitxer de radars del %1$s</string>
+    <string name="inc_card_v16">Vehicle aturat amb balisa V16</string>
+    <string name="inc_card_accident">Accident</string>
+    <string name="inc_card_closure">Carretera o calçada tallada</string>
+    <string name="inc_card_congestion">Trànsit lent</string>
+    <string name="inc_card_obstacle">Obstacle a la via</string>
+    <string name="inc_card_weather">Condicions meteorològiques o de la via</string>
+    <string name="inc_card_roadworks">Obres</string>
+    <string name="inc_card_since">Des del %1$s</string>
+    <string name="inc_card_until">Fins al %1$s</string>
+    <string name="inc_card_downloaded">Dades de trànsit descarregades %1$s. Poden haver canviat des de llavors.</string>
+    <string name="hazard_card_close">Tanca</string>
+</resources>

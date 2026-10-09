@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Adding a stop to the trip in progress -->
+    <string name="nav_stop_adding">Afegint la parada…</string>
+    <string name="nav_stop_no_route">No s\'ha trobat cap ruta per aquesta parada. El viatge continua com abans.</string>
+    <string name="nav_stop_limit">El viatge ja té %1$d parades per davant. Arriba primer a una.</string>
+    <string name="nav_stop_duplicate">Aquest lloc ja és una parada del viatge.</string>
+    <string name="nav_stop_is_destination">Aquest lloc és la destinació del viatge.</string>
+    <string name="nav_stop_busy">Encara s\'està afegint una altra parada. Espera un moment.</string>
+    <string name="nav_stop_not_navigating">El viatge ha acabat, així que no s\'ha afegit la parada.</string>
+</resources>

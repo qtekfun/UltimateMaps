@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- How camera and incident alerts are announced: a chime, the spoken sentence, or only the on-screen alert -->
+    <string name="alert_mode_cam_title">Radarwarnungen</string>
+    <string name="alert_mode_incident_title">Störungswarnungen</string>
+    <string name="alert_mode_sound">Ton (ein kurzer Signalton)</string>
+    <string name="alert_mode_voice">Sprache (gesprochene Warnung)</string>
+    <string name="alert_mode_silent">Lautlos (nur Warnung auf dem Bildschirm)</string>
+    <string name="alert_mode_note">Die Warnung auf dem Bildschirm wird immer angezeigt. Stumm (Navigation) und Warnungen stummschalten schalten Ton und Sprache aus.</string>
+</resources>

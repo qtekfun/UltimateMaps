@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Track recording -->
+    <string name="recording_title">Registrazione delle tracce</string>
+    <string name="recording_switch_title">Consenti la registrazione delle tracce</string>
+    <string name="recording_switch_body">Aggiunge un pulsante Avvia registrazione all\'elenco delle tracce. Il viaggio viene salvato come traccia solo su questo dispositivo e non viene inviato nulla da nessuna parte. I punti vengono conservati mentre l\'app è aperta o mentre navighi.</string>
+    <string name="recording_delete_all">Elimina le tracce registrate</string>
+    <string name="recording_deleted">Tracce registrate eliminate.</string>
+    <string name="recording_idle">Nessuna registrazione</string>
+    <string name="recording_start">Avvia registrazione</string>
+    <string name="recording_stop">Interrompi e salva</string>
+    <string name="recording_status_on">Registrazione · %1$d punti · %2$s</string>
+    <string name="recording_status_paused">In pausa, sei fermo · %1$d punti · %2$s</string>
+    <string name="recording_note">La registrazione continua mentre l\'app è aperta o mentre navighi, e si mette in pausa da sola quando smetti di muoverti.</string>
+    <string name="recording_saved">Traccia salvata. Puoi mostrarla sulla mappa o esportarla come GPX.</string>
+    <string name="recording_too_short">Niente da salvare: la registrazione era troppo breve.</string>
+    <string name="recording_failed">Impossibile salvare la traccia. I punti vengono conservati e salvati al prossimo avvio.</string>
+    <string name="recording_could_not_start">Impossibile avviare: una registrazione precedente è ancora in attesa di essere salvata.</string>
+    <string name="recording_track_name">Registrata il %1$s</string>
+    <string name="track_delete">Elimina</string>
+</resources>

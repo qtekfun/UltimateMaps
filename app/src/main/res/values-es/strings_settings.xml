@@ -44,7 +44,6 @@
     <string name="fuel_update_now">Actualizar ahora</string>
     <string name="fuel_update_running">Descargando %1$d de %2$d (%3$s)…</string>
     <string name="fuel_update_ok">Precios actualizados.</string>
-    <string name="fuel_update_error">%1$s: %2$s</string>
     <string name="fuel_update_kept">Se conserva el último dato bueno.</string>
     <string name="fuel_attribution">Datos: Ministerio para la Transición Ecológica y el Reto Demográfico (Geoportal de Hidrocarburos), reutilizados conforme a la Ley 37/2007. Información no oficial; comprueba el precio en el surtidor.</string>
 

@@ -1,5 +1,7 @@
 package com.qtekfun.ultimatemaps.settings
 
+import com.qtekfun.ultimatemaps.voice.voiceLanguagePrefLabel
+import com.qtekfun.ultimatemaps.fuel.fuelName
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -31,7 +33,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import com.qtekfun.ultimatemaps.R
-import com.qtekfun.ultimatemaps.core.fuel.FuelTypes
 import com.qtekfun.ultimatemaps.core.voice.VoiceLanguagePref
 import com.qtekfun.ultimatemaps.ui.theme.Mapas
 import java.util.Locale
@@ -131,13 +132,7 @@ private fun onOff(on: Boolean) = stringResource(if (on) R.string.hub_on else R.s
 private fun navigationSummary(env: NavigationSettingsEnv): String {
     val s by env.store.settings.collectAsState()
     if (!s.voiceEnabled) return stringResource(R.string.hub_navigation_voice_off)
-    val language = stringResource(
-        when (s.voiceLanguage) {
-            VoiceLanguagePref.AUTO -> R.string.nav_language_auto
-            VoiceLanguagePref.ES -> R.string.nav_language_es
-            VoiceLanguagePref.EN -> R.string.nav_language_en
-        },
-    )
+    val language = voiceLanguagePrefLabel(s.voiceLanguage)
     return stringResource(R.string.hub_navigation_voice_on, language, s.volumePercent)
 }
 
@@ -154,7 +149,7 @@ private fun fuelSummary(env: SettingsEnv): String {
     if (s.downloadedFuels.isEmpty()) return stringResource(R.string.hub_fuel_no_fuel)
     val n = s.downloadedFuels.size
     val count = LocalContext.current.resources.getQuantityString(R.plurals.hub_fuel_count, n, n)
-    val mapFuel = s.mapFuel?.let { FuelTypes.byId(it)?.displayName } ?: return count
+    val mapFuel = s.mapFuel?.let { fuelName(it) } ?: return count
     return stringResource(R.string.hub_fuel_summary, count, mapFuel)
 }
 

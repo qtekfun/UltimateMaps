@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="network_mode_offline">Offline-Modus: keine Netzwerkverbindungen</string>
+    <string name="network_connections_title">Mögliche Verbindungen</string>
+    <string name="link_short_needs_resolve">Dieser Kurzlink braucht eine Netzwerkanfrage an Google, um sein Ziel zu finden. Das Auflösen von Kurzlinks ist ausgeschaltet, daher wurde nichts gesendet.</string>
+    <string name="link_not_recognized">Dieser Link ist kein erkannter Kartenlink.</string>
+
+    <string name="about_title">Kartendaten</string>
+    <string name="about_osm_body">Kartendaten © OpenStreetMap-Mitwirkende, verfügbar unter der Open Database License (ODbL). Basiskartenstil und Kacheln von Protomaps.</string>
+    <string name="close">Schließen</string>
+
+    <string name="map_locate">Mein Standort</string>
+    <string name="map_compass">Karte nach Norden ausrichten</string>
+
+    <string name="sheet_description">Infofeld</string>
+    <string name="sheet_expand">Größe des Infofelds ändern</string>
+    <string name="sheet_state_collapsed">Eingeklappt</string>
+    <string name="sheet_state_medium">Halb</string>
+    <string name="sheet_state_full">Voll</string>
+
+    <string name="search_placeholder">Suche (demnächst)</string>
+    <string name="no_maps_title">Noch keine Karten</string>
+    <string name="no_maps_body">Lade unter Karten eine Region herunter, um die Karte zu sehen. Bis dahin wird nur der Hintergrund angezeigt.</string>
+
+    <string name="notice_link_title">Kartenlink</string>
+    <string name="notice_search_title">Suche: %1$s</string>
+    <string name="notice_search_body">Es sind keine Offline-Karten installiert, deshalb konnte dieser Link nur die Karte verschieben.</string>
+    <string name="notice_location_title">Standort</string>
+    <string name="location_permission_denied">Die Standortberechtigung wurde verweigert. Aktiviere sie in den Systemeinstellungen, um deinen Standort zu sehen.</string>
+    <string name="location_unavailable">Auf diesem Gerät ist kein Standortanbieter verfügbar.</string>
+
+    <!-- Maps screen (regions) -->
+    <string name="regions_title">Karten</string>
+    <string name="regions_tab_maps">Karten</string>
+    <string name="regions_tab_transit">Öffentlicher Verkehr</string>
+    <string name="regions_tab_settings">Downloads</string>
+    <string name="regions_tabs_group">Kartenbereiche</string>
+    <string name="regions_installed_title">Installiert</string>
+    <string name="regions_all_title">Alle Karten</string>
+    <string name="regions_search_hint">Karten suchen (z. B. Katalonien)</string>
+    <string name="regions_search_clear">Suche löschen</string>
+    <string name="regions_search_empty">Keine Karte passt zu „%1$s“.</string>
+    <string name="sheet_action_expand">Feld erweitern</string>
+    <string name="sheet_action_collapse">Feld einklappen</string>
+    <string name="maps_entry_title">Karten</string>
+    <string name="maps_entry_body">Regionen herunterladen und verwalten</string>
+    <string name="offline_title">Offline-Modus</string>
+    <string name="offline_body">Überhaupt keine Verbindungen, auch nicht für Downloads.</string>
+    <string name="server_title">Kartenserver</string>
+    <string name="server_use_default">Standardserver verwenden</string>
+    <string name="search_restart_needed">Eine gelöschte Karte kann bis zum Neustart der App weiterhin in der Suche erscheinen.</string>
+    <string name="search_link_problem">Einige heruntergeladene Karten konnten auf diesem Speicher nicht für die Suche bereitgestellt werden.</string>
+    <string name="server_save">Speichern und aktualisieren</string>
+    <string name="server_invalid">Gib eine gültige https://-Adresse ein.</string>
+    <string name="server_none_title">Kein Kartenserver eingerichtet</string>
+    <string name="server_none_body">Karten werden nur von einem Server heruntergeladen, den du auswählst. Gib oben die Adresse eines Katalogs ein. Bis dahin wird nichts kontaktiert.</string>
+    <string name="storage_title">Speicher</string>
+    <string name="storage_internal">Interner Speicher</string>
+    <string name="storage_card">SD-Karte</string>
+    <string name="storage_free">%1$s frei von %2$s</string>
+    <string name="storage_card_warning">Karten auf einer SD-Karte werden auf manchen Geräten möglicherweise nicht angezeigt.</string>
+    <string name="catalog_loading">Katalog wird geladen …</string>
+    <string name="catalog_error_offline">Der Offline-Modus ist aktiv, daher wurde der Katalog nicht angefordert. Schalte ihn aus, um zu aktualisieren.</string>
+    <string name="catalog_error_denied">Dieser Server ist für Downloads nicht zugelassen.</string>
+    <string name="catalog_error_network">Der Katalog konnte nicht geladen werden. Prüfe deine Verbindung.</string>
+    <string name="catalog_error_invalid">Der Server hat einen ungültigen Katalog geliefert.</string>
+    <string name="catalog_stale">Die gespeicherte Liste wird angezeigt. Sie konnte nicht aktualisiert werden.</string>
+    <string name="catalog_empty">Der Katalog enthält keine Regionen.</string>
+    <string name="region_download">Herunterladen</string>
+    <string name="region_pause">Pausieren</string>
+    <string name="region_resume">Fortsetzen</string>
+    <string name="region_cancel">Abbrechen</string>
+    <string name="region_delete">Löschen</string>
+    <string name="region_update">Aktualisieren</string>
+    <string name="region_retry">Erneut versuchen</string>
+    <string name="region_unavailable">Noch nicht verfügbar</string>
+    <string name="region_queued">Wartet …</string>
+    <string name="region_progress">%1$d %% von %2$s</string>
+    <string name="region_paused">Pausiert bei %1$d %%</string>
+    <string name="region_group_summary">%1$d von %2$d installiert · %3$s</string>
+    <string name="region_installed_size">Installiert · %1$s</string>
+    <string name="region_update_available">Update verfügbar · %1$s</string>
+    <string name="regions_installed_other">Installiert (nicht in der Liste)</string>
+    <string name="fail_offline">Der Offline-Modus ist aktiv: Es wurde nichts heruntergeladen.</string>
+    <string name="fail_not_allowed">Dieser Server ist für Downloads nicht zugelassen.</string>
+    <string name="fail_no_space">Nicht genug Speicherplatz: %1$s nötig, %2$s frei.</string>
+    <string name="fail_network">Download unterbrochen. Versuche es erneut, um dort fortzufahren, wo er aufgehört hat.</string>
+    <string name="fail_corrupt">Die Datei hat die Prüfung nicht bestanden und wurde verworfen. Versuche es erneut.</string>
+    <string name="delete_title">%1$s löschen?</string>
+    <string name="delete_body">Dadurch werden %1$s frei. Du kannst sie später erneut herunterladen.</string>
+    <string name="regions_channel_name">Kartendownloads</string>
+    <string name="regions_notification_title">Karten werden heruntergeladen</string>
+    <string name="regions_notification_progress">%1$d %% von %2$s</string>
+    <string name="regions_notification_waiting">Wird gestartet …</string>
+    <string name="regions_notification_queued">%1$d weitere warten</string>
+    <string name="regions_pause">Pausieren</string>
+</resources>

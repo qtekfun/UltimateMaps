@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Hiking and cycling routes: Settings group (inside the Navigation category), map card and attribution -->
+    <string name="trail_group_title">Percorsi escursionistici e ciclistici</string>
+    <string name="trail_switch_title">Mostra i percorsi escursionistici e ciclistici</string>
+    <string name="trail_switch_body">Disegna sulla mappa i percorsi segnalati di escursionismo, ciclismo e mountain bike di OpenStreetMap. Scarica un file di dati di diversi MB dal tuo server delle mappe (lo stesso delle mappe); la tua posizione non viene mai inviata.</string>
+    <string name="trail_kinds_title">Tipi di percorso</string>
+    <string name="trail_kind_hiking">Percorsi escursionistici (trattini pieni)</string>
+    <string name="trail_kind_cycling">Percorsi ciclistici e mountain bike (puntini)</string>
+    <string name="trail_legend">Il colore indica la portata del percorso: viola locale, verde regionale, arancione nazionale, rosso internazionale.</string>
+    <string name="trail_data_title">Dati dei percorsi</string>
+    <string name="trail_data_count">%1$d percorsi, dati del %2$s</string>
+    <string name="trail_data_never">Nessun dato dei percorsi ancora scaricato.</string>
+    <string name="trail_attribution">Percorsi escursionistici e ciclistici dalle relazioni di percorso di OpenStreetMap, © collaboratori di OpenStreetMap (ODbL), semplificati.</string>
+
+    <!-- Card of a tapped route -->
+    <string name="trail_category">Percorso</string>
+    <string name="trail_card_title_unknown">Percorso senza nome</string>
+    <string name="trail_card_ref">Riferimento: %1$s</string>
+    <string name="trail_kind_label_hiking">Percorso escursionistico</string>
+    <string name="trail_kind_label_cycling">Percorso ciclistico</string>
+    <string name="trail_kind_label_mtb">Percorso mountain bike</string>
+    <string name="trail_level_local">Locale</string>
+    <string name="trail_level_regional">Regionale</string>
+    <string name="trail_level_national">Nazionale</string>
+    <string name="trail_level_international">Internazionale</string>
+    <string name="trail_card_operator">Gestito da: %1$s</string>
+    <string name="trail_card_length">Lunghezza: %1$s</string>
+    <string name="trail_card_length_measured">Lunghezza: circa %1$s (misurata sulla mappa, può essere incompleta)</string>
+    <string name="trail_card_note">Dati della comunità: il percorso può essere incompleto, chiuso o mal segnalato. Verifica prima di fare affidamento.</string>
+    <string name="trail_card_data_date">Dati del %1$s</string>
+    <string name="trail_card_close">Chiudi</string>
+    <string name="trail_go_start">Percorso verso l\'inizio</string>
+
+    <!-- Backup and restore -->
+    <string name="backup_item_trails">Percorsi escursionistici e ciclistici</string>
+    <string name="backup_group_trails">Percorsi escursionistici e ciclistici</string>
+</resources>

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="network_mode_offline">Modo sen conexión: ningunha conexión de rede</string>
+    <string name="network_connections_title">Conexións posibles</string>
+    <string name="link_short_needs_resolve">Esta ligazón curta precisa unha solicitude de rede a Google para atopar o destino. A resolución de ligazóns curtas está desactivada, así que non se enviou nada.</string>
+    <string name="link_not_recognized">Esta ligazón non é unha ligazón de mapa recoñecida.</string>
+
+    <string name="about_title">Datos do mapa</string>
+    <string name="about_osm_body">Datos do mapa © colaboradores de OpenStreetMap, dispoñibles baixo a Open Database License (ODbL). Estilo do mapa base e teselas de Protomaps.</string>
+    <string name="close">Pechar</string>
+
+    <string name="map_locate">A miña localización</string>
+    <string name="map_compass">Orientar o mapa cara ao norte</string>
+
+    <string name="sheet_description">Panel de información</string>
+    <string name="sheet_expand">Cambiar o tamaño do panel</string>
+    <string name="sheet_state_collapsed">Pregado</string>
+    <string name="sheet_state_medium">Metade</string>
+    <string name="sheet_state_full">Completo</string>
+
+    <string name="search_placeholder">Buscar (en breve)</string>
+    <string name="no_maps_title">Aínda non hai mapas</string>
+    <string name="no_maps_body">Descarga unha rexión en Mapas para ver o mapa. Ata entón só se mostra o fondo.</string>
+
+    <string name="notice_link_title">Ligazón de mapa</string>
+    <string name="notice_search_title">Busca: %1$s</string>
+    <string name="notice_search_body">Non hai mapas sen conexión instalados, así que esta ligazón só puido mover o mapa.</string>
+    <string name="notice_location_title">Localización</string>
+    <string name="location_permission_denied">Denegouse o permiso de localización. Actívao na configuración do sistema para ver onde estás.</string>
+    <string name="location_unavailable">Este dispositivo non ten ningún provedor de localización dispoñible.</string>
+
+    <!-- Maps screen (regions) -->
+    <string name="regions_title">Mapas</string>
+    <string name="regions_tab_maps">Mapas</string>
+    <string name="regions_tab_transit">Transporte público</string>
+    <string name="regions_tab_settings">Descargas</string>
+    <string name="regions_tabs_group">Seccións dos mapas</string>
+    <string name="regions_installed_title">Instalados</string>
+    <string name="regions_all_title">Todos os mapas</string>
+    <string name="regions_search_hint">Buscar mapas (p. ex. Cataluña)</string>
+    <string name="regions_search_clear">Borrar a busca</string>
+    <string name="regions_search_empty">Ningún mapa coincide con «%1$s».</string>
+    <string name="sheet_action_expand">Despregar o panel</string>
+    <string name="sheet_action_collapse">Pregar o panel</string>
+    <string name="maps_entry_title">Mapas</string>
+    <string name="maps_entry_body">Descargar e xestionar rexións</string>
+    <string name="offline_title">Modo sen conexión</string>
+    <string name="offline_body">Ningunha conexión, nin sequera para as descargas.</string>
+    <string name="server_title">Servidor de mapas</string>
+    <string name="server_use_default">Usar o servidor predeterminado</string>
+    <string name="search_restart_needed">Un mapa que eliminases pode seguir aparecendo na busca ata que reinicies a aplicación.</string>
+    <string name="search_link_problem">Algúns mapas descargados non se puideron poñer á disposición da busca neste almacenamento.</string>
+    <string name="server_save">Gardar e actualizar</string>
+    <string name="server_invalid">Introduce un enderezo https:// válido.</string>
+    <string name="server_none_title">Ningún servidor de mapas configurado</string>
+    <string name="server_none_body">Os mapas só se descargan dun servidor que ti escollas. Introduce arriba o enderezo dun catálogo. Non se contacta con nada ata que o fagas.</string>
+    <string name="storage_title">Almacenamento</string>
+    <string name="storage_internal">Almacenamento interno</string>
+    <string name="storage_card">Tarxeta SD</string>
+    <string name="storage_free">%1$s libres de %2$s</string>
+    <string name="storage_card_warning">Os mapas nunha tarxeta poden non debuxarse nalgúns dispositivos.</string>
+    <string name="catalog_loading">Cargando o catálogo…</string>
+    <string name="catalog_error_offline">O modo sen conexión está activado, así que non se solicitou o catálogo. Desactívao para actualizar.</string>
+    <string name="catalog_error_denied">Este servidor non está permitido para as descargas.</string>
+    <string name="catalog_error_network">Non se puido cargar o catálogo. Comproba a conexión.</string>
+    <string name="catalog_error_invalid">O servidor devolveu un catálogo non válido.</string>
+    <string name="catalog_stale">Móstrase a lista gardada. Non se puido actualizar.</string>
+    <string name="catalog_empty">O catálogo non ten rexións.</string>
+    <string name="region_download">Descargar</string>
+    <string name="region_pause">Pausar</string>
+    <string name="region_resume">Retomar</string>
+    <string name="region_cancel">Cancelar</string>
+    <string name="region_delete">Eliminar</string>
+    <string name="region_update">Actualizar</string>
+    <string name="region_retry">Reintentar</string>
+    <string name="region_unavailable">Aínda non dispoñible</string>
+    <string name="region_queued">Agardando…</string>
+    <string name="region_progress">%1$d %% de %2$s</string>
+    <string name="region_paused">En pausa ao %1$d %%</string>
+    <string name="region_group_summary">%1$d de %2$d instalados · %3$s</string>
+    <string name="region_installed_size">Instalado · %1$s</string>
+    <string name="region_update_available">Actualización dispoñible · %1$s</string>
+    <string name="regions_installed_other">Instalados (fóra da lista)</string>
+    <string name="fail_offline">O modo sen conexión está activado: non se descargou nada.</string>
+    <string name="fail_not_allowed">Este servidor non está permitido para as descargas.</string>
+    <string name="fail_no_space">Non hai espazo suficiente: fan falta %1$s, hai %2$s libres.</string>
+    <string name="fail_network">Descarga interrompida. Reinténtao para continuar onde se parou.</string>
+    <string name="fail_corrupt">O ficheiro non superou a verificación e foi descartado. Reinténtao.</string>
+    <string name="delete_title">Eliminar %1$s?</string>
+    <string name="delete_body">Isto libera %1$s. Poderás descargalo de novo máis tarde.</string>
+    <string name="regions_channel_name">Descargas de mapas</string>
+    <string name="regions_notification_title">Descargando mapas</string>
+    <string name="regions_notification_progress">%1$d %% de %2$s</string>
+    <string name="regions_notification_waiting">Iniciando…</string>
+    <string name="regions_notification_queued">%1$d máis agardando</string>
+    <string name="regions_pause">Pausar</string>
+</resources>

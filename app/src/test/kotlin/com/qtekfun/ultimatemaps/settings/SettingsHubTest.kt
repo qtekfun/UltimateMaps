@@ -26,7 +26,6 @@ import com.qtekfun.ultimatemaps.core.cameras.InMemoryCameraSettingsStore
 import com.qtekfun.ultimatemaps.core.fuel.FuelCache
 import com.qtekfun.ultimatemaps.core.fuel.FuelClient
 import com.qtekfun.ultimatemaps.core.fuel.FuelDataManager
-import com.qtekfun.ultimatemaps.core.fuel.FuelTypes
 import com.qtekfun.ultimatemaps.core.fuel.InMemoryFuelSettingsStore
 import com.qtekfun.ultimatemaps.core.net.DefaultNetworkPolicy
 import com.qtekfun.ultimatemaps.core.voice.InMemoryNavSettingsStore
@@ -143,7 +142,7 @@ class SettingsHubTest {
         f.camStore.update { it.copy(fixedEnabled = true, acknowledged = true) }
         f.offline = true
         rule.waitForIdle()
-        rule.onNodeWithTag("settings_summary_fuel", useUnmergedTree = true).assertTextEquals("2 fuels, ${FuelTypes.byId("glp")!!.displayName} on the map")
+        rule.onNodeWithTag("settings_summary_fuel", useUnmergedTree = true).assertTextEquals("2 fuels, LPG (autogas) on the map")
         rule.onNodeWithTag("settings_summary_navigation", useUnmergedTree = true).assertTextEquals("Voice: off")
         rule.onNodeWithTag("settings_summary_alerts", useUnmergedTree = true).assertTextEquals("Cameras: on · Traffic: off")
         rule.onNodeWithTag("settings_summary_network", useUnmergedTree = true).assertTextEquals("Offline mode: on")

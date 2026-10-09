@@ -1,5 +1,6 @@
 package com.qtekfun.ultimatemaps.settings
 
+import com.qtekfun.ultimatemaps.fuel.fuelName
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -250,7 +251,7 @@ internal fun FuelSettingsContent(env: SettingsEnv) {
         )
         FuelTypes.all.forEach { f ->
             val on = f.id in s.downloadedFuels
-            ChoiceRow(f.displayName, on, radio = false, tag = "fuel_check_${f.id}") { checked ->
+            ChoiceRow(fuelName(f.id), on, radio = false, tag = "fuel_check_${f.id}") { checked ->
                 env.store.update { cur ->
                     cur.copy(downloadedFuels = if (checked) cur.downloadedFuels + f.id else cur.downloadedFuels - f.id)
                 }
@@ -266,7 +267,7 @@ internal fun FuelSettingsContent(env: SettingsEnv) {
             BasicText(stringResource(R.string.fuel_map_none), style = Mapas.typography.callout.copy(color = Mapas.colors.secondaryLabel))
         }
         FuelTypes.all.filter { it.id in s.downloadedFuels }.forEach { f ->
-            ChoiceRow(f.displayName, s.mapFuel == f.id, radio = true, tag = "fuel_map_${f.id}") {
+            ChoiceRow(fuelName(f.id), s.mapFuel == f.id, radio = true, tag = "fuel_map_${f.id}") {
                 env.store.update { cur -> cur.copy(mapFuel = f.id) }
             }
         }
@@ -364,7 +365,7 @@ private fun UpdateCard(env: SettingsEnv, s: FuelSettings) {
         }
         when (val u = update) {
             is FuelUpdateState.Running -> {
-                val name = u.currentFuelId?.let { FuelTypes.byId(it)?.displayName ?: it }.orEmpty()
+                val name = u.currentFuelId?.let { fuelName(it) }.orEmpty()
                 BasicText(
                     stringResource(R.string.fuel_update_running, u.done + 1, u.total, name),
                     style = Mapas.typography.callout.copy(color = Mapas.colors.secondaryLabel),
@@ -379,7 +380,7 @@ private fun UpdateCard(env: SettingsEnv, s: FuelSettings) {
                     }
                 } else {
                     errors.forEach { o ->
-                        val name = FuelTypes.byId(o.fuelId)?.displayName ?: o.fuelId
+                        val name = fuelName(o.fuelId)
                         BasicText(
                             stringResource(R.string.fuel_update_error, name, stringResource(failureText(o.failure!!))),
                             style = Mapas.typography.callout.copy(color = Mapas.colors.warning),

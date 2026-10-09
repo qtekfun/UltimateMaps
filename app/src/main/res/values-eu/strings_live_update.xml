@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="nav_motion_tunnels_title">Erabili mugimendu-sentsoreak tuneletan</string>
+    <string name="nav_motion_tunnels_body">GPSa tunel ezagun batean galtzen denean bakarrik, azelerometroak geldirik dagoen auto bat mugimenduan dagoen batetik bereizten du, kokapen-estimazioak ilaran desbidera ez dadin. Ez da ezer gordetzen ezta bidaltzen ere.</string>
+    <string name="live_update_title">Erakutsi distantzia egoera-barran</string>
+    <string name="live_update_body">Android 16 eta berriagoetan, hurrengo bira arteko distantzia txip gisa agertzen da egoera-barran nabigatzen duzun bitartean. Aplikazio honen jakinarazpen nabarmenduak sistemaren ezarpenetan ere desaktiba ditzakezu.</string>
+    <!-- Chip texts: the status bar chip fits about 7 characters. -->
+    <string name="live_update_chip_reroute">Ibilbide berria</string>
+    <string name="live_update_chip_no_signal">GPSrik ez</string>
+    <string name="driving_focus_group">Gidatzean arreta</string>
+    <string name="driving_focus_hide_bar_title">Ezkutatu egoera-barra nabigatzean</string>
+    <string name="driving_focus_hide_bar_body">Beste aplikazioen jakinarazpen-ikonoak ezkutuan geratzen dira nabigazio-pantailan. Pasatu hatza goiko ertzetik behera barra une batez ikusteko. Lehenespenez desaktibatuta.</string>
+    <string name="driving_focus_open_dnd">Ireki Ez molestatu ezarpenak</string>
+    <string name="driving_focus_dnd_note">Androidek ez dio aplikazio bati uzten beste aplikazioen laster-leihoak blokeatzen. Gidatzean saihesteko, ezarri deiak onartzen dituen Ez molestatu modu bat (Ezarpenak, Ez molestatu, Jendea, Deiak: Guztiak) eta aktibatu gidatzen duzunean.</string>
+</resources>

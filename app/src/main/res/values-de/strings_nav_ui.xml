@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Route card buttons -->
+    <string name="nav_ui_start">Start</string>
+    <string name="nav_ui_simulate">Simulieren</string>
+    <string name="nav_ui_computing">Geführte Route wird berechnet …</string>
+    <!-- Navigation screen -->
+    <string name="nav_ui_stop">Beenden</string>
+    <string name="nav_ui_stop_description">Navigation beenden</string>
+    <string name="nav_ui_recenter">Zentrieren</string>
+    <string name="nav_ui_then">Danach</string>
+    <string name="nav_ui_follow_route">Der Route folgen</string>
+    <string name="nav_ui_roundabout_exit">Im Kreisverkehr die %1$d. Ausfahrt nehmen</string>
+    <string name="nav_ui_arrive_at">Ankunft %1$s</string>
+    <string name="nav_ui_phase_off_route">Du hast die Route verlassen</string>
+    <string name="nav_ui_phase_no_signal">GPS-Signal verloren. Geschätzte Position</string>
+    <string name="nav_ui_phase_in_tunnel">GPS im Tunnel verloren. Geschätzte Position</string>
+    <string name="nav_ui_phase_stop_reached">Zwischenstopp erreicht. Weiter zum Ziel</string>
+    <string name="nav_ui_limit_description">Tempolimit %1$d</string>
+    <string name="nav_ui_speed_description">Aktuelle Geschwindigkeit %1$d km/h</string>
+    <string name="nav_ui_over_limit">Über dem Tempolimit</string>
+    <string name="nav_ui_lanes_description">Fahrspuren</string>
+    <string name="nav_ui_lane_recommended">empfohlene Spur</string>
+    <string name="nav_ui_lane_other">andere Spur</string>
+    <string name="nav_ui_glove">Handschuhe</string>
+    <string name="nav_ui_glove_on_description">Handschuhmodus an. Tippen, um ihn auszuschalten</string>
+    <string name="nav_ui_glove_off_description">Handschuhmodus aus. Tippen, um ihn einzuschalten</string>
+    <!-- Simulation -->
+    <string name="nav_ui_simulating">Simulation</string>
+    <string name="nav_ui_sim_faster">Schneller</string>
+    <string name="nav_ui_sim_slower">Langsamer</string>
+    <!-- 3D view, overview -->
+    <string name="nav_ui_view3d_on_description">3D-Ansicht an. Zur flachen 2D-Ansicht wechseln</string>
+    <string name="nav_ui_view2d_on_description">Flache 2D-Ansicht an. Zur 3D-Ansicht wechseln</string>
+    <string name="nav_ui_overview">Route</string>
+    <string name="nav_ui_overview_description">Die gesamte restliche Route kurz anzeigen</string>
+    <!-- Arrival summary -->
+    <string name="nav_ui_summary_title">Du bist angekommen</string>
+    <string name="nav_ui_summary_body">%1$s in %2$s</string>
+    <string name="nav_ui_summary_simulated">Simulierte Route. Es wurde nichts gespeichert.</string>
+    <string name="nav_ui_exit">Fertig</string>
+    <!-- Resume after the process died -->
+    <string name="nav_ui_resume_title">Navigation unterbrochen</string>
+    <string name="nav_ui_resume_body">Die App wurde geschlossen, während du navigiert hast. Möchtest du fortfahren?</string>
+    <string name="nav_ui_resume">Fortsetzen</string>
+    <string name="nav_ui_discard">Verwerfen</string>
+    <!-- Icons (accessibility) -->
+    <string name="nav_ui_icon_turn">Nächstes Manöver: %1$s</string>
+    <string name="nav_ui_mute">Stumm</string>
+    <string name="nav_ui_unmute">Ton an</string>
+    <string name="nav_ui_mute_description">Sprache an. Tippen, um die Sprachführung stummzuschalten</string>
+    <string name="nav_ui_unmute_description">Sprache stumm. Tippen, um die Sprachführung wieder einzuschalten</string>
+</resources>

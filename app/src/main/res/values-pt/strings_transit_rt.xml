@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Settings: opt-in switch -->
+    <string name="transit_rt_title">Cercanías em tempo real</string>
+    <string name="transit_rt_body">Pergunta ao servidor da Renfe pelos atrasos dos comboios enquanto usas transportes públicos. A tua posição nunca é enviada; a Renfe vê o teu endereço IP.</string>
+    <string name="transit_rt_source">Dados: Renfe (CC BY 4.0), data.renfe.com</string>
+
+    <!-- Labels and statuses -->
+    <string name="transit_rt_label">Tempo real (Renfe)</string>
+    <plurals name="transit_rt_delayed">
+        <item quantity="one">Atraso de %d min</item>
+        <item quantity="many">Atraso de %d min</item>
+        <item quantity="other">Atraso de %d min</item>
+    </plurals>
+    <plurals name="transit_rt_early">
+        <item quantity="one">%d min adiantado</item>
+        <item quantity="many">%d min adiantado</item>
+        <item quantity="other">%d min adiantado</item>
+    </plurals>
+    <string name="transit_rt_on_time">A horas</string>
+    <string name="transit_rt_cancelled">Cancelado</string>
+    <string name="transit_rt_alert">Alerta: %1$s</string>
+    <string name="transit_rt_skips">Não pára em %1$s</string>
+    <string name="transit_rt_note">Os horários são teóricos, retirados dos horários publicados. Os troços marcados “Tempo real (Renfe)” incluem também os atrasos comunicados pela Renfe; todos os outros troços não têm informação em tempo real.</string>
+
+    <!-- Backup restore list and connection list -->
+    <string name="backup_item_cercanias_rt">Cercanías em tempo real</string>
+    <string name="conn_purpose_transit_rt">Atrasos de comboios (Renfe)</string>
+</resources>

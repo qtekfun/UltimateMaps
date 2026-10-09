@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Bike: prefer or require cycle infrastructure -->
+    <string name="bike_cycleways_title">Infraestructura ciclista</string>
+    <string name="bike_cycleways_settings_body">Valor per defecte per a les rutes en bicicleta: com de fort es prefereixen els carrils bici i les vies ciclistes. Es basa en les etiquetes d\'OpenStreetMap, més completes en unes zones que en altres.</string>
+    <string name="bike_cycleways_off">Desactivat</string>
+    <string name="bike_cycleways_prefer">Preferir</string>
+    <string name="bike_cycleways_strong">Preferir molt</string>
+    <string name="bike_cycleways_only">Només</string>
+    <string name="bike_cycleways_full_off">Desactivat (estàndard)</string>
+    <string name="bike_cycleways_full_prefer">Preferir</string>
+    <string name="bike_cycleways_full_strong">Preferir molt</string>
+    <string name="bike_cycleways_full_only">Només infraestructura ciclista</string>
+    <string name="bike_cycleways_caption_off">Càlcul de rutes en bicicleta estàndard, que ja afavoreix els carrils bici i les vies ciclistes senyalitzades.</string>
+    <string name="bike_cycleways_caption_prefer">Prefereix carrils bici i vies ciclistes, amb alguns desviaments.</string>
+    <string name="bike_cycleways_caption_strong">Prefereix molt els carrils bici i les vies ciclistes, fins i tot amb desviaments llargs.</string>
+    <string name="bike_cycleways_caption_only">Només utilitza carrils bici i vies senyalitzades per a bicicletes. Sovint no troba cap ruta.</string>
+    <string name="bike_err_no_cycle_route">No s\'ha trobat cap ruta només amb infraestructura ciclista. Prova Preferir.</string>
+</resources>

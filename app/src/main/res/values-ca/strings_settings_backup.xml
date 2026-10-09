@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="backup_title">Còpia de seguretat i restauració</string>
+    <string name="backup_body">Desa la teva configuració en un fitxer, o restaura-la des d\'un, per exemple quan canvies de telèfon. El fitxer no conté ubicacions, contrasenyes ni res de les teves cerques. Es queda on el desis.</string>
+    <string name="backup_export">Exporta la configuració</string>
+    <string name="backup_import">Importa la configuració</string>
+    <string name="backup_all_body">«Tot» també inclou els llocs desats, les llistes i els tracks, en un sol fitxer ZIP.</string>
+    <string name="backup_export_all">Exporta-ho tot</string>
+
+    <string name="backup_exported">Configuració desada al fitxer que has triat.</string>
+    <string name="backup_exported_all">Llocs i configuració desats al fitxer que has triat.</string>
+    <string name="backup_failed">Això no ha funcionat. No s\'ha canviat res.</string>
+    <string name="backup_err_not_settings">Aquest no és un fitxer de configuració d\'aquesta aplicació. No s\'ha canviat res.</string>
+    <string name="backup_err_corrupt">El fitxer està malmès i no es pot llegir. No s\'ha canviat res.</string>
+    <string name="backup_err_too_large">El fitxer és massa gran per ser un fitxer de configuració. No s\'ha canviat res.</string>
+    <string name="backup_err_newer">Aquest fitxer l\'ha creat una versió més recent de l\'aplicació (format de fitxer %1$d). Actualitza l\'aplicació per restaurar-lo. No s\'ha canviat res.</string>
+
+    <string name="backup_restored">Restaurats %1$d, omesos %2$d.</string>
+    <string name="backup_restored_consent">Interruptors que continuen desactivats fins que els tornis a acceptar: %1$d.</string>
+    <string name="backup_restored_regions">Mapes instal·lats que figuren al fitxer: %1$d. La pantalla Mapes ofereix descarregar-los.</string>
+    <string name="backup_restored_places">Llocs afegits: %1$d, ja presents: %2$d, tracks afegits: %3$d.</string>
+
+    <string name="backup_confirm_title">Vols importar la configuració?</string>
+    <string name="backup_confirm_body">Configuracions que se substituiran pels valors del fitxer: %1$d.</string>
+    <string name="backup_confirm_nothing">El fitxer coincideix amb la teva configuració actual. No canviarà res.</string>
+    <string name="backup_confirm_consent">Aquests estaven activats al fitxer. NO s\'activen: hauràs de tornar a acceptar-ne l\'avís.</string>
+    <string name="backup_confirm_regions">Mapes instal·lats que figuren al fitxer: %1$d. Ara no es descarrega res; la pantalla Mapes ho oferirà.</string>
+    <string name="backup_confirm_skipped">Entrades del fitxer que no es poden utilitzar i s\'ometran: %1$d.</string>
+    <string name="backup_confirm_places">El fitxer també té llocs, llistes i tracks. S\'afegeixen als teus; no se suprimeix res.</string>
+    <string name="backup_confirm_yes">Restaura</string>
+    <string name="backup_confirm_no">Cancel·la</string>
+
+    <string name="backup_pending_title">Per tornar a activar</string>
+    <string name="backup_pending_body">Aquests estaven activats al teu telèfon antic. Per la teva privadesa, continuen desactivats fins que els activis i n\'acceptis l\'avís aquí.</string>
+    <string name="backup_pending_dismiss">Ignora</string>
+
+    <string name="backup_item_cameras_fixed">Radars</string>
+    <string name="backup_item_cameras_mobile">Zones de radars mòbils</string>
+    <string name="backup_item_incidents">Incidències de trànsit</string>
+    <string name="backup_item_v16">Balises V16</string>
+    <string name="backup_item_roadworks">Obres</string>
+    <string name="backup_item_fuel">Gasolineres</string>
+    <string name="backup_item_other">Altres</string>
+
+    <string name="backup_group_navigation">Navegació</string>
+    <string name="backup_group_navigation_ui">Pantalla de navegació</string>
+    <string name="backup_group_fuel">Gasolineres</string>
+    <string name="backup_group_cameras">Radars i incidents</string>
+    <string name="backup_group_history">Historial de cerques</string>
+    <string name="backup_group_recording">Enregistrament de tracks</string>
+    <string name="backup_group_regions">Privadesa i mapes</string>
+
+    <string name="regions_restored_title">Mapes de la teva còpia de seguretat</string>
+    <string name="regions_restored_body">Mapes de la teva còpia de seguretat que no estan instal·lats en aquest telèfon: %1$d. No es descarrega res fins que ho demanis.</string>
+    <string name="regions_restored_offline">El mode fora de línia està activat: desactiva\'l per descarregar-los.</string>
+    <string name="regions_restored_unavailable">No són al catàleg actual: %1$d.</string>
+    <string name="regions_restored_download">Descarrega\'ls (%1$s)</string>
+    <string name="regions_restored_dismiss">Ignora</string>
+</resources>

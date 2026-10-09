@@ -14,7 +14,6 @@
     <!-- Ficha de una estación -->
     <string name="bike_category">Estación de bicicleta compartida</string>
     <string name="bike_card_title_unknown">Estación de bicicleta compartida</string>
-    <string name="bike_card_system">%1$s</string>
     <string name="bike_card_capacity">Anclajes: %1$d</string>
     <string name="bike_card_capacity_unknown">Anclajes: no indicados</string>
     <string name="bike_card_availability">%1$d bicis, %2$d anclajes libres (actualizado %3$s)</string>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Track recording -->
+    <string name="recording_title">Track-Aufzeichnung</string>
+    <string name="recording_switch_title">Track-Aufzeichnung erlauben</string>
+    <string name="recording_switch_body">Fügt der Track-Liste eine Schaltfläche „Aufzeichnung starten“ hinzu. Die Fahrt wird nur auf diesem Gerät als Track gespeichert und nichts wird irgendwohin gesendet. Punkte werden aufgezeichnet, solange die App geöffnet ist oder du navigierst.</string>
+    <string name="recording_delete_all">Aufgezeichnete Tracks löschen</string>
+    <string name="recording_deleted">Aufgezeichnete Tracks gelöscht.</string>
+    <string name="recording_idle">Keine Aufzeichnung</string>
+    <string name="recording_start">Aufzeichnung starten</string>
+    <string name="recording_stop">Beenden und speichern</string>
+    <string name="recording_status_on">Aufzeichnung · %1$d Punkte · %2$s</string>
+    <string name="recording_status_paused">Pausiert, du stehst · %1$d Punkte · %2$s</string>
+    <string name="recording_note">Die Aufzeichnung läuft weiter, solange die App geöffnet ist oder du navigierst, und pausiert von selbst, wenn du dich nicht mehr bewegst.</string>
+    <string name="recording_saved">Track gespeichert. Du kannst ihn auf der Karte anzeigen oder als GPX exportieren.</string>
+    <string name="recording_too_short">Nichts zu speichern: Die Aufzeichnung war zu kurz.</string>
+    <string name="recording_failed">Der Track konnte nicht gespeichert werden. Die Punkte bleiben erhalten und werden beim nächsten Start gespeichert.</string>
+    <string name="recording_could_not_start">Start nicht möglich: Eine frühere Aufzeichnung wartet noch auf das Speichern.</string>
+    <string name="recording_track_name">Aufgezeichnet am %1$s</string>
+    <string name="track_delete">Löschen</string>
+</resources>

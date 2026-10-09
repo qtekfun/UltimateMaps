@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_title">Definições</string>
+    <string name="settings_open">Definições</string>
+    <string name="settings_back">Voltar</string>
+
+    <string name="settings_privacy_title">Privacidade</string>
+    <string name="settings_offline_title">Modo offline</string>
+    <string name="settings_offline_body">A aplicação não faz nenhuma ligação, nem sequer para transferências. A mesma definição que em Mapas.</string>
+    <string name="settings_regions_title">Catálogo de regiões</string>
+    <string name="settings_regions_body">Endereço do catálogo: %1$s</string>
+    <string name="settings_regions_none">Nenhum endereço de catálogo definido.</string>
+    <string name="settings_regions_open">Abrir Mapas</string>
+    <string name="settings_connections_title">Ligações possíveis</string>
+    <string name="settings_connections_none">Nenhuma ligação é possível neste momento.</string>
+    <string name="conn_status_active">Permitida</string>
+    <string name="conn_status_disabled">Desativada</string>
+    <string name="conn_status_blocked_offline">Bloqueada pelo modo offline</string>
+    <string name="conn_purpose_tiles">Mosaicos online</string>
+    <string name="conn_purpose_short_link">Ligações curtas</string>
+    <string name="conn_purpose_map_download">Transferência de mapas</string>
+    <string name="conn_purpose_sync">Sincronização</string>
+    <string name="conn_purpose_other">Outros (preços de combustível)</string>
+
+    <string name="fuel_title">Postos de combustível</string>
+    <string name="fuel_switch_title">Mostrar postos de combustível e preços</string>
+    <string name="fuel_switch_body">Desativado por predefinição. Nada é transferido enquanto estiver desativado.</string>
+    <string name="fuel_fuels_title">Combustíveis a transferir</string>
+    <string name="fuel_fuels_body">É pedido um ficheiro por cada combustível assinalado.</string>
+    <string name="fuel_fuels_none">Assinala pelo menos um combustível para transferir os seus preços.</string>
+    <string name="fuel_map_title">Combustível mostrado no mapa</string>
+    <string name="fuel_map_none">Assinala um combustível acima para o escolher aqui.</string>
+    <string name="fuel_refresh_title">Frequência de atualização</string>
+    <string name="fuel_refresh_minutes">A cada %1$d min</string>
+    <string name="fuel_refresh_hours">A cada %1$d h</string>
+    <string name="fuel_refresh_days">Uma vez por dia</string>
+    <string name="fuel_url_title">Endereço da fonte</string>
+    <string name="fuel_url_save">Guardar</string>
+    <string name="fuel_url_reset">Repor</string>
+    <string name="fuel_url_invalid">Endereço https inválido.</string>
+    <string name="fuel_url_saved">Guardado.</string>
+    <string name="fuel_last_update">Última atualização: %1$s</string>
+    <string name="fuel_last_update_never">Ainda não transferido.</string>
+    <string name="fuel_update_now">Atualizar agora</string>
+    <string name="fuel_update_running">A transferir %1$d de %2$d (%3$s)…</string>
+    <string name="fuel_update_ok">Preços atualizados.</string>
+    <string name="fuel_update_kept">Os últimos dados válidos são mantidos.</string>
+    <string name="fuel_attribution">Dados: Ministerio para la Transición Ecológica y el Reto Demográfico (Geoportal de Hidrocarburos), reutilizados ao abrigo da Lei 37/2007. Informação não oficial; confirma o preço na bomba.</string>
+
+    <string name="fuel_err_offline">O modo offline está ativo: não foi feita nenhuma ligação.</string>
+    <string name="fuel_err_not_allowed">Ligação não permitida (endereço não autorizado ou redirecionado para outro servidor).</string>
+    <string name="fuel_err_network">Não foi possível ligar.</string>
+    <string name="fuel_err_timeout">Tempo esgotado.</string>
+    <string name="fuel_err_server">O servidor devolveu um erro.</string>
+    <string name="fuel_err_too_large">A resposta é demasiado grande.</string>
+    <string name="fuel_err_invalid">Dados inválidos ou incompletos.</string>
+
+    <string name="fuel_confirm_title">Ativar postos de combustível?</string>
+    <string name="fuel_confirm_body">O que é pedido: um ficheiro de preços por cada combustível que escolheres (nada até escolheres algum).\n\nA que servidor: %1$s.\n\nO que esse servidor vê: o teu endereço IP e que combustíveis transferes. A tua localização nunca é enviada: os ficheiros são nacionais e são filtrados no teu telemóvel.\n\nSó se liga quando o ativas, tocas em Atualizar agora ou abres a aplicação com dados mais antigos do que a frequência de atualização.</string>
+    <string name="fuel_confirm_offline">O modo offline está ativo, por isso nada se ligará até o desativares.</string>
+    <string name="fuel_confirm_yes">Ativar</string>
+    <string name="fuel_confirm_no">Cancelar</string>
+</resources>

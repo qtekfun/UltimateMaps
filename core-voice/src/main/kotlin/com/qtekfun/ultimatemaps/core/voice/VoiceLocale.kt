@@ -16,7 +16,11 @@ object VoiceLocale {
             out += Locale(base.language, system.country.uppercase(Locale.ROOT))
         }
         // The project's first users are in Spain: a Spanish app on a phone with a foreign locale still gets Spain's voice.
-        if (language == VoiceLanguage.ES) out += Locale("es", "ES")
+        when (language) {
+            VoiceLanguage.ES, VoiceLanguage.CA, VoiceLanguage.GL -> out += Locale(language.tag, "ES")
+            VoiceLanguage.PT -> out += Locale("pt", "PT") // the wording of the guidance is European Portuguese
+            else -> Unit
+        }
         out += base
         return out.toList()
     }

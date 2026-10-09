@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Route stops and petrol-station card (RF-15) -->
+    <string name="route_stops_title">Paradas (%1$d de %2$d)</string>
+    <string name="route_stop_up">Subir %1$s</string>
+    <string name="route_stop_down">Baixar %1$s</string>
+    <string name="route_stop_remove">Quitar %1$s da ruta</string>
+    <string name="route_stops_limit">Ata %1$d paradas. Quita unha para engadir outra.</string>
+    <string name="route_err_stop">Unha parada non está nunha vía dos mapas descargados. Quítaa ou escolle outra.</string>
+    <string name="fuel_category">Gasolineira</string>
+    <string name="fuel_card_close">Pechar</string>
+    <string name="fuel_go">Ir</string>
+    <string name="fuel_add_stop">Engadir parada</string>
+    <string name="fuel_save">Gardar</string>
+    <string name="fuel_saved">Gardado</string>
+    <string name="fuel_schedule">Horario: %1$s</string>
+    <string name="fuel_prices_title">Prezos</string>
+    <string name="fuel_price_on_map">%1$s (no mapa)</string>
+    <string name="fuel_updated_now">actualizado agora mesmo</string>
+    <string name="fuel_updated_min">actualizado hai %1$d min</string>
+    <string name="fuel_updated_h">actualizado hai %1$d h</string>
+    <string name="fuel_updated_d">actualizado hai %1$d d</string>
+    <string name="fuel_updated_unknown">hora de actualización descoñecida</string>
+    <string name="fuel_stop_duplicate">Esta gasolineira xa é unha parada da ruta.</string>
+    <string name="fuel_stop_is_destination">Esta gasolineira é o destino da ruta.</string>
+    <string name="fuel_stop_limit">A ruta xa ten %1$d paradas. Quita unha primeiro.</string>
+    <string name="fuel_stop_no_route">Inicia primeiro unha ruta para engadir unha parada.</string>
+    <string name="fuel_source">Fonte: Ministerio para a Transición Ecolóxica e o Reto Demográfico</string>
+    <string name="fuel_price_note">Prezo publicado polo Ministerio; non oficial. Compróbao no xerador.</string>
+</resources>

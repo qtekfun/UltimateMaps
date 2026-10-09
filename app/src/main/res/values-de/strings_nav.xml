@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Navigation service notification -->
+    <string name="nav_channel_name">Navigation</string>
+    <string name="nav_notification_stop">Beenden</string>
+    <string name="nav_notification_open">Öffnen</string>
+    <string name="nav_in_distance">%1$s: %2$s</string>
+    <string name="nav_onto_street">%1$s auf %2$s</string>
+    <string name="nav_exit_badge">Ausfahrt %1$s</string>
+    <string name="nav_exit_toward">%1$s Richtung %2$s</string>
+    <string name="nav_waiting_gps">Warten auf GPS-Signal …</string>
+    <string name="nav_recalculating">Route wird neu berechnet …</string>
+    <string name="nav_arrived">Du bist angekommen</string>
+    <string name="nav_stop_reached">Zwischenstopp erreicht</string>
+    <string name="nav_problem_permission">Die Standortberechtigung wurde entzogen. Erlaube sie, um die Navigation fortzusetzen.</string>
+    <string name="nav_problem_gps_off">Der Standort ist ausgeschaltet. Schalte ihn ein, um die Navigation fortzusetzen.</string>
+    <string name="nav_resumed">Navigation fortgesetzt</string>
+    <string name="nav_turn_depart">Start</string>
+    <string name="nav_turn_straight">Geradeaus weiterfahren</string>
+    <string name="nav_turn_slight_right">Halb rechts halten</string>
+    <string name="nav_turn_right">Rechts abbiegen</string>
+    <string name="nav_turn_sharp_right">Scharf rechts</string>
+    <string name="nav_turn_slight_left">Halb links halten</string>
+    <string name="nav_turn_left">Links abbiegen</string>
+    <string name="nav_turn_sharp_left">Scharf links</string>
+    <string name="nav_turn_u_turn">Wenden</string>
+    <string name="nav_turn_roundabout_enter">In den Kreisverkehr einfahren</string>
+    <string name="nav_turn_roundabout_leave">Kreisverkehr verlassen</string>
+    <string name="nav_turn_exit_left">Ausfahrt links nehmen</string>
+    <string name="nav_turn_exit_right">Ausfahrt rechts nehmen</string>
+    <string name="nav_turn_merge">Einfädeln</string>
+    <string name="nav_turn_arrive">Ziel erreichen</string>
+    <string name="nav_turn_arrive_left">Dein Ziel liegt links</string>
+    <string name="nav_turn_arrive_right">Dein Ziel liegt rechts</string>
+    <!-- Failed routes (policy in RouteFailurePolicy) -->
+    <string name="nav_route_err_no_regions">Keine Regionen installiert. Lade eine Region herunter, um Routen offline zu berechnen.</string>
+    <string name="nav_route_err_need_maps">Für diese Route fehlen Karten. Lade sie unter Karten herunter und versuche es dann erneut.</string>
+    <string name="nav_route_err_need_maps_named">Für diese Route fehlen Karten: %1$s. Lade sie unter Karten herunter und versuche es dann erneut.</string>
+    <string name="nav_route_err_start">Der Start liegt nicht an einer Straße in den heruntergeladenen Karten. Wähle einen anderen Startpunkt.</string>
+    <string name="nav_route_err_end">Das Ziel liegt nicht an einer Straße in den heruntergeladenen Karten.</string>
+    <string name="nav_route_err_stop">Einer der Zwischenstopps liegt nicht an einer Straße in den heruntergeladenen Karten. Verschiebe oder entferne ihn.</string>
+    <string name="nav_route_err_not_found">Mit diesen Optionen wurde keine Route gefunden. Versuche ein anderes Profil, andere Vermeiden-Optionen oder andere Punkte.</string>
+    <string name="nav_route_err_timeout">Die Routenberechnung hat zu lange gedauert. Versuche es erneut oder wähle einen näheren Punkt.</string>
+    <string name="nav_route_err_core">Beim Routing-Modul ist ein Problem aufgetreten und es wurde neu gestartet. Versuche es erneut.</string>
+    <string name="nav_route_err_core_unavailable">Das Routing-Modul schlägt weiterhin fehl. Versuche es gleich noch einmal.</string>
+    <string name="nav_route_err_internal">Die Route konnte nicht berechnet werden.</string>
+</resources>

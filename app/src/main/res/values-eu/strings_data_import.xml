@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Google Takeout import, GPX track layer -->
+    <string name="msg_takeout_imported">Takeout: %1$d zerrenda, %2$d leku gehitu dira (%3$d bazeuden), %4$d saltatu dira koordenaturik gabe</string>
+    <string name="tracks_title">Mapako ibilbide-grabaketak</string>
+    <string name="tracks_empty">Ez dago inportatutako ibilbide-grabaketarik</string>
+    <string name="track_show">Erakutsi</string>
+    <string name="track_hide">Ezkutatu</string>
+    <string name="track_fit">Zooma grabaketara doitu</string>
+    <string name="track_points">%1$d puntu</string>
+</resources>

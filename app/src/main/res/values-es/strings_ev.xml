@@ -7,11 +7,8 @@
     <string name="ev_sockets_title">Tipos de conector</string>
     <string name="ev_sockets_body">Con los cuatro marcados se muestran todos los puntos, también los que no indican conector. Marca menos para ver solo los que indican alguno de ellos.</string>
     <string name="ev_socket_type2">Tipo 2</string>
-    <string name="ev_socket_ccs">CCS</string>
-    <string name="ev_socket_chademo">CHAdeMO</string>
     <string name="ev_socket_schuko">Schuko (enchufe doméstico)</string>
     <string name="ev_socket_type1">Tipo 1</string>
-    <string name="ev_socket_tesla">Tesla</string>
     <string name="ev_socket_other">Otro conector</string>
     <string name="ev_power_title">Potencia mínima</string>
     <string name="ev_power_body">Si fijas un mínimo se ocultan los puntos cuya potencia no se conoce.</string>
@@ -23,7 +20,6 @@
     <string name="ev_data_count">%1$d puntos, datos del %2$s</string>
     <string name="ev_data_never">Aún no se han descargado datos de cargadores.</string>
     <string name="ev_attribution">Puntos de carga de OpenStreetMap, © colaboradores de OpenStreetMap (ODbL).</string>
-    <string name="ev_unit_kw">%1$s kW</string>
 
     <!-- Ficha de un cargador pulsado -->
     <string name="ev_category">Cargador eléctrico</string>
@@ -32,8 +28,6 @@
     <string name="ev_card_capacity">Puntos de carga: %1$d</string>
     <string name="ev_card_sockets">Conectores</string>
     <string name="ev_card_sockets_unknown">Conectores: no indicados en OpenStreetMap</string>
-    <string name="ev_card_socket_count">%1$d × %2$s</string>
-    <string name="ev_card_socket_power">%1$s, %2$s kW</string>
     <string name="ev_card_fee_paid">Tarifa: de pago</string>
     <string name="ev_card_fee_free">Tarifa: gratuito</string>
     <string name="ev_card_fee_unknown">Tarifa: no indicada</string>

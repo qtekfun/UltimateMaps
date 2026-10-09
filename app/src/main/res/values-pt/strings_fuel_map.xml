@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Route stops and petrol-station card (RF-15) -->
+    <string name="route_stops_title">Paragens (%1$d de %2$d)</string>
+    <string name="route_stop_up">Subir %1$s</string>
+    <string name="route_stop_down">Descer %1$s</string>
+    <string name="route_stop_remove">Remover %1$s da rota</string>
+    <string name="route_stops_limit">Até %1$d paragens. Remove uma para adicionar outra.</string>
+    <string name="route_err_stop">Uma paragem não está numa estrada dos mapas transferidos. Remove-a ou escolhe outra.</string>
+    <string name="fuel_category">Posto de combustível</string>
+    <string name="fuel_card_close">Fechar</string>
+    <string name="fuel_go">Ir</string>
+    <string name="fuel_add_stop">Adicionar paragem</string>
+    <string name="fuel_save">Guardar</string>
+    <string name="fuel_saved">Guardado</string>
+    <string name="fuel_schedule">Horário: %1$s</string>
+    <string name="fuel_prices_title">Preços</string>
+    <string name="fuel_price_on_map">%1$s (no mapa)</string>
+    <string name="fuel_updated_now">atualizado agora mesmo</string>
+    <string name="fuel_updated_min">atualizado há %1$d min</string>
+    <string name="fuel_updated_h">atualizado há %1$d h</string>
+    <string name="fuel_updated_d">atualizado há %1$d d</string>
+    <string name="fuel_updated_unknown">hora de atualização desconhecida</string>
+    <string name="fuel_stop_duplicate">Este posto já é uma paragem da rota.</string>
+    <string name="fuel_stop_is_destination">Este posto é o destino da rota.</string>
+    <string name="fuel_stop_limit">A rota já tem %1$d paragens. Remove uma primeiro.</string>
+    <string name="fuel_stop_no_route">Inicia primeiro uma rota para adicionar uma paragem.</string>
+    <string name="fuel_source">Fonte: Ministério da Transição Ecológica e do Desafio Demográfico</string>
+    <string name="fuel_price_note">Preço publicado pelo Ministério; não oficial. Confirma-o na bomba.</string>
+</resources>

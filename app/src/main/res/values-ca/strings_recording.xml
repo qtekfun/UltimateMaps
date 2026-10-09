@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Track recording -->
+    <string name="recording_title">Enregistrament de tracks</string>
+    <string name="recording_switch_title">Permet l\'enregistrament de tracks</string>
+    <string name="recording_switch_body">Afegeix un botó Inicia l\'enregistrament a la llista de tracks. El trajecte es desa com a track només en aquest dispositiu i no s\'envia enlloc. Els punts es conserven mentre l\'aplicació és oberta o mentre navegues.</string>
+    <string name="recording_delete_all">Suprimeix els tracks enregistrats</string>
+    <string name="recording_deleted">Tracks enregistrats suprimits.</string>
+    <string name="recording_idle">No s\'està enregistrant</string>
+    <string name="recording_start">Inicia l\'enregistrament</string>
+    <string name="recording_stop">Atura i desa</string>
+    <string name="recording_status_on">Enregistrant · %1$d punts · %2$s</string>
+    <string name="recording_status_paused">En pausa, estàs aturat · %1$d punts · %2$s</string>
+    <string name="recording_note">L\'enregistrament continua mentre l\'aplicació és oberta o mentre navegues, i es posa en pausa sol quan deixes de moure\'t.</string>
+    <string name="recording_saved">Track desat. Pots mostrar-lo al mapa o exportar-lo com a GPX.</string>
+    <string name="recording_too_short">No hi ha res a desar: l\'enregistrament era massa curt.</string>
+    <string name="recording_failed">No s\'ha pogut desar el track. Els punts es conserven i es desen la propera vegada que iniciïs.</string>
+    <string name="recording_could_not_start">No s\'ha pogut iniciar: un enregistrament anterior encara espera ser desat.</string>
+    <string name="recording_track_name">Enregistrat el %1$s</string>
+    <string name="track_delete">Suprimeix</string>
+</resources>

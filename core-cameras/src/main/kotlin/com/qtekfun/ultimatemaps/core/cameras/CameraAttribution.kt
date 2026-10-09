@@ -3,6 +3,8 @@ package com.qtekfun.ultimatemaps.core.cameras
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
+import java.util.Locale
 
 /**
  * Attribution to show next to the data (Settings, cards). The DGT publishes its datasets under Creative Commons
@@ -24,6 +26,19 @@ object CameraAttribution {
 
     /** Credit for the live incident feed. */
     fun forIncidents(english: Boolean): String = if (english) DGT_EN else DGT_ES
+
+    /**
+     * The date of [millis] in the style of [locale]: "07/10/2026 12:30" for Spanish, "2026-10-07 12:30" for English (the
+     * formats the app always used), the locale's own short date and time for any other language.
+     */
+    fun dateText(millis: Long, locale: Locale, zone: ZoneId = ZoneId.systemDefault()): String {
+        val moment = Instant.ofEpochMilli(millis).atZone(zone)
+        return when (locale.language) {
+            "es" -> dateText(millis, english = false, zone = zone)
+            "en" -> dateText(millis, english = true, zone = zone)
+            else -> moment.format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).withLocale(locale))
+        }
+    }
 
     /** "2026-10-07 12:30" / "07/10/2026 12:30" of an epoch-millis time. */
     fun dateText(millis: Long, english: Boolean, zone: ZoneId = ZoneId.systemDefault()): String =

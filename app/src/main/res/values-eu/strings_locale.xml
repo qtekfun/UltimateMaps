@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Language of place information (Settings) -->
+    <string name="locale_title">Lekuen informazioaren hizkuntza</string>
+    <string name="locale_body">Bilaketa-emaitzetako eta leku-fitxetako izenak, helbideak eta kategoriak. Mapako etiketei ez die eragiten.</string>
+    <string name="locale_auto">Automatikoa (aplikazioaren hizkuntza)</string>
+    <string name="locale_es">Gaztelania</string>
+    <string name="locale_en">Ingelesa</string>
+    <string name="locale_local">Tokiko izenak</string>
+    <string name="locale_local_note">Izenak tokian idazten diren bezala erakusten dira (adibidez katalana, euskara edo galegoa); kategoriek aplikazioaren hizkuntza erabiltzen dute.</string>
+</resources>

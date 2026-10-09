@@ -37,10 +37,10 @@ class StyleAndStringsTest {
 
     @Test
     fun spanishAndEnglishStringsHaveSameKeys() {
-        fun keys(f: String) = Regex("<string name=\"([^\"]+)\"").findAll(File(f).readText()).map { it.groupValues[1] }.toSet()
+        fun keys(f: String) = Regex("<string name=\"([^\"]+)\"(?![^>]*translatable=\"false\")").findAll(File(f).readText()).map { it.groupValues[1] }.toSet()
         val en = keys("src/main/res/values/strings.xml")
         val es = keys("src/main/res/values-es/strings.xml")
         assertEquals(en, es)
-        assertTrue("attribution_osm" in en)
+        assertTrue("about_title" in en)
     }
 }

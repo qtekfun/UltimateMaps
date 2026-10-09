@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="backup_title">Sauvegarde et restauration</string>
+    <string name="backup_body">Enregistrez vos réglages dans un fichier, ou restaurez-les depuis un fichier, par exemple lorsque vous changez de téléphone. Le fichier ne contient ni positions, ni mots de passe, ni rien de vos recherches. Il reste à l\'endroit où vous l\'enregistrez.</string>
+    <string name="backup_export">Exporter les réglages</string>
+    <string name="backup_import">Importer les réglages</string>
+    <string name="backup_all_body">« Tout exporter » inclut aussi vos lieux enregistrés, vos listes et vos traces, dans un seul fichier ZIP.</string>
+    <string name="backup_export_all">Tout exporter</string>
+
+    <string name="backup_exported">Réglages enregistrés dans le fichier que vous avez choisi.</string>
+    <string name="backup_exported_all">Lieux et réglages enregistrés dans le fichier que vous avez choisi.</string>
+    <string name="backup_failed">Cela n\'a pas fonctionné. Rien n\'a été modifié.</string>
+    <string name="backup_err_not_settings">Ce n\'est pas un fichier de réglages de cette application. Rien n\'a été modifié.</string>
+    <string name="backup_err_corrupt">Le fichier est endommagé et ne peut pas être lu. Rien n\'a été modifié.</string>
+    <string name="backup_err_too_large">Le fichier est trop volumineux pour être un fichier de réglages. Rien n\'a été modifié.</string>
+    <string name="backup_err_newer">Ce fichier a été créé par une version plus récente de l\'application (format de fichier %1$d). Mettez l\'application à jour pour le restaurer. Rien n\'a été modifié.</string>
+
+    <string name="backup_restored">%1$d restauré(s), %2$d ignoré(s).</string>
+    <string name="backup_restored_consent">Commutateurs qui restent désactivés jusqu\'à ce que vous les acceptiez de nouveau : %1$d.</string>
+    <string name="backup_restored_regions">Cartes installées répertoriées dans le fichier : %1$d. L\'écran Cartes propose de les télécharger.</string>
+    <string name="backup_restored_places">Lieux ajoutés : %1$d, déjà présents : %2$d, traces ajoutées : %3$d.</string>
+
+    <string name="backup_confirm_title">Importer les réglages ?</string>
+    <string name="backup_confirm_body">Réglages qui seront remplacés par les valeurs du fichier : %1$d.</string>
+    <string name="backup_confirm_nothing">Le fichier correspond à vos réglages actuels. Rien ne changera.</string>
+    <string name="backup_confirm_consent">Ceux-ci étaient activés dans le fichier. Ils ne sont PAS activés : vous devrez accepter de nouveau leur avis.</string>
+    <string name="backup_confirm_regions">Cartes installées répertoriées dans le fichier : %1$d. Rien n\'est téléchargé maintenant ; l\'écran Cartes le proposera.</string>
+    <string name="backup_confirm_skipped">Entrées du fichier inutilisables qui seront ignorées : %1$d.</string>
+    <string name="backup_confirm_places">Le fichier contient aussi des lieux, des listes et des traces. Ils sont ajoutés aux vôtres ; rien n\'est supprimé.</string>
+    <string name="backup_confirm_yes">Restaurer</string>
+    <string name="backup_confirm_no">Annuler</string>
+
+    <string name="backup_pending_title">À réactiver</string>
+    <string name="backup_pending_body">Ceux-ci étaient activés sur votre ancien téléphone. Pour votre vie privée, ils restent désactivés tant que vous ne les activez pas et n\'acceptez pas leur avis ici.</string>
+    <string name="backup_pending_dismiss">Ignorer</string>
+
+    <string name="backup_item_cameras_fixed">Radars</string>
+    <string name="backup_item_cameras_mobile">Zones de radars mobiles</string>
+    <string name="backup_item_incidents">Incidents de circulation</string>
+    <string name="backup_item_v16">Balises V16</string>
+    <string name="backup_item_roadworks">Travaux</string>
+    <string name="backup_item_fuel">Stations-service</string>
+    <string name="backup_item_other">Autre</string>
+
+    <string name="backup_group_navigation">Navigation</string>
+    <string name="backup_group_navigation_ui">Écran de navigation</string>
+    <string name="backup_group_fuel">Stations-service</string>
+    <string name="backup_group_cameras">Radars et incidents</string>
+    <string name="backup_group_history">Historique de recherche</string>
+    <string name="backup_group_recording">Enregistrement de traces</string>
+    <string name="backup_group_regions">Confidentialité et cartes</string>
+
+    <string name="regions_restored_title">Cartes de votre sauvegarde</string>
+    <string name="regions_restored_body">Cartes de votre sauvegarde qui ne sont pas installées sur ce téléphone : %1$d. Rien n\'est téléchargé tant que vous ne le demandez pas.</string>
+    <string name="regions_restored_offline">Le mode hors ligne est activé : désactivez-le pour les télécharger.</string>
+    <string name="regions_restored_unavailable">Absentes du catalogue actuel : %1$d.</string>
+    <string name="regions_restored_download">Les télécharger (%1$s)</string>
+    <string name="regions_restored_dismiss">Ignorer</string>
+</resources>

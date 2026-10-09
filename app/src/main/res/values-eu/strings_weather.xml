@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Weather alerts (AEMET): Settings group (inside the Alerts category), map chip, detail card, route summary, backup -->
+    <string name="weather_group_title">Eguraldi-abisuak (AEMET)</string>
+    <string name="weather_switch_title">Eguraldi-abisuak (AEMET)</string>
+    <string name="weather_switch_body">Espainiako eguraldi-zerbitzuaren (AEMET) eguraldi-abisu laranja eta gorriak erakusten ditu mapan eta ibilbideetan. AEMET-en zerbitzariari (opendata.aemet.es) abisuen paketa nazional bakarra eskatzen dio, 15 minutuan behin gehienez, eta zure telefonoan zure kokapenarekin alderatzen du: ez da inoiz kokapenik edo area bat bidaltzen. Zure AEMET API gako doakoa behar du, AEMET-en aurrean identifikatzen zaituena. Lehenespenez desaktibatuta.</string>
+    <string name="weather_honesty">Abisu bat informazioa da, ez aholkua. Datuak berandu edo osatu gabe iritsi daitezke: egiaztatu AEMET-en (aemet.es) testu ofiziala.</string>
+    <string name="weather_key_title">API gakoa</string>
+    <string name="weather_key_hint">Itsatsi zure AEMET API gakoa</string>
+    <string name="weather_key_saved">Gako bat gordeta dago telefono honetan.</string>
+    <string name="weather_key_none">Ez dago gakorik gordeta. Eguraldi-abisuak inaktibo jarraitzen dute bat gehitu arte.</string>
+    <string name="weather_key_privacy">Gakoa zifratuta gordetzen da Android Keystore-n, ez da inoiz erregistroetan idazten eta ez da inoiz babeskopietan edo ezarpen-fitxategietan sartzen. AEMET-en aurrean identifikatzen zaitu: AEMET-ek (eta zure sareak) ikus dezake, zure IP helbidetik, gako honek abisuak eskatzen dituela.</string>
+    <string name="weather_key_save">Gorde gakoa</string>
+    <string name="weather_key_remove">Kendu gakoa</string>
+    <string name="weather_key_invalid">Hori ez dirudi AEMET API gako bat. Itsatsi berriro, testu gehigarririk gabe.</string>
+    <string name="weather_key_help">Nola lortu gako bat</string>
+    <string name="weather_key_help_body">AEMET-ek gako doakoa ematen dio posta elektroniko helbide batekin eskatzen duen edonori (zure nabigatzailean irekitzen da).</string>
+    <string name="weather_yellow_title">Erakutsi abisu horiak</string>
+    <string name="weather_yellow_body">Abisu horiak mapa-erdiko abisuen xehetasunetan bakarrik zerrendatzen dira. Ez dago inoiz haientzako bannerrik.</string>
+    <string name="weather_check_now">Egiaztatu orain</string>
+    <string name="weather_checking">Egiaztatzen…</string>
+    <string name="weather_status_never">Oraindik egiaztatu gabe.</string>
+    <string name="weather_status_ok">Egiaztatua: %1$s.</string>
+    <string name="weather_status_too_soon">Une bat lehenago egiaztatua. AEMET-i 15 minutuan behin gehienez galdetzen zaio.</string>
+    <string name="weather_status_fresh">Abisuak berriak dira. 30 minutuan behin gehienez berritzen dira.</string>
+    <string name="weather_status_rejected">AEMET-ek ez du gako hau onartu. Egiaztatu edo eskatu berri bat.</string>
+    <string name="weather_status_failed">Ezin izan dira abisuak AEMET-etik lortu. Ez da ezer aldatu.</string>
+    <string name="weather_attribution">Iturria: AEMET</string>
+    <string name="conn_purpose_weather">Eguraldi-abisuak (AEMET)</string>
+
+    <!-- Level names (used mid-sentence) -->
+    <string name="weather_level_yellow">Horia</string>
+    <string name="weather_level_orange">Laranja</string>
+    <string name="weather_level_red">Gorria</string>
+
+    <!-- One warning in a line: level, event, time -->
+    <string name="weather_line_until">Abisu %1$s: %2$s, %3$s arte (AEMET)</string>
+    <string name="weather_line_from">Abisu %1$s: %2$s, %3$s-tik aurrera (AEMET)</string>
+    <string name="weather_line_open">Abisu %1$s: %2$s (AEMET)</string>
+    <string name="weather_chip_description">Eguraldi-abisua. Sakatu xehetasunetarako.</string>
+
+    <!-- Detail card -->
+    <string name="weather_card_title">Eguraldi-abisuak</string>
+    <string name="weather_card_area">Eremua: %1$s</string>
+    <string name="weather_card_valid">Baliozkoa: %1$s</string>
+    <string name="weather_card_valid_range">%1$s-tik %2$s arte</string>
+    <string name="weather_card_valid_until">%1$s arte</string>
+    <string name="weather_card_valid_from">%1$s-tik aurrera</string>
+    <string name="weather_card_instruction">AEMET: %1$s</string>
+    <string name="weather_card_issued">Emana: %1$s</string>
+    <string name="weather_card_close">Itxi</string>
+    <string name="weather_card_empty">Ez dago abisurik leku honetarako.</string>
+
+    <!-- Route summary -->
+    <string name="weather_route_title">Eguraldi-abisuak ibilbide honetan</string>
+
+    <!-- Backup and restore -->
+    <string name="backup_item_weather">Eguraldi-abisuak (AEMET)</string>
+    <string name="backup_item_weather_yellow">Erakutsi abisu horiak</string>
+    <string name="backup_group_weather">Eguraldi-abisuak</string>
+</resources>

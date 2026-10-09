@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Data credits of the speed-camera, traffic and low-emission-zone layers -->
+    <string name="attr_dgt">Dados: Dirección General de Tráfico (nap.dgt.es), CC BY.</string>
+    <string name="attr_cameras_osm">Radares também do OpenStreetMap, © colaboradores do OpenStreetMap (ODbL).</string>
+    <string name="attr_zbe_osm">Zonas de baixas emissões do OpenStreetMap, © colaboradores do OpenStreetMap (ODbL).</string>
+</resources>

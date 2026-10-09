@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Electric chargers: Settings group (inside the Fuel stations category), map card and attribution -->
+    <string name="ev_group_title">Bornes de recharge électrique</string>
+    <string name="ev_switch_title">Afficher les bornes de recharge</string>
+    <string name="ev_switch_body">Affiche sur la carte les stations de recharge d\'OpenStreetMap. Un petit fichier de données est téléchargé depuis votre serveur de cartes (le même que pour les cartes) ; votre position n\'est jamais envoyée.</string>
+    <string name="ev_sockets_title">Types de prises</string>
+    <string name="ev_sockets_body">Avec les quatre sélectionnés, toutes les stations sont affichées, y compris celles sans information sur les prises. Sélectionnez-en moins pour n\'afficher que les stations qui en indiquent au moins une.</string>
+    <string name="ev_socket_type2">Type 2</string>
+    <string name="ev_socket_schuko">Schuko (prise domestique)</string>
+    <string name="ev_socket_type1">Type 1</string>
+    <string name="ev_socket_other">Autre prise</string>
+    <string name="ev_power_title">Puissance minimale</string>
+    <string name="ev_power_body">Les stations dont la puissance est inconnue sont masquées lorsqu\'un minimum est défini.</string>
+    <string name="ev_power_any">Toutes</string>
+    <string name="ev_power_22">22 kW ou plus</string>
+    <string name="ev_power_50">50 kW ou plus</string>
+    <string name="ev_power_100">100 kW ou plus</string>
+    <string name="ev_data_title">Données des bornes</string>
+    <string name="ev_data_count">%1$d stations, données du %2$s</string>
+    <string name="ev_data_never">Aucune donnée de bornes téléchargée pour l\'instant.</string>
+    <string name="ev_attribution">Stations de recharge électrique d\'OpenStreetMap, © contributeurs d\'OpenStreetMap (ODbL).</string>
+
+    <!-- Card of a tapped charger -->
+    <string name="ev_category">Borne de recharge</string>
+    <string name="ev_card_title_unknown">Station de recharge électrique</string>
+    <string name="ev_card_network">Réseau : %1$s</string>
+    <string name="ev_card_capacity">Points de charge : %1$d</string>
+    <string name="ev_card_sockets">Prises</string>
+    <string name="ev_card_sockets_unknown">Prises : non précisées dans OpenStreetMap</string>
+    <string name="ev_card_fee_paid">Tarif : payant</string>
+    <string name="ev_card_fee_free">Tarif : gratuit</string>
+    <string name="ev_card_fee_unknown">Tarif : non précisé</string>
+    <string name="ev_card_hours">Horaires : %1$s</string>
+    <string name="ev_card_access_customers">Accès : clients uniquement</string>
+    <string name="ev_card_access_private">Accès : privé ou restreint</string>
+    <string name="ev_card_access_public">Accès : public</string>
+    <string name="ev_card_auth">Démarrer avec : %1$s</string>
+    <string name="ev_auth_none">aucun compte nécessaire</string>
+    <string name="ev_auth_app">application</string>
+    <string name="ev_auth_card">carte d\'abonné</string>
+    <string name="ev_auth_nfc">sans contact</string>
+    <string name="ev_card_note">Données communautaires : la disponibilité, le prix et le bon fonctionnement ne sont pas connus. Vérifiez avant de vous y fier.</string>
+    <string name="ev_card_data_date">Données du %1$s</string>
+    <string name="ev_card_close">Fermer</string>
+    <string name="ev_go">Y aller</string>
+    <string name="ev_add_stop">Ajouter une étape</string>
+
+    <!-- Backup and restore -->
+    <string name="backup_item_chargers">Bornes de recharge</string>
+    <string name="backup_group_chargers">Bornes de recharge</string>
+</resources>

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Settings: section -->
+    <string name="cam_title">Radars et circulation</string>
+    <string name="cam_intro">Facultatif, désactivé par défaut. Les données des radars sont un petit fichier issu de la publication des données cartographiques ; la circulation n\'est téléchargée que si vous l\'activez. Votre position n\'est jamais envoyée.</string>
+
+    <string name="cam_fixed_title">Radars fixes</string>
+    <string name="cam_fixed_body">Radars fixes et tronçons à vitesse moyenne, sur la carte et sous forme d\'alerte en approche.</string>
+    <string name="cam_mobile_title">Zones de radars mobiles</string>
+    <string name="cam_mobile_body">Routes où la DGT indique que des radars mobiles peuvent opérer. Affichées comme des tronçons de route, jamais comme des points.</string>
+    <string name="cam_incidents_title">Incidents de circulation</string>
+    <string name="cam_incidents_body">Accidents, fermetures, circulation ralentie, obstacles et mauvais temps (DGT, en direct).</string>
+    <string name="cam_v16_title">Balises V16</string>
+    <string name="cam_v16_body">Véhicules arrêtés avec une balise V16 connectée (DGT, en direct).</string>
+    <string name="cam_roadworks_title">Inclure les travaux</string>
+    <string name="cam_roadworks_body">Il peut y en avoir des centaines à tout moment.</string>
+    <string name="cam_only_speeding_title">Avertir seulement en cas d\'excès de vitesse</string>
+    <string name="cam_only_speeding_body">Pour les radars dont la limite est connue, rester silencieux tant que vous êtes en dessous. Les radars dont la limite est inconnue avertissent toujours.</string>
+
+    <!-- Settings: legal note and acknowledgement dialog -->
+    <string name="cam_legal_note">Les zones de radars mobiles sont les tronçons publiés par la DGT ; l\'emplacement exact d\'un contrôle mobile n\'est jamais affiché. Les alertes sont données à titre informatif et peuvent être erronées ou périmées. Vous êtes responsable de votre conduite.</string>
+    <string name="cam_confirm_title">Données des radars</string>
+    <string name="cam_confirm_body">Cela active les avertissements de radars.\n\n- Sources : DGT (CC BY) et OpenStreetMap (ODbL). Un radar de la liste peut ne pas être en service.\n- Les zones de radars mobiles sont des tronçons de route publiés par la DGT. Pas de données en direct, de contrôles de police ni de signalements d\'utilisateurs.\n- Le fichier provient du serveur de données cartographiques que vous avez choisi ; rien sur votre position n\'est envoyé.\n- À titre informatif uniquement : il peut être erroné ou périmé.</string>
+    <string name="cam_confirm_yes">Je comprends, activer</string>
+    <string name="cam_confirm_no">Annuler</string>
+    <string name="cam_incidents_confirm_title">Données de circulation</string>
+    <string name="cam_incidents_confirm_body">Cela télécharge le fichier national de circulation de la DGT (environ 200 Ko) depuis nap.dgt.es lorsque vous l\'activez, appuyez sur Mettre à jour ou ouvrez l\'application avec des données anciennes. Il est filtré sur votre téléphone : votre position et votre itinéraire ne sont jamais envoyés. Le mode hors ligne le bloque.</string>
+    <string name="cam_incidents_confirm_offline">Le mode hors ligne est activé : rien n\'est téléchargé tant que vous ne le désactivez pas.</string>
+
+    <!-- Settings: data card -->
+    <string name="cam_data_title">Données</string>
+    <string name="cam_data_cameras_never">Données des radars : pas encore téléchargées.</string>
+    <string name="cam_data_cameras">Données des radars : %1$d radars fixes, %2$d tronçons à vitesse moyenne, %3$d zones de radars mobiles (%4$d traçables). Fichier du %5$s.</string>
+    <string name="cam_data_incidents_never">Données de circulation : pas encore téléchargées.</string>
+    <string name="cam_data_incidents">Données de circulation : %1$d enregistrements actifs, téléchargés %2$s.</string>
+    <string name="cam_refresh_title">Actualiser les données de circulation toutes les</string>
+    <string name="cam_refresh_minutes">%1$d minutes</string>
+    <string name="cam_refresh_hour">1 heure</string>
+    <string name="cam_update_now">Mettre à jour maintenant</string>
+    <string name="cam_update_running">Mise à jour…</string>
+    <string name="cam_update_ok">Mis à jour.</string>
+    <string name="cam_update_error">Mise à jour impossible (%1$s). Les données précédentes sont conservées.</string>
+    <string name="cam_err_offline">le mode hors ligne est activé</string>
+    <string name="cam_err_not_allowed">connexion non autorisée</string>
+    <string name="cam_err_network">erreur réseau</string>
+    <string name="cam_err_timeout">délai dépassé</string>
+    <string name="cam_err_server">le serveur a échoué</string>
+    <string name="cam_err_too_large">fichier trop volumineux</string>
+    <string name="cam_err_invalid">données non valides</string>
+    <string name="cam_err_no_catalog">le catalogue de cartes ne contient aucun fichier de radars ; ouvrez Cartes et actualisez-le</string>
+
+    <!-- Connection list -->
+    <string name="conn_purpose_traffic">Incidents de circulation (DGT)</string>
+
+    <!-- Map cards -->
+    <string name="cam_card_fixed_title">Radar fixe possible</string>
+    <string name="cam_card_section_title">Tronçon à vitesse moyenne</string>
+    <string name="cam_card_zone_title">Des radars mobiles peuvent opérer sur ce tronçon</string>
+    <string name="cam_card_road">Route : %1$s</string>
+    <string name="cam_card_limit">Limite appliquée : %1$d km/h</string>
+    <string name="cam_card_limit_unknown">Limite de vitesse : non publiée</string>
+    <string name="cam_card_km">Kilomètre %1$s à %2$s</string>
+    <string name="cam_card_zone_note">Publié par la DGT comme un tronçon de route, et non comme une position. Un appareil peut s\'y trouver ou non, et la ligne tracée est approximative.</string>
+    <string name="cam_card_fixed_note">La source indique où un radar peut se trouver, pas qu\'il est en service.</string>
+    <string name="cam_card_data_date">Fichier des radars du %1$s</string>
+    <string name="inc_card_v16">Véhicule arrêté avec une balise V16</string>
+    <string name="inc_card_accident">Accident</string>
+    <string name="inc_card_closure">Route ou chaussée fermée</string>
+    <string name="inc_card_congestion">Circulation ralentie</string>
+    <string name="inc_card_obstacle">Obstacle sur la route</string>
+    <string name="inc_card_weather">Conditions météo ou routières</string>
+    <string name="inc_card_roadworks">Travaux</string>
+    <string name="inc_card_since">Depuis le %1$s</string>
+    <string name="inc_card_until">Jusqu\'au %1$s</string>
+    <string name="inc_card_downloaded">Données de circulation téléchargées %1$s. Elles ont pu changer depuis.</string>
+    <string name="hazard_card_close">Fermer</string>
+</resources>

@@ -7,11 +7,11 @@
     <string name="ev_sockets_title">Plug types</string>
     <string name="ev_sockets_body">With all four selected every station is shown, including those with no plug information. Select fewer to show only stations that list one of them.</string>
     <string name="ev_socket_type2">Type 2</string>
-    <string name="ev_socket_ccs">CCS</string>
-    <string name="ev_socket_chademo">CHAdeMO</string>
+    <string name="ev_socket_ccs" translatable="false">CCS</string>
+    <string name="ev_socket_chademo" translatable="false">CHAdeMO</string>
     <string name="ev_socket_schuko">Schuko (household socket)</string>
     <string name="ev_socket_type1">Type 1</string>
-    <string name="ev_socket_tesla">Tesla</string>
+    <string name="ev_socket_tesla" translatable="false">Tesla</string>
     <string name="ev_socket_other">Other plug</string>
     <string name="ev_power_title">Minimum power</string>
     <string name="ev_power_body">Stations whose power is not known are hidden when a minimum is set.</string>
@@ -23,7 +23,7 @@
     <string name="ev_data_count">%1$d stations, data from %2$s</string>
     <string name="ev_data_never">No charger data downloaded yet.</string>
     <string name="ev_attribution">EV charging stations from OpenStreetMap, © OpenStreetMap contributors (ODbL).</string>
-    <string name="ev_unit_kw">%1$s kW</string>
+    <string name="ev_unit_kw" translatable="false">%1$s kW</string>
 
     <!-- Card of a tapped charger -->
     <string name="ev_category">EV charger</string>
@@ -32,8 +32,8 @@
     <string name="ev_card_capacity">Charging points: %1$d</string>
     <string name="ev_card_sockets">Plugs</string>
     <string name="ev_card_sockets_unknown">Plugs: not specified in OpenStreetMap</string>
-    <string name="ev_card_socket_count">%1$d × %2$s</string>
-    <string name="ev_card_socket_power">%1$s, %2$s kW</string>
+    <string name="ev_card_socket_count" translatable="false">%1$d × %2$s</string>
+    <string name="ev_card_socket_power" translatable="false">%1$s, %2$s kW</string>
     <string name="ev_card_fee_paid">Fee: yes</string>
     <string name="ev_card_fee_free">Fee: free</string>
     <string name="ev_card_fee_unknown">Fee: not specified</string>

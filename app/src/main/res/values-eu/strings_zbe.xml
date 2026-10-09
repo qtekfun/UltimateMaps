@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Low-emission zones: Settings group (inside the Alerts category), route warning, navigation prompt, backup. The data is OpenStreetMap and says only "zone": nothing here claims a vehicle is allowed or banned. -->
+    <string name="zbe_group_title">Isurketa gutxiko eremuak</string>
+    <string name="zbe_switch_title">Isurketa gutxiko eremuak</string>
+    <string name="zbe_switch_body">Eremuak mapan erakusten ditu, auto-ibilbide batek bat zeharkatzen duenean abisatzen du eta sartu aurretik behin ohartarazten du. Datu-fitxategi txiki bat deskargatzen du zure mapa-zerbitzaritik (mapen berbera); zure kokapena ez da inoiz bidaltzen. Datuak OpenStreetMap-en oinarritzen dira eta osatu gabe edo zaharkituta egon daitezke: hiriaren arau ofizialak aplikatzen dira.</string>
+    <string name="zbe_map_title">Erakutsi eremuak mapan</string>
+    <string name="zbe_map_body">Eremu anbar gardena, ertz eten batekin.</string>
+    <string name="zbe_prompt_title">Ohartarazi eremu batean sartu aurretik</string>
+    <string name="zbe_data_title">Eremuen datuak</string>
+    <string name="zbe_data_count">%1$d eremu, datuak: %2$s</string>
+    <string name="zbe_data_never">Oraindik ez da eremuen daturik deskargatu.</string>
+    <string name="zbe_data_notice">OpenStreetMap-en oinarritua, osatu gabe edo zaharkituta egon daiteke; hiriaren arau ofizialak aplikatzen dira. Aplikazioak ez daki zein ibilgailuri eragiten dien.</string>
+
+    <!-- Route summary (car routes) -->
+    <string name="zbe_route_warning">Ibilbide honek isurketa gutxiko eremu batean sartzen da: egiaztatu hiriaren sarbide-arauak</string>
+    <string name="zbe_route_zones">Eremua: %1$s</string>
+    <string name="zbe_route_tagged">OpenStreetMap-en etiketatua: %1$s</string>
+
+    <!-- Navigation prompt -->
+    <string name="zbe_ahead_title">Isurketa gutxiko eremua aurrean</string>
+    <string name="zbe_ahead_hint">Egiaztatu sarbide-arauak</string>
+    <string name="zbe_ahead_description">%1$s, %2$s barru. %3$s.</string>
+
+    <!-- Backup and restore -->
+    <string name="backup_item_zbe">Isurketa gutxiko eremuak</string>
+    <string name="backup_group_zbe">Isurketa gutxiko eremuak</string>
+</resources>

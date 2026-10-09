@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Names of the fuels of the Ministry service, by FuelType id (see FuelNames) -->
+    <string name="fuel_name_g95e5">Benzina 95 E5</string>
+    <string name="fuel_name_g95e10">Benzina 95 E10</string>
+    <string name="fuel_name_g95e25">Benzina 95 E25</string>
+    <string name="fuel_name_g95e85">Benzina 95 E85</string>
+    <string name="fuel_name_g95e5p">Benzina 95 E5 Premium</string>
+    <string name="fuel_name_g98e5">Benzina 98 E5</string>
+    <string name="fuel_name_g98e10">Benzina 98 E10</string>
+    <string name="fuel_name_goa">Gasolio A (standard)</string>
+    <string name="fuel_name_goap">Gasolio Premium</string>
+    <string name="fuel_name_gob">Gasolio B (agricolo)</string>
+    <string name="fuel_name_bie">Bioetanolo</string>
+    <string name="fuel_name_bio">Biodiesel</string>
+    <string name="fuel_name_glp">GPL (autogas)</string>
+    <string name="fuel_name_gnc">GNC (gas naturale compresso)</string>
+    <string name="fuel_name_gnl">GNL (gas naturale liquefatto)</string>
+    <string name="fuel_name_h2">Idrogeno</string>
+    <string name="fuel_name_dren">Diesel rinnovabile</string>
+    <string name="fuel_name_gren">Benzina rinnovabile</string>
+    <string name="fuel_name_met">Metanolo</string>
+    <string name="fuel_name_amo">Ammoniaca</string>
+    <string name="fuel_name_bgnc">Biogas compresso</string>
+    <string name="fuel_name_bgnl">Biogas liquefatto</string>
+</resources>

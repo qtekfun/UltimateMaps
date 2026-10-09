@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Bike: prefer or require cycle infrastructure -->
+    <string name="bike_cycleways_title">Radinfrastruktur</string>
+    <string name="bike_cycleways_settings_body">Standard für Radrouten: wie stark Radwege und Radstreifen bevorzugt werden. Das beruht auf OpenStreetMap-Tags, die in manchen Gebieten vollständiger sind als in anderen.</string>
+    <string name="bike_cycleways_off">Aus</string>
+    <string name="bike_cycleways_prefer">Bevorzugen</string>
+    <string name="bike_cycleways_strong">Stark bevorzugen</string>
+    <string name="bike_cycleways_only">Nur</string>
+    <string name="bike_cycleways_full_off">Aus (Standard)</string>
+    <string name="bike_cycleways_full_prefer">Bevorzugen</string>
+    <string name="bike_cycleways_full_strong">Stark bevorzugen</string>
+    <string name="bike_cycleways_full_only">Nur Radinfrastruktur</string>
+    <string name="bike_cycleways_caption_off">Standard-Radrouting, das Radwege und gekennzeichnete Radstreifen bereits bevorzugt.</string>
+    <string name="bike_cycleways_caption_prefer">Bevorzugt Radwege und Radstreifen, mit einigen Umwegen.</string>
+    <string name="bike_cycleways_caption_strong">Bevorzugt Radwege und Radstreifen stark, auch mit langen Umwegen.</string>
+    <string name="bike_cycleways_caption_only">Nutzt nur Radwege und für Fahrräder gekennzeichnete Straßen. Findet oft keine Route.</string>
+    <string name="bike_err_no_cycle_route">Mit ausschließlich Radinfrastruktur wurde keine Route gefunden. Versuche „Bevorzugen“.</string>
+</resources>

@@ -5,19 +5,23 @@ import com.qtekfun.ultimatemaps.core.voice.InstructionText
 import com.qtekfun.ultimatemaps.core.voice.NavSettings
 import com.qtekfun.ultimatemaps.core.voice.Utterance
 import com.qtekfun.ultimatemaps.core.voice.VoiceGuide
+import com.qtekfun.ultimatemaps.core.voice.AlertPromptPhrases
 import com.qtekfun.ultimatemaps.core.voice.VoiceLanguage
+import com.qtekfun.ultimatemaps.core.voice.VoicePacks
 import com.qtekfun.ultimatemaps.core.voice.VoicePriority
+import com.qtekfun.ultimatemaps.core.voice.fill
 import kotlinx.coroutines.flow.StateFlow
 import java.util.Locale
 
 /**
- * The sentences of the alerts, Spanish and English (pure; the cases are in `AlertPhrasesTest`). Wording is cautious on
+ * The sentences of the alerts, Spanish and English here and the other languages from their voice packs (pure; the cases are in `AlertPhrasesTest`). Wording is cautious on
  * purpose: the data says where a camera may be, not that it is switched on ("posible radar", "possible camera"), and a
  * mobile-radar zone is only "a stretch where mobile radars may operate".
  */
 object AlertPhrases {
     fun of(e: AlertEvent, units: DistanceUnits, language: VoiceLanguage): String {
         val lead = InstructionText.lead(e.distanceMeters, units, language)
+        if (language != VoiceLanguage.ES && language != VoiceLanguage.EN) VoicePacks.of(language)?.let { return fromPack(e, lead, it.alerts) }
         val es = language == VoiceLanguage.ES
         val what = when (e.target.category) {
             AlertCategory.FIXED_CAMERA -> if (es) "posible radar fijo" else "possible fixed speed camera"
@@ -38,6 +42,28 @@ object AlertPhrases {
             if (e.stage == AlertStage.NEAR && e.speeding) append(if (es) ". Reduce la velocidad" else ". Slow down")
         }
         return sentence + tail
+    }
+
+    /** The same sentence for a language that is a [VoicePack]. */
+    private fun fromPack(e: AlertEvent, lead: String, t: AlertPromptPhrases): String {
+        val what = when (e.target.category) {
+            AlertCategory.FIXED_CAMERA -> t.fixedCamera
+            AlertCategory.SECTION -> t.section
+            AlertCategory.MOBILE_ZONE -> t.mobileZone
+            AlertCategory.V16 -> t.v16
+            AlertCategory.ACCIDENT -> t.accident
+            AlertCategory.CLOSURE -> t.closure
+            AlertCategory.CONGESTION -> t.congestion
+            AlertCategory.OBSTACLE -> t.obstacle
+        }
+        val limit = e.limitKmh
+        return buildString {
+            append(lead).append(", ").append(what)
+            if (limit != null && (e.target.category == AlertCategory.FIXED_CAMERA || e.target.category == AlertCategory.SECTION)) {
+                append(t.limit.fill("n" to limit.toString()))
+            }
+            if (e.stage == AlertStage.NEAR && e.speeding) append(t.slowDown)
+        }
     }
 }
 

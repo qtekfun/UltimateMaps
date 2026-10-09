@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Route stops and petrol-station card (RF-15) -->
+    <string name="route_stops_title">Tappe (%1$d di %2$d)</string>
+    <string name="route_stop_up">Sposta %1$s in alto</string>
+    <string name="route_stop_down">Sposta %1$s in basso</string>
+    <string name="route_stop_remove">Rimuovi %1$s dal percorso</string>
+    <string name="route_stops_limit">Fino a %1$d tappe. Rimuovine una per aggiungerne un\'altra.</string>
+    <string name="route_err_stop">Una tappa non è su una strada delle mappe scaricate. Rimuovila o scegline un\'altra.</string>
+    <string name="fuel_category">Distributore di carburante</string>
+    <string name="fuel_card_close">Chiudi</string>
+    <string name="fuel_go">Vai</string>
+    <string name="fuel_add_stop">Aggiungi tappa</string>
+    <string name="fuel_save">Salva</string>
+    <string name="fuel_saved">Salvato</string>
+    <string name="fuel_schedule">Orari: %1$s</string>
+    <string name="fuel_prices_title">Prezzi</string>
+    <string name="fuel_price_on_map">%1$s (sulla mappa)</string>
+    <string name="fuel_updated_now">aggiornato adesso</string>
+    <string name="fuel_updated_min">aggiornato %1$d min fa</string>
+    <string name="fuel_updated_h">aggiornato %1$d h fa</string>
+    <string name="fuel_updated_d">aggiornato %1$d g fa</string>
+    <string name="fuel_updated_unknown">ora di aggiornamento sconosciuta</string>
+    <string name="fuel_stop_duplicate">Questo distributore è già una tappa del percorso.</string>
+    <string name="fuel_stop_is_destination">Questo distributore è la destinazione del percorso.</string>
+    <string name="fuel_stop_limit">Il percorso ha già %1$d tappe. Rimuovine prima una.</string>
+    <string name="fuel_stop_no_route">Avvia prima un percorso per aggiungere una tappa.</string>
+    <string name="fuel_source">Fonte: Ministero per la Transizione Ecologica e la Sfida Demografica</string>
+    <string name="fuel_price_note">Prezzo pubblicato dal Ministero; non ufficiale. Verificalo alla pompa.</string>
+</resources>

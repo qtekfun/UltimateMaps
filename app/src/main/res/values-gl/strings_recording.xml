@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Track recording -->
+    <string name="recording_title">Gravación de tracks</string>
+    <string name="recording_switch_title">Permitir a gravación de tracks</string>
+    <string name="recording_switch_body">Engade un botón Iniciar gravación á lista de tracks. A viaxe gárdase como track só neste dispositivo e non se envía a ningures. Os puntos consérvanse mentres a aplicación está aberta ou mentres navegas.</string>
+    <string name="recording_delete_all">Eliminar os tracks gravados</string>
+    <string name="recording_deleted">Tracks gravados eliminados.</string>
+    <string name="recording_idle">Sen gravar</string>
+    <string name="recording_start">Iniciar gravación</string>
+    <string name="recording_stop">Parar e gardar</string>
+    <string name="recording_status_on">Gravando · %1$d puntos · %2$s</string>
+    <string name="recording_status_paused">En pausa, estás parado · %1$d puntos · %2$s</string>
+    <string name="recording_note">A gravación continúa mentres a aplicación está aberta ou mentres navegas, e fai pausa soa cando deixas de moverte.</string>
+    <string name="recording_saved">Track gardado. Podes amosalo no mapa ou exportalo como GPX.</string>
+    <string name="recording_too_short">Nada que gardar: a gravación foi demasiado curta.</string>
+    <string name="recording_failed">Non se puido gardar o track. Os puntos consérvanse e gárdanse a próxima vez que inicies.</string>
+    <string name="recording_could_not_start">Non se puido iniciar: unha gravación anterior aínda agarda para ser gardada.</string>
+    <string name="recording_track_name">Gravado o %1$s</string>
+    <string name="track_delete">Eliminar</string>
+</resources>

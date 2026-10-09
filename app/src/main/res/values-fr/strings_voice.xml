@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Settings: Navigation section -->
+    <string name="nav_settings_title">Navigation</string>
+    <string name="nav_voice_title">Guidage vocal</string>
+    <string name="nav_voice_body">Énonce les instructions de virage pendant la navigation.</string>
+    <string name="nav_important_title">Uniquement les consignes importantes</string>
+    <string name="nav_important_body">Ignore « continuez tout droit », les virages légers et les avertissements lointains.</string>
+    <string name="nav_volume_title">Volume de la voix</string>
+    <string name="nav_language_title">Langue de la voix</string>
+    <string name="nav_language_auto">Identique à l\'application</string>
+    <string name="nav_language_es">Espagnol</string>
+    <string name="nav_language_en">Anglais</string>
+    <string name="nav_units_title">Unités</string>
+    <string name="nav_units_auto">Automatique (selon la région)</string>
+    <string name="nav_units_metric">Kilomètres et mètres</string>
+    <string name="nav_units_imperial">Miles et pieds</string>
+    <string name="nav_test_voice">Tester la voix</string>
+    <string name="nav_voice_ready">Le moteur vocal est prêt.</string>
+    <string name="nav_voice_starting">Démarrage du moteur vocal…</string>
+    <string name="nav_view3d_title">Vue 3D</string>
+    <string name="nav_view3d_body">Pendant la navigation, incline la carte et regarde devant sur la route, comme la plupart des applications de navigation. Désactivé : carte à plat.</string>
+    <string name="nav_buildings3d_title">Bâtiments en 3D</string>
+    <string name="nav_buildings3d_body">Dessine les bâtiments avec leur hauteur dans la vue 3D à partir du zoom 15. Cela demande plus de puissance graphique ; désactivez-le si la carte saccade.</string>
+    <string name="nav_avoid_title">Éviter par défaut</string>
+    <string name="nav_avoid_body">Utilisé lorsque vous planifiez un itinéraire. Vous pouvez le modifier pour chaque trajet.</string>
+    <string name="nav_avoid_motorways">Autoroutes</string>
+    <string name="nav_avoid_tolls">Routes à péage</string>
+    <string name="nav_avoid_ferries">Ferries</string>
+    <string name="nav_avoid_unpaved">Routes non goudronnées</string>
+
+    <!-- Voice problems -->
+    <string name="voice_lang_es">Espagnol</string>
+    <string name="voice_lang_en">Anglais</string>
+    <string name="voice_problem_no_engine_title">Aucun moteur vocal installé</string>
+    <string name="voice_problem_no_engine_body">La navigation fonctionne, mais sans voix. Cet appareil n\'a pas de moteur de synthèse vocale, ce qui est courant sans les services Google.</string>
+    <string name="voice_problem_lang_title">Aucune voix en %1$s</string>
+    <string name="voice_problem_lang_body">Les moteurs installés n\'ont pas de données vocales en %1$s. Installez-les depuis les réglages du moteur, ou installez un autre moteur. La navigation continue sans voix.</string>
+    <string name="voice_problem_failed_title">Le moteur vocal ne répond pas</string>
+    <string name="voice_problem_failed_body">Le moteur a cessé de répondre plusieurs fois. La navigation continue sans voix. Réessayez ou installez un autre moteur.</string>
+    <string name="voice_problem_init_body">Le moteur n\'a pas pu démarrer. La navigation continue sans voix. Réessayez ou installez un autre moteur.</string>
+    <string name="voice_install_intro">Moteurs libres sur F-Droid :</string>
+    <string name="voice_install_engine">Obtenir %1$s sur F-Droid</string>
+    <string name="voice_install_then">Après en avoir installé un, choisissez-le dans les réglages Android sous Sortie de la synthèse vocale, puis revenez et touchez « Réessayer ».</string>
+    <string name="voice_install_data">Installer les données vocales</string>
+    <string name="voice_open_tts_settings">Ouvrir les réglages de la synthèse vocale</string>
+    <string name="voice_retry">Réessayer</string>
+    <string name="voice_banner_no_engine">Navigation silencieuse : aucun moteur vocal installé. Touchez pour obtenir de l\'aide.</string>
+    <string name="voice_banner_lang">Navigation silencieuse : aucune voix en %1$s. Touchez pour obtenir de l\'aide.</string>
+    <string name="voice_banner_failed">Navigation silencieuse : le moteur vocal ne répond pas. Touchez pour obtenir de l\'aide.</string>
+</resources>

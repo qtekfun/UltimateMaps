@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Route panel: fourth travel mode -->
+    <string name="route_profile_transit">Transporte</string>
+    <string name="transit_group_departure">Saída</string>
+    <string name="transit_depart_now">Saír agora</string>
+    <string name="transit_depart_later">Saír ás</string>
+    <string name="transit_time_earlier">15 minutos antes</string>
+    <string name="transit_time_later">15 minutos despois</string>
+    <string name="transit_day_earlier">Día anterior</string>
+    <string name="transit_day_later">Día seguinte</string>
+
+    <string name="transit_computing">Buscando conexións…</string>
+    <string name="transit_needs_origin">Agardando a túa localización. Escolle un punto de partida ou activa a localización.</string>
+    <string name="transit_err_no_data">Non hai datos de transporte público instalados e o servidor de mapas non lista ningún. Abre Mapas para buscalos.</string>
+    <string name="transit_err_not_downloaded">Os horarios de %1$s aínda non están descargados. Descárgaos en Mapas, en Transporte público.</string>
+    <string name="transit_err_across">Esta viaxe vai de %1$s a %2$s, que teñen horarios separados. Non se planifican viaxes entre eles; planifica cada parte por separado.</string>
+    <string name="transit_err_outside">Os horarios do transporte público non cobren esta viaxe.</string>
+    <string name="transit_err_expired">Os horarios caducaron o %1$s, así que non se planifican viaxes posteriores a esa data. Escolle unha data anterior ou actualiza os datos en Mapas.</string>
+    <string name="transit_err_not_yet">Os horarios comezan o %1$s. Escolle unha data posterior.</string>
+    <string name="transit_err_no_route">Non se atopou ningunha conexión a esa hora. Proba outra hora.</string>
+    <string name="transit_err_internal">Non se puido ler o ficheiro de horarios. Elimínao e descárgao de novo en Mapas.</string>
+
+    <!-- Itinerary list -->
+    <string name="transit_direct">Directo</string>
+    <plurals name="transit_transfers">
+        <item quantity="one">%d transbordo</item>
+        <item quantity="other">%d transbordos</item>
+    </plurals>
+    <string name="transit_walk_only">Só a pé</string>
+    <string name="transit_walking">%1$s a pé</string>
+    <string name="transit_option_description">Opción %1$d: %2$s, chegada %3$s, %4$s, %5$s</string>
+    <string name="transit_chip_walk">A pé</string>
+    <string name="transit_walk_pill">%1$d min</string>
+    <string name="transit_walk_only_pill">A pé · %1$d min</string>
+    <plurals name="transit_walk_description">
+        <item quantity="one">Camiñar %d minuto</item>
+        <item quantity="other">Camiñar %d minutos</item>
+    </plurals>
+
+    <!-- Itinerary card -->
+    <string name="transit_back">Volver ás opcións</string>
+    <string name="transit_card_summary">%1$s, saída %2$s, chegada %3$s</string>
+    <string name="transit_place_destination">o teu destino</string>
+    <string name="transit_leg_walk">Camiñar %1$s ata %2$s</string>
+    <string name="transit_leg_towards">Dirección %1$s</string>
+    <string name="transit_leg_board">Subir en %1$s</string>
+    <string name="transit_leg_alight">Baixar en %1$s</string>
+    <plurals name="transit_leg_stops">
+        <item quantity="one">%d parada</item>
+        <item quantity="other">%d paradas</item>
+    </plurals>
+
+    <!-- Honesty and data -->
+    <string name="transit_theoretical_note">Os horarios son teóricos, tomados dos horarios publicados. Non inclúen atrasos, cancelacións nin información en tempo real.</string>
+    <string name="transit_valid_range">Horarios válidos do %1$s ao %2$s.</string>
+    <string name="transit_projected_note">Os horarios do metro son de 2025 (non se publican datos máis novos): as horas poden diferir.</string>
+    <string name="transit_unverified">Unha parte destes datos non se puido comprobar co seu calendario.</string>
+    <string name="transit_link_description">Abrir %1$s</string>
+
+    <!-- About -->
+    <string name="transit_about_title">Datos de transporte público</string>
+
+    <!-- Maps screen: section -->
+    <string name="transit_maps_title">Transporte público</string>
+    <string name="transit_maps_intro">Horarios para rutas teóricas. Cada cidade ou rexión é unha descarga independente, que só se fai cando premes Descargar; toda a planificación faise no teu teléfono e non se envía ningunha posición.</string>
+    <string name="transit_maps_none">O catálogo aínda non ofrece cidades con transporte público.</string>
+    <string name="transit_maps_size">Tamaño da descarga: %1$s</string>
+    <string name="transit_maps_valid">Válido do %1$s ao %2$s</string>
+    <string name="transit_maps_expired">Caducou o %1$s: os datos publicados están desactualizados</string>
+    <string name="transit_maps_update_available">Hai un ficheiro máis novo dispoñible</string>
+    <string name="transit_maps_installed">Instalado</string>
+    <string name="transit_maps_download">Descargar</string>
+    <string name="transit_maps_update">Actualizar</string>
+    <string name="transit_maps_delete">Eliminar</string>
+    <string name="transit_maps_downloading">Descargando…</string>
+    <string name="transit_fail_offline">O modo sen conexión está activado: non se descargou nada.</string>
+    <string name="transit_fail_not_allowed">Este servidor non está permitido pola lista de conexións.</string>
+    <string name="transit_fail_network">A descarga fallou. Téntao de novo máis tarde.</string>
+    <string name="transit_fail_integrity">O ficheiro non coincidía co catálogo e foi descartado.</string>
+    <string name="transit_fail_invalid">O ficheiro non é un índice de horarios válido.</string>
+    <string name="transit_fail_expired">Os horarios publicados xa caducaron.</string>
+    <string name="transit_fail_cancelled">A descarga cancelouse.</string>
+    <!-- Spoken form of a line badge: the mode comes first because short names are shared between modes -->
+    <string name="transit_line_bus">Liña de autobús %1$s</string>
+    <string name="transit_line_tram">Liña de tranvía %1$s</string>
+    <string name="transit_line_train">Liña de tren %1$s</string>
+    <string name="transit_line_metro">Liña de metro %1$s</string>
+    <string name="transit_line_ferry">Liña de ferri %1$s</string>
+    <string name="transit_line_other">Liña %1$s</string>
+</resources>

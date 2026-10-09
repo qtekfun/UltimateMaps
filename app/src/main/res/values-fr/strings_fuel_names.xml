@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Names of the fuels of the Ministry service, by FuelType id (see FuelNames) -->
+    <string name="fuel_name_g95e5">Essence 95 E5</string>
+    <string name="fuel_name_g95e10">Essence 95 E10</string>
+    <string name="fuel_name_g95e25">Essence 95 E25</string>
+    <string name="fuel_name_g95e85">Essence 95 E85</string>
+    <string name="fuel_name_g95e5p">Essence 95 E5 Premium</string>
+    <string name="fuel_name_g98e5">Essence 98 E5</string>
+    <string name="fuel_name_g98e10">Essence 98 E10</string>
+    <string name="fuel_name_goa">Gazole A (standard)</string>
+    <string name="fuel_name_goap">Gazole Premium</string>
+    <string name="fuel_name_gob">Gazole B (agricole)</string>
+    <string name="fuel_name_bie">Bioéthanol</string>
+    <string name="fuel_name_bio">Biodiesel</string>
+    <string name="fuel_name_glp">GPL (carburant)</string>
+    <string name="fuel_name_gnc">GNC (gaz naturel comprimé)</string>
+    <string name="fuel_name_gnl">GNL (gaz naturel liquéfié)</string>
+    <string name="fuel_name_h2">Hydrogène</string>
+    <string name="fuel_name_dren">Diesel renouvelable</string>
+    <string name="fuel_name_gren">Essence renouvelable</string>
+    <string name="fuel_name_met">Méthanol</string>
+    <string name="fuel_name_amo">Ammoniac</string>
+    <string name="fuel_name_bgnc">Biogaz comprimé</string>
+    <string name="fuel_name_bgnl">Biogaz liquéfié</string>
+</resources>

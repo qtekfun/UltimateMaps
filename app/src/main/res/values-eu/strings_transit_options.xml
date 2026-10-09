@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Mode chips of the public-transport route panel -->
+    <string name="transit_mode_bus">Autobusa</string>
+    <string name="transit_mode_metro">Metroa</string>
+    <string name="transit_mode_tram">Tranbia</string>
+    <string name="transit_mode_train">Trena</string>
+    <string name="transit_mode_ferry">Ferrya</string>
+    <string name="transit_mode_other">Beste bat</string>
+    <string name="transit_modes_reset">Berrezarri</string>
+    <string name="transit_err_no_route_modes">Ez dago ibilbiderik hautatutako garraioarekin</string>
+    <string name="transit_note_walk_as_fast">Oinez ia azkar bezain</string>
+    <string name="transit_note_less_walking">Oinez gutxiago</string>
+    <string name="transit_note_fewer_changes">Aldaketa gutxiago</string>
+    <string name="transit_note_walk_the_rest">Gainerakoa oinez</string>
+    <string name="transit_note_long_walk_to_station">Geltokirainoko ibilaldi luzeagoa</string>
+
+    <!-- Settings: public-transport planning -->
+    <string name="transit_plan_title">Garraio publikoaren planifikazioa</string>
+    <string name="transit_plan_minutes">%1$d min</string>
+    <string name="transit_plan_walk_title">Erakutsi oinezkoa hau baino gutxiago irauten duenean</string>
+    <string name="transit_plan_walk_body">Oinezko aukera beti zerrendatzen da garraio publikoko aukeren ondoan, ibilaldiak hau baino gutxiago irauten duenean.</string>
+    <string name="transit_plan_saving_title">Lehenetsi oinez garraio publikoak hau baino gutxiago aurrezten badu</string>
+    <string name="transit_plan_saving_body" formatted="false">Hau baino denbora gutxiago aurrezten duen garraio publikoko aukera bat (edo oinezko ibilbidearen ehuneko 20 baino gutxiago) kentzen da oinezko ibilbidea zerrendatuta dagoenean.</string>
+    <string name="transit_plan_maxwalk_title">Bidaia bakoitzeko gehieneko oinezkoa</string>
+    <string name="transit_plan_maxwalk_body">Guztira hau baino oinez gehiago behar duten garraio publikoko aukerak kentzen dira.</string>
+    <string name="transit_plan_maxwalk_none">Mugarik ez</string>
+</resources>

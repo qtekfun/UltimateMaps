@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="nav_motion_tunnels_title">Usa i sensori di movimento nelle gallerie</string>
+    <string name="nav_motion_tunnels_body">Solo quando il GPS è perso in una galleria nota, l\'accelerometro distingue un\'auto ferma da una in movimento, così la stima della posizione non deriva in coda. Non viene memorizzato né inviato nulla.</string>
+    <string name="live_update_title">Mostra la distanza nella barra di stato</string>
+    <string name="live_update_body">Su Android 16 e versioni successive, la distanza dalla prossima svolta appare come chip nella barra di stato durante la navigazione. Puoi anche disattivare le notifiche promosse per questa app nelle impostazioni di sistema.</string>
+    <!-- Chip texts: the status bar chip fits about 7 characters. -->
+    <string name="live_update_chip_reroute">Ricalcolo</string>
+    <string name="live_update_chip_no_signal">No GPS</string>
+    <string name="driving_focus_group">Concentrazione alla guida</string>
+    <string name="driving_focus_hide_bar_title">Nascondi la barra di stato durante la navigazione</string>
+    <string name="driving_focus_hide_bar_body">Le icone di notifica delle altre app restano nascoste nella schermata di navigazione. Scorri verso il basso dal bordo superiore per vedere la barra per un momento. Disattivato per impostazione predefinita.</string>
+    <string name="driving_focus_open_dnd">Apri le impostazioni Non disturbare</string>
+    <string name="driving_focus_dnd_note">Android non permette a un\'app di bloccare i pop-up delle altre app. Per evitarli mentre guidi, imposta una modalità Non disturbare che consenta le chiamate (Impostazioni, Non disturbare, Persone, Chiamate: Tutti) e attivala quando guidi.</string>
+</resources>

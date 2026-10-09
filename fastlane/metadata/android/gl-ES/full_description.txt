@@ -1,0 +1,14 @@
+UltimateMaps é unha aplicación de mapas sen conexión e privada. O mapa, a busca e as rutas calcúlanse no teu teléfono: sen tráfico en directo, sen contas, sen anuncios, sen analítica e sen telemetría. Funciona sen os Servizos de Google Play.
+
+Esta é unha versión candidata dun MVP, non unha aplicación rematada. O que funciona hoxe:
+
+• Mapa vectorial sen conexión (MapLibre + PMTiles), con tema claro e escuro.
+• Descarga de rexións desde a pantalla Mapas: pódese retomar e verifícase con SHA-256. Un modo sen rede bloquea todas as conexións da aplicación.
+• Busca de lugares e enderezos sen conexión, co motor CoMaps.
+• Vista previa de ruta en coche, a pé ou en bicicleta (aínda sen guía xiro a xiro).
+• Lugares e listas gardados, con importación e exportación GPX e KML.
+• Abre ligazóns de Google Maps, Apple Maps, Waze e geo:.
+
+Aínda non hai: a navegación por voz xiro a xiro, a guía de carrís e os límites de velocidade, un perfil de moto e rutas de curvas, a gravación de tracks, a sincronización con Nextcloud, a importación de Google Takeout, Android Auto.
+
+Polo momento só está España. Os datos do mapa veñen de OpenStreetMap (© colaboradores de OpenStreetMap, ODbL) e só se descargan cando o pides. Software libre, GPL-3.0-or-later.

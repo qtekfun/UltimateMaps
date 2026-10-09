@@ -12,8 +12,8 @@ import java.util.Locale
 enum class VoiceMessage { RECALCULATING, OFF_ROUTE, ARRIVED, STOP_REACHED }
 
 /**
- * Turns navigation events into the sentence the TTS engine reads (pure functions, Spanish and English; the
- * cases are in `InstructionTextTest`). Rules that apply everywhere:
+ * Turns navigation events into the sentence the TTS engine reads (pure functions; Spanish and English here, the other
+ * languages as [VoicePacks]; the cases are in `InstructionTextTest` and `VoicePacksTest`). Rules that apply everywhere:
  *
  * - A missing street name (null, blank, or the literal "null" the native core produced in the first device
  *   test) is simply left out: "gira a la izquierda", never "gira a la izquierda en null".
@@ -92,7 +92,16 @@ object InstructionText {
 
     private const val IMMEDIATE_UNDER_METERS = 20
 
-    private fun words(language: VoiceLanguage): Words = if (language == VoiceLanguage.ES) Spanish else English
+    private val packWords = HashMap<VoiceLanguage, Words>()
+
+    /** Spanish and English are written below; every other language is a [VoicePack] (a language without one speaks English). */
+    private fun words(language: VoiceLanguage): Words = when (language) {
+        VoiceLanguage.ES -> Spanish
+        VoiceLanguage.EN -> English
+        else -> synchronized(packWords) {
+            packWords.getOrPut(language) { VoicePacks.of(language)?.let { PackWords(it.instructions, language.locale) } ?: English }
+        }
+    }
 
     // ------------------------------------------------------------------ Lanes
 
@@ -123,7 +132,7 @@ object InstructionText {
 
     // ------------------------------------------------------------------ Languages
 
-    private interface Words {
+    internal interface Words {
         val now: String
         val testIntro: String
         fun distance(d: SpokenDistance): String

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- How camera and incident alerts are announced: a chime, the spoken sentence, or only the on-screen alert -->
+    <string name="alert_mode_cam_title">Radar-abisuak</string>
+    <string name="alert_mode_incident_title">Gertakari-abisuak</string>
+    <string name="alert_mode_sound">Soinua (seinale labur bat)</string>
+    <string name="alert_mode_voice">Ahotsa (ahozko abisua)</string>
+    <string name="alert_mode_silent">Isila (pantailako abisua bakarrik)</string>
+    <string name="alert_mode_note">Pantailako abisua beti erakusten da. Mututu (nabigazioa) eta Mututu abisuak aukerek soinua eta ahotsa desaktibatzen dituzte.</string>
+</resources>

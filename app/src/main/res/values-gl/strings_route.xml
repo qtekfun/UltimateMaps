@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Route preview (M4) -->
+    <string name="route_to">A %1$s</string>
+    <string name="route_close">Pechar</string>
+    <string name="route_from_current">Desde: a túa localización</string>
+    <string name="route_from_point">Desde: punto seleccionado</string>
+    <string name="route_from_named">Desde: %1$s</string>
+    <string name="route_change_origin">Cambiar a orixe</string>
+    <string name="route_use_location">Usar a miña localización</string>
+    <string name="route_pick_hint">Busca o lugar de saída ou toca o mapa.</string>
+    <string name="route_pick_cancel">Cancelar</string>
+    <string name="route_profile_car">Coche</string>
+    <string name="route_profile_foot">A pé</string>
+    <string name="route_profile_bike">Bicicleta</string>
+    <string name="route_avoid_motorways">Sen autoestradas</string>
+    <string name="route_avoid_tolls">Sen peaxes</string>
+    <string name="route_avoid_ferries">Sen transbordadores</string>
+    <string name="route_avoid_unpaved">Sen pistas</string>
+    <string name="route_computing">Calculando a ruta…</string>
+    <string name="route_elevation_toggle_cd">Subida de %1$d metros, baixada de %2$d metros. Amosar ou agochar o perfil de altitude.</string>
+    <string name="route_elevation_chart_cd">Perfil de altitude: mínimo %1$d metros, máximo %2$d metros, subida máis pronunciada %3$d por cento.</string>
+    <string name="route_elevation_grade">Máis pronunciado: ↑ %1$d %%  ↓ %2$d %%</string>
+    <string name="route_needs_origin">A túa localización non está dispoñible. Permite a localización ou escolle outro punto de partida coa busca ou tocando o mapa.</string>
+    <string name="route_err_no_regions">Non hai rexións instaladas. Descarga unha rexión para calcular rutas sen conexión.</string>
+    <string name="route_err_need_more_maps">Faltan mapas para esta ruta. Descarga as rexións que atravesa.</string>
+    <string name="route_err_start">O inicio non está nunha vía dos mapas descargados. Escolle outro punto de partida.</string>
+    <string name="route_err_end">O destino non está nunha vía dos mapas descargados.</string>
+    <string name="route_err_not_found">Non se atopou ruta con estas opcións. Proba a cambiar o perfil ou as opcións de evitar.</string>
+    <string name="route_err_timeout">O cálculo da ruta tardou demasiado. Téntao de novo ou escolle un punto máis próximo.</string>
+    <string name="route_err_internal">Non se puido calcular a ruta.</string>
+    <string name="route_err_unexpected">Algo foi mal ao calcular a ruta. Téntao de novo ou escolle outro destino ou outras opcións.</string>
+    <string name="route_change_short">Cambiar</string>
+    <string name="route_profile_group">Modo de desprazamento</string>
+    <string name="route_options_title">Opcións da ruta</string>
+    <string name="route_options_none">Ningunha</string>
+    <string name="route_options_avoiding">Evitando: %1$s</string>
+    <string name="route_avoid_short_motorways">autoestradas</string>
+    <string name="route_avoid_short_tolls">peaxes</string>
+    <string name="route_avoid_short_ferries">transbordadores</string>
+    <string name="route_avoid_short_unpaved">pistas</string>
+</resources>

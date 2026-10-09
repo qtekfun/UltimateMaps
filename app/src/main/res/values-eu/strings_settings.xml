@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_title">Ezarpenak</string>
+    <string name="settings_open">Ezarpenak</string>
+    <string name="settings_back">Atzera</string>
+
+    <string name="settings_privacy_title">Pribatutasuna</string>
+    <string name="settings_offline_title">Lineaz kanpoko modua</string>
+    <string name="settings_offline_body">Aplikazioak ez du inolako konexiorik egiten, deskargetarako ere ez. Mapak atalean dagoen ezarpen bera.</string>
+    <string name="settings_regions_title">Eskualdeen katalogoa</string>
+    <string name="settings_regions_body">Katalogoaren helbidea: %1$s</string>
+    <string name="settings_regions_none">Ez da katalogo-helbiderik ezarri.</string>
+    <string name="settings_regions_open">Ireki Mapak</string>
+    <string name="settings_connections_title">Konexio posibleak</string>
+    <string name="settings_connections_none">Une honetan ez da konexiorik posible.</string>
+    <string name="conn_status_active">Baimenduta</string>
+    <string name="conn_status_disabled">Desaktibatuta</string>
+    <string name="conn_status_blocked_offline">Lineaz kanpoko moduak blokeatuta</string>
+    <string name="conn_purpose_tiles">Lineako lauzak</string>
+    <string name="conn_purpose_short_link">Esteka laburrak</string>
+    <string name="conn_purpose_map_download">Mapen deskarga</string>
+    <string name="conn_purpose_sync">Sinkronizazioa</string>
+    <string name="conn_purpose_other">Beste batzuk (erregai-prezioak)</string>
+
+    <string name="fuel_title">Gasolindegiak</string>
+    <string name="fuel_switch_title">Erakutsi gasolindegiak eta prezioak</string>
+    <string name="fuel_switch_body">Lehenespenez desaktibatuta. Ez da ezer deskargatzen desaktibatuta dagoen bitartean.</string>
+    <string name="fuel_fuels_title">Deskargatzeko erregaiak</string>
+    <string name="fuel_fuels_body">Fitxategi bat eskatzen da markatutako erregai bakoitzeko.</string>
+    <string name="fuel_fuels_none">Markatu gutxienez erregai bat haren prezioak deskargatzeko.</string>
+    <string name="fuel_map_title">Mapan erakutsitako erregaia</string>
+    <string name="fuel_map_none">Markatu goian erregai bat hemen aukeratzeko.</string>
+    <string name="fuel_refresh_title">Eguneratze-maiztasuna</string>
+    <string name="fuel_refresh_minutes">%1$d minuturo</string>
+    <string name="fuel_refresh_hours">%1$d ordutik behin</string>
+    <string name="fuel_refresh_days">Egunean behin</string>
+    <string name="fuel_url_title">Iturriaren helbidea</string>
+    <string name="fuel_url_save">Gorde</string>
+    <string name="fuel_url_reset">Berrezarri</string>
+    <string name="fuel_url_invalid">Ez da baliozko https helbidea.</string>
+    <string name="fuel_url_saved">Gordeta.</string>
+    <string name="fuel_last_update">Azken eguneratzea: %1$s</string>
+    <string name="fuel_last_update_never">Oraindik deskargatu gabe.</string>
+    <string name="fuel_update_now">Eguneratu orain</string>
+    <string name="fuel_update_running">%1$d / %2$d deskargatzen (%3$s)…</string>
+    <string name="fuel_update_ok">Prezioak eguneratuta.</string>
+    <string name="fuel_update_kept">Azken datu baliodunak mantentzen dira.</string>
+    <string name="fuel_attribution">Datuak: Ministerio para la Transición Ecológica y el Reto Demográfico (Geoportal de Hidrocarburos), 37/2007 Legearen arabera berrerabiliak. Informazio ez-ofiziala; egiaztatu prezioa hornigailuan.</string>
+
+    <string name="fuel_err_offline">Lineaz kanpoko modua aktibo dago: ez da konexiorik egin.</string>
+    <string name="fuel_err_not_allowed">Konexioa ez dago baimenduta (helbidea ez dago baimenduta, edo beste zerbitzari batera birbideratu da).</string>
+    <string name="fuel_err_network">Ezin izan da konektatu.</string>
+    <string name="fuel_err_timeout">Denbora agortu da.</string>
+    <string name="fuel_err_server">Zerbitzariak errore bat itzuli du.</string>
+    <string name="fuel_err_too_large">Erantzuna handiegia da.</string>
+    <string name="fuel_err_invalid">Datu baliogabeak edo osatu gabeak.</string>
+
+    <string name="fuel_confirm_title">Gasolindegiak aktibatu?</string>
+    <string name="fuel_confirm_body">Zer eskatzen den: aukeratzen duzun erregai bakoitzeko prezio-fitxategi bat (ezer ez zuk aukeratu arte).\n\nZein zerbitzaritara: %1$s.\n\nZer ikusten duen zerbitzari horrek: zure IP helbidea eta zein erregai deskargatzen dituzun. Zure kokapena ez da inoiz bidaltzen: fitxategiak nazionalak dira eta zure telefonoan iragazten dira.\n\nAktibatzen duzunean, Eguneratu orain sakatzen duzunean edo aplikazioa eguneratze-maiztasuna baino zaharragoak diren datuekin irekitzen duzunean bakarrik konektatzen da.</string>
+    <string name="fuel_confirm_offline">Lineaz kanpoko modua aktibo dago, beraz ez da ezer konektatuko desaktibatu arte.</string>
+    <string name="fuel_confirm_yes">Aktibatu</string>
+    <string name="fuel_confirm_no">Utzi</string>
+</resources>

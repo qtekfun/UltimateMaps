@@ -42,7 +42,7 @@ fun ListsPanel(
         if (open == null) {
             Overview(controller, onImport, onExport, onFocus, tracks)
         } else {
-            val comma = LocalConfiguration.current.locales[0].language == "es"
+            val comma = java.text.DecimalFormatSymbols.getInstance(LocalConfiguration.current.locales[0]).decimalSeparator == ','
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 PanelButton(stringResource(R.string.lists_back), { controller.openList(null) }, tag = "lists_back")
                 BasicText(

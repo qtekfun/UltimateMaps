@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Weather alerts (AEMET): Settings group (inside the Alerts category), map chip, detail card, route summary, backup -->
+    <string name="weather_group_title">Wetterwarnungen (AEMET)</string>
+    <string name="weather_switch_title">Wetterwarnungen (AEMET)</string>
+    <string name="weather_switch_body">Zeigt die orangen und roten Wetterwarnungen des spanischen Wetterdienstes (AEMET) auf der Karte und auf Routen. Es fragt den Server der AEMET (opendata.aemet.es) nach seinem einen landesweiten Warnungspaket, höchstens alle 15 Minuten, und vergleicht es auf dem Telefon mit deinem Standort: Weder Position noch Gebiet werden je gesendet. Du brauchst deinen eigenen kostenlosen AEMET-API-Schlüssel, der dich gegenüber der AEMET identifiziert. Standardmäßig aus.</string>
+    <string name="weather_honesty">Eine Warnung ist eine Information, kein Ratschlag. Die Daten können verspätet oder unvollständig sein: Den offiziellen Text findest du bei der AEMET (aemet.es).</string>
+    <string name="weather_key_title">API-Schlüssel</string>
+    <string name="weather_key_hint">Füge deinen AEMET-API-Schlüssel ein</string>
+    <string name="weather_key_saved">Auf diesem Telefon ist ein Schlüssel gespeichert.</string>
+    <string name="weather_key_none">Kein Schlüssel gespeichert. Die Wetterwarnungen bleiben inaktiv, bis du einen hinzufügst.</string>
+    <string name="weather_key_privacy">Der Schlüssel wird verschlüsselt im Android Keystore gespeichert, nie in Protokolle geschrieben und nie in Sicherungen oder Einstellungsdateien aufgenommen. Er identifiziert dich gegenüber der AEMET: Die AEMET (und dein Netzwerk) kann von deiner IP-Adresse aus sehen, dass dieser Schlüssel Warnungen abfragt.</string>
+    <string name="weather_key_save">Schlüssel speichern</string>
+    <string name="weather_key_remove">Schlüssel entfernen</string>
+    <string name="weather_key_invalid">Das sieht nicht nach einem AEMET-API-Schlüssel aus. Füge ihn ohne zusätzlichen Text erneut ein.</string>
+    <string name="weather_key_help">So erhältst du einen Schlüssel</string>
+    <string name="weather_key_help_body">Die AEMET gibt jedem, der mit einer E-Mail-Adresse danach fragt, einen kostenlosen Schlüssel (öffnet sich in deinem Browser).</string>
+    <string name="weather_yellow_title">Gelbe Warnungen anzeigen</string>
+    <string name="weather_yellow_body">Gelbe Warnungen werden nur in den Details der Warnungen in der Kartenmitte aufgeführt. Für sie gibt es nie ein Banner.</string>
+    <string name="weather_check_now">Jetzt prüfen</string>
+    <string name="weather_checking">Wird geprüft …</string>
+    <string name="weather_status_never">Noch nicht geprüft.</string>
+    <string name="weather_status_ok">Geprüft um %1$s.</string>
+    <string name="weather_status_too_soon">Gerade erst geprüft. Die AEMET wird höchstens alle 15 Minuten abgefragt.</string>
+    <string name="weather_status_fresh">Die Warnungen sind aktuell. Sie werden höchstens alle 30 Minuten erneuert.</string>
+    <string name="weather_status_rejected">Die AEMET hat diesen Schlüssel nicht akzeptiert. Prüfe ihn oder fordere einen neuen an.</string>
+    <string name="weather_status_failed">Die Warnungen konnten nicht von der AEMET abgerufen werden. Es wurde nichts geändert.</string>
+    <string name="weather_attribution">Quelle: AEMET</string>
+    <string name="conn_purpose_weather">Wetterwarnungen (AEMET)</string>
+
+    <!-- Level names (used mid-sentence) -->
+    <string name="weather_level_yellow">Gelb</string>
+    <string name="weather_level_orange">Orange</string>
+    <string name="weather_level_red">Rot</string>
+
+    <!-- One warning in a line: level, event, time -->
+    <string name="weather_line_until">Warnung %1$s: %2$s bis %3$s (AEMET)</string>
+    <string name="weather_line_from">Warnung %1$s: %2$s ab %3$s (AEMET)</string>
+    <string name="weather_line_open">Warnung %1$s: %2$s (AEMET)</string>
+    <string name="weather_chip_description">Wetterwarnung. Tippen für Details.</string>
+
+    <!-- Detail card -->
+    <string name="weather_card_title">Wetterwarnungen</string>
+    <string name="weather_card_area">Gebiet: %1$s</string>
+    <string name="weather_card_valid">Gültig %1$s</string>
+    <string name="weather_card_valid_range">von %1$s bis %2$s</string>
+    <string name="weather_card_valid_until">bis %1$s</string>
+    <string name="weather_card_valid_from">ab %1$s</string>
+    <string name="weather_card_instruction">AEMET: %1$s</string>
+    <string name="weather_card_issued">Ausgegeben %1$s</string>
+    <string name="weather_card_close">Schließen</string>
+    <string name="weather_card_empty">Keine Warnungen für diesen Ort.</string>
+
+    <!-- Route summary -->
+    <string name="weather_route_title">Wetterwarnungen auf dieser Route</string>
+
+    <!-- Backup and restore -->
+    <string name="backup_item_weather">Wetterwarnungen (AEMET)</string>
+    <string name="backup_item_weather_yellow">Gelbe Warnungen anzeigen</string>
+    <string name="backup_group_weather">Wetterwarnungen</string>
+</resources>

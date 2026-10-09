@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Hiking and cycling routes: Settings group (inside the Navigation category), map card and attribution -->
+    <string name="trail_group_title">Rotas de caminhada e ciclismo</string>
+    <string name="trail_switch_title">Mostrar rotas de caminhada e ciclismo</string>
+    <string name="trail_switch_body">Desenha no mapa as rotas assinaladas de caminhada, ciclismo e BTT do OpenStreetMap. Transfere um ficheiro de dados de vários MB do teu servidor de mapas (o mesmo dos mapas); a tua posição nunca é enviada.</string>
+    <string name="trail_kinds_title">Tipos de rota</string>
+    <string name="trail_kind_hiking">Rotas de caminhada (traços contínuos)</string>
+    <string name="trail_kind_cycling">Rotas de ciclismo e BTT (pontos)</string>
+    <string name="trail_legend">A cor indica o alcance da rota: roxo local, verde regional, laranja nacional, vermelho internacional.</string>
+    <string name="trail_data_title">Dados das rotas</string>
+    <string name="trail_data_count">%1$d rotas, dados de %2$s</string>
+    <string name="trail_data_never">Ainda não foram transferidos dados das rotas.</string>
+    <string name="trail_attribution">Rotas de caminhada e ciclismo de relações de rotas do OpenStreetMap, © colaboradores do OpenStreetMap (ODbL), simplificadas.</string>
+
+    <!-- Card of a tapped route -->
+    <string name="trail_category">Rota</string>
+    <string name="trail_card_title_unknown">Rota sem nome</string>
+    <string name="trail_card_ref">Referência: %1$s</string>
+    <string name="trail_kind_label_hiking">Rota de caminhada</string>
+    <string name="trail_kind_label_cycling">Rota de ciclismo</string>
+    <string name="trail_kind_label_mtb">Rota de BTT</string>
+    <string name="trail_level_local">Local</string>
+    <string name="trail_level_regional">Regional</string>
+    <string name="trail_level_national">Nacional</string>
+    <string name="trail_level_international">Internacional</string>
+    <string name="trail_card_operator">Mantida por: %1$s</string>
+    <string name="trail_card_length">Comprimento: %1$s</string>
+    <string name="trail_card_length_measured">Comprimento: cerca de %1$s (medido no mapa, pode estar incompleto)</string>
+    <string name="trail_card_note">Dados da comunidade: a rota pode estar incompleta, fechada ou mal sinalizada. Verifica antes de confiares nela.</string>
+    <string name="trail_card_data_date">Dados de %1$s</string>
+    <string name="trail_card_close">Fechar</string>
+    <string name="trail_go_start">Rota até ao início</string>
+
+    <!-- Backup and restore -->
+    <string name="backup_item_trails">Rotas de caminhada e ciclismo</string>
+    <string name="backup_group_trails">Rotas de caminhada e ciclismo</string>
+</resources>

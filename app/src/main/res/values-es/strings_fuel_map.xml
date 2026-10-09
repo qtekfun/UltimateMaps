@@ -26,6 +26,5 @@
     <string name="fuel_stop_limit">La ruta ya tiene %1$d paradas. Quita una primero.</string>
     <string name="fuel_stop_no_route">Primero inicia una ruta para añadir una parada.</string>
     <string name="fuel_source">Fuente: Ministerio para la Transición Ecológica y el Reto Demográfico</string>
-    <string name="fuel_source_with_date">%1$s · %2$s</string>
     <string name="fuel_price_note">Precio publicado por el Ministerio; no oficial. Compruébalo en el surtidor.</string>
 </resources>

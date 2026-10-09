@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Google Takeout import, GPX track layer -->
+    <string name="msg_takeout_imported">Takeout: %1$d llistes, %2$d llocs afegits (%3$d ja hi eren), %4$d omesos sense coordenades</string>
+    <string name="tracks_title">Rutes enregistrades al mapa</string>
+    <string name="tracks_empty">Cap track importat</string>
+    <string name="track_show">Mostra</string>
+    <string name="track_hide">Amaga</string>
+    <string name="track_fit">Ajusta el zoom al track</string>
+    <string name="track_points">%1$d punts</string>
+</resources>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Bike-share stations: Settings group (inside the Navigation category), map card, live availability, attribution and backup -->
+    <string name="bike_group_title">Estacións de bicicletas compartidas</string>
+    <string name="bike_switch_title">Amosar estacións de bicicletas compartidas</string>
+    <string name="bike_switch_body">Amosa no mapa as estacións dos sistemas de bicicletas compartidas de Barcelona (Bicing) e Madrid (BiciMAD). Descarga un pequeno ficheiro de datos do teu servidor de mapas (o mesmo ca os mapas); a túa posición nunca se envía.</string>
+    <string name="bike_live_title">Amosar a dispoñibilidade de bicicletas en directo</string>
+    <string name="bike_live_body">Mentres haxa unha ficha de estación aberta, consulta a canle de datos pública dese sistema para saber cantas bicicletas e prazas libres hai, como máximo unha vez cada 30 segundos. Isto contacta cun servidor de terceiros (barcelona.publicbikesystem.net ou madrid.publicbikesystem.net), que pode ver o teu enderezo IP e que consultas o seu sistema, pero non que estación. Desactivado por defecto.</string>
+    <string name="bike_data_title">Datos das estacións</string>
+    <string name="bike_data_count">%1$d estacións, datos do %2$s</string>
+    <string name="bike_data_never">Aínda non se descargaron datos das estacións.</string>
+    <string name="bike_attribution_settings">Datos das estacións: Bicing, Ajuntament de Barcelona (Open Data BCN, CC BY 4.0); BiciMAD, Empresa Municipal de Transportes de Madrid (datos.madrid.es, CC BY 4.0).</string>
+
+    <!-- Card of a tapped station -->
+    <string name="bike_category">Estación de bicicletas compartidas</string>
+    <string name="bike_card_title_unknown">Estación de bicicletas compartidas</string>
+    <string name="bike_card_capacity">Prazas: %1$d</string>
+    <string name="bike_card_capacity_unknown">Prazas: non especificado</string>
+    <string name="bike_card_availability">%1$d bicicletas, %2$d prazas libres (actualizado %3$s)</string>
+    <string name="bike_card_note">O número de prazas vén do ficheiro de datos. Só se sabe se hai bicicleta dispoñible se activas a dispoñibilidade en directo na configuración.</string>
+    <string name="bike_card_data_date">Datos do %1$s</string>
+    <string name="bike_card_close">Pechar</string>
+    <string name="bike_go">Ruta á estación</string>
+    <string name="bike_add_stop">Engadir parada</string>
+    <string name="conn_purpose_bike">Dispoñibilidade de bicicletas (sistemas de bicicletas compartidas)</string>
+
+    <!-- Backup and restore -->
+    <string name="backup_item_bikeshare">Estacións de bicicletas compartidas</string>
+    <string name="backup_item_bikeshare_live">Dispoñibilidade de bicicletas en directo</string>
+    <string name="backup_group_bikeshare">Estacións de bicicletas compartidas</string>
+</resources>

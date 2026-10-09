@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">UltimateMaps</string>
     <string name="network_mode_offline">Modo sin red: sin conexiones salientes</string>
     <string name="network_connections_title">Conexiones posibles</string>
     <string name="link_short_needs_resolve">Este enlace corto necesita una petición de red a Google para conocer su destino. Resolver enlaces cortos está desactivado, así que no se ha enviado nada.</string>
     <string name="link_not_recognized">Este enlace no es un enlace de mapas reconocido.</string>
 
-    <string name="attribution_osm">© OpenStreetMap</string>
     <string name="about_title">Datos del mapa</string>
     <string name="about_osm_body">Datos del mapa © colaboradores de OpenStreetMap, disponibles bajo la Open Database License (ODbL). Estilo base y teselas de Protomaps.</string>
     <string name="close">Cerrar</string>
@@ -49,7 +47,6 @@
     <string name="offline_title">Modo sin red</string>
     <string name="offline_body">Ninguna conexión, ni siquiera para descargas.</string>
     <string name="server_title">Servidor de mapas</string>
-    <string name="server_hint">https://ejemplo.org/mapas/catalog.json</string>
     <string name="server_use_default">Usar el servidor por defecto</string>
     <string name="search_restart_needed">Un mapa que has borrado puede seguir saliendo en la búsqueda hasta que reinicies la aplicación.</string>
     <string name="search_link_problem">Algunos mapas descargados no se han podido poner a disposición de la búsqueda en este almacenamiento.</string>

@@ -70,7 +70,7 @@
     <string name="inc_card_obstacle">Obstacle on the road</string>
     <string name="inc_card_weather">Weather or road conditions</string>
     <string name="inc_card_roadworks">Roadworks</string>
-    <string name="inc_card_place">%1$s (%2$s)</string>
+    <string name="inc_card_place" translatable="false">%1$s (%2$s)</string>
     <string name="inc_card_since">Since %1$s</string>
     <string name="inc_card_until">Until %1$s</string>
     <string name="inc_card_downloaded">Traffic data downloaded %1$s. It may have changed since.</string>

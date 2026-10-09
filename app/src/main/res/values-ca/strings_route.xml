@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Route preview (M4) -->
+    <string name="route_to">A %1$s</string>
+    <string name="route_close">Tanca</string>
+    <string name="route_from_current">Des de: la teva ubicació</string>
+    <string name="route_from_point">Des de: punt seleccionat</string>
+    <string name="route_from_named">Des de: %1$s</string>
+    <string name="route_change_origin">Canvia l\'inici</string>
+    <string name="route_use_location">Utilitza la meva ubicació</string>
+    <string name="route_pick_hint">Cerca el lloc de sortida o toca el mapa.</string>
+    <string name="route_pick_cancel">Cancel·la</string>
+    <string name="route_profile_car">Cotxe</string>
+    <string name="route_profile_foot">A peu</string>
+    <string name="route_profile_bike">Bicicleta</string>
+    <string name="route_avoid_motorways">Sense autopistes</string>
+    <string name="route_avoid_tolls">Sense peatges</string>
+    <string name="route_avoid_ferries">Sense transbordadors</string>
+    <string name="route_avoid_unpaved">Sense camins</string>
+    <string name="route_computing">Calculant la ruta…</string>
+    <string name="route_elevation_toggle_cd">Pujada de %1$d metres, baixada de %2$d metres. Mostra o amaga el perfil d\'altitud.</string>
+    <string name="route_elevation_chart_cd">Perfil d\'altitud: mínim %1$d metres, màxim %2$d metres, pujada més pronunciada %3$d per cent.</string>
+    <string name="route_elevation_grade">Més pronunciat: ↑ %1$d %%  ↓ %2$d %%</string>
+    <string name="route_needs_origin">La teva ubicació no està disponible. Permet la ubicació o tria un altre punt de partida amb la cerca o tocant el mapa.</string>
+    <string name="route_err_no_regions">No hi ha cap regió instal·lada. Descarrega una regió per calcular rutes fora de línia.</string>
+    <string name="route_err_need_more_maps">Falten mapes per a aquesta ruta. Descarrega les regions que travessa.</string>
+    <string name="route_err_start">L\'inici no és en una via dels mapes descarregats. Tria un altre punt de partida.</string>
+    <string name="route_err_end">La destinació no és en una via dels mapes descarregats.</string>
+    <string name="route_err_not_found">No s\'ha trobat cap ruta amb aquestes opcions. Prova de canviar el perfil o les opcions d\'evitar.</string>
+    <string name="route_err_timeout">El càlcul de la ruta ha trigat massa. Torna-ho a provar o tria un punt més proper.</string>
+    <string name="route_err_internal">No s\'ha pogut calcular la ruta.</string>
+    <string name="route_err_unexpected">Ha fallat alguna cosa en calcular la ruta. Torna-ho a provar o tria una altra destinació o altres opcions.</string>
+    <string name="route_change_short">Canvia</string>
+    <string name="route_profile_group">Mode de desplaçament</string>
+    <string name="route_options_title">Opcions de la ruta</string>
+    <string name="route_options_none">Cap</string>
+    <string name="route_options_avoiding">Evitant: %1$s</string>
+    <string name="route_avoid_short_motorways">autopistes</string>
+    <string name="route_avoid_short_tolls">peatges</string>
+    <string name="route_avoid_short_ferries">transbordadors</string>
+    <string name="route_avoid_short_unpaved">camins</string>
+</resources>

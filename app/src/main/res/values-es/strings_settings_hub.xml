@@ -12,6 +12,7 @@
     <string name="hub_fuel_no_fuel">Activadas, sin combustible elegido</string>
     <plurals name="hub_fuel_count">
         <item quantity="one">%d combustible</item>
+        <item quantity="many">%d combustibles</item>
         <item quantity="other">%d combustibles</item>
     </plurals>
     <string name="hub_fuel_summary">%1$s, %2$s en el mapa</string>

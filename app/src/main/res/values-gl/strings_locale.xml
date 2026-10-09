@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Language of place information (Settings) -->
+    <string name="locale_title">Idioma da información dos lugares</string>
+    <string name="locale_body">Nomes, enderezos e categorías nos resultados de busca e nas fichas de lugar. As etiquetas do mapa non se ven afectadas.</string>
+    <string name="locale_auto">Automático (idioma da aplicación)</string>
+    <string name="locale_es">Castelán</string>
+    <string name="locale_en">Inglés</string>
+    <string name="locale_local">Nomes locais</string>
+    <string name="locale_local_note">Os nomes móstranse tal e como se escriben no lugar (por exemplo catalán, éuscaro ou galego); as categorías usan o idioma da aplicación.</string>
+</resources>

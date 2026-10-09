@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Navigation service notification -->
+    <string name="nav_channel_name">Navigazione</string>
+    <string name="nav_notification_stop">Interrompi</string>
+    <string name="nav_notification_open">Apri</string>
+    <string name="nav_in_distance">%1$s: %2$s</string>
+    <string name="nav_onto_street">%1$s su %2$s</string>
+    <string name="nav_exit_badge">Uscita %1$s</string>
+    <string name="nav_exit_toward">%1$s verso %2$s</string>
+    <string name="nav_waiting_gps">In attesa del segnale GPS…</string>
+    <string name="nav_recalculating">Ricalcolo del percorso…</string>
+    <string name="nav_arrived">Sei arrivato</string>
+    <string name="nav_stop_reached">Tappa raggiunta</string>
+    <string name="nav_problem_permission">Il permesso di posizione è stato revocato. Consentilo per continuare a navigare.</string>
+    <string name="nav_problem_gps_off">La posizione è disattivata. Attivala per continuare a navigare.</string>
+    <string name="nav_resumed">Navigazione ripresa</string>
+    <string name="nav_turn_depart">Partenza</string>
+    <string name="nav_turn_straight">Prosegui dritto</string>
+    <string name="nav_turn_slight_right">Mantieni la destra</string>
+    <string name="nav_turn_right">Svolta a destra</string>
+    <string name="nav_turn_sharp_right">Svolta decisa a destra</string>
+    <string name="nav_turn_slight_left">Mantieni la sinistra</string>
+    <string name="nav_turn_left">Svolta a sinistra</string>
+    <string name="nav_turn_sharp_left">Svolta decisa a sinistra</string>
+    <string name="nav_turn_u_turn">Fai inversione a U</string>
+    <string name="nav_turn_roundabout_enter">Entra nella rotatoria</string>
+    <string name="nav_turn_roundabout_leave">Esci dalla rotatoria</string>
+    <string name="nav_turn_exit_left">Prendi l\'uscita a sinistra</string>
+    <string name="nav_turn_exit_right">Prendi l\'uscita a destra</string>
+    <string name="nav_turn_merge">Immettiti</string>
+    <string name="nav_turn_arrive">Arrivo a destinazione</string>
+    <string name="nav_turn_arrive_left">La destinazione è a sinistra</string>
+    <string name="nav_turn_arrive_right">La destinazione è a destra</string>
+    <!-- Failed routes (policy in RouteFailurePolicy) -->
+    <string name="nav_route_err_no_regions">Nessuna regione installata. Scarica una regione per calcolare percorsi offline.</string>
+    <string name="nav_route_err_need_maps">Mancano delle mappe per questo percorso. Scaricale in Mappe, poi riprova.</string>
+    <string name="nav_route_err_need_maps_named">Mancano delle mappe per questo percorso: %1$s. Scaricale in Mappe, poi riprova.</string>
+    <string name="nav_route_err_start">La partenza non è su una strada delle mappe scaricate. Scegli un altro punto di partenza.</string>
+    <string name="nav_route_err_end">La destinazione non è su una strada delle mappe scaricate.</string>
+    <string name="nav_route_err_stop">Una delle tappe non è su una strada delle mappe scaricate. Spostala o rimuovila.</string>
+    <string name="nav_route_err_not_found">Nessun percorso trovato con queste opzioni. Prova un altro profilo, altre opzioni da evitare o altri punti.</string>
+    <string name="nav_route_err_timeout">Il calcolo del percorso ha richiesto troppo tempo. Riprova o scegli un punto più vicino.</string>
+    <string name="nav_route_err_core">Il motore dei percorsi ha avuto un problema ed è stato riavviato. Riprova.</string>
+    <string name="nav_route_err_core_unavailable">Il motore dei percorsi continua a fallire. Riprova tra un momento.</string>
+    <string name="nav_route_err_internal">Impossibile calcolare il percorso.</string>
+</resources>

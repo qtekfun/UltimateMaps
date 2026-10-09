@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Electric chargers: Settings group (inside the Fuel stations category), map card and attribution -->
+    <string name="ev_group_title">Elektro-Ladestationen</string>
+    <string name="ev_switch_title">Ladestationen anzeigen</string>
+    <string name="ev_switch_body">Zeigt Ladestationen aus OpenStreetMap auf der Karte. Es wird eine kleine Datendatei von deinem Kartenserver geladen (demselben wie für die Karten); dein Standort wird nie gesendet.</string>
+    <string name="ev_sockets_title">Steckertypen</string>
+    <string name="ev_sockets_body">Sind alle vier ausgewählt, werden alle Stationen angezeigt, auch solche ohne Steckerangaben. Wähle weniger aus, um nur Stationen anzuzeigen, die einen davon angeben.</string>
+    <string name="ev_socket_type2">Typ 2</string>
+    <string name="ev_socket_schuko">Schuko (Haushaltssteckdose)</string>
+    <string name="ev_socket_type1">Typ 1</string>
+    <string name="ev_socket_other">Anderer Stecker</string>
+    <string name="ev_power_title">Mindestleistung</string>
+    <string name="ev_power_body">Stationen mit unbekannter Leistung werden ausgeblendet, wenn ein Minimum festgelegt ist.</string>
+    <string name="ev_power_any">Beliebig</string>
+    <string name="ev_power_22">22 kW oder mehr</string>
+    <string name="ev_power_50">50 kW oder mehr</string>
+    <string name="ev_power_100">100 kW oder mehr</string>
+    <string name="ev_data_title">Ladestationsdaten</string>
+    <string name="ev_data_count">%1$d Stationen, Daten vom %2$s</string>
+    <string name="ev_data_never">Noch keine Ladestationsdaten heruntergeladen.</string>
+    <string name="ev_attribution">Elektro-Ladestationen aus OpenStreetMap, © OpenStreetMap-Mitwirkende (ODbL).</string>
+
+    <!-- Card of a tapped charger -->
+    <string name="ev_category">Ladestation</string>
+    <string name="ev_card_title_unknown">Elektro-Ladestation</string>
+    <string name="ev_card_network">Netzwerk: %1$s</string>
+    <string name="ev_card_capacity">Ladepunkte: %1$d</string>
+    <string name="ev_card_sockets">Stecker</string>
+    <string name="ev_card_sockets_unknown">Stecker: in OpenStreetMap nicht angegeben</string>
+    <string name="ev_card_fee_paid">Gebühr: ja</string>
+    <string name="ev_card_fee_free">Gebühr: kostenlos</string>
+    <string name="ev_card_fee_unknown">Gebühr: nicht angegeben</string>
+    <string name="ev_card_hours">Öffnungszeiten: %1$s</string>
+    <string name="ev_card_access_customers">Zugang: nur für Kunden</string>
+    <string name="ev_card_access_private">Zugang: privat oder eingeschränkt</string>
+    <string name="ev_card_access_public">Zugang: öffentlich</string>
+    <string name="ev_card_auth">Starten mit: %1$s</string>
+    <string name="ev_auth_none">kein Konto nötig</string>
+    <string name="ev_auth_app">App</string>
+    <string name="ev_auth_card">Mitgliedskarte</string>
+    <string name="ev_auth_nfc">kontaktlos</string>
+    <string name="ev_card_note">Community-Daten: Verfügbarkeit, Preis und Betriebszustand sind nicht bekannt. Prüfe es, bevor du dich darauf verlässt.</string>
+    <string name="ev_card_data_date">Daten vom %1$s</string>
+    <string name="ev_card_close">Schließen</string>
+    <string name="ev_go">Los</string>
+    <string name="ev_add_stop">Zwischenstopp hinzufügen</string>
+
+    <!-- Backup and restore -->
+    <string name="backup_item_chargers">Ladestationen</string>
+    <string name="backup_group_chargers">Ladestationen</string>
+</resources>

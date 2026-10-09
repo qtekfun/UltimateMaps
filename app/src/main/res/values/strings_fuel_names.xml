@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Names of the fuels of the Ministry service, by FuelType id (see FuelNames) -->
+    <string name="fuel_name_g95e5">Petrol 95 E5</string>
+    <string name="fuel_name_g95e10">Petrol 95 E10</string>
+    <string name="fuel_name_g95e25">Petrol 95 E25</string>
+    <string name="fuel_name_g95e85">Petrol 95 E85</string>
+    <string name="fuel_name_g95e5p">Petrol 95 E5 Premium</string>
+    <string name="fuel_name_g98e5">Petrol 98 E5</string>
+    <string name="fuel_name_g98e10">Petrol 98 E10</string>
+    <string name="fuel_name_goa">Diesel A (standard)</string>
+    <string name="fuel_name_goap">Diesel Premium</string>
+    <string name="fuel_name_gob">Diesel B (agricultural)</string>
+    <string name="fuel_name_bie">Bioethanol</string>
+    <string name="fuel_name_bio">Biodiesel</string>
+    <string name="fuel_name_glp">LPG (autogas)</string>
+    <string name="fuel_name_gnc">CNG (compressed natural gas)</string>
+    <string name="fuel_name_gnl">LNG (liquefied natural gas)</string>
+    <string name="fuel_name_h2">Hydrogen</string>
+    <string name="fuel_name_adblue" translatable="false">AdBlue</string>
+    <string name="fuel_name_dren">Renewable diesel</string>
+    <string name="fuel_name_gren">Renewable petrol</string>
+    <string name="fuel_name_met">Methanol</string>
+    <string name="fuel_name_amo">Ammonia</string>
+    <string name="fuel_name_bgnc">Compressed biogas</string>
+    <string name="fuel_name_bgnl">Liquefied biogas</string>
+</resources>

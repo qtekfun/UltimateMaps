@@ -51,4 +51,4 @@ Thresholds marked "target" are proposals that the spike must validate or correct
 | RNF-09 | Size | App without data < 100 MB (target) |
 | RNF-10 | Licenses | GPLv3; compatibility of each dependency recorded in `LICENSES.md` |
 | RNF-11 | Quality | Unit tests (link parsers, importers, sync), navigation tests with simulated routes, CI and Baseline Profiles |
-| RNF-12 | Accessibility and language | System font size, contrast, basic TalkBack; Spanish and English with externalized strings |
+| RNF-12 | Accessibility and language | System font size, contrast, basic TalkBack; Spanish and English with externalized strings; Catalan, Galician, Basque, French, German, Portuguese and Italian added later (see `decisions.md`) |

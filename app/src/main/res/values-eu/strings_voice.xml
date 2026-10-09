@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Settings: Navigation section -->
+    <string name="nav_settings_title">Nabigazioa</string>
+    <string name="nav_voice_title">Ahots-gidaritza</string>
+    <string name="nav_voice_body">Biraren jarraibideak ahots goran esaten ditu nabigatzen duzun bitartean.</string>
+    <string name="nav_important_title">Abisu garrantzitsuak soilik</string>
+    <string name="nav_important_body">“Jarraitu zuzen”, bihurgune leunak eta urruneko abisuak saltatzen ditu.</string>
+    <string name="nav_volume_title">Ahotsaren bolumena</string>
+    <string name="nav_language_title">Ahotsaren hizkuntza</string>
+    <string name="nav_language_auto">Aplikazioaren berbera</string>
+    <string name="nav_language_es">Gaztelania</string>
+    <string name="nav_language_en">Ingelesa</string>
+    <string name="nav_units_title">Unitateak</string>
+    <string name="nav_units_auto">Automatikoa (eskualdearen arabera)</string>
+    <string name="nav_units_metric">Kilometroak eta metroak</string>
+    <string name="nav_units_imperial">Miliak eta oinak</string>
+    <string name="nav_test_voice">Probatu ahotsa</string>
+    <string name="nav_voice_ready">Ahots-motorra prest dago.</string>
+    <string name="nav_voice_starting">Ahots-motorra abiarazten…</string>
+    <string name="nav_view3d_title">3D ikuspegia</string>
+    <string name="nav_view3d_body">Nabigatzean, mapa makurtzen du eta errepidean aurrera begiratzen du, nabigazio-aplikazio gehienek bezala. Desaktibatuta: mapa laua.</string>
+    <string name="nav_buildings3d_title">3D eraikinak</string>
+    <string name="nav_buildings3d_body">Eraikinak altuerarekin marrazten ditu 3D ikuspegian 15 zoometik aurrera. Potentzia grafiko gehiago behar du; desaktibatu mapa trabatzen bada.</string>
+    <string name="nav_avoid_title">Saihestu lehenespenez</string>
+    <string name="nav_avoid_body">Ibilbide bat planifikatzen duzunean erabiltzen da. Bidaia bakoitzerako alda dezakezu.</string>
+    <string name="nav_avoid_motorways">Autobideak</string>
+    <string name="nav_avoid_tolls">Ordainpeko errepideak</string>
+    <string name="nav_avoid_ferries">Ferryak</string>
+    <string name="nav_avoid_unpaved">Asfaltatu gabeko bideak</string>
+
+    <!-- Voice problems -->
+    <string name="voice_lang_es">Gaztelania</string>
+    <string name="voice_lang_en">Ingelesa</string>
+    <string name="voice_problem_no_engine_title">Ez dago ahots-motorrik instalatuta</string>
+    <string name="voice_problem_no_engine_body">Nabigazioak funtzionatzen du, baina ahotsik gabe. Gailu honek ez du testu-ahots bihurketarako motorrik, Google zerbitzurik gabe ohikoa dena.</string>
+    <string name="voice_problem_lang_title">Ez dago ahotsik hizkuntza honetan: %1$s</string>
+    <string name="voice_problem_lang_body">Instalatutako motorrek ez dute ahots-daturik hizkuntza honetan: %1$s. Instalatu motorraren ezarpenetatik, edo instalatu beste motor bat. Nabigazioak ahotsik gabe jarraitzen du.</string>
+    <string name="voice_problem_failed_title">Ahots-motorra ez da erantzuten</string>
+    <string name="voice_problem_failed_body">Motorra hainbat aldiz gelditu da erantzuten. Nabigazioak ahotsik gabe jarraitzen du. Saiatu berriro edo instalatu beste motor bat.</string>
+    <string name="voice_problem_init_body">Motorra ezin izan da abiarazi. Nabigazioak ahotsik gabe jarraitzen du. Saiatu berriro edo instalatu beste motor bat.</string>
+    <string name="voice_install_intro">Motor libreak F-Droid-en:</string>
+    <string name="voice_install_engine">Lortu %1$s F-Droid-en</string>
+    <string name="voice_install_then">Bat instalatu ondoren, aukeratu Android-en ezarpenetan Testu-ahots irteera atalean, gero itzuli hona eta sakatu “Saiatu berriro”.</string>
+    <string name="voice_install_data">Instalatu ahots-datuak</string>
+    <string name="voice_open_tts_settings">Ireki testu-ahots bihurketaren ezarpenak</string>
+    <string name="voice_retry">Saiatu berriro</string>
+    <string name="voice_banner_no_engine">Nabigazio isila: ez dago ahots-motorrik instalatuta. Sakatu laguntza lortzeko.</string>
+    <string name="voice_banner_lang">Nabigazio isila: ez dago ahotsik hizkuntza honetan: %1$s. Sakatu laguntza lortzeko.</string>
+    <string name="voice_banner_failed">Nabigazio isila: ahots-motorra ez da erantzuten. Sakatu laguntza lortzeko.</string>
+</resources>

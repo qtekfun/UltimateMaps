@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Category chips under the search field -->
+    <string name="category_pharmacy">Farmàcia</string>
+    <string name="category_supermarket">Supermercat</string>
+    <string name="category_restaurant">Restaurant</string>
+    <string name="category_cafe">Cafè</string>
+    <string name="category_fuel">Combustible</string>
+    <string name="category_atm">Caixer automàtic</string>
+    <string name="category_hospital">Hospital</string>
+    <string name="category_parking">Aparcament</string>
+    <string name="category_lodging">Allotjament</string>
+    <string name="category_toilets">Lavabos</string>
+    <string name="category_drinking_water">Aigua potable</string>
+
+    <!-- The category name the search core looks for (not shown to the user; must be a name from its category list) -->
+    <string name="category_query_pharmacy">farmàcia</string>
+    <string name="category_query_supermarket">supermercat</string>
+    <string name="category_query_restaurant">restaurant</string>
+    <string name="category_query_cafe">cafè</string>
+    <string name="category_query_fuel">combustible</string>
+    <string name="category_query_atm">caixer automàtic</string>
+    <string name="category_query_hospital">hospital</string>
+    <string name="category_query_parking">aparcament</string>
+    <string name="category_query_lodging">hotel</string>
+    <string name="category_query_toilets">lavabo</string>
+    <string name="category_query_drinking_water">aigua potable</string>
+
+    <string name="category_distance_note">Les distàncies són en línia recta des de la teva ubicació o el centre del mapa.</string>
+    <string name="category_none">No s\'ha trobat res a prop als mapes descarregats.</string>
+    <string name="category_chip_description">Explora %1$s a prop</string>
+</resources>

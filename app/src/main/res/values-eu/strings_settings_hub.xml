@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Hub rows: title, words the search also matches, and the one-line summary of the current state -->
+    <string name="hub_navigation_title">Nabigazioa eta ahotsa</string>
+    <string name="hub_navigation_keywords">ahotsa unitateak ibilbidea saihestu autobideak ordainpekoak ferryak 3d eraikinak bizikleta bizikleta-bideak egoera-barra distantzia txipa denbora errealeko eguneratzea soinua bolumena hizkuntza kilometroak miliak mendi-ibilaldiak txirrindularitza ibilbideak mendiko bizikleta</string>
+    <string name="hub_navigation_voice_on">Ahotsa: %1$s, %% %2$d</string>
+    <string name="hub_navigation_voice_off">Ahotsa: desaktibatuta</string>
+    <string name="hub_alerts_title">Abisuak</string>
+    <string name="hub_alerts_keywords">radarrak kamerak abiadura trafikoa gertakariak obrak abisuak soinua isiltasuna isurketa gutxiko eremua ZBE</string>
+    <string name="hub_alerts_summary">Radarrak: %1$s · Trafikoa: %2$s</string>
+    <string name="hub_fuel_keywords">gasolina gasolioa diesel erregaia prezioak gasolindegiak elektrikoa autoa kargagailua karga entxufea</string>
+    <string name="hub_fuel_off">Desaktibatuta</string>
+    <string name="hub_fuel_no_fuel">Aktibatuta, erregairik aukeratu gabe</string>
+    <plurals name="hub_fuel_count">
+        <item quantity="one">erregai %d</item>
+        <item quantity="other">%d erregai</item>
+    </plurals>
+    <string name="hub_fuel_summary">%1$s, %2$s mapan</string>
+    <string name="hub_network_title">Mapak eta sarea</string>
+    <string name="hub_network_keywords">lineaz kanpo pribatutasuna konexioak internet katalogoa zerbitzaria eskualdeak deskarga</string>
+    <string name="hub_network_summary">Lineaz kanpoko modua: %1$s</string>
+    <string name="hub_data_title">Datuak</string>
+    <string name="hub_data_keywords">historia azken bilaketak ibilbide-grabaketa babeskopia berreskuratu esportatu inportatu ezabatu garbitu</string>
+    <string name="hub_data_searches">Bilaketak: %1$s</string>
+    <string name="hub_data_recording">Grabaketa: %1$s</string>
+    <string name="hub_about_title">Honi buruz</string>
+    <string name="hub_about_keywords">bertsioa lizentzia atribuzioa openstreetmap iturburu-kodea kredituak</string>
+    <string name="hub_about_summary">%1$s bertsioa</string>
+    <string name="hub_about_summary_plain">Lizentzia eta atribuzioak</string>
+    <string name="hub_on">aktibatuta</string>
+    <string name="hub_off">desaktibatuta</string>
+
+    <string name="hub_search_hint">Bilatu ezarpenetan</string>
+    <string name="hub_search_none">Ez dago bat datorren ezarpenik.</string>
+
+    <!-- Group headings inside the category screens -->
+    <string name="hub_group_voice">Ahotsa</string>
+    <string name="hub_group_display">Unitateak eta mapa-ikuspegia</string>
+    <string name="hub_group_route">Ibilbidearen lehenespenak</string>
+    <string name="hub_group_cameras">Radarrak</string>
+    <string name="hub_group_incidents">Trafiko-gertakariak</string>
+    <string name="hub_group_maps">Mapak</string>
+    <string name="hub_advanced">Aurreratua</string>
+    <string name="hub_advanced_open">Zabalduta</string>
+    <string name="hub_advanced_closed">Tolestuta</string>
+
+    <string name="hub_privacy_note">Aplikazio honek ez du analitikarik ez hutsegite-txostenik. Konexio posible guztiak behean zerrendatzen dira, eta lineaz kanpoko moduak guztiak blokeatzen ditu.</string>
+
+    <!-- About -->
+    <string name="hub_about_version_title">Bertsioa</string>
+    <string name="hub_about_license_title">Lizentzia</string>
+    <string name="hub_about_license_body">Software librea GNU General Public License v3 (GPLv3) lizentziapean.</string>
+    <string name="about_notice_title">Hirugarrenen oharrak</string>
+    <string name="about_notice_show">Erakutsi barne dagoen softwarearen lizentziak</string>
+    <string name="about_notice_hide">Ezkutatu lizentziak</string>
+    <string name="about_notice_unavailable">Oharren fitxategia ez dago eskuragarri konpilazio honetan.</string>
+    <string name="about_diag_title">Diagnostikoa</string>
+    <string name="about_diag_body">Telefono honetan bakarrik gordetako akatsei buruzko oharrak, hala nola aplikazioaren prozesuak nola amaitu diren eta ustekabeko erroreak. Ez dute lekurik ez kokapenik. Ez da ezer inora bidaltzen; kopiatu akats-txosten batean nahi baduzu.</string>
+    <string name="about_diag_show">Erakutsi diagnostiko-oharrak</string>
+    <string name="about_diag_hide">Ezkutatu diagnostiko-oharrak</string>
+    <string name="about_diag_empty">Oraindik ez da ezer apuntatu.</string>
+    <string name="about_diag_copy">Kopiatu</string>
+    <string name="about_diag_clear">Garbitu oharrak</string>
+    <string name="hub_about_source">Iturburu-kodea: github.com/qtekfun/UltimateMaps</string>
+</resources>

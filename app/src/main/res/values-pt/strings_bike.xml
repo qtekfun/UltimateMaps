@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Bike: prefer or require cycle infrastructure -->
+    <string name="bike_cycleways_title">Infraestrutura ciclável</string>
+    <string name="bike_cycleways_settings_body">Predefinição para rotas de bicicleta: com que intensidade preferir ciclovias e faixas cicláveis. Baseia-se nas etiquetas do OpenStreetMap, que são mais completas em algumas zonas do que noutras.</string>
+    <string name="bike_cycleways_off">Desligado</string>
+    <string name="bike_cycleways_prefer">Preferir</string>
+    <string name="bike_cycleways_strong">Preferir fortemente</string>
+    <string name="bike_cycleways_only">Apenas</string>
+    <string name="bike_cycleways_full_off">Desligado (padrão)</string>
+    <string name="bike_cycleways_full_prefer">Preferir</string>
+    <string name="bike_cycleways_full_strong">Preferir fortemente</string>
+    <string name="bike_cycleways_full_only">Apenas infraestrutura ciclável</string>
+    <string name="bike_cycleways_caption_off">Cálculo de rotas de bicicleta padrão, que já favorece ciclovias e faixas cicláveis assinaladas.</string>
+    <string name="bike_cycleways_caption_prefer">Prefere ciclovias e faixas cicláveis, com alguns desvios.</string>
+    <string name="bike_cycleways_caption_strong">Prefere fortemente ciclovias e faixas cicláveis, mesmo com desvios longos.</string>
+    <string name="bike_cycleways_caption_only">Usa apenas ciclovias e estradas assinaladas para bicicletas. Muitas vezes não encontra rota.</string>
+    <string name="bike_err_no_cycle_route">Não foi encontrada nenhuma rota usando apenas infraestrutura ciclável. Experimenta Preferir.</string>
+</resources>

@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Route panel: fourth travel mode -->
+    <string name="route_profile_transit">Transports</string>
+    <string name="transit_group_departure">Départ</string>
+    <string name="transit_depart_now">Partir maintenant</string>
+    <string name="transit_depart_later">Partir à</string>
+    <string name="transit_time_earlier">15 minutes plus tôt</string>
+    <string name="transit_time_later">15 minutes plus tard</string>
+    <string name="transit_day_earlier">Jour précédent</string>
+    <string name="transit_day_later">Jour suivant</string>
+
+    <string name="transit_computing">Recherche de correspondances…</string>
+    <string name="transit_needs_origin">En attente de votre position. Choisissez un point de départ ou activez la localisation.</string>
+    <string name="transit_err_no_data">Aucune donnée de transports en commun n\'est installée et le serveur de cartes n\'en propose aucune. Ouvrez Cartes pour en chercher.</string>
+    <string name="transit_err_not_downloaded">Les horaires de %1$s ne sont pas encore téléchargés. Téléchargez-les dans Cartes, sous Transports en commun.</string>
+    <string name="transit_err_across">Ce trajet va de %1$s à %2$s, qui ont des horaires distincts. Les trajets entre les deux ne sont pas planifiés ; planifiez chaque partie séparément.</string>
+    <string name="transit_err_outside">Les horaires des transports en commun ne couvrent pas ce trajet.</string>
+    <string name="transit_err_expired">Les horaires ont expiré le %1$s ; les trajets après cette date ne sont donc pas planifiés. Choisissez une date antérieure ou mettez à jour les données dans Cartes.</string>
+    <string name="transit_err_not_yet">Les horaires commencent le %1$s. Choisissez une date ultérieure.</string>
+    <string name="transit_err_no_route">Aucune correspondance trouvée à cette heure. Essayez une autre heure.</string>
+    <string name="transit_err_internal">Le fichier d\'horaires n\'a pas pu être lu. Supprimez-le et téléchargez-le de nouveau dans Cartes.</string>
+
+    <!-- Itinerary list -->
+    <string name="transit_direct">Direct</string>
+    <plurals name="transit_transfers">
+        <item quantity="one">%d correspondance</item>
+        <item quantity="many">%d correspondances</item>
+        <item quantity="other">%d correspondances</item>
+    </plurals>
+    <string name="transit_walk_only">À pied uniquement</string>
+    <string name="transit_walking">%1$s à pied</string>
+    <string name="transit_option_description">Option %1$d : %2$s, arrivée %3$s, %4$s, %5$s</string>
+    <string name="transit_chip_walk">À pied</string>
+    <string name="transit_walk_pill">%1$d min</string>
+    <string name="transit_walk_only_pill">À pied · %1$d min</string>
+    <plurals name="transit_walk_description">
+        <item quantity="one">Marcher %d minute</item>
+        <item quantity="many">Marcher %d minutes</item>
+        <item quantity="other">Marcher %d minutes</item>
+    </plurals>
+
+    <!-- Itinerary card -->
+    <string name="transit_back">Retour aux options</string>
+    <string name="transit_card_summary">%1$s, départ %2$s, arrivée %3$s</string>
+    <string name="transit_place_destination">votre destination</string>
+    <string name="transit_leg_walk">Marcher %1$s jusqu\'à %2$s</string>
+    <string name="transit_leg_towards">Direction %1$s</string>
+    <string name="transit_leg_board">Monter à %1$s</string>
+    <string name="transit_leg_alight">Descendre à %1$s</string>
+    <plurals name="transit_leg_stops">
+        <item quantity="one">%d arrêt</item>
+        <item quantity="many">%d arrêts</item>
+        <item quantity="other">%d arrêts</item>
+    </plurals>
+
+    <!-- Honesty and data -->
+    <string name="transit_theoretical_note">Les horaires sont théoriques, issus des horaires publiés. Ils n\'incluent ni retards, ni annulations, ni informations en temps réel.</string>
+    <string name="transit_valid_range">Horaires valables du %1$s au %2$s.</string>
+    <string name="transit_projected_note">Les horaires du métro datent de 2025 (aucune donnée plus récente n\'est publiée) : les horaires peuvent différer.</string>
+    <string name="transit_unverified">Une partie de ces données n\'a pas pu être vérifiée par rapport à son calendrier.</string>
+    <string name="transit_link_description">Ouvrir %1$s</string>
+
+    <!-- About -->
+    <string name="transit_about_title">Données des transports en commun</string>
+
+    <!-- Maps screen: section -->
+    <string name="transit_maps_title">Transports en commun</string>
+    <string name="transit_maps_intro">Horaires pour des itinéraires théoriques. Chaque ville ou région est un téléchargement distinct, effectué uniquement lorsque vous appuyez sur Télécharger ; toute la planification se fait sur votre téléphone et aucune position n\'est envoyée.</string>
+    <string name="transit_maps_none">Le catalogue ne propose pas encore de villes avec transports en commun.</string>
+    <string name="transit_maps_size">Taille du téléchargement : %1$s</string>
+    <string name="transit_maps_valid">Valable du %1$s au %2$s</string>
+    <string name="transit_maps_expired">Expiré le %1$s : les données publiées sont périmées</string>
+    <string name="transit_maps_update_available">Un fichier plus récent est disponible</string>
+    <string name="transit_maps_installed">Installé</string>
+    <string name="transit_maps_download">Télécharger</string>
+    <string name="transit_maps_update">Mettre à jour</string>
+    <string name="transit_maps_delete">Supprimer</string>
+    <string name="transit_maps_downloading">Téléchargement…</string>
+    <string name="transit_fail_offline">Le mode hors ligne est activé : rien n\'a été téléchargé.</string>
+    <string name="transit_fail_not_allowed">Ce serveur n\'est pas autorisé par la liste de connexions.</string>
+    <string name="transit_fail_network">Le téléchargement a échoué. Réessayez plus tard.</string>
+    <string name="transit_fail_integrity">Le fichier ne correspondait pas au catalogue et a été supprimé.</string>
+    <string name="transit_fail_invalid">Le fichier n\'est pas un index d\'horaires valide.</string>
+    <string name="transit_fail_expired">Les horaires publiés ont déjà expiré.</string>
+    <string name="transit_fail_cancelled">Le téléchargement a été annulé.</string>
+    <!-- Spoken form of a line badge: the mode comes first because short names are shared between modes -->
+    <string name="transit_line_bus">Ligne de bus %1$s</string>
+    <string name="transit_line_tram">Ligne de tramway %1$s</string>
+    <string name="transit_line_train">Ligne de train %1$s</string>
+    <string name="transit_line_metro">Ligne de métro %1$s</string>
+    <string name="transit_line_ferry">Ligne de ferry %1$s</string>
+    <string name="transit_line_other">Ligne %1$s</string>
+</resources>

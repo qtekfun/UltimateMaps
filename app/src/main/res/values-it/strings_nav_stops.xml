@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Adding a stop to the trip in progress -->
+    <string name="nav_stop_adding">Aggiunta della tappa…</string>
+    <string name="nav_stop_no_route">Nessun percorso trovato passando da questa tappa. Il viaggio prosegue come prima.</string>
+    <string name="nav_stop_limit">Il viaggio ha già %1$d tappe davanti. Raggiungine prima una.</string>
+    <string name="nav_stop_duplicate">Questo luogo è già una tappa del viaggio.</string>
+    <string name="nav_stop_is_destination">Questo luogo è la destinazione del viaggio.</string>
+    <string name="nav_stop_busy">Un\'altra tappa è ancora in fase di aggiunta. Attendi un momento.</string>
+    <string name="nav_stop_not_navigating">Il viaggio è terminato, quindi la tappa non è stata aggiunta.</string>
+</resources>

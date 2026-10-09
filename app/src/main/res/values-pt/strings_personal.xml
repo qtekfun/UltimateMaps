@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Home, Work and parked car -->
+    <string name="quick_home">Casa</string>
+    <string name="quick_work">Trabalho</string>
+    <string name="quick_park">Estacionar</string>
+    <string name="quick_parked">Carro estacionado</string>
+    <string name="quick_sos">SOS</string>
+    <string name="quick_park_again">Marcar aqui novamente</string>
+    <string name="quick_park_clear">Limpar carro estacionado</string>
+    <string name="parking_name">Carro estacionado</string>
+    <string name="quick_msg_home_set">Casa definida.</string>
+    <string name="quick_msg_work_set">Trabalho definido.</string>
+    <string name="quick_msg_parking_set">Carro estacionado marcado no mapa.</string>
+    <string name="quick_msg_parking_cleared">Carro estacionado limpo.</string>
+    <string name="quick_msg_waiting">A aguardar a tua posição…</string>
+    <string name="quick_msg_home_unset">Abre um local e toca em “Definir como Casa”.</string>
+    <string name="quick_msg_work_unset">Abre um local e toca em “Definir como Trabalho”.</string>
+    <string name="place_set_home">Definir como Casa</string>
+    <string name="place_set_work">Definir como Trabalho</string>
+
+    <!-- Recent searches -->
+    <string name="recent_title">Pesquisas recentes</string>
+    <string name="recent_clear">Limpar</string>
+    <string name="history_title">Histórico de pesquisa</string>
+    <string name="history_switch_title">Guardar pesquisas recentes</string>
+    <string name="history_switch_body">Memoriza o que pesquisaste apenas neste dispositivo, para o sugerir novamente. Ao desativar, também é eliminado.</string>
+    <string name="history_clear">Limpar pesquisas recentes</string>
+    <string name="history_cleared">Pesquisas recentes limpas.</string>
+
+    <!-- List customisation -->
+    <string name="list_customize">Personalizar</string>
+    <string name="list_edit_name_hint">Nome</string>
+    <string name="list_edit_emoji_hint">Emoji</string>
+    <string name="list_edit_notes_hint">Notas</string>
+    <string name="list_edit_color">Cor</string>
+    <string name="list_edit_color_none">Sem cor</string>
+    <string name="list_edit_color_swatch">Cor</string>
+    <string name="list_edit_save">Guardar</string>
+    <string name="list_edit_cancel">Cancelar</string>
+
+    <!-- Launcher shortcuts -->
+    <string name="shortcut_search_short">Pesquisar</string>
+    <string name="shortcut_search_long">Pesquisar locais</string>
+    <string name="shortcut_saved_short">Guardados</string>
+    <string name="shortcut_saved_long">Locais guardados</string>
+    <string name="shortcut_maps_short">Mapas</string>
+    <string name="shortcut_maps_long">Mapas transferidos</string>
+    <string name="shortcut_emergency_short">Emergência</string>
+    <string name="shortcut_emergency_long">Emergência</string>
+
+    <!-- Emergency screen -->
+    <string name="emergency_title">Emergência</string>
+    <string name="emergency_call">Ligar para o %1$s</string>
+    <string name="emergency_position_title">A tua posição</string>
+    <string name="emergency_accuracy">Precisão de cerca de %1$d m</string>
+    <string name="emergency_waiting">A aguardar uma posição…</string>
+    <string name="emergency_no_permission">É necessária a permissão de localização para mostrar a tua posição.</string>
+    <string name="emergency_grant">Permitir localização</string>
+    <string name="emergency_no_provider">Este dispositivo não tem fornecedor de localização.</string>
+    <string name="emergency_share">Partilhar a minha posição</string>
+    <string name="emergency_share_header">A minha posição (emergência):</string>
+    <string name="emergency_dial_failed">Não foi encontrada nenhuma aplicação de telefone para fazer a chamada.</string>
+    <string name="emergency_privacy_note">O botão de chamada abre o teu marcador; carregas em ligar lá. A tua posição só é mostrada neste ecrã e não é guardada, registada nem enviada, a menos que toques em Partilhar e escolhas uma aplicação.</string>
+</resources>

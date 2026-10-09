@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Settings: Navigation section -->
+    <string name="nav_settings_title">Navigation</string>
+    <string name="nav_voice_title">Sprachführung</string>
+    <string name="nav_voice_body">Abbiegehinweise während der Navigation ansagen.</string>
+    <string name="nav_important_title">Nur wichtige Hinweise</string>
+    <string name="nav_important_body">„Geradeaus weiterfahren“, leichte Kurven und weit entfernte Warnungen überspringen.</string>
+    <string name="nav_volume_title">Lautstärke der Sprache</string>
+    <string name="nav_language_title">Sprache der Sprachführung</string>
+    <string name="nav_language_auto">Wie die App</string>
+    <string name="nav_language_es">Spanisch</string>
+    <string name="nav_language_en">Englisch</string>
+    <string name="nav_units_title">Einheiten</string>
+    <string name="nav_units_auto">Automatisch (nach Region)</string>
+    <string name="nav_units_metric">Kilometer und Meter</string>
+    <string name="nav_units_imperial">Meilen und Fuß</string>
+    <string name="nav_test_voice">Stimme testen</string>
+    <string name="nav_voice_ready">Die Sprachausgabe ist bereit.</string>
+    <string name="nav_voice_starting">Sprachausgabe wird gestartet …</string>
+    <string name="nav_view3d_title">3D-Ansicht</string>
+    <string name="nav_view3d_body">Neigt die Karte während der Navigation und blickt entlang der Straße voraus, wie die meisten Navigations-Apps. Aus: eine flache Karte.</string>
+    <string name="nav_buildings3d_title">3D-Gebäude</string>
+    <string name="nav_buildings3d_body">Zeichnet Gebäude mit Höhe in der 3D-Ansicht ab Zoomstufe 15. Das braucht mehr Grafikleistung; schalte es aus, wenn die Karte ruckelt.</string>
+    <string name="nav_avoid_title">Standardmäßig vermeiden</string>
+    <string name="nav_avoid_body">Wird bei der Routenplanung verwendet. Du kannst es für jede Fahrt ändern.</string>
+    <string name="nav_avoid_motorways">Autobahnen</string>
+    <string name="nav_avoid_tolls">Mautstraßen</string>
+    <string name="nav_avoid_ferries">Fähren</string>
+    <string name="nav_avoid_unpaved">Unbefestigte Straßen</string>
+
+    <!-- Voice problems -->
+    <string name="voice_lang_es">Spanisch</string>
+    <string name="voice_lang_en">Englisch</string>
+    <string name="voice_problem_no_engine_title">Keine Sprachausgabe installiert</string>
+    <string name="voice_problem_no_engine_body">Die Navigation funktioniert, aber ohne Sprache. Dieses Gerät hat keine Text-to-Speech-Engine, was ohne Google-Dienste üblich ist.</string>
+    <string name="voice_problem_lang_title">Keine Stimme für %1$s</string>
+    <string name="voice_problem_lang_body">Die installierten Engines haben keine Sprachdaten für %1$s. Installiere sie in den Einstellungen der Engine oder installiere eine andere Engine. Die Navigation läuft ohne Sprache weiter.</string>
+    <string name="voice_problem_failed_title">Die Sprachausgabe reagiert nicht</string>
+    <string name="voice_problem_failed_body">Die Engine hat mehrmals nicht mehr geantwortet. Die Navigation läuft ohne Sprache weiter. Versuche es erneut oder installiere eine andere Engine.</string>
+    <string name="voice_problem_init_body">Die Engine konnte nicht gestartet werden. Die Navigation läuft ohne Sprache weiter. Versuche es erneut oder installiere eine andere Engine.</string>
+    <string name="voice_install_intro">Freie Engines auf F-Droid:</string>
+    <string name="voice_install_engine">%1$s auf F-Droid herunterladen</string>
+    <string name="voice_install_then">Wähle nach der Installation die Engine in den Android-Einstellungen unter Sprachausgabe aus, komm dann zurück und tippe auf „Erneut versuchen“.</string>
+    <string name="voice_install_data">Sprachdaten installieren</string>
+    <string name="voice_open_tts_settings">Text-to-Speech-Einstellungen öffnen</string>
+    <string name="voice_retry">Erneut versuchen</string>
+    <string name="voice_banner_no_engine">Lautlose Navigation: keine Sprachausgabe installiert. Tippen für Hilfe.</string>
+    <string name="voice_banner_lang">Lautlose Navigation: keine Stimme für %1$s. Tippen für Hilfe.</string>
+    <string name="voice_banner_failed">Lautlose Navigation: Die Sprachausgabe reagiert nicht. Tippen für Hilfe.</string>
+</resources>

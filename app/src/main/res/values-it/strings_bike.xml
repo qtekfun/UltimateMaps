@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Bike: prefer or require cycle infrastructure -->
+    <string name="bike_cycleways_title">Infrastrutture ciclabili</string>
+    <string name="bike_cycleways_settings_body">Impostazione predefinita per i percorsi in bici: quanto preferire piste e corsie ciclabili. Si basa sui tag di OpenStreetMap, più completi in alcune zone che in altre.</string>
+    <string name="bike_cycleways_off">No</string>
+    <string name="bike_cycleways_prefer">Preferisci</string>
+    <string name="bike_cycleways_strong">Preferisci molto</string>
+    <string name="bike_cycleways_only">Solo</string>
+    <string name="bike_cycleways_full_off">No (standard)</string>
+    <string name="bike_cycleways_full_prefer">Preferisci</string>
+    <string name="bike_cycleways_full_strong">Preferisci molto</string>
+    <string name="bike_cycleways_full_only">Solo infrastrutture ciclabili</string>
+    <string name="bike_cycleways_caption_off">Calcolo standard dei percorsi in bici, che già favorisce piste e corsie ciclabili segnalate.</string>
+    <string name="bike_cycleways_caption_prefer">Preferisce piste e corsie ciclabili, con qualche deviazione.</string>
+    <string name="bike_cycleways_caption_strong">Preferisce molto piste e corsie ciclabili, anche con lunghe deviazioni.</string>
+    <string name="bike_cycleways_caption_only">Usa solo piste ciclabili e strade segnalate per le bici. Spesso non trova alcun percorso.</string>
+    <string name="bike_err_no_cycle_route">Nessun percorso trovato usando solo infrastrutture ciclabili. Prova Preferisci.</string>
+</resources>

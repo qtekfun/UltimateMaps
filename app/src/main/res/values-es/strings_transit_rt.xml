@@ -9,10 +9,12 @@
     <string name="transit_rt_label">Tiempo real (Renfe)</string>
     <plurals name="transit_rt_delayed">
         <item quantity="one">Retraso de %d min</item>
+        <item quantity="many">Retraso de %d min</item>
         <item quantity="other">Retraso de %d min</item>
     </plurals>
     <plurals name="transit_rt_early">
         <item quantity="one">%d min antes de la hora</item>
+        <item quantity="many">%d min antes de la hora</item>
         <item quantity="other">%d min antes de la hora</item>
     </plurals>
     <string name="transit_rt_on_time">Puntual</string>
