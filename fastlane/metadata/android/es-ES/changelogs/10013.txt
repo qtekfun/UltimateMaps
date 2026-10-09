@@ -1,0 +1,1 @@
+Versión candidata: la app está disponible en catalán, gallego, euskera, francés, alemán, portugués e italiano, con guiado por voz en todos salvo euskera (se habla en inglés). Las traducciones aún no las han revisado hablantes nativos. Solo España.
