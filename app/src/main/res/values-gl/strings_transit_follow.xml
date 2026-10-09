@@ -83,4 +83,8 @@
     <string name="trip_prompts_title">Indicacións da viaxe en transporte público</string>
     <string name="trip_prompts_body">Como che di unha viaxe en transporte público paso a paso cando subir, cambiar e baixar.</string>
     <string name="trip_prompts_note">O báner da pantalla sempre se mostra. O Silenciar da navegación desactiva o son e a voz.</string>
+    <string name="trip_on_board">Vou a bordo</string>
+    <string name="trip_not_on_board">Non vou a bordo</string>
+    <string name="trip_on_board_description">Indica á app que vas no vehículo</string>
+    <string name="trip_not_on_board_description">Indica á app que non vas no vehículo</string>
 </resources>
