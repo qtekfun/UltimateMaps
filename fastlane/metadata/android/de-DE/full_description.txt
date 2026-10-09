@@ -1,0 +1,14 @@
+UltimateMaps ist eine private Offline-Karten-App. Karte, Suche und Routen werden auf deinem Telefon berechnet: kein Live-Verkehr, keine Konten, keine Werbung, keine Analyse und keine Telemetrie. Sie funktioniert ohne Google Play Services.
+
+Dies ist ein Release Candidate eines MVP, keine fertige App. Was heute funktioniert:
+
+• Offline-Vektorkarte (MapLibre + PMTiles), helles und dunkles Design.
+• Regionsdownloads über den Bildschirm Karten: fortsetzbar und mit SHA-256 geprüft. Ein Netzwerk-Aus-Modus blockiert alle Verbindungen der App.
+• Offline-Suche nach Orten und Adressen mit der CoMaps-Engine.
+• Routenvorschau mit dem Auto, zu Fuß oder mit dem Fahrrad (noch ohne Abbiegehinweise).
+• Gespeicherte Orte und Listen, mit GPX- und KML-Import und -Export.
+• Öffnet Links von Google Maps, Apple Maps, Waze und geo:-Links.
+
+Noch nicht vorhanden: Sprachnavigation mit Abbiegehinweisen, Spurführung und Tempolimits, ein Motorradprofil und kurvige Routen, Track-Aufzeichnung, Nextcloud-Synchronisierung, Google-Takeout-Import, Android Auto.
+
+Vorerst ist nur Spanien verfügbar. Die Kartendaten stammen von OpenStreetMap (© OpenStreetMap-Mitwirkende, ODbL) und werden nur auf deinen Wunsch heruntergeladen. Freie Software, GPL-3.0-or-later.
