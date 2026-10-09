@@ -84,4 +84,8 @@
     <string name="trip_prompts_title">Transit trip prompts</string>
     <string name="trip_prompts_body">How a step-by-step transit trip tells you to board, change and get off.</string>
     <string name="trip_prompts_note">The on-screen banner always shows. The navigation Mute silences the sound and the voice.</string>
+    <string name="trip_on_board">I\'m on board</string>
+    <string name="trip_not_on_board">I\'m not on board</string>
+    <string name="trip_on_board_description">Tell the app you are on the vehicle</string>
+    <string name="trip_not_on_board_description">Tell the app you are not on the vehicle</string>
 </resources>

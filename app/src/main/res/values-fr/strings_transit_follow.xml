@@ -87,4 +87,8 @@
     <string name="trip_prompts_title">Consignes du trajet en transports</string>
     <string name="trip_prompts_body">La façon dont un trajet en transports pas à pas vous indique quand monter, changer et descendre.</string>
     <string name="trip_prompts_note">La bannière à l\'écran s\'affiche toujours. Le bouton Couper le son de la navigation coupe le son et la voix.</string>
+    <string name="trip_on_board">Je suis à bord</string>
+    <string name="trip_not_on_board">Je ne suis pas à bord</string>
+    <string name="trip_on_board_description">Indiquer à l\'appli que vous êtes dans le véhicule</string>
+    <string name="trip_not_on_board_description">Indiquer à l\'appli que vous n\'êtes pas dans le véhicule</string>
 </resources>

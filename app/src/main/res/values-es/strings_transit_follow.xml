@@ -87,4 +87,8 @@
     <string name="trip_prompts_title">Avisos del viaje en transporte público</string>
     <string name="trip_prompts_body">Cómo te avisa el viaje paso a paso de que subas, cambies y bajes.</string>
     <string name="trip_prompts_note">El aviso en pantalla se muestra siempre. El silencio de la navegación apaga el sonido y la voz.</string>
+    <string name="trip_on_board">Voy a bordo</string>
+    <string name="trip_not_on_board">No voy a bordo</string>
+    <string name="trip_on_board_description">Indica a la app que vas en el vehículo</string>
+    <string name="trip_not_on_board_description">Indica a la app que no vas en el vehículo</string>
 </resources>

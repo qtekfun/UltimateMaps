@@ -15,6 +15,9 @@ import kotlin.math.min
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
 
+/** The ride the traveller is on right now: [progress] is a stop index plus the fraction of the way to the next stop; [delaySec] is behind the schedule. */
+data class BoardedRide(val legIndex: Int, val ride: ItineraryLeg.Ride, val progress: Double, val delaySec: Int)
+
 /** What survives the death of the process: enough to continue a trip without starting from the first leg. */
 data class FollowerSnapshot(val legIndex: Int, val boarded: Boolean, val progress: Double, val delaySec: Int?)
 
@@ -63,6 +66,7 @@ class ItineraryFollower(
     private var offPlan = false
     private var offEpisode = 0
     private var ridingCount = 0
+    private var fastCount = 0
     private var pendingP = -1.0
     private var pendingCount = 0
     private var forceRecover = false
@@ -90,6 +94,44 @@ class ItineraryFollower(
         }
         skipEmptyWalks()
         state = buildState(clockMillis())
+    }
+
+    /** The ride the traveller is aboard, or null when not (waiting, walking, arrived). */
+    fun boardedRide(): BoardedRide? {
+        val ride = legs.getOrNull(legIdx) as? ItineraryLeg.Ride ?: return null
+        if (!boarded) return null
+        return BoardedRide(legIdx, ride, progress, delaySec ?: 0)
+    }
+
+    /**
+     * The traveller says "I am on the train": the next (or current) ride counts as boarded, at the place of the last fix on
+     * its stops (a wide corridor) or, with no usable fix, where the timetable says it is. The next fixes resynchronise it.
+     * False when no ride is left. Wins over what the fixes said.
+     */
+    fun assumeBoarded(): Boolean {
+        val idx = if (legs.getOrNull(legIdx) is ItineraryLeg.Ride) legIdx else nextRideIndex(legIdx)
+        if (idx < 0) return false
+        val ride = legs[idx] as ItineraryLeg.Ride
+        if (!(idx == legIdx && boarded)) {
+            legIdx = idx
+            resetLeg()
+            boarded = true
+            val nowMs = clockMillis()
+            val match = lastFix?.let { bestSegment(ride, it, 0, ride.stops.size - 2, config.wideCorridorFactor * 2) }
+            progress = match?.p ?: min(scheduleProgress(ride, nowMs / 1000), ride.stops.size - 1 - 1e-3)
+            forceRecover = true
+            updateDelay(ride, nowMs)
+        }
+        state = buildState(clockMillis())
+        return true
+    }
+
+    /** The traveller says "I am not on the train": the ride goes back to being waited for, and the position decides what is off plan. */
+    fun assumeNotBoarded() {
+        if (legs.getOrNull(legIdx) is ItineraryLeg.Ride && boarded) {
+            resetLeg()
+            state = buildState(clockMillis())
+        }
     }
 
     fun snapshot(): FollowerSnapshot = FollowerSnapshot(legIdx, boarded, progress, delaySec)
@@ -147,6 +189,7 @@ class ItineraryFollower(
         offCount = 0
         offPlan = false
         ridingCount = 0
+        fastCount = 0
         pendingP = -1.0
         pendingCount = 0
         lastAtBoardingStop = false
@@ -206,6 +249,18 @@ class ItineraryFollower(
                 }
             } else {
                 ridingCount = (ridingCount - 1).coerceAtLeast(0) // one slow fix (a traffic light) does not undo the evidence
+            }
+            // Rail lines curve between stops and the stop-to-stop lines have no shape, so a fast train can stay outside the
+            // corridor for a whole hop: a speed no walker or cyclist reaches, sustained along the line, also means "aboard".
+            if (!boarded && !atStop && ride.line.routeType in config.estimateRouteTypes && (speed ?: 0f) >= config.trainSpeedMps) {
+                val wide = bestSegment(ride, fix, 0, min(config.lookaheadSegments, n - 2), config.wideCorridorFactor)
+                if (wide != null && ++fastCount >= config.trainConfirmFixes) {
+                    boarded = true
+                    progress = wide.p
+                    updateDelay(ride, nowMs)
+                }
+            } else if (!boarded) {
+                fastCount = 0
             }
             if (!boarded) {
                 if (atStop) {
@@ -290,9 +345,9 @@ class ItineraryFollower(
     // ------------------------------------------------------------------------------------------------ geometry
 
     /** Best stop-to-stop segment in [lo]..[hi] within the corridor of [fix], or null. Ties go to the earlier segment. */
-    private fun bestSegment(ride: ItineraryLeg.Ride, fix: Fix, lo: Int, hi: Int): Match? {
+    private fun bestSegment(ride: ItineraryLeg.Ride, fix: Fix, lo: Int, hi: Int, corridorFactor: Double = 1.0): Match? {
         var best: Match? = null
-        val limit = config.corridorM + fix.accuracy
+        val limit = config.corridorM * corridorFactor + fix.accuracy
         for (i in lo..hi) {
             if (i < 0 || i + 1 >= ride.stops.size) continue
             val (t, d) = project(fix.point, ride.stops[i].point, ride.stops[i + 1].point)
