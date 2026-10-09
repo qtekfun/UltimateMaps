@@ -137,7 +137,7 @@ rule. Revisit only after checking an `.mwm` for the section and testing on a dev
 1. Legal review of the whole feature (fixed cameras from the administration's own list are tolerated; mobile zones are a gray
    area; the Fiscalia reform outcome was never verified). Ship mobile zones at all?
 2. Confirm the DGT licence terms (CC BY version, legal notice, the report PDF) before the first release that includes the file.
-3. Who changes the weekly workflow in `UltimateMaps-data` to build and list `speedcams-es.bin` (recipe in `cameras-data.md`).
+3. Who changes the weekly workflow in `ultimate-maps-data` to build and list `speedcams-es.bin` (recipe in `cameras-data.md`).
 4. Whether to also ship OSM cameras (more coverage and `maxspeed`, uneven quality) or DGT only (the safest basis).
 5. Mobile zones: only 25 of 1,325 can be drawn because most roads (regional) have no kilometre reference in any open DGT
    dataset. A better road geometry source (OSM road refs with kilometre posts, or a dataset with PK geometry) is needed to make

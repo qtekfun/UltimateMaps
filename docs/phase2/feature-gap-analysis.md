@@ -29,7 +29,7 @@ Known gaps from the README: motorcycle profile and curvy routes, track recording
 - **later**: valuable but large, speculative or data-dependent.
 - **never**: conflicts with privacy or non-negotiables (or not possible offline).
 
-Core dependency column: **CoMaps** = needs C++ core work or data-generation changes; **MapLibre** = rendering/style only; **App** = Kotlin/Compose only; **Data** = data pipeline in `UltimateMaps-data`.
+Core dependency column: **CoMaps** = needs C++ core work or data-generation changes; **MapLibre** = rendering/style only; **App** = Kotlin/Compose only; **Data** = data pipeline in `ultimate-maps-data`.
 
 ## 3. Navigation
 
@@ -152,7 +152,7 @@ Core dependency column: **CoMaps** = needs C++ core work or data-generation chan
 ## 11. Cross-cutting risks and open questions
 
 - Almost every "next" item that touches routing, categories or opening hours depends on what the CoMaps core already exposes through our JNI wrapper; a one-day spike per item should confirm before committing the estimate.
-- Data-pipeline items (contours, overlays, speed cameras, curvature, EV chargers, more countries) are in `UltimateMaps-data`, which is outside this repo; estimates assume the pipeline can add layers to the PMTiles and MWM builds.
+- Data-pipeline items (contours, overlays, speed cameras, curvature, EV chargers, more countries) are in `ultimate-maps-data`, which is outside this repo; estimates assume the pipeline can add layers to the PMTiles and MWM builds.
 - Any new data licence (Sentinel mosaic, Wikivoyage, national open data) must be recorded in `LICENSES.md` before shipping; share-alike terms (CC BY-SA, ODbL derived databases) need a compatibility check against GPLv3.
 - Location-history features (P5) must stay opt-in and local, consistent with the privacy rules in `CLAUDE.md`.
 - Android Auto and widgets add new libraries: check each for GMS dependency before use in the `foss` flavor.

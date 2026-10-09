@@ -30,7 +30,7 @@ Date: 2026-10-07. Sources: `docs/phase2/feature-gap-analysis.md` (Google/Apple M
 
 ## Wave 3 (next)
 
-Motorcycle and curvy routes, terrain contours and elevation profile, cycling/hiking overlays, track recording, WebDAV sync with encrypted backup, EV charger layer. Several need layers in the data pipeline (`UltimateMaps-data`).
+Motorcycle and curvy routes, terrain contours and elevation profile, cycling/hiking overlays, track recording, WebDAV sync with encrypted backup, EV charger layer. Several need layers in the data pipeline (`ultimate-maps-data`).
 
 ## Later
 

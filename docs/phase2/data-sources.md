@@ -1,10 +1,10 @@
 # Open data sources beyond what exists today
 
-Status: research and plan only, 2026-10-08. No app or pipeline code changed. Effort numbers are rough **estimates** in person-days (one developer who knows the codebase and the `UltimateMaps-data` workflow; they include a converter script, tests, strings and docs, and exclude device testing). File sizes are **estimates unless a source is given**.
+Status: research and plan only, 2026-10-08. No app or pipeline code changed. Effort numbers are rough **estimates** in person-days (one developer who knows the codebase and the `ultimate-maps-data` workflow; they include a converter script, tests, strings and docs, and exclude device testing). File sizes are **estimates unless a source is given**.
 
 ## 0. Method, scope and how to read the evidence
 
-Read first, so nothing here repeats it: `docs/phase2/feature-gap-analysis.md`, `docs/phase2/next-plan.md`, `docs/phase2/transit.md` (Madrid GTFS, NAP licence page already read), `docs/phase2/cameras-data.md`, and the data repo workflow `~/mapas-data/repo-UltimateMaps-data/.github/workflows/weekly-data.yml` (steps today: Madrid transit index, Protomaps PMTiles split per region, CoMaps `.mwm`, speed cameras `speedcams-es.bin`, EV chargers `chargers-es.bin`, catalog with optional blocks `--cameras-file`, `--chargers-file`, `--transit-file`).
+Read first, so nothing here repeats it: `docs/phase2/feature-gap-analysis.md`, `docs/phase2/next-plan.md`, `docs/phase2/transit.md` (Madrid GTFS, NAP licence page already read), `docs/phase2/cameras-data.md`, and the data repo workflow `~/mapas-data/repo-ultimate-maps-data/.github/workflows/weekly-data.yml` (steps today: Madrid transit index, Protomaps PMTiles split per region, CoMaps `.mwm`, speed cameras `speedcams-es.bin`, EV chargers `chargers-es.bin`, catalog with optional blocks `--cameras-file`, `--chargers-file`, `--transit-file`).
 
 Already covered elsewhere (only referenced here): Madrid transit (CRTM/EMT/Cercanias), fuel prices, DGT cameras and incidents, EV chargers, speed limits and lanes from OSM, search categories (S2), opening hours display (S3) and place extras (S5), terrain/contours as a feature (M3), cycling/hiking overlays as a feature (M4), Wikivoyage guides (S8), level crossings and hazard warnings (X4), water points and shelters (X6), a transit planner for other cities as "later" (N10). This document adds the **data sources, licences and pipeline fit** for those features and for new ones.
 
@@ -256,10 +256,10 @@ Compatibility to confirm: baking CC BY data into an ODbL-derived file is common 
 
 ### What needs the owner
 
-1. Register an account at the NAP (https://nap.transportes.gob.es/) and store the API token as a repository secret in `UltimateMaps-data`. (Registration requirement is S; the process was not tested.)
+1. Register an account at the NAP (https://nap.transportes.gob.es/) and store the API token as a repository secret in `ultimate-maps-data`. (Registration requirement is S; the process was not tested.)
 2. Ask Renfe in writing about the licence of its GTFS and GTFS-RT datasets (contact route not verified; the dataset page links to a legal notice that was not read).
 3. Decide whether Wikipedia text (CC BY-SA 4.0) may ship in the data files, or only Wikidata (CC0).
-4. Approve any change to the `UltimateMaps-data` workflow (it is under `.github/workflows/`, which `CLAUDE.md` lists as owner-controlled for the app repo; confirm the same rule applies to the data repo).
+4. Approve any change to the `ultimate-maps-data` workflow (it is under `.github/workflows/`, which `CLAUDE.md` lists as owner-controlled for the app repo; confirm the same rule applies to the data repo).
 5. Confirm the preferred first cities for transit (suggestion: Barcelona via ATM, Valencia via FGV, Sevilla via Tussam) and whether Basque feeds are wanted.
 6. Request a second opinion on mixing CC BY data with ODbL-derived files and on the data-versus-GPLv3 reading in section 8.
 7. Decide whether the live features (GTFS-RT, GBFS status, AEMET) should appear at all, since each adds a network host to the "possible connections" list.

@@ -6,6 +6,10 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 
 ## [0.1.0-rc.12] - 2026-10-09
 
+### Changed
+
+- **The data repository is now `qtekfun/ultimate-maps-data`.** The default catalog URL points to it (the old name redirects).
+
 ### Fixed
 
 - **Public transport with a mode switched off.** The planner now applies the mode filter before choosing the nearest stops, so turning Bus off no longer ends in "no route" when a train or a walk exists; the stop search radius is wider and the default maximum walking is 60 minutes.
@@ -162,7 +166,7 @@ First release candidate (`rc.1` to `rc.3` only existed as test pre-releases): an
 ### Added
 
 - Offline vector map (MapLibre Native + PMTiles) with light and dark themes, labels and icons, and an always-visible OpenStreetMap attribution.
-- Region downloads from "Maps": hierarchical list, resumable downloads verified with SHA-256, pause, resume, delete and update, foreground service and an offline mode. The default catalog lives in `UltimateMaps-data`.
+- Region downloads from "Maps": hierarchical list, resumable downloads verified with SHA-256, pause, resume, delete and update, foreground service and an offline mode. The default catalog lives in `ultimate-maps-data`.
 - Offline search for places and addresses with the CoMaps core, with a place card (save, route, share).
 - Route preview by car, on foot or by bike, with options to avoid motorways, tolls, ferries and unpaved roads, and intermediate stops (up to 5).
 - Saved places and lists, with GPX and KML import and export and a full backup.

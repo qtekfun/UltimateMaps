@@ -40,7 +40,7 @@ Rejected for stage 1 because (a) works. Design if it is ever needed:
 
 ## 3. Stage 2 plan: contour lines and hillshade (not started)
 
-Goal: M3 of the feature gap analysis, vector contour lines and a shaded relief under the map, offline, in the PMTiles pipeline of `UltimateMaps-data`.
+Goal: M3 of the feature gap analysis, vector contour lines and a shaded relief under the map, offline, in the PMTiles pipeline of `ultimate-maps-data`.
 
 ### Data and products
 

@@ -23,7 +23,7 @@ Motorcycle profile and curvy routes, track recording, Nextcloud sync, Google Tak
 
 ## Data
 
-Map data (OpenStreetMap, ODbL) is downloaded by region from [`UltimateMaps-data`](https://github.com/qtekfun/UltimateMaps-data). Only Spain for now. The app does not connect to anything until you open "Mapas" ("Maps") or download a region.
+Map data (OpenStreetMap, ODbL) is downloaded by region from [`ultimate-maps-data`](https://github.com/qtekfun/ultimate-maps-data). Only Spain for now. The app does not connect to anything until you open "Mapas" ("Maps") or download a region.
 
 ## Building
 
