@@ -94,6 +94,10 @@ class TransitTripHost(
 
     fun replan() = controller.replan()
 
+    fun setOnBoard(onBoard: Boolean) {
+        controller.setOnBoard(onBoard)
+    }
+
     /** The service resumed a saved trip by itself (process death): get the voice ready. */
     fun onResumedByService() = speaker.prepare()
 

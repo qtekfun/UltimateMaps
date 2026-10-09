@@ -87,4 +87,8 @@
     <string name="trip_prompts_title">Avisos da viagem de transportes</string>
     <string name="trip_prompts_body">Como uma viagem de transportes passo a passo te diz para entrares, mudares e saíres.</string>
     <string name="trip_prompts_note">O aviso no ecrã aparece sempre. O Silenciar da navegação desliga o som e a voz.</string>
+    <string name="trip_on_board">Estou a bordo</string>
+    <string name="trip_not_on_board">Não estou a bordo</string>
+    <string name="trip_on_board_description">Indicar à app que está no veículo</string>
+    <string name="trip_not_on_board_description">Indicar à app que não está no veículo</string>
 </resources>

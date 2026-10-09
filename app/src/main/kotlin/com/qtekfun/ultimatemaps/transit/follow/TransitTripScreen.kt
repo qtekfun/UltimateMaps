@@ -63,6 +63,8 @@ import java.time.ZoneId
 class TransitTripActions(
     val onStop: () -> Unit = {},
     val onReplan: () -> Unit = {},
+    /** "I'm on board" (true) / "I'm not on board" (false): the traveller's answer wins over what the fixes inferred. */
+    val onBoard: (Boolean) -> Unit = {},
     val onGlove: (Boolean) -> Unit = {},
     val onVoice: (Boolean) -> Unit = {},
     val onResume: () -> Unit = {},
@@ -194,6 +196,15 @@ private fun Strips(trip: TransitTripState, actions: TransitTripActions) {
         TransitTripTexts.connection(res, s)?.let { Strip(it, c.statusDanger, "trip_connection") }
         if (trip.replanning) Strip(stringResource(R.string.trip_replanning), c.statusInfo, "trip_replanning")
         if (trip.replanFailed) Strip(stringResource(R.string.trip_replan_failed), c.statusDanger, "trip_replan_failed")
+        val aboard = s.phase == FollowPhase.ON_BOARD || s.phase == FollowPhase.ALIGHT_NEXT
+        if (aboard || s.phase == FollowPhase.WAITING || s.phase == FollowPhase.BEFORE_START || s.phase == FollowPhase.TRANSFER || s.phase == FollowPhase.OFF_PLAN) {
+            TripButton(
+                stringResource(if (aboard) R.string.trip_not_on_board else R.string.trip_on_board), { actions.onBoard(!aboard) },
+                Modifier.testTag("trip_on_board"),
+                container = c.statusInfo, content = c.onStatus,
+                description = stringResource(if (aboard) R.string.trip_not_on_board_description else R.string.trip_on_board_description),
+            )
+        }
         if (s.canReplan && !trip.replanning) {
             TripButton(
                 stringResource(R.string.trip_replan), actions.onReplan, Modifier.testTag("trip_replan"),
@@ -378,7 +389,7 @@ fun TransitTripOverlay(host: TransitTripHost, dark: Boolean, showItinerary: (Lis
     TransitTripScreen(
         ui = ui,
         actions = TransitTripActions(
-            onStop = host::stop, onReplan = { host.replan() }, onGlove = host::setGlove, onVoice = host::setVoice,
+            onStop = host::stop, onReplan = { host.replan() }, onBoard = host::setOnBoard, onGlove = host::setGlove, onVoice = host::setVoice,
             onResume = host::resume, onDiscard = host::discard,
         ),
         dark = dark,

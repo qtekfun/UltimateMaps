@@ -133,6 +133,11 @@ data class FollowerConfig(
      * stay well under that; a higher one (4 m/s was the first choice) never recognised that bus.
      */
     val ridingSpeedMps: Float = 2.5f,
+    /** About 25 km/h: faster than anyone walks or cycles on a street, so on a rail leg it means a train (a car is the user's doing). */
+    val trainSpeedMps: Float = 7f,
+    val trainConfirmFixes: Int = 3,
+    /** While boarding at that speed the corridor to the stop-to-stop line is this many times wider (curves between stops). */
+    val wideCorridorFactor: Double = 4.0,
     /** Consecutive agreeing fixes needed to board, to skip several stops at once or to leave the plan. */
     val confirmFixes: Int = 2,
     val offPlanFixes: Int = 4,

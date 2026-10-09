@@ -4,6 +4,14 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 
 ## [Unreleased]
 
+### Added
+
+- **"I'm on board" button in the public-transport trip.** One tap tells the app you are (or are not) on the vehicle, and it wins over what the GPS inferred.
+
+### Fixed
+
+- **Re-planning on a train no longer says "take the next train".** Aboard, the new trip starts on the vehicle: it looks at getting off at each of the next stops (and the planned one) and keeps the earliest arrival; staying on the same train is one ride. A fast train whose track curves away from the straight line between stops is now recognised as boarded.
+
 ## [0.1.0-rc.13] - 2026-10-09
 
 ### Added

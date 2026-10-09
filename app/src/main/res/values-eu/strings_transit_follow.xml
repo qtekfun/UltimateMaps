@@ -83,4 +83,8 @@
     <string name="trip_prompts_title">Garraio publikoko bidaiaren jakinarazpenak</string>
     <string name="trip_prompts_body">Urratsez urratseko garraio publikoko bidaia batek noiz igo, aldatu eta jaitsi behar duzun nola esaten dizun.</string>
     <string name="trip_prompts_note">Pantailako bannerra beti erakusten da. Nabigazioko Mututu aukerak soinua eta ahotsa desaktibatzen ditu.</string>
+    <string name="trip_on_board">Barruan nago</string>
+    <string name="trip_not_on_board">Ez nago barruan</string>
+    <string name="trip_on_board_description">Esan aplikazioari ibilgailuan zaudela</string>
+    <string name="trip_not_on_board_description">Esan aplikazioari ez zaudela ibilgailuan</string>
 </resources>
