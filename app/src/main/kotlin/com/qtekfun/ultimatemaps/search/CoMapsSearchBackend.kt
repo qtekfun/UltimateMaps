@@ -39,7 +39,8 @@ class CoMapsSearchBackend(
         @Synchronized
         private fun handle(app: Context): CoreHandle = core ?: run {
             val isolated = app.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getBoolean(PREF_ISOLATED, true)
-            (if (isolated) IsolatedCore(BinderCoreTransport(app)) else CoMapsCore()).also { core = it }
+            val notes = com.qtekfun.ultimatemaps.diagnostics.Diagnostics.notes(app)
+            (if (isolated) IsolatedCore(BinderCoreTransport(app), onEvent = { notes.note("core", it) }) else CoMapsCore()).also { core = it }
         }
 
         /** Starts the process-wide core if needed and re-scans [maps]; shared by search and routing. */

@@ -556,5 +556,6 @@ private fun errorText(e: RouteError?): Int = when (e) {
     RouteError.ROUTE_NOT_FOUND -> R.string.route_err_not_found
     RouteError.NO_CYCLE_ROUTE -> R.string.bike_err_no_cycle_route
     RouteError.TIMEOUT -> R.string.route_err_timeout
+    RouteError.UNEXPECTED -> R.string.route_err_unexpected
     RouteError.INTERNAL, null -> R.string.route_err_internal
 }

@@ -30,6 +30,9 @@ class IsolatedCoreTest {
         val routes = AtomicInteger()
         @Volatile var routePoints = 2
         @Volatile var onRoute: () -> Unit = {}
+        @Volatile var codeToReturn = 0
+        @Volatile var altitudesPerPoint: ((Int) -> Double)? = null
+        @Volatile var lastAvoidFlags = -1
         @Volatile var guidance: DoubleArray = DoubleArray(0)
         @Volatile var names: Array<String> = emptyArray()
         override fun init(apk: String, writableDir: String, tmpDir: String, locale: String): String { inits.incrementAndGet(); return "" }
@@ -44,12 +47,21 @@ class IsolatedCoreTest {
         }
         override fun route(profile: Int, points: DoubleArray, avoidFlags: Int, timeoutSec: Int): DoubleArray {
             routes.incrementAndGet()
+            lastAvoidFlags = avoidFlags
             onRoute()
+            if (codeToReturn != 0) return doubleArrayOf(codeToReturn.toDouble(), 0.0, 0.0)
             val n = routePoints
-            val raw = DoubleArray(3 + 2 * n)
+            val alt = altitudesPerPoint
+            val raw = DoubleArray(3 + 2 * n + if (alt != null) n + 2 else 0)
             raw[1] = 1000.0 * n
             raw[2] = 60.0 * n
             for (i in 0 until n) { raw[3 + 2 * i] = 40.0 + i * 1e-5; raw[4 + 2 * i] = -3.0 + i * 1e-5 }
+            if (alt != null) {
+                // Same trailer as RouteFlat in um_jni.cpp: n heights, n, marker.
+                for (i in 0 until n) raw[3 + 2 * n + i] = alt(i)
+                raw[3 + 3 * n] = n.toDouble()
+                raw[4 + 3 * n] = -7_777_777.0
+            }
             return raw
         }
         override fun routeGuidance(profile: Int, points: DoubleArray, avoidFlags: Int, timeoutSec: Int) =
@@ -409,5 +421,143 @@ class IsolatedCoreTest {
         assertEquals(n, plan.geometry.size)
         assertEquals(n / 2, plan.guidance.maneuvers.size)
         assertEquals(0, t.tooLarge.get())
+    }
+
+    // ---- a 500 km route (Leganes to Motril) with every trailer the wire has grown: the bug report that motivated these ----
+
+    /** Guidance wire for [points] points: exit-ramp maneuvers with exit data, speed limits, tunnels, and the exit section. */
+    private fun longGuidance(points: Int, maneuvers: Int): DoubleArray {
+        val g = ArrayList<Double>()
+        fun add(vararg v: Number) = v.forEach { g += it.toDouble() }
+        val limits = 1_000
+        val tunnels = 300
+        add(1, maneuvers, limits)
+        for (i in 0 until maneuvers) {
+            val exit = i % 10 == 5
+            add((i + 1) * (points - 2) / (maneuvers + 1), if (exit) 13 else 3, -1, i % 50, 0) // index, turn, roundabout exit, name, no lanes
+        }
+        for (i in 0 until limits) add(i * (points - 2) / limits, (i + 1) * (points - 2) / limits, 50 + (i % 8) * 10)
+        add(tunnels)
+        for (i in 0 until tunnels) add(i * (points - 2) / tunnels, i * (points - 2) / tunnels + 5)
+        val exits = (0 until maneuvers).filter { it % 10 == 5 }
+        add(exits.size)
+        for (m in exits) add(m, 50 + m % 7, 60, 61)
+        return g.toDoubleArray()
+    }
+
+    @Test fun `a 500 km guided route with heights, tunnels and exit data crosses the boundary intact and in chunks`() {
+        val n = 60_000
+        val bridge = Bridge().apply {
+            routePoints = n
+            altitudesPerPoint = { i -> if (i % 17 == 0) -32768.0 else 600.0 + (i % 400) / 4.0 }
+            names = Array(62) { "Autovia del Sur $it" }
+            guidance = longGuidance(n, 2_000)
+        }
+        val t = FakeTransport(bridge, maxTransaction = 250_000)
+        val outcome = client(t).routingEngine(withGuidance = true).routeDetailed(RouteRequest(a, b))
+        val plan = outcome.plan
+        assertNotNull(plan, "guidanceError=${outcome.guidanceError} code=${outcome.code}")
+        assertNull(outcome.guidanceError)
+        assertEquals(n, plan.geometry.size)
+        assertEquals(n, plan.altitudes.size)
+        assertTrue(plan.altitudes[0].isNaN() && plan.altitudes[17].isNaN())
+        assertEquals(600.0, plan.altitudes[1]) // whole metres on the wire
+        assertEquals(2_000, plan.guidance.maneuvers.size)
+        assertEquals(1_000, plan.guidance.speedLimits.size)
+        assertEquals(300, plan.guidance.tunnels.size)
+        val withExit = plan.guidance.maneuvers.filter { it.towardRef != null }
+        assertEquals(200, withExit.size)
+        assertEquals("Autovia del Sur 60", withExit.first().towardRef)
+        assertEquals(0, t.tooLarge.get())
+        // Size of what crossed: the wire must stay far below the sanity limit of the protocol.
+        val encoded = CoreProtocol.encodeOutcome(outcome)
+        assertTrue(encoded.size < 3_000_000, "encoded plan is ${encoded.size} bytes")
+        assertTrue(encoded.size > CoreProtocol.MAX_INLINE) // so it really was chunked
+    }
+
+    @Test fun `avoid tolls and the other options reach the native side as the same bits the C++ constants have`() {
+        val bridge = Bridge()
+        val c = client(FakeTransport(bridge))
+        val toll = com.qtekfun.ultimatemaps.core.routing.RouteOptions(avoidTolls = true)
+        c.routingEngine().routeDetailed(RouteRequest(a, b, options = toll))
+        assertEquals(2, bridge.lastAvoidFlags) // um::kAvoidToll = 1 << 1
+        val all = com.qtekfun.ultimatemaps.core.routing.RouteOptions(true, true, true, true)
+        c.routingEngine().routeDetailed(RouteRequest(a, b, options = all))
+        assertEquals(15, bridge.lastAvoidFlags)
+        assertEquals(all, com.qtekfun.ultimatemaps.core.routing.RouteOptions.fromFlags(bridge.lastAvoidFlags))
+    }
+
+    @Test fun `every router result code crosses the boundary as a result, never as an exception`() {
+        val bridge = Bridge()
+        val c = client(FakeTransport(bridge))
+        for (code in listOf(1, 2, 3, 4, 5, 6, 7, 8, RouteCode.NEED_MORE_MAPS, 10, 11, 12, 13, 14, 15, 1004, 99_999, -3)) {
+            bridge.codeToReturn = code
+            val outcome = c.routingEngine().routeDetailed(RouteRequest(a, b))
+            assertEquals(code, outcome.code, "code $code")
+            assertNull(outcome.plan, "code $code")
+        }
+    }
+
+    /** A connection that answers every call with the given reply (or throws), to probe how the client copes with nonsense. */
+    private fun scripted(reply: (op: Int) -> ByteArray) = CoreTransport {
+        object : CoreConnection {
+            override val isAlive = true
+            override fun call(op: Int, payload: ByteArray) = reply(op)
+            override fun kill() = Unit
+            override fun close() = Unit
+        }
+    }
+
+    @Test fun `a route reply that is garbage is a failed route, not an exception in the caller`() {
+        val ok = CoreProtocol.encodeReply(CoreProtocol.Reply(CoreProtocol.KIND_OK, ByteArray(0)))
+        val garbage = CoreProtocol.encodeReply(CoreProtocol.Reply(CoreProtocol.KIND_OK, ByteArray(300) { (it * 31).toByte() }))
+        val c = IsolatedCore(scripted { op -> if (op == CoreProtocol.OP_ROUTE) garbage else ok }, fast())
+        c.init("a.apk", "/maps", "/tmp", "en")
+        val outcome = c.routingEngine().routeDetailed(RouteRequest(a, b))
+        assertNull(outcome.plan)
+        assertEquals(RouteCode.CORE_INTERNAL, outcome.code)
+    }
+
+    @Test fun `a plan whose altitude count disagrees with its geometry is refused cleanly`() {
+        val bridge = Bridge().apply { routePoints = 50 }
+        val host = CoreHost(CoMapsCore(bridge))
+        // Hand-built outcome with 50 points and 7 altitudes (what a mismatch between the two native lists would produce).
+        val bad = CoreProtocol.encodeOutcome(
+            com.qtekfun.ultimatemaps.nativecomaps.RouteOutcome(
+                0,
+                com.qtekfun.ultimatemaps.core.routing.RoutePlan(List(50) { LatLon(40.0 + it * 1e-4, -3.0) }, 1.0, 1.0, altitudes = List(7) { 600.0 }),
+            ),
+        )
+        assertFailsWith<java.io.IOException> { CoreProtocol.decodeOutcome(bad) }
+        // And through the client, as a reply the host would have sent.
+        val reply = CoreProtocol.encodeReply(CoreProtocol.Reply(CoreProtocol.KIND_OK, bad))
+        val ok = CoreProtocol.encodeReply(CoreProtocol.Reply(CoreProtocol.KIND_OK, ByteArray(0)))
+        val c = IsolatedCore(scripted { op -> if (op == CoreProtocol.OP_ROUTE) reply else ok }, fast())
+        c.init("a.apk", "/maps", "/tmp", "en")
+        val outcome = c.routingEngine().routeDetailed(RouteRequest(a, b))
+        assertNull(outcome.plan)
+        assertEquals(RouteCode.CORE_INTERNAL, outcome.code)
+        host.parkedCount // the host is untouched
+    }
+
+    @Test fun `an out of memory error inside the host is an error reply, not a dead binder thread`() {
+        val bridge = object : NativeBridge by Bridge() {
+            override fun route(profile: Int, points: DoubleArray, avoidFlags: Int, timeoutSec: Int): DoubleArray = throw OutOfMemoryError("huge")
+        }
+        val host = CoreHost(CoMapsCore(bridge))
+        host.handle(CoreProtocol.OP_INIT, CoreProtocol.encodeInit(CoreProtocol.InitArgs("a", "m", "t", "en")))
+        val raw = host.handle(CoreProtocol.OP_ROUTE, CoreProtocol.encodeRoute(CoreProtocol.RouteArgs(0, doubleArrayOf(40.0, -3.0, 40.1, -3.1), 2, 1, false)))
+        assertEquals(CoreProtocol.KIND_ERROR, raw[0].toInt())
+    }
+
+    @Test fun `the client tells its observer, in fixed words, when the core dies`() {
+        val events = java.util.concurrent.CopyOnWriteArrayList<String>()
+        val t = FakeTransport(Bridge())
+        t.dieOnceOnOp = CoreProtocol.OP_ROUTE
+        val c = IsolatedCore(t, fast(), onEvent = { events += it })
+        c.init("a.apk", "/maps", "/tmp", "en")
+        assertNotNull(c.routingEngine().routeDetailed(RouteRequest(a, b)).plan)
+        assertEquals(1, events.size)
+        assertTrue(events.single().startsWith("core process died"), events.toString())
     }
 }

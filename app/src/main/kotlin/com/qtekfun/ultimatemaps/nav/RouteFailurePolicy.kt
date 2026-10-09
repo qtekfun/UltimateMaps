@@ -123,7 +123,7 @@ class RouteRunner(
                     runInterruptible(io) { e.routeDetailed(request) }
                 } catch (c: CancellationException) {
                     throw c
-                } catch (_: Exception) {
+                } catch (_: Throwable) { // also Errors (out of memory...): a failed route, never a dead app
                     RouteOutcome(RouteCode.INTERNAL_ERROR, null)
                 }
                 val plan = outcome.plan

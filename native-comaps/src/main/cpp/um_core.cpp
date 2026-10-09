@@ -200,6 +200,11 @@ void FillAltitudes(routing::Route const & route, RouteOut & out)
     LOG(LWARNING, ("Altitudes failed:", e.Msg()));
     out.altitudes.clear();
   }
+  catch (std::exception const & e)
+  {
+    LOG(LWARNING, ("Altitudes failed:", e.what()));
+    out.altitudes.clear();
+  }
 }
 
 // Fills out.guidance / out.guidanceNames from route.GetRouteSegments(). The geometry indices are those of
@@ -684,6 +689,12 @@ RouteOut Core::Route(Profile profile, std::vector<double> const & pts, int32_t a
           out.guidance.clear();
           out.guidanceNames.clear();
         }
+        catch (std::exception const & e)
+        {
+          LOG(LERROR, ("Guidance failed:", e.what()));
+          out.guidance.clear();
+          out.guidanceNames.clear();
+        }
       }
     }
   }
@@ -691,6 +702,26 @@ RouteOut Core::Route(Profile profile, std::vector<double> const & pts, int32_t a
   {
     LOG(LERROR, ("Route failed:", e.Msg()));
     out.code = static_cast<int32_t>(routing::RouterResultCode::InternalError);
+  }
+  catch (std::exception const & e)
+  {
+    // std::bad_alloc on a huge search, std::out_of_range...: an error code, not a std::terminate that kills the process.
+    LOG(LERROR, ("Route failed:", e.what()));
+    out.code = static_cast<int32_t>(routing::RouterResultCode::InternalError);
+  }
+  catch (...)
+  {
+    LOG(LERROR, ("Route failed: unknown exception"));
+    out.code = static_cast<int32_t>(routing::RouterResultCode::InternalError);
+  }
+  // A failed route must not carry half-filled geometry (the code says it failed; the wire would still ship the points).
+  if (out.code != static_cast<int32_t>(routing::RouterResultCode::NoError) &&
+      out.code != static_cast<int32_t>(routing::RouterResultCode::HasWarnings))
+  {
+    out.latLon.clear();
+    out.altitudes.clear();
+    out.guidance.clear();
+    out.guidanceNames.clear();
   }
   return out;
 }

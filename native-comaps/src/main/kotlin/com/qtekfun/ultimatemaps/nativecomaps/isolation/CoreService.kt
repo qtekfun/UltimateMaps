@@ -19,7 +19,14 @@ import com.qtekfun.ultimatemaps.nativecomaps.CoMapsCore
  * binding costs nothing until a search or a route is actually asked for.
  */
 class CoreService : Service() {
-    private val host by lazy { CoreHost(CoMapsCore()) } // CoMapsCore() loads the native library: only in this process
+    private val host by lazy {
+        val core = CoMapsCore() // loads the native library: only in this process
+        runCatching {
+            val dir = java.io.File(noBackupFilesDir, "diagnostics").also { it.mkdirs() }
+            core.installCrashNote(java.io.File(dir, "notes-core.txt").absolutePath) // same file the process's Kotlin notes use
+        }
+        CoreHost(core)
+    }
 
     private val binder = object : Binder() {
         override fun onTransact(code: Int, data: Parcel, reply: Parcel?, flags: Int): Boolean {

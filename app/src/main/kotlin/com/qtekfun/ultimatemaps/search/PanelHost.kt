@@ -200,6 +200,7 @@ class PanelHost(
             if (app.zbeSettings.settings.value.enabled) app.zbeData.repository.index.crossings(geometry) else emptyList()
         },
         weatherWarnings = { geometry -> (activity.application as MapasApp).weatherAlerts.forRoute(geometry) },
+        onFailure = { where, e -> com.qtekfun.ultimatemaps.diagnostics.Diagnostics.notes(activity).record("route/$where", e) },
     )
 
     /** "Start" / "Simulate" on the route card: the guided route goes through the same shared core and lock. */
@@ -217,6 +218,7 @@ class PanelHost(
                 route.close() // the preview is replaced by the navigation screen
                 screen.detent = SheetDetent.COLLAPSED
             },
+            onFailure = { e -> com.qtekfun.ultimatemaps.diagnostics.Diagnostics.notes(activity).record("navigation-start", e) },
         )
     }
 

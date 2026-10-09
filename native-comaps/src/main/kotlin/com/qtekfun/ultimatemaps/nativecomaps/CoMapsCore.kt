@@ -95,6 +95,13 @@ class CoMapsCore internal constructor(private val bridge: NativeBridge) : CoreHa
         initialized = true
     }
 
+    /**
+     * For the isolated core process only: a native crash there (a CoMaps `CHECK`, a bad access) ends that process quietly and
+     * appends a short note (signal, fault address, frames as `module+offset`; no message, no position) to [path], instead of
+     * raising the system's "app keeps stopping" dialog over the user's screen. The client already restarts the core.
+     */
+    fun installCrashNote(path: String) = bridge.installCrashNote(path)
+
     /** Rescans the maps directory after a download or delete. Returns how many maps are registered. */
     @Synchronized
     override fun refreshMaps(): Int {

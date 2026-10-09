@@ -51,5 +51,12 @@
     <string name="about_notice_show">Mostrar las licencias del software incluido</string>
     <string name="about_notice_hide">Ocultar las licencias</string>
     <string name="about_notice_unavailable">El archivo de avisos no está disponible en esta compilación.</string>
+    <string name="about_diag_title">Diagnóstico</string>
+    <string name="about_diag_body">Notas guardadas solo en este teléfono sobre fallos, como la forma en que terminaron los procesos de la app y los errores inesperados. No contienen lugares ni posiciones. No se envía nada a ningún sitio; cópialas en un informe de error si quieres.</string>
+    <string name="about_diag_show">Mostrar notas de diagnóstico</string>
+    <string name="about_diag_hide">Ocultar notas de diagnóstico</string>
+    <string name="about_diag_empty">Todavía no hay nada anotado.</string>
+    <string name="about_diag_copy">Copiar</string>
+    <string name="about_diag_clear">Borrar notas</string>
     <string name="hub_about_source">Código fuente: github.com/qtekfun/UltimateMaps</string>
 </resources>
