@@ -87,4 +87,9 @@
     <string name="trip_prompts_title">Consignes du trajet en transports</string>
     <string name="trip_prompts_body">La façon dont un trajet en transports pas à pas vous indique quand monter, changer et descendre.</string>
     <string name="trip_prompts_note">La bannière à l\'écran s\'affiche toujours. Le bouton Couper le son de la navigation coupe le son et la voix.</string>
+    <string name="transit_changes_any">Toutes correspondances</string>
+    <string name="transit_changes_one">1 correspondance max.</string>
+    <string name="transit_changes_none">Sans correspondance</string>
+    <string name="transit_plan_changes_title">Correspondances</string>
+    <string name="transit_plan_changes_body">Nombre de correspondances qu\'un trajet peut comporter. Avec « Sans correspondance », le calculateur cherche aussi des arrêts plus éloignés avec une ligne directe, même si la marche est plus longue.</string>
 </resources>

@@ -87,4 +87,9 @@
     <string name="trip_prompts_title">Avisos da viagem de transportes</string>
     <string name="trip_prompts_body">Como uma viagem de transportes passo a passo te diz para entrares, mudares e saíres.</string>
     <string name="trip_prompts_note">O aviso no ecrã aparece sempre. O Silenciar da navegação desliga o som e a voz.</string>
+    <string name="transit_changes_any">Qualquer transbordo</string>
+    <string name="transit_changes_one">Máx. 1 transbordo</string>
+    <string name="transit_changes_none">Sem transbordos</string>
+    <string name="transit_plan_changes_title">Transbordos</string>
+    <string name="transit_plan_changes_body">Quantos transbordos uma viagem pode ter. Com «Sem transbordos» o planeador também procura paragens mais afastadas com linha direta, mesmo que se ande mais.</string>
 </resources>

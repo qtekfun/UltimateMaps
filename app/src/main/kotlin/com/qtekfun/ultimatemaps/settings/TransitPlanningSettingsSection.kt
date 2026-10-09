@@ -38,6 +38,24 @@ internal fun TransitPlanningCards(store: TransitTripSettingsStore) {
         "transit_plan_maxwalk", R.string.transit_plan_maxwalk_title, R.string.transit_plan_maxwalk_body,
         TransitPlanningDefaults.MAX_WALK_CHOICES, store.maxWalkMin, store::setMaxWalkMin,
     )
+    Spacer(Modifier.height(10.dp))
+    ChangesCard(store)
+}
+
+/** The vehicle changes a trip may have: any, at most one, none. */
+@Composable
+private fun ChangesCard(store: TransitTripSettingsStore) {
+    val value by store.maxChanges.collectAsState()
+    Card("transit_plan_changes_card") {
+        BasicText(stringResource(R.string.transit_plan_changes_title), style = Mapas.typography.body.copy(color = Mapas.colors.label))
+        BasicText(stringResource(R.string.transit_plan_changes_body), style = Mapas.typography.callout.copy(color = Mapas.colors.secondaryLabel))
+        TransitPlanningDefaults.CHANGES_CHOICES.forEach { choice ->
+            ChoiceRow(
+                stringResource(com.qtekfun.ultimatemaps.transit.changesLabel(choice)), value == choice, radio = true,
+                tag = "transit_plan_changes_$choice",
+            ) { store.setMaxChanges(choice) }
+        }
+    }
 }
 
 /** A card with one radio per choice; 0 minutes is shown as "No limit" only for the walking cap. */
