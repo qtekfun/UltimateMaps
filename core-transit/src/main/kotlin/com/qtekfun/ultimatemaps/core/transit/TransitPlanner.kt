@@ -59,6 +59,11 @@ data class PlannerConfig(
      * radius (1 h). The widening also never exceeds the request's walking cap (the "max walking per trip" setting).
      */
     val maxAccessWalkSec: Int = 3600,
+    /**
+     * When every journey found changes vehicle, one more search looks up to this far (straight line, metres) for a stop with a
+     * line that goes straight to the destination area, even if reaching it means a longer walk.
+     */
+    val directSearchRadiusM: Int = 2500,
 )
 
 /** One stop of a ride with its scheduled times (seconds since midnight of the query service day). */
@@ -270,6 +275,7 @@ class TransitPlanner(val index: TransitIndex, val config: PlannerConfig = Planne
         val walkAltMax = options.walkAlternativeMaxSec ?: config.walkAlternativeMaxSec
         val minSaving = options.minTransitSavingSec ?: config.minTransitSavingSec
         val walkCap = options.maxTotalWalkSec ?: config.maxTotalWalkSec
+        val maxChanges = options.maxTransfers
         val oLat = micro(origin.lat)
         val oLon = micro(origin.lon)
         val dLat = micro(destination.lat)
@@ -294,6 +300,7 @@ class TransitPlanner(val index: TransitIndex, val config: PlannerConfig = Planne
                 if (roundDestStop[k] < 0) continue
                 val j = reconstruct(k, roundDestStop[k], oLat, oLon, dLat, dLon)
                 if (walkCap > 0 && j.walkSec > walkCap) continue
+                if (maxChanges != null && j.transfers > maxChanges) continue
                 if (walkOffered && j.arriveSec > limit) {
                     droppedForSaving = true
                     continue
@@ -312,7 +319,8 @@ class TransitPlanner(val index: TransitIndex, val config: PlannerConfig = Planne
                         if (c.arrive < walkArrive) droppedForSaving = true
                         continue
                     }
-                    pool.add(reconstruct(c.k, c.stop, oLat, oLon, dLat, dLon))
+                    val j = reconstruct(c.k, c.stop, oLat, oLon, dLat, dLon)
+                    if (maxChanges == null || j.transfers <= maxChanges) pool.add(j)
                 }
             }
             collect(config.accessRadiusM, config.maxAccessStops, extRadius, extCap)
@@ -320,6 +328,12 @@ class TransitPlanner(val index: TransitIndex, val config: PlannerConfig = Planne
             if (fastestWalk >= config.lowWalkPassMinWalkSec) {
                 // A calmer search: small access and egress radii find the journeys that start and end next to a stop.
                 collect(config.accessRadiusM / 2, config.maxAccessStops / 3, config.accessRadiusM / 2, extCap)
+            }
+            if (pool.any { it.walkSec <= poolCap } && pool.none { it.rideCount <= 1 }) {
+                // Every journey so far changes vehicle. A farther stop may have a line that goes straight there: look for it with
+                // a wider access, even when the walk is longer than the cap (such a journey is shown as "walk the rest").
+                val directR = min(extRadius, config.directSearchRadiusM)
+                if (directR > config.accessRadiusM) collect(directR, config.maxAccessStops * 2, extRadius, extCap, extCap)
             }
             var widened = false
             if (pool.isEmpty() && !droppedForSaving) {

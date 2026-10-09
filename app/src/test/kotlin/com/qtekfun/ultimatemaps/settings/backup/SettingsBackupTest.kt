@@ -37,6 +37,7 @@ fun nonDefaultValue(spec: SettingSpec, consentOn: Boolean): Any = when (spec.typ
         "plan_walk_alt_min" -> 30
         "plan_min_saving_min" -> 10
         "plan_max_walk_min" -> 0 // no cap (default 15)
+        "plan_max_changes" -> 0 // no changes (default: any)
         else -> error("no non-default value for ${spec.id}")
     }
     SettingType.STRING -> when (spec.key) {

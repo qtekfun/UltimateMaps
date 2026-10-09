@@ -92,6 +92,9 @@ class TransitState {
     /** The modes the traveller allows (the chips); only [TransitMode.FILTERABLE] ones. */
     var modes by mutableStateOf<Set<TransitMode>>(TransitPlanningDefaults.ALL_MODES)
 
+    /** Vehicle changes accepted (the chips): see [TransitPlanningDefaults.CHANGES_ANY]. */
+    var changes by mutableStateOf(TransitPlanningDefaults.CHANGES_ANY)
+
     /** Modes of the city's index (from the last answer); the chips shown are the filterable ones in it. */
     var availableModes by mutableStateOf<Set<TransitMode>>(emptySet())
 
@@ -134,7 +137,20 @@ class TransitController(
     /** The planner settings (allowed modes and walking limits); null plans with the defaults and does not remember the chips. */
     private val settings: TransitTripSettingsStore? = null,
 ) {
-    val state = TransitState().also { st -> settings?.let { st.modes = it.allowedModes.value } }
+    val state = TransitState().also { st ->
+        settings?.let {
+            st.modes = it.allowedModes.value
+            st.changes = it.maxChanges.value
+        }
+    }
+
+    /** Sets how many vehicle changes are accepted and plans again; remembered across runs. */
+    fun setChanges(choice: Int) {
+        if (choice == state.changes) return
+        state.changes = choice
+        settings?.setMaxChanges(choice)
+        replanIfActive()
+    }
 
     /** Sets one mode chip and plans again; remembered across runs. */
     fun setMode(mode: TransitMode, on: Boolean) {
@@ -153,7 +169,10 @@ class TransitController(
     }
 
     /** The planner options for the next query: the settings' limits and the chips' modes. */
-    private fun options(): PlanOptions = (settings?.planOptions() ?: PlanOptions()).copy(modes = state.modes + TransitMode.OTHER)
+    private fun options(): PlanOptions = (settings?.planOptions() ?: PlanOptions()).copy(
+        modes = state.modes + TransitMode.OTHER,
+        maxTransfers = TransitPlanningDefaults.transfersLimit(state.changes),
+    )
 
     /** The itinerary card offers a Start button. */
     val canStartTrip: Boolean get() = onStartTrip != null

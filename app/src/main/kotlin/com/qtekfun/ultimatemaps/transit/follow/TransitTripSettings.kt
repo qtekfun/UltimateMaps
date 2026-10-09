@@ -39,6 +39,10 @@ interface TransitTripSettingsStore {
     /** Cap on the walking of one journey in minutes; 0 means no cap. */
     val maxWalkMin: StateFlow<Int>
     fun setMaxWalkMin(minutes: Int)
+
+    /** How many vehicle changes a journey may have: [TransitPlanningDefaults.CHANGES_NONE], [TransitPlanningDefaults.CHANGES_ONE] or [TransitPlanningDefaults.CHANGES_ANY]. */
+    val maxChanges: StateFlow<Int>
+    fun setMaxChanges(changes: Int)
 }
 
 /** Defaults and offered choices of the planner settings. */
@@ -54,6 +58,15 @@ object TransitPlanningDefaults {
     val MAX_WALK_CHOICES = listOf(10, 15, 20, 30, 45, 60, 90, 0)
     const val MAX_MINUTES = 120
 
+    /** The "vehicle changes" choice, stored as is: no change, at most one, any number. */
+    const val CHANGES_NONE = 0
+    const val CHANGES_ONE = 1
+    const val CHANGES_ANY = 2
+    val CHANGES_CHOICES = listOf(CHANGES_ANY, CHANGES_ONE, CHANGES_NONE)
+
+    /** The planner's limit for a stored choice (null: any). */
+    fun transfersLimit(choice: Int): Int? = choice.takeIf { it in CHANGES_NONE..CHANGES_ONE }
+
     /** Only the five switchable modes survive; anything else is dropped. */
     fun cleanModes(modes: Collection<TransitMode>): Set<TransitMode> = modes.filter { it in TransitMode.FILTERABLE }.toSet()
 }
@@ -64,6 +77,7 @@ fun TransitTripSettingsStore.planOptions(): PlanOptions = PlanOptions(
     walkAlternativeMaxSec = walkAlternativeMin.value * 60,
     minTransitSavingSec = minSavingMin.value * 60,
     maxTotalWalkSec = maxWalkMin.value * 60,
+    maxTransfers = TransitPlanningDefaults.transfersLimit(maxChanges.value),
 )
 
 class InMemoryTransitTripSettings(initial: AlertSoundMode = AlertSoundMode.VOICE, realTime: Boolean = false) : TransitTripSettingsStore {
@@ -92,6 +106,12 @@ class InMemoryTransitTripSettings(initial: AlertSoundMode = AlertSoundMode.VOICE
     override fun setMaxWalkMin(minutes: Int) {
         maxWalk.value = minutes.coerceIn(0, TransitPlanningDefaults.MAX_MINUTES)
     }
+    private val changes = MutableStateFlow(TransitPlanningDefaults.CHANGES_ANY)
+    override val maxChanges: StateFlow<Int> = changes
+    override fun setMaxChanges(changes: Int) {
+        this.changes.value = changes.coerceIn(TransitPlanningDefaults.CHANGES_NONE, TransitPlanningDefaults.CHANGES_ANY)
+    }
+
     override val promptMode: StateFlow<AlertSoundMode> = state
     override fun setPromptMode(mode: AlertSoundMode) {
         state.value = mode
@@ -115,10 +135,27 @@ class PrefsTransitTripSettings(private val prefs: SharedPreferences) : TransitTr
     private val walkAlt = MutableStateFlow(readMinutes(KEY_WALK_ALT, TransitPlanningDefaults.WALK_ALTERNATIVE_MIN))
     private val saving = MutableStateFlow(readMinutes(KEY_MIN_SAVING, TransitPlanningDefaults.MIN_SAVING_MIN))
     private val maxWalk = MutableStateFlow(readMinutes(KEY_MAX_WALK, TransitPlanningDefaults.MAX_WALK_MIN))
+    private val changes = MutableStateFlow(readChanges())
     override val allowedModes: StateFlow<Set<TransitMode>> = modes
     override val walkAlternativeMin: StateFlow<Int> = walkAlt
     override val minSavingMin: StateFlow<Int> = saving
     override val maxWalkMin: StateFlow<Int> = maxWalk
+    override val maxChanges: StateFlow<Int> = changes
+
+    @Synchronized
+    override fun setMaxChanges(changes: Int) {
+        val v = changes.coerceIn(TransitPlanningDefaults.CHANGES_NONE, TransitPlanningDefaults.CHANGES_ANY)
+        if (v == this.changes.value) return
+        prefs.edit().putInt(KEY_MAX_CHANGES, v).apply()
+        this.changes.value = v
+    }
+
+    private fun readChanges(): Int = try {
+        prefs.getInt(KEY_MAX_CHANGES, TransitPlanningDefaults.CHANGES_ANY).takeIf { it in TransitPlanningDefaults.CHANGES_NONE..TransitPlanningDefaults.CHANGES_ANY }
+            ?: TransitPlanningDefaults.CHANGES_ANY
+    } catch (_: ClassCastException) {
+        TransitPlanningDefaults.CHANGES_ANY
+    }
 
     @Synchronized
     override fun setAllowedModes(modes: Set<TransitMode>) {
@@ -177,6 +214,7 @@ class PrefsTransitTripSettings(private val prefs: SharedPreferences) : TransitTr
         walkAlt.value = readMinutes(KEY_WALK_ALT, TransitPlanningDefaults.WALK_ALTERNATIVE_MIN)
         saving.value = readMinutes(KEY_MIN_SAVING, TransitPlanningDefaults.MIN_SAVING_MIN)
         maxWalk.value = readMinutes(KEY_MAX_WALK, TransitPlanningDefaults.MAX_WALK_MIN)
+        changes.value = readChanges()
     }
 
     /** Only a stored boolean `true` turns it on; anything else (missing, damaged, another type) is off. */
@@ -193,6 +231,7 @@ class PrefsTransitTripSettings(private val prefs: SharedPreferences) : TransitTr
         const val KEY_WALK_ALT = "plan_walk_alt_min"
         const val KEY_MIN_SAVING = "plan_min_saving_min"
         const val KEY_MAX_WALK = "plan_max_walk_min"
+        const val KEY_MAX_CHANGES = "plan_max_changes"
         val DEFAULT = AlertSoundMode.VOICE
     }
 }

@@ -50,6 +50,7 @@ import com.qtekfun.ultimatemaps.core.transit.TransitMode
 import com.qtekfun.ultimatemaps.route.Icon
 import com.qtekfun.ultimatemaps.places.PanelNote
 import com.qtekfun.ultimatemaps.route.RouteFormat
+import com.qtekfun.ultimatemaps.transit.follow.TransitPlanningDefaults
 import com.qtekfun.ultimatemaps.ui.theme.Mapas
 import java.util.Locale
 
@@ -74,6 +75,7 @@ fun TransitSection(controller: TransitController, modifier: Modifier = Modifier)
         Spacer(Modifier.height(8.dp))
         if (s.showModeChips && s.phase != TransitPhase.IDLE && s.phase != TransitPhase.NEEDS_ORIGIN) {
             ModeChips(controller)
+            ChangesChips(controller)
             Spacer(Modifier.height(8.dp))
         }
         when (s.phase) {
@@ -235,6 +237,45 @@ private fun ModeChips(controller: TransitController) {
                 contentAlignment = Alignment.Center,
             ) {
                 BasicText(stringResource(R.string.transit_modes_reset), style = Mapas.typography.callout.copy(color = colors.accent), maxLines = 1)
+            }
+        }
+    }
+}
+
+@androidx.annotation.StringRes
+internal fun changesLabel(choice: Int): Int = when (choice) {
+    TransitPlanningDefaults.CHANGES_NONE -> R.string.transit_changes_none
+    TransitPlanningDefaults.CHANGES_ONE -> R.string.transit_changes_one
+    else -> R.string.transit_changes_any
+}
+
+/** How many vehicle changes are accepted: any, at most one, none. One of the three is always selected. Tags `transit_changes_<n>`. */
+@Composable
+private fun ChangesChips(controller: TransitController) {
+    val s = controller.state
+    val colors = Mapas.colors
+    Row(
+        Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()).testTag("transit_changes"),
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        TransitPlanningDefaults.CHANGES_CHOICES.forEach { choice ->
+            val on = s.changes == choice
+            Box(
+                Modifier
+                    .heightIn(min = target)
+                    .clip(Mapas.shapes.pill)
+                    .background(if (on) colors.accent.copy(alpha = 0.16f) else colors.field)
+                    .selectable(selected = on, role = Role.RadioButton, onClick = { controller.setChanges(choice) })
+                    .padding(horizontal = 14.dp)
+                    .testTag("transit_changes_$choice"),
+                contentAlignment = Alignment.Center,
+            ) {
+                BasicText(
+                    stringResource(changesLabel(choice)),
+                    style = Mapas.typography.callout.copy(color = if (on) colors.accent else colors.secondaryLabel),
+                    maxLines = 1,
+                )
             }
         }
     }

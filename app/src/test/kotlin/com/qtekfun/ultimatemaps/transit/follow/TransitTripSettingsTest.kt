@@ -161,6 +161,23 @@ class TransitTripSettingsTest {
         assertEquals(listOf(20, 5, 60), listOf(d.walkAlternativeMin.value, d.minSavingMin.value, d.maxWalkMin.value))
     }
 
+    @Test fun theChangesChoiceIsStoredReachesThePlannerAndIsInTheBackupWhitelist() {
+        val p = prefs()
+        val s = PrefsTransitTripSettings(p)
+        assertNull(s.planOptions().maxTransfers) // any, by default
+        s.setMaxChanges(TransitPlanningDefaults.CHANGES_NONE)
+        assertEquals(0, PrefsTransitTripSettings(p).planOptions().maxTransfers)
+        s.setMaxChanges(TransitPlanningDefaults.CHANGES_ONE)
+        assertEquals(1, PrefsTransitTripSettings(p).planOptions().maxTransfers)
+        s.setMaxChanges(99) // out of range is clamped to "any"
+        assertNull(PrefsTransitTripSettings(p).planOptions().maxTransfers)
+        p.edit().putString(PrefsTransitTripSettings.KEY_MAX_CHANGES, "x").commit()
+        assertEquals(TransitPlanningDefaults.CHANGES_ANY, PrefsTransitTripSettings(p).maxChanges.value)
+        val spec = assertNotNull(SettingsSchema.find(SettingsSchema.GROUP_NAVIGATION, PrefsTransitTripSettings.KEY_MAX_CHANGES))
+        assertEquals(PrefsTransitTripSettings.PREFS, spec.prefsName)
+        assertEquals(TransitPlanningDefaults.CHANGES_ANY, spec.default)
+    }
+
     @Test fun reloadReadsARestoredPlannerChoice() {
         val p = prefs()
         val s = PrefsTransitTripSettings(p)

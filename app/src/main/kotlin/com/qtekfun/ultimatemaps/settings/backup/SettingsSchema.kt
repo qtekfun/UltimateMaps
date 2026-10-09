@@ -180,6 +180,7 @@ object SettingsSchema {
         int(GROUP_NAVIGATION, PrefsTransitTripSettings.PREFS, PrefsTransitTripSettings.KEY_WALK_ALT, TransitPlanningDefaults.WALK_ALTERNATIVE_MIN) { it in 0..TransitPlanningDefaults.MAX_MINUTES },
         int(GROUP_NAVIGATION, PrefsTransitTripSettings.PREFS, PrefsTransitTripSettings.KEY_MIN_SAVING, TransitPlanningDefaults.MIN_SAVING_MIN) { it in 0..TransitPlanningDefaults.MAX_MINUTES },
         int(GROUP_NAVIGATION, PrefsTransitTripSettings.PREFS, PrefsTransitTripSettings.KEY_MAX_WALK, TransitPlanningDefaults.MAX_WALK_MIN) { it in 0..TransitPlanningDefaults.MAX_MINUTES },
+        int(GROUP_NAVIGATION, PrefsTransitTripSettings.PREFS, PrefsTransitTripSettings.KEY_MAX_CHANGES, TransitPlanningDefaults.CHANGES_ANY) { it in TransitPlanningDefaults.CHANGES_NONE..TransitPlanningDefaults.CHANGES_ANY },
 
         // Petrol stations: the switch needs consent (it starts downloads); the rest is plain preference.
         bool(GROUP_FUEL, fuelPrefs, PrefsFuelSettingsStore.KEY_ENABLED, fuel.enabled, RestorePolicy.NEEDS_CONSENT),

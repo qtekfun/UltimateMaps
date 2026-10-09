@@ -71,4 +71,6 @@ data class PlanOptions(
     val minTransitSavingSec: Int? = null,
     /** Cap on the walking of one journey in seconds (0 = no cap). */
     val maxTotalWalkSec: Int? = null,
+    /** Most vehicle changes a journey may have (0 = none); null = any. */
+    val maxTransfers: Int? = null,
 )
