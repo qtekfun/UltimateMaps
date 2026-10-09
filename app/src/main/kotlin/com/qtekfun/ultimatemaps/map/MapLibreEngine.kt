@@ -15,6 +15,7 @@ import com.qtekfun.ultimatemaps.core.map.MapTheme
 import com.qtekfun.ultimatemaps.core.map.TrackLine
 import com.qtekfun.ultimatemaps.core.map.TrailLine
 import com.qtekfun.ultimatemaps.core.map.TransitMapLeg
+import com.qtekfun.mapcore.MapEngineOptions
 import com.qtekfun.mapcore.UltimateMapEngine
 import java.io.File
 import org.maplibre.android.camera.CameraPosition
@@ -22,6 +23,7 @@ import org.maplibre.android.camera.CameraUpdateFactory
 import org.maplibre.android.geometry.LatLng
 import org.maplibre.android.geometry.LatLngBounds
 import org.maplibre.android.maps.MapLibreMap
+import org.maplibre.android.maps.MapLibreMapOptions
 import org.maplibre.android.maps.MapView
 import org.maplibre.android.maps.Style
 import org.maplibre.android.style.layers.CircleLayer
@@ -160,9 +162,19 @@ class MapLibreEngine(
     /**
      * The shared viewer (ultimate-mapcore, AGPL-3.0): it owns the [MapView], its lifecycle, the style loading and the
      * camera-idle, camera-gesture and tap callbacks. This class stays the adapter that turns the app's [MapEngine]
-     * contract into it and keeps every overlay layer. Its own packaged style is never used (see [onStyleLoaded]).
+     * contract into it and keeps every overlay layer. Its own packaged style and core layers are switched off (see [MapEngineOptions]).
      */
-    private val core = UltimateMapEngine(context, File(context.filesDir, "maps"))
+    private val core = UltimateMapEngine(
+        context, File(context.filesDir, "maps"),
+        MapEngineOptions(
+            autoLoadStyle = false, // our generated style is the only one; nothing packaged is loaded or copied
+            addCoreLayers = false, // the viewer's own empty route, marker and user layers: every overlay here is ours
+            mapOptions = MapLibreMapOptions.createFromAttributes(context)
+                .attributionEnabled(false) // we draw our own always-visible OSM attribution (RF-13)
+                .logoEnabled(false)
+                .compassEnabled(false),
+        ),
+    )
 
     /** The view to host (the viewer's). The saved camera is applied as soon as the map exists, before any style loads. */
     val view: MapView get() = core.view
@@ -184,12 +196,9 @@ class MapLibreEngine(
         }
         core.onMapTap { handleTap(LatLng(it.lat, it.lon)) }
         core.onMapReady { _, style -> onStyleLoaded(style) }
-        // Queued after the viewer's own callback, so its map exists and its default style is already requested.
+        // Queued after the viewer's own callback, so its map exists.
         view.getMapAsync { m ->
             map = m
-            m.uiSettings.isAttributionEnabled = false // we draw our own always-visible OSM attribution (RF-13)
-            m.uiSettings.isLogoEnabled = false
-            m.uiSettings.isCompassEnabled = false
             m.setMaxPitchPreference(MAX_PITCH) // the navigation's 3D view tilts up to 60 degrees
             m.moveCamera(CameraUpdateFactory.newCameraPosition((pendingCamera ?: initial).toPosition()))
             pendingCamera = null
@@ -1001,13 +1010,7 @@ class MapLibreEngine(
 
     /** The viewer calls this after EVERY style load: add the app's layers on top of it (a reload drops them all). */
     private fun onStyleLoaded(style: Style) {
-        val built = styleBuilt
-        if (built == null) return // the viewer's own packaged style, before ours was requested
-        if (!style.json.contains(MultiRegionStyle.STYLE_NAME)) {
-            // The viewer's packaged style finished after ours (its first-run asset copy): put ours back.
-            if (!closed) core.setStyle(built.json)
-            return
-        }
+        val built = styleBuilt ?: return
         val wanted = styleTheme
         loadedTheme = wanted
         // Metrics only (no locations, no paths): to size the cost of many regions on a device later.
