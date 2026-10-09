@@ -35,7 +35,7 @@ jobs:
       # The script initializes only the nested submodules it needs (requires network and PyPI).
       - name: Prepare the CoMaps core
         run: |
-          git submodule update --init third_party/comaps
+          git submodule update --init third_party/comaps ultimate-mapcore
           bash scripts/comaps-prepare.sh
 
       - name: Check that the tag matches appVersion

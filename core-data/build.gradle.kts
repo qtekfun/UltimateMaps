@@ -14,10 +14,10 @@ dependencies {
     // org.xmlpull.v1 comes from the Android platform; kXML2 only for JVM tests (see :core-geo).
     testImplementation(libs.androidx.sqlite.bundled)
     testImplementation(libs.kxml2)
-    testImplementation(platform(libs.junit.bom))
-    testImplementation(libs.junit.jupiter)
+    testImplementation(platform(libs.junit5.bom))
+    testImplementation(libs.junit5.jupiter)
     testImplementation(kotlin("test"))
-    testRuntimeOnly(libs.junit.platform.launcher)
+    testRuntimeOnly(libs.junit5.launcher)
 }
 
 tasks.test { useJUnitPlatform() }

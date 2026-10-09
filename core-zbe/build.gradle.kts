@@ -12,11 +12,11 @@ dependencies {
     api(project(":core-cameras"))
     api(libs.kotlinx.coroutines.core)
 
-    testImplementation(platform(libs.junit.bom))
-    testImplementation(libs.junit.jupiter)
+    testImplementation(platform(libs.junit5.bom))
+    testImplementation(libs.junit5.jupiter)
     testImplementation(kotlin("test"))
     testImplementation(libs.kotlinx.coroutines.test)
-    testRuntimeOnly(libs.junit.platform.launcher)
+    testRuntimeOnly(libs.junit5.launcher)
 }
 
 tasks.test { useJUnitPlatform() }

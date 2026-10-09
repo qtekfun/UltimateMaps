@@ -25,6 +25,9 @@ jobs:
         with:
           persist-credentials: false
 
+      - name: Shared map viewer submodule
+        run: git submodule update --init --depth 1 ultimate-mapcore
+
       - name: No proprietary dependencies (Play Services, Firebase)
         run: |
           if grep -rEi "play-services|firebase|com\.google\.android\.gms" \
@@ -73,7 +76,7 @@ jobs:
       - uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
 
       - name: CoMaps submodule
-        run: git submodule update --init --depth 1 third_party/comaps
+        run: git submodule update --init --depth 1 third_party/comaps ultimate-mapcore
 
       - name: Prepare the CoMaps core (generated files)
         run: sudo apt-get install -y -qq jq && scripts/comaps-prepare.sh

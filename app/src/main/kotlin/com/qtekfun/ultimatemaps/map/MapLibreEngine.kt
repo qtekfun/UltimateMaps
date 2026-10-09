@@ -15,13 +15,13 @@ import com.qtekfun.ultimatemaps.core.map.MapTheme
 import com.qtekfun.ultimatemaps.core.map.TrackLine
 import com.qtekfun.ultimatemaps.core.map.TrailLine
 import com.qtekfun.ultimatemaps.core.map.TransitMapLeg
-import org.maplibre.android.MapLibre
+import com.qtekfun.mapcore.UltimateMapEngine
+import java.io.File
 import org.maplibre.android.camera.CameraPosition
 import org.maplibre.android.camera.CameraUpdateFactory
 import org.maplibre.android.geometry.LatLng
 import org.maplibre.android.geometry.LatLngBounds
 import org.maplibre.android.maps.MapLibreMap
-import org.maplibre.android.maps.MapLibreMapOptions
 import org.maplibre.android.maps.MapView
 import org.maplibre.android.maps.Style
 import org.maplibre.android.style.layers.CircleLayer
@@ -157,32 +157,42 @@ class MapLibreEngine(
     private var parkingSource: GeoJsonSource? = null
     private var pendingParking: LatLon? = null
 
-    /** The view to host. Created with the saved camera so the first frame already shows the last state. */
-    val view: MapView
+    /**
+     * The shared viewer (ultimate-mapcore, AGPL-3.0): it owns the [MapView], its lifecycle, the style loading and the
+     * camera-idle, camera-gesture and tap callbacks. This class stays the adapter that turns the app's [MapEngine]
+     * contract into it and keeps every overlay layer. Its own packaged style is never used (see [onStyleLoaded]).
+     */
+    private val core = UltimateMapEngine(context, File(context.filesDir, "maps"))
+
+    /** The view to host (the viewer's). The saved camera is applied as soon as the map exists, before any style loads. */
+    val view: MapView get() = core.view
+
+    /** Metrics of the style being loaded, logged when it is up. */
+    private var styleT0 = 0L
+    private var styleBuildMs = 0L
+    private var styleBuilt: MultiRegionStyle.Result? = null
+    private var styleTheme: MapTheme = initialTheme
 
     init {
-        MapLibre.getInstance(context.applicationContext)
         val initial = store.load() ?: CameraState.DEFAULT
         lastIdle = initial
-        val options = MapLibreMapOptions.createFromAttributes(context)
-            .camera(initial.toPosition())
-            .attributionEnabled(false) // we draw our own always-visible OSM attribution (RF-13)
-            .logoEnabled(false)
-            .compassEnabled(false)
-        view = MapView(context, options)
-        view.onCreate(null)
+        core.onCreate(null)
+        core.onCameraIdle { map?.let { handleIdle(it) } }
+        core.onCameraGesture {
+            gestureListener?.invoke()
+            extraGestureListeners.forEach { it() }
+        }
+        core.onMapTap { handleTap(LatLng(it.lat, it.lon)) }
+        core.onMapReady { _, style -> onStyleLoaded(style) }
+        // Queued after the viewer's own callback, so its map exists and its default style is already requested.
         view.getMapAsync { m ->
             map = m
+            m.uiSettings.isAttributionEnabled = false // we draw our own always-visible OSM attribution (RF-13)
+            m.uiSettings.isLogoEnabled = false
+            m.uiSettings.isCompassEnabled = false
             m.setMaxPitchPreference(MAX_PITCH) // the navigation's 3D view tilts up to 60 degrees
-            m.addOnCameraIdleListener { handleIdle(m) }
-            m.addOnCameraMoveStartedListener { reason ->
-                if (reason == MapLibreMap.OnCameraMoveStartedListener.REASON_API_GESTURE) {
-                    gestureListener?.invoke()
-                    extraGestureListeners.forEach { it() }
-                }
-            }
-            m.addOnMapClickListener { p -> handleTap(p) }
-            pendingCamera?.let { m.moveCamera(CameraUpdateFactory.newCameraPosition(it.toPosition())); pendingCamera = null }
+            m.moveCamera(CameraUpdateFactory.newCameraPosition((pendingCamera ?: initial).toPosition()))
+            pendingCamera = null
             loadStyle()
         }
     }
@@ -955,15 +965,15 @@ class MapLibreEngine(
     // --- Style ---
 
     private fun loadStyle() {
-        val m = map ?: return
+        if (map == null) return
         val wanted = theme
         if (files.isInstalled()) {
-            applyStyle(m, wanted)
+            applyStyle(wanted)
         } else {
             // First run: copy sprites and glyphs off the main thread, then load.
             Thread({
                 runCatching { files.install() }
-                main.post { if (!closed) map?.let { applyStyle(it, theme) } }
+                main.post { if (!closed && map != null) applyStyle(theme) }
             }, "mapas-assets").start()
         }
     }
@@ -976,88 +986,104 @@ class MapLibreEngine(
         if (map != null && loadedTheme != null && files.tilesSignature() != loadedTiles) loadStyle()
     }
 
-    private fun applyStyle(m: MapLibreMap, wanted: MapTheme) {
+    private fun applyStyle(wanted: MapTheme) {
         loadedTiles = files.tilesSignature()
         val t0 = SystemClock.elapsedRealtime()
         val built = files.style(wanted)
-        val buildMs = SystemClock.elapsedRealtime() - t0
-        m.setStyle(Style.Builder().fromJson(built.json)) { style ->
-            loadedTheme = wanted
-            // Metrics only (no locations, no paths): to size the cost of many regions on a device later.
-            Log.i(
-                METRICS_TAG,
-                "sources=${built.sources} layers=${built.layers} template_layers=${built.templateLayers} " +
-                    "skipped=${built.skipped} json_kb=${built.json.length / 1024} build_ms=$buildMs " +
-                    "style_load_ms=${SystemClock.elapsedRealtime() - t0 - buildMs}",
-            )
-            val user = GeoJsonSource(USER_SOURCE).also { userSource = it }
-            val pin = GeoJsonSource(PIN_SOURCE).also { pinSource = it }
-            addZoneLayer(style, wanted == MapTheme.DARK) // low-emission zones: below everything drawn on top of the map
-            addTrailLayers(style, wanted == MapTheme.DARK) // hiking and cycling routes: below everything else
-            addTracksLayer(style, wanted == MapTheme.DARK) // below the route line
-            addRouteLayer(style, wanted == MapTheme.DARK) // below the markers, pin and user dots
-            addTransitLayer(style, wanted == MapTheme.DARK)
-            addHazardLayers(style, wanted == MapTheme.DARK)
-            addBikeLayer(style, wanted == MapTheme.DARK)
-            addChargerLayer(style, wanted == MapTheme.DARK)
-            addFuelLayer(style, wanted == MapTheme.DARK)
-            style.addSource(user)
-            style.addSource(pin)
-            style.addSource(GeoJsonSource(MARKERS_SOURCE).also { markersSource = it })
-            style.addSource(GeoJsonSource(PARKING_SOURCE).also { parkingSource = it })
-            style.addSource(GeoJsonSource(ORIGIN_SOURCE).also { originSource = it })
-            style.addLayer(
-                CircleLayer(MARKERS_LAYER, MARKERS_SOURCE).withProperties(
-                    circleRadius(6f), circleColor(MARKER_COLOR), circleStrokeColor(WHITE), circleStrokeWidth(2f),
-                ),
-            )
-            style.addSource(GeoJsonSource(CATEGORY_SOURCE).also { categorySource = it })
-            style.addLayer(
-                CircleLayer(CATEGORY_LAYER, CATEGORY_SOURCE).withProperties(
-                    circleRadius(7f), circleColor(CATEGORY_COLOR), circleStrokeColor(WHITE), circleStrokeWidth(2f),
-                ),
-            )
-            pushCategory()
-            style.addLayer(
-                CircleLayer(PARKING_LAYER, PARKING_SOURCE).withProperties(
-                    circleRadius(8f), circleColor(PARKING_COLOR), circleStrokeColor(WHITE), circleStrokeWidth(3f),
-                ),
-            )
-            style.addLayer(
-                CircleLayer(ORIGIN_LAYER, ORIGIN_SOURCE).withProperties(
-                    circleRadius(7f), circleColor(WHITE), circleStrokeColor(ROUTE_COLOR), circleStrokeWidth(4f),
-                ),
-            )
-            style.addLayer(
-                CircleLayer(PIN_LAYER, PIN_SOURCE).withProperties(
-                    circleRadius(8f), circleColor(PIN_COLOR), circleStrokeColor(WHITE), circleStrokeWidth(2.5f),
-                ),
-            )
-            style.addLayer(
-                CircleLayer(USER_LAYER, USER_SOURCE).withProperties(
-                    circleRadius(8f), circleColor(USER_COLOR), circleStrokeColor(WHITE), circleStrokeWidth(3f),
-                ),
-            )
-            // The heading arrow (navigation): flat on the map plane, rotated by the course; hidden until a heading is set.
-            val screen = view.resources.displayMetrics
-            style.addImage(UserArrowIcon.NAME, UserArrowIcon.render(screen.density, screen.densityDpi))
-            style.addLayer(
-                SymbolLayer(USER_ARROW_LAYER, USER_SOURCE).withProperties(
-                    iconImage(UserArrowIcon.NAME), iconRotate(Expression.get(USER_BEARING)),
-                    iconRotationAlignment(Property.ICON_ROTATION_ALIGNMENT_MAP), iconPitchAlignment(Property.ICON_PITCH_ALIGNMENT_MAP),
-                    iconAllowOverlap(true), iconIgnorePlacement(true), iconAnchor(Property.ICON_ANCHOR_CENTER),
-                    visibility(Property.NONE),
-                ),
-            )
-            applyUserMode()
-            applyBuildings() // a style reload (day/night, new region) drops the extrusion layers: put them back if still wanted
-            pushUser()
-            pushOverlay(pinSource, pendingPin)
-            pushOverlay(parkingSource, pendingParking)
-            pushOverlay(originSource, pendingOrigin)
-            pushMarkers()
-            dispatchViewport() // the first station draw (a new style has no camera-idle of its own)
+        styleT0 = t0
+        styleBuildMs = SystemClock.elapsedRealtime() - t0
+        styleBuilt = built
+        styleTheme = wanted
+        // Our own generated style (all installed regions) replaces the viewer's packaged one; the viewer loads it
+        // and calls onStyleLoaded when it is up. A region change builds a new JSON, so refreshTiles() is not needed.
+        core.setStyle(built.json)
+    }
+
+    /** The viewer calls this after EVERY style load: add the app's layers on top of it (a reload drops them all). */
+    private fun onStyleLoaded(style: Style) {
+        val built = styleBuilt
+        if (built == null) return // the viewer's own packaged style, before ours was requested
+        if (!style.json.contains(MultiRegionStyle.STYLE_NAME)) {
+            // The viewer's packaged style finished after ours (its first-run asset copy): put ours back.
+            if (!closed) core.setStyle(built.json)
+            return
         }
+        val wanted = styleTheme
+        loadedTheme = wanted
+        // Metrics only (no locations, no paths): to size the cost of many regions on a device later.
+        Log.i(
+            METRICS_TAG,
+            "sources=${built.sources} layers=${built.layers} template_layers=${built.templateLayers} " +
+                "skipped=${built.skipped} json_kb=${built.json.length / 1024} build_ms=$styleBuildMs " +
+                "style_load_ms=${SystemClock.elapsedRealtime() - styleT0 - styleBuildMs}",
+        )
+        val user = GeoJsonSource(USER_SOURCE).also { userSource = it }
+        val pin = GeoJsonSource(PIN_SOURCE).also { pinSource = it }
+        addZoneLayer(style, wanted == MapTheme.DARK) // low-emission zones: below everything drawn on top of the map
+        addTrailLayers(style, wanted == MapTheme.DARK) // hiking and cycling routes: below everything else
+        addTracksLayer(style, wanted == MapTheme.DARK) // below the route line
+        addRouteLayer(style, wanted == MapTheme.DARK) // below the markers, pin and user dots
+        addTransitLayer(style, wanted == MapTheme.DARK)
+        addHazardLayers(style, wanted == MapTheme.DARK)
+        addBikeLayer(style, wanted == MapTheme.DARK)
+        addChargerLayer(style, wanted == MapTheme.DARK)
+        addFuelLayer(style, wanted == MapTheme.DARK)
+        style.addSource(user)
+        style.addSource(pin)
+        style.addSource(GeoJsonSource(MARKERS_SOURCE).also { markersSource = it })
+        style.addSource(GeoJsonSource(PARKING_SOURCE).also { parkingSource = it })
+        style.addSource(GeoJsonSource(ORIGIN_SOURCE).also { originSource = it })
+        style.addLayer(
+            CircleLayer(MARKERS_LAYER, MARKERS_SOURCE).withProperties(
+                circleRadius(6f), circleColor(MARKER_COLOR), circleStrokeColor(WHITE), circleStrokeWidth(2f),
+            ),
+        )
+        style.addSource(GeoJsonSource(CATEGORY_SOURCE).also { categorySource = it })
+        style.addLayer(
+            CircleLayer(CATEGORY_LAYER, CATEGORY_SOURCE).withProperties(
+                circleRadius(7f), circleColor(CATEGORY_COLOR), circleStrokeColor(WHITE), circleStrokeWidth(2f),
+            ),
+        )
+        pushCategory()
+        style.addLayer(
+            CircleLayer(PARKING_LAYER, PARKING_SOURCE).withProperties(
+                circleRadius(8f), circleColor(PARKING_COLOR), circleStrokeColor(WHITE), circleStrokeWidth(3f),
+            ),
+        )
+        style.addLayer(
+            CircleLayer(ORIGIN_LAYER, ORIGIN_SOURCE).withProperties(
+                circleRadius(7f), circleColor(WHITE), circleStrokeColor(ROUTE_COLOR), circleStrokeWidth(4f),
+            ),
+        )
+        style.addLayer(
+            CircleLayer(PIN_LAYER, PIN_SOURCE).withProperties(
+                circleRadius(8f), circleColor(PIN_COLOR), circleStrokeColor(WHITE), circleStrokeWidth(2.5f),
+            ),
+        )
+        style.addLayer(
+            CircleLayer(USER_LAYER, USER_SOURCE).withProperties(
+                circleRadius(8f), circleColor(USER_COLOR), circleStrokeColor(WHITE), circleStrokeWidth(3f),
+            ),
+        )
+        // The heading arrow (navigation): flat on the map plane, rotated by the course; hidden until a heading is set.
+        val screen = view.resources.displayMetrics
+        style.addImage(UserArrowIcon.NAME, UserArrowIcon.render(screen.density, screen.densityDpi))
+        style.addLayer(
+            SymbolLayer(USER_ARROW_LAYER, USER_SOURCE).withProperties(
+                iconImage(UserArrowIcon.NAME), iconRotate(Expression.get(USER_BEARING)),
+                iconRotationAlignment(Property.ICON_ROTATION_ALIGNMENT_MAP), iconPitchAlignment(Property.ICON_PITCH_ALIGNMENT_MAP),
+                iconAllowOverlap(true), iconIgnorePlacement(true), iconAnchor(Property.ICON_ANCHOR_CENTER),
+                visibility(Property.NONE),
+            ),
+        )
+        applyUserMode()
+        applyBuildings() // a style reload (day/night, new region) drops the extrusion layers: put them back if still wanted
+        pushUser()
+        pushOverlay(pinSource, pendingPin)
+        pushOverlay(parkingSource, pendingParking)
+        pushOverlay(originSource, pendingOrigin)
+        pushMarkers()
+        dispatchViewport() // the first station draw (a new style has no camera-idle of its own)
     }
 
     private fun pushOverlay(source: GeoJsonSource?, point: LatLon?) {
@@ -1079,12 +1105,12 @@ class MapLibreEngine(
 
     // --- Lifecycle ---
 
-    override fun onStart(owner: LifecycleOwner) = view.onStart()
-    override fun onResume(owner: LifecycleOwner) = view.onResume()
-    override fun onPause(owner: LifecycleOwner) = view.onPause()
+    override fun onStart(owner: LifecycleOwner) = core.onStart()
+    override fun onResume(owner: LifecycleOwner) = core.onResume()
+    override fun onPause(owner: LifecycleOwner) = core.onPause()
     override fun onStop(owner: LifecycleOwner) {
         map?.let { handleIdle(it) } // persist even if the process dies in the background
-        view.onStop()
+        core.onStop()
     }
 
     override fun onDestroy(owner: LifecycleOwner) = close()
@@ -1092,7 +1118,7 @@ class MapLibreEngine(
     override fun close() {
         if (closed) return
         closed = true
-        view.onDestroy()
+        core.onDestroy()
     }
 
     private fun CameraState.toPosition(): CameraPosition = CameraPosition.Builder()

@@ -13,6 +13,7 @@ The project is under GPLv3. Every dependency must be compatible and be listed he
 | Kotlin stdlib | 2.4.20 | Apache-2.0 | Yes | All modules |
 | JUnit Jupiter / Platform | 6.1.3 | EPL-2.0 | Yes (tests only, not distributed) | Tests |
 | MapLibre Native Android (`org.maplibre.gl:android-sdk`) | 13.6.1 | BSD-2-Clause | Yes | `:app`, map rendering and local PMTiles reading |
+| `ultimate-mapcore` (`:mapcore`, git submodule, github.com/qtekfun/ultimate-mapcore) | master | AGPL-3.0 (sources, same author); assets: Noto Sans OFL-1.1, Protomaps style/sprites permissive; data ODbL | Yes (AGPL-3.0 and GPLv3 may be combined, AGPL section 13); network clause applies to the library part | `:app`, shared MapLibre + PMTiles viewer; map view, lifecycle, style loading and camera callbacks of `MapLibreEngine` |
 | AndroidX Compose (BOM) and Activity Compose | 2026.09.00 / 1.13.0 | Apache-2.0 | Yes | `:app`, UI (only `ui` and `foundation`; no Material) |
 | `@protomaps/basemaps` | 5.7.2 | BSD-3-Clause | Yes | Development only: `scripts/gen-map-style.mjs` generates the light/dark styles included in `app/src/main/assets/map/` |
 | Sprites and fonts from `basemaps-assets` (Protomaps; Noto Sans, SIL OFL 1.1) | v4 | BSD-3 (sprites) / OFL-1.1 (fonts) | Yes | Packaged in `app/src/main/assets/map` (sprites v4, 3 fonts, ranges 0-255, 256-511, 8192-8703; ~1.3 MB) with `scripts/fetch-map-assets.sh` |
