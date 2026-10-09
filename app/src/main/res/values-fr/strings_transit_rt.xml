@@ -21,6 +21,15 @@
     <string name="transit_rt_cancelled">Annulé</string>
     <string name="transit_rt_alert">Alerte : %1$s</string>
     <string name="transit_rt_skips">Ne s\'arrête pas à %1$s</string>
+    <plurals name="transit_rt_alerts_count">
+        <item quantity="one">%d alerte</item>
+        <item quantity="many">%d alertes</item>
+        <item quantity="other">%d alertes</item>
+    </plurals>
+    <string name="transit_rt_alerts_expand">Afficher toutes les alertes</string>
+    <string name="transit_rt_alerts_collapse">Masquer la liste des alertes</string>
+    <string name="transit_rt_alerts_dismiss">Masquer</string>
+    <string name="transit_rt_alerts_dismiss_description">Masquer les alertes de ce trajet</string>
     <string name="transit_rt_note">Les horaires sont théoriques, issus des horaires publiés. Les trajets marqués « Temps réel (Renfe) » incluent aussi les retards signalés par Renfe ; tous les autres trajets n\'ont aucune information en temps réel.</string>
 
     <!-- Backup restore list and connection list -->

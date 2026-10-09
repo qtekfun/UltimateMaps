@@ -1,7 +1,9 @@
 package com.qtekfun.ultimatemaps.transit.follow
 
 import android.app.Application
+import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.assertTextEquals
+import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.test.core.app.ApplicationProvider
@@ -50,6 +52,8 @@ class TransitTripRealTimeTest {
     @Test fun alertsAreShownAsStrips() {
         show(onBoard.copy(realTime = LegRealTime(delaySec = 0, alerts = listOf("Obras entre Sol y Atocha"), skippedStops = listOf("Charlie"))))
         rule.onNodeWithTag("trip_rt_status").assertTextEquals("Real time (Renfe) · On time")
+        rule.onNodeWithTag("trip_rt_alerts_chip", useUnmergedTree = true).assertTextContains("2 alerts", substring = true)
+        rule.onNodeWithTag("trip_rt_alerts_chip", useUnmergedTree = true).performClick()
         rule.onNodeWithTag("trip_rt_detail_0").assertTextEquals("Does not stop at Charlie")
         rule.onNodeWithTag("trip_rt_detail_1").assertTextEquals("Alert: Obras entre Sol y Atocha")
     }
@@ -87,5 +91,46 @@ class TransitTripRealTimeTest {
         val cancelled = TripTestSupport.trip(onBoard.copy(realTime = LegRealTime(cancelled = true)))
         assertNotEquals(TransitTripNotificationTexts.key(delayed), TransitTripNotificationTexts.key(cancelled))
         assertEquals(TransitTripNotificationTexts.key(delayed), TransitTripNotificationTexts.key(TripTestSupport.trip(onBoard.copy(realTime = LegRealTime(delaySec = 250)))))
+    }
+
+    private val many = LegRealTime(delaySec = 300, alerts = (1..30).map { "Notice number $it about works between stations" }, skippedStops = listOf("Charlie", "Delta"))
+
+    @Test fun manyAlertsCollapseIntoOneCompactChipWithTheFirstOneAsPreview() {
+        show(onBoard.copy(realTime = many))
+        rule.onNodeWithTag("trip_rt_alerts_chip", useUnmergedTree = true).assertTextContains("32 alerts", substring = true)
+        rule.onNodeWithTag("trip_rt_alerts_preview", useUnmergedTree = true).assertTextEquals("Does not stop at Charlie")
+        rule.onNodeWithTag("trip_rt_alerts_list").assertDoesNotExist()
+        rule.onNodeWithTag("trip_rt_detail_1").assertDoesNotExist()
+        // The delay status and the rest of the screen stay visible.
+        rule.onNodeWithTag("trip_rt_status").assertExists()
+        rule.onNodeWithTag("trip_stop").assertExists()
+    }
+
+    @Test fun theExpandedListIsBoundedToAThirdOfTheScreenAndScrolls() {
+        show(onBoard.copy(realTime = many))
+        rule.onNodeWithTag("trip_rt_alerts_chip", useUnmergedTree = true).performClick()
+        rule.onNodeWithTag("trip_rt_alerts_list").assertExists()
+        rule.onNodeWithTag("trip_rt_detail_0").assertTextEquals("Does not stop at Charlie")
+        val height = rule.onNodeWithTag("trip_rt_alerts_list").fetchSemanticsNode().size.height
+        val screen = rule.onNodeWithTag("trip_screen").fetchSemanticsNode().size.height
+        assertTrue(height > 0 && height <= screen * 0.35f + 1, "list $height px of a $screen px screen")
+        // Collapsing again hides the list.
+        rule.onNodeWithTag("trip_rt_alerts_chip", useUnmergedTree = true).performClick()
+        rule.onNodeWithTag("trip_rt_alerts_list").assertDoesNotExist()
+    }
+
+    @Test fun hideDropsAllTheAlertsForTheTripButKeepsTheDelayStatus() {
+        show(onBoard.copy(realTime = many))
+        rule.onNodeWithTag("trip_rt_alerts_dismiss").performClick()
+        rule.onNodeWithTag("trip_rt_alerts_chip", useUnmergedTree = true).assertDoesNotExist()
+        rule.onNodeWithTag("trip_rt_alerts_dismiss").assertDoesNotExist()
+        rule.onNodeWithTag("trip_rt_status").assertTextEquals("Real time (Renfe) · Delayed 5 min")
+    }
+
+    @Test fun aSingleAlertCanBeHiddenToo() {
+        show(onBoard.copy(realTime = LegRealTime(alerts = listOf("Aviso"))))
+        rule.onNodeWithTag("trip_rt_detail_0").assertTextEquals("Alert: Aviso")
+        rule.onNodeWithTag("trip_rt_alerts_dismiss").performClick()
+        rule.onNodeWithTag("trip_rt_detail_0").assertDoesNotExist()
     }
 }
