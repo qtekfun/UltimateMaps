@@ -3,6 +3,8 @@ package com.qtekfun.ultimatemaps.core.transit.follow
 import com.qtekfun.ultimatemaps.core.geo.LatLon
 import com.qtekfun.ultimatemaps.core.map.LocationFix
 import com.qtekfun.ultimatemaps.core.map.LocationSource
+import com.qtekfun.ultimatemaps.core.map.MovementHint
+import com.qtekfun.ultimatemaps.core.map.NoMovementHint
 import com.qtekfun.ultimatemaps.core.transit.Itinerary
 import com.qtekfun.ultimatemaps.core.transit.ItineraryLeg
 import com.qtekfun.ultimatemaps.core.transit.rt.RideRealTime
@@ -59,6 +61,8 @@ class TransitTripController(
     private val persistEveryMillis: Long = 10_000L,
     /** Real time for the rides (null: none). Read from memory on every tick; this class never fetches. */
     private val realTime: RideRealTime = RideRealTime.NONE,
+    /** The system's movement hint (activity recognition in the `play` flavor); started with a trip and stopped with it. */
+    private val movementHint: MovementHint = NoMovementHint,
 ) {
     private val _state = MutableStateFlow<TransitTripState?>(null)
     private val _prompts = MutableSharedFlow<FollowPrompt>(extraBufferCapacity = 16)
@@ -106,6 +110,7 @@ class TransitTripController(
         replanJob?.cancel()
         replanJob = null
         location.stop()
+        runCatching { movementHint.stop() }
         follower = null
         _state.value = null
         store.clear()
@@ -117,12 +122,13 @@ class TransitTripController(
         replanJob?.cancel()
         location.stop()
         zoneId = zone
-        val f = ItineraryFollower(itinerary, config, clock, snapshot, realTime)
+        val f = ItineraryFollower(itinerary, config, clock, snapshot, realTime, inVehicle = movementHint::inVehicle)
         follower = f
         _state.value = TransitTripState(itinerary, f.state, zone)
         saveLocked(force = true)
         // A listener that is replaced by a restart must not feed a stale follower: it always reads the current one.
         runCatching { location.start { fix -> onFix(fix) } }
+        runCatching { movementHint.start() }
         ticker = scope.launch {
             while (true) {
                 delay(tickMillis)
@@ -158,6 +164,7 @@ class TransitTripController(
             ticker?.cancel()
             ticker = null
             location.stop()
+            runCatching { movementHint.stop() }
         } else {
             val snap = f.snapshot()
             saveLocked(force = false, key = "${snap.legIndex}|${snap.boarded}|${snap.progress.toInt()}")
@@ -225,7 +232,7 @@ class TransitTripController(
                     if (found == null || found.itinerary.isWalkOnly) {
                         _state.value = _state.value?.copy(replanning = false, replanFailed = true)
                     } else {
-                        val nf = ItineraryFollower(found.itinerary, config, clock, found.snapshot, realTime = realTime)
+                        val nf = ItineraryFollower(found.itinerary, config, clock, found.snapshot, realTime = realTime, inVehicle = movementHint::inVehicle)
                         follower = nf
                         _state.value = TransitTripState(found.itinerary, nf.state, zoneId)
                         saveLocked(force = true)
