@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Place card extras (OSM tags, shown only when the data has them) -->
+    <string name="place_plus_code">Plus Code: %1$s</string>
+    <string name="place_call_description">Deitu: %1$s</string>
+    <string name="place_website_label">Webgunea</string>
+    <string name="place_website_description">Ireki webgunea nabigatzailean</string>
+    <string name="place_wheelchair_yes">Gurpil-aulkiarentzat irisgarria</string>
+    <string name="place_wheelchair_limited">Gurpil-aulkiarentzat zati batean irisgarria</string>
+    <string name="place_wheelchair_no">Gurpil-aulkiarentzat ez irisgarria</string>
+    <string name="place_hours">Ordutegia: %1$s</string>
+    <string name="place_open_now">Orain irekita</string>
+    <string name="place_closed_now">Orain itxita</string>
+    <string name="place_open_unknown">Orain irekita: ezezaguna</string>
+    <string name="place_open_closes_at">Orain irekita · Ixten da: %1$s</string>
+    <string name="place_open_closes_on">Orain irekita · Ixten da: %1$s, %2$s</string>
+    <string name="place_closed_opens_at">Itxita · Irekitzen da: %1$s</string>
+    <string name="place_closed_opens_tomorrow">Itxita · Irekitzen da: bihar, %1$s</string>
+    <string name="place_closed_opens_on">Itxita · Irekitzen da: %1$s, %2$s</string>
+    <string name="place_hours_holidays_note">Jaiegunak ez dira kontuan hartzen.</string>
+    <string name="place_no_dialer">Ez da telefono-aplikaziorik aurkitu</string>
+    <string name="place_no_browser">Ez da nabigatzailerik aurkitu</string>
+
+    <!-- Search by coordinates and Plus Codes -->
+    <string name="search_result_coordinates">Koordenatuak</string>
+    <string name="search_result_plus_code">Plus Code</string>
+
+    <!-- Sharing -->
+    <string name="nav_share_eta_action">Partekatu iristeko ordua</string>
+    <string name="nav_share_eta_description">Partekatu zure iristeko ordu estimatua testu gisa</string>
+    <string name="nav_share_eta_text">%1$s inguruan helduko naiz (%2$s, %3$s falta dira).</string>
+
+    <!-- Map scale bar -->
+    <string name="map_scale_description">Mapa-eskala: %1$s</string>
+</resources>

@@ -28,7 +28,7 @@
         <item quantity="other">%d transfers</item>
     </plurals>
     <string name="transit_walk_only">Walk only</string>
-    <string name="transit_times">%1$s – %2$s</string>
+    <string name="transit_times" translatable="false">%1$s – %2$s</string>
     <string name="transit_walking">%1$s walking</string>
     <string name="transit_option_description">Option %1$d: %2$s, arriving %3$s, %4$s, %5$s</string>
     <string name="transit_chip_walk">Walk</string>

@@ -10,6 +10,7 @@ import com.qtekfun.ultimatemaps.core.transit.follow.PromptKind
  */
 object TransitPhrases {
     fun of(p: FollowPrompt, language: VoiceLanguage): String {
+        if (language != VoiceLanguage.ES && language != VoiceLanguage.EN) VoicePacks.of(language)?.let { return fromPack(p, it.transit) }
         val es = language == VoiceLanguage.ES
         val line = p.line?.takeIf { it.isNotBlank() }
         val towards = p.headsign?.takeIf { it.isNotBlank() }
@@ -37,6 +38,33 @@ object TransitPhrases {
             PromptKind.CONNECTION_MISSED -> if (es) "Puede que hayas perdido $lineText. Puedes calcular otra ruta" else "You may have missed $lineText. You can plan again"
             PromptKind.OFF_PLAN -> if (es) "Estás fuera del itinerario. Puedes calcular otra ruta" else "You are off the planned trip. You can plan again"
             PromptKind.ARRIVED -> if (es) "Has llegado" else "You have arrived"
+        }
+    }
+
+    /** The same sentences for a language that is a [VoicePack]. */
+    private fun fromPack(p: FollowPrompt, t: TransitPromptPhrases): String {
+        val line = p.line?.takeIf { it.isNotBlank() }
+        val towards = p.headsign?.takeIf { it.isNotBlank() }
+        val stop = p.stop?.takeIf { it.isNotBlank() }
+        val lineText = if (line == null) t.lineNext else t.lineNamed.fill("line" to line)
+        val lineTowards = if (towards == null) lineText else t.lineTowards.fill("line" to lineText, "to" to towards)
+        return when (p.kind) {
+            PromptKind.BOARD_NOW -> t.boardNow.fill("x" to lineTowards)
+            PromptKind.GET_READY -> when {
+                p.estimated && stop != null -> t.getReadyEstimated.fill("stop" to stop)
+                stop != null -> t.getReadyStop.fill("stop" to stop)
+                else -> t.getReadyNone
+            }
+            PromptKind.GET_OFF_NOW -> when {
+                p.estimated && stop != null -> t.getOffEstimated.fill("stop" to stop)
+                stop != null -> t.getOffStop.fill("stop" to stop)
+                else -> t.getOffNone
+            }
+            PromptKind.CHANGE_HERE -> t.changeHere.fill("x" to lineTowards)
+            PromptKind.CONNECTION_AT_RISK -> t.connectionAtRisk.fill("line" to lineText)
+            PromptKind.CONNECTION_MISSED -> t.connectionMissed.fill("line" to lineText)
+            PromptKind.OFF_PLAN -> t.offPlan
+            PromptKind.ARRIVED -> t.arrived
         }
     }
 

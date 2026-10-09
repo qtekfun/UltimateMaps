@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Weather alerts (AEMET): Settings group (inside the Alerts category), map chip, detail card, route summary, backup -->
+    <string name="weather_group_title">Avisos meteorològics (AEMET)</string>
+    <string name="weather_switch_title">Avisos meteorològics (AEMET)</string>
+    <string name="weather_switch_body">Mostra al mapa i a les rutes els avisos meteorològics taronja i vermells del servei meteorològic d\'Espanya (AEMET). Pregunta al servidor de l\'AEMET (opendata.aemet.es) pel seu únic paquet nacional d\'avisos, com a màxim cada 15 minuts, i el compara amb la teva posició al telèfon: mai no s\'envia ni la posició ni cap àrea. Necessita la teva pròpia clau d\'API d\'AEMET gratuïta, que t\'identifica davant l\'AEMET. Desactivat per defecte.</string>
+    <string name="weather_honesty">Un avís és informació, no un consell. Les dades poden arribar tard o incompletes: consulta l\'AEMET (aemet.es) per al text oficial.</string>
+    <string name="weather_key_title">Clau d\'API</string>
+    <string name="weather_key_hint">Enganxa la teva clau d\'API d\'AEMET</string>
+    <string name="weather_key_saved">Hi ha una clau desada en aquest telèfon.</string>
+    <string name="weather_key_none">No hi ha cap clau desada. Els avisos meteorològics queden inactius fins que n\'afegeixis una.</string>
+    <string name="weather_key_privacy">La clau es desa xifrada a l\'Android Keystore, mai s\'escriu als registres i mai s\'inclou a les còpies de seguretat ni als fitxers de configuració. T\'identifica davant l\'AEMET: l\'AEMET (i la teva xarxa) pot veure, des de la teva adreça IP, que aquesta clau demana avisos.</string>
+    <string name="weather_key_save">Desa la clau</string>
+    <string name="weather_key_remove">Elimina la clau</string>
+    <string name="weather_key_invalid">Això no sembla una clau d\'API d\'AEMET. Enganxa-la de nou, sense text addicional.</string>
+    <string name="weather_key_help">Com obtenir una clau</string>
+    <string name="weather_key_help_body">L\'AEMET dona una clau gratuïta a qui la demana amb una adreça de correu electrònic (s\'obre al navegador).</string>
+    <string name="weather_yellow_title">Mostra els avisos grocs</string>
+    <string name="weather_yellow_body">Els avisos grocs només es llisten als detalls dels avisos al centre del mapa. Mai hi ha un bàner per a ells.</string>
+    <string name="weather_check_now">Comprova ara</string>
+    <string name="weather_checking">Comprovant…</string>
+    <string name="weather_status_never">Encara no comprovat.</string>
+    <string name="weather_status_ok">Comprovat a les %1$s.</string>
+    <string name="weather_status_too_soon">Comprovat fa un moment. L\'AEMET es consulta com a màxim cada 15 minuts.</string>
+    <string name="weather_status_fresh">Els avisos són recents. Es renoven com a màxim cada 30 minuts.</string>
+    <string name="weather_status_rejected">L\'AEMET no ha acceptat aquesta clau. Comprova-la o demana\'n una de nova.</string>
+    <string name="weather_status_failed">No s\'han pogut obtenir els avisos de l\'AEMET. No s\'ha canviat res.</string>
+    <string name="weather_attribution">Font: AEMET</string>
+    <string name="conn_purpose_weather">Avisos meteorològics (AEMET)</string>
+
+    <!-- Level names (used mid-sentence) -->
+    <string name="weather_level_yellow">Groc</string>
+    <string name="weather_level_orange">Taronja</string>
+    <string name="weather_level_red">Vermell</string>
+
+    <!-- One warning in a line: level, event, time -->
+    <string name="weather_line_until">Avís %1$s: %2$s fins a %3$s (AEMET)</string>
+    <string name="weather_line_from">Avís %1$s: %2$s des de %3$s (AEMET)</string>
+    <string name="weather_line_open">Avís %1$s: %2$s (AEMET)</string>
+    <string name="weather_chip_description">Avís meteorològic. Toca per veure\'n els detalls.</string>
+
+    <!-- Detail card -->
+    <string name="weather_card_title">Avisos meteorològics</string>
+    <string name="weather_card_area">Zona: %1$s</string>
+    <string name="weather_card_valid">Vàlid %1$s</string>
+    <string name="weather_card_valid_range">des de %1$s fins a %2$s</string>
+    <string name="weather_card_valid_until">fins a %1$s</string>
+    <string name="weather_card_valid_from">des de %1$s</string>
+    <string name="weather_card_instruction">AEMET: %1$s</string>
+    <string name="weather_card_issued">Emès %1$s</string>
+    <string name="weather_card_close">Tanca</string>
+    <string name="weather_card_empty">No hi ha avisos per a aquest lloc.</string>
+
+    <!-- Route summary -->
+    <string name="weather_route_title">Avisos meteorològics en aquesta ruta</string>
+
+    <!-- Backup and restore -->
+    <string name="backup_item_weather">Avisos meteorològics (AEMET)</string>
+    <string name="backup_item_weather_yellow">Mostra els avisos grocs</string>
+    <string name="backup_group_weather">Avisos meteorològics</string>
+</resources>

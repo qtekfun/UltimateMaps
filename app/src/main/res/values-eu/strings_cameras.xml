@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Settings: section -->
+    <string name="cam_title">Radarrak eta trafikoa</string>
+    <string name="cam_intro">Aukerakoa, lehenespenez desaktibatuta. Radarren datuak mapa-datuen argitalpeneko fitxategi txiki bat dira; trafikoa aktibatzen duzunean bakarrik deskargatzen da. Zure kokapena ez da inoiz bidaltzen.</string>
+
+    <string name="cam_fixed_title">Radar finkoak</string>
+    <string name="cam_fixed_body">Radar finkoak eta batez besteko abiaduraren kontrol-tarteak, mapan eta aurretiko abisu gisa.</string>
+    <string name="cam_mobile_title">Radar mugikorren eremuak</string>
+    <string name="cam_mobile_body">DGT-ren arabera radar mugikorrak ibil daitezkeen errepideak. Errepide-tarte gisa erakusten dira, inoiz ez puntu gisa.</string>
+    <string name="cam_incidents_title">Trafiko-gertakariak</string>
+    <string name="cam_incidents_body">Istripuak, mozketak, trafiko mantsoa, oztopoak eta eguraldi txarra (DGT, denbora errealean).</string>
+    <string name="cam_v16_title">V16 balizak</string>
+    <string name="cam_v16_body">V16 baliza konektatua duten ibilgailu geldiak (DGT, denbora errealean).</string>
+    <string name="cam_roadworks_title">Sartu obrak</string>
+    <string name="cam_roadworks_body">Ehunka egon daitezke edozein unetan.</string>
+    <string name="cam_only_speeding_title">Abisatu abiadura gainditzen bada bakarrik</string>
+    <string name="cam_only_speeding_body">Muga ezaguna duten radarretan, isilik egon muga azpitik zauden bitartean. Muga ezezaguna duten radarrek beti abisatzen dute.</string>
+
+    <!-- Settings: legal note and acknowledgement dialog -->
+    <string name="cam_legal_note">Radar mugikorren eremuak DGT-k argitaratzen dituen tarteak dira; kontrol mugikor baten toki zehatza ez da inoiz erakusten. Abisuak informaziorako dira eta okerrak edo zaharkituak izan daitezke. Zeu zara zure gidatzeko moduaren arduraduna.</string>
+    <string name="cam_confirm_title">Radarren datuak</string>
+    <string name="cam_confirm_body">Honek radar-abisuak aktibatzen ditu.\n\n- Iturriak: DGT (CC BY) eta OpenStreetMap (ODbL). Zerrendako radar bat piztuta ez egotea gerta daiteke.\n- Radar mugikorren eremuak DGT-k argitaratutako errepide-tarteak dira. Ez dago denbora errealeko daturik, poliziaren kontrolik edo erabiltzaileen berririk.\n- Fitxategia zuk aukeratutako mapa-datuen zerbitzaritik dator; zure kokapenari buruzko ezer ez da bidaltzen.\n- Informaziorako soilik: okerra edo zaharkitua izan daiteke.</string>
+    <string name="cam_confirm_yes">Ulertu dut, aktibatu</string>
+    <string name="cam_confirm_no">Utzi</string>
+    <string name="cam_incidents_confirm_title">Trafiko-datuak</string>
+    <string name="cam_incidents_confirm_body">Honek DGT-ren trafiko-fitxategi nazionala (200 KB inguru) deskargatzen du nap.dgt.es helbidetik aktibatzen duzunean, Eguneratu orain sakatzen duzunean edo aplikazioa datu zaharrekin irekitzen duzunean. Zure telefonoan iragazten da: zure kokapena eta ibilbidea ez dira inoiz bidaltzen. Lineaz kanpoko moduak blokeatzen du.</string>
+    <string name="cam_incidents_confirm_offline">Lineaz kanpoko modua aktibo dago: ez da ezer deskargatzen desaktibatu arte.</string>
+
+    <!-- Settings: data card -->
+    <string name="cam_data_title">Datuak</string>
+    <string name="cam_data_cameras_never">Radarren datuak: oraindik deskargatu gabe.</string>
+    <string name="cam_data_cameras">Radarren datuak: %1$d radar finko, %2$d batez besteko abiaduraren tarte, %3$d radar mugikorren eremu (%4$d marraztekoak). Fitxategia: %5$s.</string>
+    <string name="cam_data_incidents_never">Trafiko-datuak: oraindik deskargatu gabe.</string>
+    <string name="cam_data_incidents">Trafiko-datuak: %1$d erregistro aktibo, deskargatuta: %2$s.</string>
+    <string name="cam_refresh_title">Eguneratu trafiko-datuak</string>
+    <string name="cam_refresh_minutes">%1$d minuturo</string>
+    <string name="cam_refresh_hour">ordubetean behin</string>
+    <string name="cam_update_now">Eguneratu orain</string>
+    <string name="cam_update_running">Eguneratzen…</string>
+    <string name="cam_update_ok">Eguneratuta.</string>
+    <string name="cam_update_error">Ezin izan da eguneratu (%1$s). Aurreko datuak gordetzen dira.</string>
+    <string name="cam_err_offline">lineaz kanpoko modua aktibo dago</string>
+    <string name="cam_err_not_allowed">konexioa ez dago baimenduta</string>
+    <string name="cam_err_network">sare-errorea</string>
+    <string name="cam_err_timeout">denbora agortu da</string>
+    <string name="cam_err_server">zerbitzariak huts egin du</string>
+    <string name="cam_err_too_large">fitxategia handiegia da</string>
+    <string name="cam_err_invalid">baliogabeko datuak</string>
+    <string name="cam_err_no_catalog">mapa-katalogoak ez du radar-fitxategirik; ireki Mapak eta eguneratu</string>
+
+    <!-- Connection list -->
+    <string name="conn_purpose_traffic">Trafiko-gertakariak (DGT)</string>
+
+    <!-- Map cards -->
+    <string name="cam_card_fixed_title">Radar finko posiblea</string>
+    <string name="cam_card_section_title">Batez besteko abiaduraren kontrol-tartea</string>
+    <string name="cam_card_zone_title">Tarte honetan radar mugikorrak ibil daitezke</string>
+    <string name="cam_card_road">Errepidea: %1$s</string>
+    <string name="cam_card_limit">Kontrolatutako muga: %1$d km/h</string>
+    <string name="cam_card_limit_unknown">Abiadura-muga: argitaratu gabe</string>
+    <string name="cam_card_km">Kilometroa: %1$s - %2$s</string>
+    <string name="cam_card_zone_note">DGT-k errepide-tarte gisa argitaratua, ez kokapen gisa. Gailu bat egon daiteke ala ez, eta marraztutako lerroa hurbilekoa da.</string>
+    <string name="cam_card_fixed_note">Iturriak radar bat non egon daitekeen adierazten du, ez piztuta dagoenik.</string>
+    <string name="cam_card_data_date">Radar-fitxategia: %1$s</string>
+    <string name="inc_card_v16">V16 baliza duen ibilgailu geldia</string>
+    <string name="inc_card_accident">Istripua</string>
+    <string name="inc_card_closure">Errepidea edo galtzada itxita</string>
+    <string name="inc_card_congestion">Trafiko mantsoa</string>
+    <string name="inc_card_obstacle">Oztopoa errepidean</string>
+    <string name="inc_card_weather">Eguraldi- edo errepide-baldintzak</string>
+    <string name="inc_card_roadworks">Obrak</string>
+    <string name="inc_card_since">Noiztik: %1$s</string>
+    <string name="inc_card_until">Noiz arte: %1$s</string>
+    <string name="inc_card_downloaded">Trafiko-datuak deskargatuta: %1$s. Ordutik aldatuak izan daitezke.</string>
+    <string name="hazard_card_close">Itxi</string>
+</resources>

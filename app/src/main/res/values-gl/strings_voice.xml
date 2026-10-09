@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Settings: Navigation section -->
+    <string name="nav_settings_title">Navegación</string>
+    <string name="nav_voice_title">Guía por voz</string>
+    <string name="nav_voice_body">Di as indicacións de xiro mentres navegas.</string>
+    <string name="nav_important_title">Só avisos importantes</string>
+    <string name="nav_important_body">Omite «segue recto», as curvas suaves e os avisos afastados.</string>
+    <string name="nav_volume_title">Volume da voz</string>
+    <string name="nav_language_title">Idioma da voz</string>
+    <string name="nav_language_auto">O mesmo ca a aplicación</string>
+    <string name="nav_language_es">Castelán</string>
+    <string name="nav_language_en">Inglés</string>
+    <string name="nav_units_title">Unidades</string>
+    <string name="nav_units_auto">Automáticas (segundo a rexión)</string>
+    <string name="nav_units_metric">Quilómetros e metros</string>
+    <string name="nav_units_imperial">Millas e pés</string>
+    <string name="nav_test_voice">Probar a voz</string>
+    <string name="nav_voice_ready">O motor de voz está preparado.</string>
+    <string name="nav_voice_starting">Iniciando o motor de voz…</string>
+    <string name="nav_view3d_title">Vista 3D</string>
+    <string name="nav_view3d_body">Durante a navegación, inclina o mapa e mira cara a adiante ao longo da estrada, como a maioría das aplicacións de navegación. Desactivado: mapa plano.</string>
+    <string name="nav_buildings3d_title">Edificios en 3D</string>
+    <string name="nav_buildings3d_body">Debuxa os edificios con altura na vista 3D desde o zoom 15. Necesita máis potencia gráfica; desactívao se o mapa vai a trompicóns.</string>
+    <string name="nav_avoid_title">Evitar por defecto</string>
+    <string name="nav_avoid_body">Úsase cando planificas unha ruta. Podes cambialo para cada viaxe.</string>
+    <string name="nav_avoid_motorways">Autoestradas</string>
+    <string name="nav_avoid_tolls">Estradas de peaxe</string>
+    <string name="nav_avoid_ferries">Transbordadores</string>
+    <string name="nav_avoid_unpaved">Vías sen asfaltar</string>
+
+    <!-- Voice problems -->
+    <string name="voice_lang_es">Castelán</string>
+    <string name="voice_lang_en">Inglés</string>
+    <string name="voice_problem_no_engine_title">Non hai ningún motor de voz instalado</string>
+    <string name="voice_problem_no_engine_body">A navegación funciona, pero sen voz. Este dispositivo non ten ningún motor de síntese de voz, o que é habitual sen os servizos de Google.</string>
+    <string name="voice_problem_lang_title">Non hai voz en %1$s</string>
+    <string name="voice_problem_lang_body">Os motores instalados non teñen datos de voz en %1$s. Instálaos desde a configuración do motor, ou instala outro motor. A navegación continúa sen voz.</string>
+    <string name="voice_problem_failed_title">O motor de voz non responde</string>
+    <string name="voice_problem_failed_body">O motor deixou de responder varias veces. A navegación continúa sen voz. Téntao de novo ou instala outro motor.</string>
+    <string name="voice_problem_init_body">Non se puido iniciar o motor. A navegación continúa sen voz. Téntao de novo ou instala outro motor.</string>
+    <string name="voice_install_intro">Motores libres en F-Droid:</string>
+    <string name="voice_install_engine">Obter %1$s en F-Droid</string>
+    <string name="voice_install_then">Despois de instalar un, escóllao na configuración de Android en Saída de síntese de voz, volve aquí e toca «Tentar de novo».</string>
+    <string name="voice_install_data">Instalar os datos de voz</string>
+    <string name="voice_open_tts_settings">Abrir a configuración da síntese de voz</string>
+    <string name="voice_retry">Tentar de novo</string>
+    <string name="voice_banner_no_engine">Navegación silenciosa: non hai ningún motor de voz instalado. Toca para obter axuda.</string>
+    <string name="voice_banner_lang">Navegación silenciosa: non hai voz en %1$s. Toca para obter axuda.</string>
+    <string name="voice_banner_failed">Navegación silenciosa: o motor de voz non responde. Toca para obter axuda.</string>
+</resources>

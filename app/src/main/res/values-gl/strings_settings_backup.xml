@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="backup_title">Copia de seguranza e restauración</string>
+    <string name="backup_body">Garda a túa configuración nun ficheiro, ou restáurala desde un, por exemplo cando cambias de teléfono. O ficheiro non ten localizacións, contrasinais nin nada das túas buscas. Queda onde o gardes.</string>
+    <string name="backup_export">Exportar a configuración</string>
+    <string name="backup_import">Importar a configuración</string>
+    <string name="backup_all_body">«Todo» tamén inclúe os teus lugares gardados, listas e tracks, nun só ficheiro ZIP.</string>
+    <string name="backup_export_all">Exportar todo</string>
+
+    <string name="backup_exported">Configuración gardada no ficheiro que escolliches.</string>
+    <string name="backup_exported_all">Lugares e configuración gardados no ficheiro que escolliches.</string>
+    <string name="backup_failed">Iso non funcionou. Non se cambiou nada.</string>
+    <string name="backup_err_not_settings">Este non é un ficheiro de configuración desta aplicación. Non se cambiou nada.</string>
+    <string name="backup_err_corrupt">O ficheiro está danado e non se pode ler. Non se cambiou nada.</string>
+    <string name="backup_err_too_large">O ficheiro é demasiado grande para ser un ficheiro de configuración. Non se cambiou nada.</string>
+    <string name="backup_err_newer">Este ficheiro foi creado por unha versión máis recente da aplicación (formato de ficheiro %1$d). Actualiza a aplicación para restauralo. Non se cambiou nada.</string>
+
+    <string name="backup_restored">Restaurados %1$d, omitidos %2$d.</string>
+    <string name="backup_restored_consent">Interruptores que seguen desactivados ata que os aceptes de novo: %1$d.</string>
+    <string name="backup_restored_regions">Mapas instalados que figuran no ficheiro: %1$d. A pantalla Mapas ofrece descargalos.</string>
+    <string name="backup_restored_places">Lugares engadidos: %1$d, xa presentes: %2$d, tracks engadidos: %3$d.</string>
+
+    <string name="backup_confirm_title">Importar a configuración?</string>
+    <string name="backup_confirm_body">Configuracións que se substituirán polos valores do ficheiro: %1$d.</string>
+    <string name="backup_confirm_nothing">O ficheiro coincide coa túa configuración actual. Non cambiará nada.</string>
+    <string name="backup_confirm_consent">Estes estaban activados no ficheiro. NON se activan: terás que aceptar de novo o seu aviso.</string>
+    <string name="backup_confirm_regions">Mapas instalados que figuran no ficheiro: %1$d. Agora non se descarga nada; a pantalla Mapas ofreceralo.</string>
+    <string name="backup_confirm_skipped">Entradas do ficheiro que non se poden usar e se omitirán: %1$d.</string>
+    <string name="backup_confirm_places">O ficheiro tamén ten lugares, listas e tracks. Engádense aos teus; non se elimina nada.</string>
+    <string name="backup_confirm_yes">Restaurar</string>
+    <string name="backup_confirm_no">Cancelar</string>
+
+    <string name="backup_pending_title">Para volver activar</string>
+    <string name="backup_pending_body">Estes estaban activados no teu teléfono antigo. Pola túa privacidade, seguen desactivados ata que os actives e aceptes aquí o seu aviso.</string>
+    <string name="backup_pending_dismiss">Descartar</string>
+
+    <string name="backup_item_cameras_fixed">Radares</string>
+    <string name="backup_item_cameras_mobile">Zonas de radares móbiles</string>
+    <string name="backup_item_incidents">Incidencias de tráfico</string>
+    <string name="backup_item_v16">Balizas V16</string>
+    <string name="backup_item_roadworks">Obras</string>
+    <string name="backup_item_fuel">Gasolineiras</string>
+    <string name="backup_item_other">Outros</string>
+
+    <string name="backup_group_navigation">Navegación</string>
+    <string name="backup_group_navigation_ui">Pantalla de navegación</string>
+    <string name="backup_group_fuel">Gasolineiras</string>
+    <string name="backup_group_cameras">Radares e incidencias</string>
+    <string name="backup_group_history">Historial de buscas</string>
+    <string name="backup_group_recording">Gravación de tracks</string>
+    <string name="backup_group_regions">Privacidade e mapas</string>
+
+    <string name="regions_restored_title">Mapas da túa copia de seguranza</string>
+    <string name="regions_restored_body">Mapas da túa copia de seguranza que non están instalados neste teléfono: %1$d. Non se descarga nada ata que o pidas.</string>
+    <string name="regions_restored_offline">O modo sen conexión está activado: desactívao para descargalos.</string>
+    <string name="regions_restored_unavailable">Non están no catálogo actual: %1$d.</string>
+    <string name="regions_restored_download">Descargalos (%1$s)</string>
+    <string name="regions_restored_dismiss">Descartar</string>
+</resources>

@@ -201,7 +201,7 @@ class CamerasSettingsTest {
     }
 
     @Test fun cameraStringsExistInEnglishAndSpanishWithTheSameKeys() {
-        fun keys(f: String) = Regex("<string name=\"([^\"]+)\"").findAll(File(f).readText()).map { it.groupValues[1] }.toSet()
+        fun keys(f: String) = Regex("<string name=\"([^\"]+)\"(?![^>]*translatable=\"false\")").findAll(File(f).readText()).map { it.groupValues[1] }.toSet()
         val en = keys("src/main/res/values/strings_cameras.xml")
         val es = keys("src/main/res/values-es/strings_cameras.xml")
         assertEquals(en, es)

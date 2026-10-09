@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Route card buttons -->
+    <string name="nav_ui_start">Hasi</string>
+    <string name="nav_ui_simulate">Simulatu</string>
+    <string name="nav_ui_computing">Ibilbide gidatua kalkulatzen…</string>
+    <!-- Navigation screen -->
+    <string name="nav_ui_stop">Gelditu</string>
+    <string name="nav_ui_stop_description">Gelditu nabigazioa</string>
+    <string name="nav_ui_recenter">Zentratu berriro</string>
+    <string name="nav_ui_then">Gero</string>
+    <string name="nav_ui_follow_route">Jarraitu ibilbidea</string>
+    <string name="nav_ui_roundabout_exit">Biribilgunean, hartu %1$d. irteera</string>
+    <string name="nav_ui_arrive_at">Iristea: %1$s</string>
+    <string name="nav_ui_phase_off_route">Ibilbidetik atera zara</string>
+    <string name="nav_ui_phase_no_signal">GPS seinalea galdu da. Kokapen estimatua</string>
+    <string name="nav_ui_phase_in_tunnel">GPSa galdu da tunelean. Kokapen estimatua</string>
+    <string name="nav_ui_phase_stop_reached">Geldialdira iritsi zara. Jarraitu helmugarantz</string>
+    <string name="nav_ui_limit_description">Abiadura-muga: %1$d</string>
+    <string name="nav_ui_speed_description">Uneko abiadura: %1$d km/h</string>
+    <string name="nav_ui_over_limit">Abiadura-muga gainditzen</string>
+    <string name="nav_ui_lanes_description">Erreiak</string>
+    <string name="nav_ui_lane_recommended">gomendatutako erreia</string>
+    <string name="nav_ui_lane_other">beste erreia</string>
+    <string name="nav_ui_glove">Eskularruak</string>
+    <string name="nav_ui_glove_on_description">Eskularru modua aktibo. Sakatu desaktibatzeko</string>
+    <string name="nav_ui_glove_off_description">Eskularru modua desaktibatuta. Sakatu aktibatzeko</string>
+    <!-- Simulation -->
+    <string name="nav_ui_simulating">Simulazioa</string>
+    <string name="nav_ui_sim_faster">Azkarrago</string>
+    <string name="nav_ui_sim_slower">Mantsoago</string>
+    <!-- 3D view, overview -->
+    <string name="nav_ui_view3d_on_description">3D ikuspegia aktibo. Aldatu 2D ikuspegi lauera</string>
+    <string name="nav_ui_view2d_on_description">2D ikuspegi laua aktibo. Aldatu 3D ikuspegira</string>
+    <string name="nav_ui_overview">Ibilbidea</string>
+    <string name="nav_ui_overview_description">Erakutsi une batez geratzen den ibilbide osoa</string>
+    <!-- Arrival summary -->
+    <string name="nav_ui_summary_title">Iritsi zara</string>
+    <string name="nav_ui_summary_body">%1$s · %2$s</string>
+    <string name="nav_ui_summary_simulated">Ibilbide simulatua. Ez da ezer gorde.</string>
+    <string name="nav_ui_exit">Eginda</string>
+    <!-- Resume after the process died -->
+    <string name="nav_ui_resume_title">Nabigazioa eten da</string>
+    <string name="nav_ui_resume_body">Aplikazioa itxi egin zen nabigatzen ari zinela. Jarraitu nahi duzu?</string>
+    <string name="nav_ui_resume">Jarraitu</string>
+    <string name="nav_ui_discard">Baztertu</string>
+    <!-- Icons (accessibility) -->
+    <string name="nav_ui_icon_turn">Hurrengo maniobra: %1$s</string>
+    <string name="nav_ui_mute">Mututu</string>
+    <string name="nav_ui_unmute">Aktibatu soinua</string>
+    <string name="nav_ui_mute_description">Ahotsa aktibo. Sakatu ahots-gidaritza mututzeko</string>
+    <string name="nav_ui_unmute_description">Ahotsa mutututa. Sakatu ahots-gidaritza berriro aktibatzeko</string>
+</resources>

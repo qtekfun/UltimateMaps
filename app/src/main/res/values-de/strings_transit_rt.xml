@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Settings: opt-in switch -->
+    <string name="transit_rt_title">Cercanías in Echtzeit</string>
+    <string name="transit_rt_body">Fragt den Renfe-Server nach Zugverspätungen, während du den öffentlichen Verkehr nutzt. Dein Standort wird nie gesendet; Renfe sieht deine IP-Adresse.</string>
+    <string name="transit_rt_source">Daten: Renfe (CC BY 4.0), data.renfe.com</string>
+
+    <!-- Labels and statuses -->
+    <string name="transit_rt_label">Echtzeit (Renfe)</string>
+    <plurals name="transit_rt_delayed">
+        <item quantity="one">%d Min. Verspätung</item>
+        <item quantity="other">%d Min. Verspätung</item>
+    </plurals>
+    <plurals name="transit_rt_early">
+        <item quantity="one">%d Min. zu früh</item>
+        <item quantity="other">%d Min. zu früh</item>
+    </plurals>
+    <string name="transit_rt_on_time">Pünktlich</string>
+    <string name="transit_rt_cancelled">Ausgefallen</string>
+    <string name="transit_rt_alert">Warnung: %1$s</string>
+    <string name="transit_rt_skips">Hält nicht in %1$s</string>
+    <string name="transit_rt_note">Die Zeiten sind theoretisch und stammen aus den veröffentlichten Fahrplänen. Abschnitte mit der Kennzeichnung „Echtzeit (Renfe)“ enthalten auch die von Renfe gemeldeten Verspätungen; alle anderen Abschnitte haben keine Echtzeitinformationen.</string>
+
+    <!-- Backup restore list and connection list -->
+    <string name="backup_item_cercanias_rt">Cercanías in Echtzeit</string>
+    <string name="conn_purpose_transit_rt">Zugverspätungen (Renfe)</string>
+</resources>

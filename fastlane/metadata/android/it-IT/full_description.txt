@@ -1,0 +1,14 @@
+UltimateMaps è un'app di mappe offline e privata. La mappa, la ricerca e i percorsi sono calcolati sul tuo telefono: niente traffico in tempo reale, niente account, niente pubblicità, niente analisi d'uso e niente telemetria. Funziona senza i Google Play Services.
+
+Questa è una release candidate di un MVP, non un'app finita. Cosa funziona oggi:
+
+• Mappa vettoriale offline (MapLibre + PMTiles), tema chiaro e scuro.
+• Download delle regioni dalla schermata Mappe: riprendibile e verificato con SHA-256. Una modalità senza rete blocca tutte le connessioni dell'app.
+• Ricerca offline di luoghi e indirizzi, con il motore CoMaps.
+• Anteprima del percorso in auto, a piedi o in bici (ancora senza navigazione passo passo).
+• Luoghi ed elenchi salvati, con importazione ed esportazione GPX e KML.
+• Apre i link di Google Maps, Apple Maps, Waze e geo:.
+
+Non ancora disponibili: la navigazione vocale passo passo, le indicazioni di corsia e i limiti di velocità, un profilo moto e i percorsi tortuosi, la registrazione delle tracce, la sincronizzazione con Nextcloud, l'importazione da Google Takeout, Android Auto.
+
+Per ora è disponibile solo la Spagna. I dati della mappa provengono da OpenStreetMap (© collaboratori di OpenStreetMap, ODbL) e vengono scaricati solo quando lo chiedi. Software libero, GPL-3.0-or-later.

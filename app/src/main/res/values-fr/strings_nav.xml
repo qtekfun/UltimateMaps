@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Navigation service notification -->
+    <string name="nav_channel_name">Navigation</string>
+    <string name="nav_notification_stop">Arrêter</string>
+    <string name="nav_notification_open">Ouvrir</string>
+    <string name="nav_in_distance">%1$s : %2$s</string>
+    <string name="nav_onto_street">%1$s sur %2$s</string>
+    <string name="nav_exit_badge">Sortie %1$s</string>
+    <string name="nav_exit_toward">%1$s vers %2$s</string>
+    <string name="nav_waiting_gps">En attente du signal GPS…</string>
+    <string name="nav_recalculating">Recalcul de l\'itinéraire…</string>
+    <string name="nav_arrived">Vous êtes arrivé</string>
+    <string name="nav_stop_reached">Étape atteinte</string>
+    <string name="nav_problem_permission">L\'autorisation de localisation a été retirée. Autorisez-la pour continuer la navigation.</string>
+    <string name="nav_problem_gps_off">La localisation est désactivée. Activez-la pour continuer la navigation.</string>
+    <string name="nav_resumed">Navigation reprise</string>
+    <string name="nav_turn_depart">Départ</string>
+    <string name="nav_turn_straight">Continuez tout droit</string>
+    <string name="nav_turn_slight_right">Serrez à droite</string>
+    <string name="nav_turn_right">Tournez à droite</string>
+    <string name="nav_turn_sharp_right">Tournez franchement à droite</string>
+    <string name="nav_turn_slight_left">Serrez à gauche</string>
+    <string name="nav_turn_left">Tournez à gauche</string>
+    <string name="nav_turn_sharp_left">Tournez franchement à gauche</string>
+    <string name="nav_turn_u_turn">Faites demi-tour</string>
+    <string name="nav_turn_roundabout_enter">Entrez dans le rond-point</string>
+    <string name="nav_turn_roundabout_leave">Quittez le rond-point</string>
+    <string name="nav_turn_exit_left">Prenez la sortie à gauche</string>
+    <string name="nav_turn_exit_right">Prenez la sortie à droite</string>
+    <string name="nav_turn_merge">Insérez-vous</string>
+    <string name="nav_turn_arrive">Vous arrivez à destination</string>
+    <string name="nav_turn_arrive_left">Votre destination est à gauche</string>
+    <string name="nav_turn_arrive_right">Votre destination est à droite</string>
+    <!-- Failed routes (policy in RouteFailurePolicy) -->
+    <string name="nav_route_err_no_regions">Aucune région installée. Téléchargez une région pour calculer des itinéraires hors ligne.</string>
+    <string name="nav_route_err_need_maps">Des cartes manquent pour cet itinéraire. Téléchargez-les dans Cartes, puis réessayez.</string>
+    <string name="nav_route_err_need_maps_named">Des cartes manquent pour cet itinéraire : %1$s. Téléchargez-les dans Cartes, puis réessayez.</string>
+    <string name="nav_route_err_start">Le départ ne se trouve pas sur une route des cartes téléchargées. Choisissez un autre point de départ.</string>
+    <string name="nav_route_err_end">La destination ne se trouve pas sur une route des cartes téléchargées.</string>
+    <string name="nav_route_err_stop">Une des étapes ne se trouve pas sur une route des cartes téléchargées. Déplacez-la ou retirez-la.</string>
+    <string name="nav_route_err_not_found">Aucun itinéraire trouvé avec ces options. Essayez un autre profil, d\'autres options d\'évitement ou d\'autres points.</string>
+    <string name="nav_route_err_timeout">Le calcul de l\'itinéraire a pris trop de temps. Réessayez ou choisissez un point plus proche.</string>
+    <string name="nav_route_err_core">Le moteur d\'itinéraires a rencontré un problème et a été redémarré. Réessayez.</string>
+    <string name="nav_route_err_core_unavailable">Le moteur d\'itinéraires continue d\'échouer. Réessayez dans un instant.</string>
+    <string name="nav_route_err_internal">L\'itinéraire n\'a pas pu être calculé.</string>
+</resources>

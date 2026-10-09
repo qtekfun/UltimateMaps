@@ -1,0 +1,14 @@
+UltimateMaps és una aplicació de mapes fora de línia i privada. El mapa, la cerca i les rutes es calculen al teu telèfon: sense trànsit en directe, sense comptes, sense anuncis, sense analítiques i sense telemetria. Funciona sense els Serveis de Google Play.
+
+Aquesta és una versió candidata d'un MVP, no una aplicació acabada. El que funciona avui:
+
+• Mapa vectorial fora de línia (MapLibre + PMTiles), amb tema clar i fosc.
+• Baixada de regions des de la pantalla Mapes: es pot represa i es verifica amb SHA-256. Un mode sense xarxa bloqueja totes les connexions de l'aplicació.
+• Cerca de llocs i adreces fora de línia, amb el motor CoMaps.
+• Previsualització de ruta en cotxe, a peu o en bicicleta (encara sense guia revolt a revolt).
+• Llocs i llistes desats, amb importació i exportació GPX i KML.
+• Obre enllaços de Google Maps, Apple Maps, Waze i geo:.
+
+Encara no hi és: la navegació per veu revolt a revolt, la guia de carrils i els límits de velocitat, un perfil de moto i rutes de revolts, l'enregistrament de tracks, la sincronització amb Nextcloud, la importació de Google Takeout, Android Auto.
+
+De moment només hi ha Espanya. Les dades del mapa vénen d'OpenStreetMap (© col·laboradors d'OpenStreetMap, ODbL) i només es baixen quan ho demanes. Programari lliure, GPL-3.0-or-later.

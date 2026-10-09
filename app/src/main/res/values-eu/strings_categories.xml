@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Category chips under the search field -->
+    <string name="category_pharmacy">Farmazia</string>
+    <string name="category_supermarket">Supermerkatua</string>
+    <string name="category_restaurant">Jatetxea</string>
+    <string name="category_cafe">Kafetegia</string>
+    <string name="category_fuel">Erregaia</string>
+    <string name="category_atm">Kutxazain automatikoa</string>
+    <string name="category_hospital">Ospitalea</string>
+    <string name="category_parking">Aparkalekua</string>
+    <string name="category_lodging">Ostatua</string>
+    <string name="category_toilets">Komunak</string>
+    <string name="category_drinking_water">Edateko ura</string>
+
+    <!-- The category name the search core looks for (not shown to the user; must be a name from its category list) -->
+    <string name="category_query_pharmacy">farmazia</string>
+    <string name="category_query_supermarket">supermerkatua</string>
+    <string name="category_query_restaurant">jatetxea</string>
+    <string name="category_query_cafe">kafetegia</string>
+    <string name="category_query_fuel">erregaia</string>
+    <string name="category_query_atm">kutxazain automatikoa</string>
+    <string name="category_query_hospital">ospitalea</string>
+    <string name="category_query_parking">aparkalekua</string>
+    <string name="category_query_lodging">hotela</string>
+    <string name="category_query_toilets">komuna</string>
+    <string name="category_query_drinking_water">edateko ura</string>
+
+    <string name="category_distance_note">Distantziak lerro zuzenean daude zure kokapenetik edo mapa-erditik.</string>
+    <string name="category_none">Ez da ezer aurkitu inguruan deskargatutako mapetan.</string>
+    <string name="category_chip_description">Arakatu ingurua: %1$s</string>
+</resources>

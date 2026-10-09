@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="backup_title">Babeskopia eta berreskurapena</string>
+    <string name="backup_body">Gorde zure ezarpenak fitxategi batean, edo berreskuratu fitxategi batetik, adibidez telefono berrira aldatzen zarenean. Fitxategiak ez du kokapenik, pasahitzik edo zure bilaketetako ezer. Gordetzen duzun tokian geratzen da.</string>
+    <string name="backup_export">Esportatu ezarpenak</string>
+    <string name="backup_import">Inportatu ezarpenak</string>
+    <string name="backup_all_body">“Dena” aukerak gordetako lekuak, zerrendak eta ibilbide-grabaketak ere barne hartzen ditu, ZIP fitxategi bakarrean.</string>
+    <string name="backup_export_all">Esportatu dena</string>
+
+    <string name="backup_exported">Ezarpenak aukeratu duzun fitxategian gorde dira.</string>
+    <string name="backup_exported_all">Lekuak eta ezarpenak aukeratu duzun fitxategian gorde dira.</string>
+    <string name="backup_failed">Horrek ez du funtzionatu. Ez da ezer aldatu.</string>
+    <string name="backup_err_not_settings">Hau ez da aplikazio honen ezarpen-fitxategi bat. Ez da ezer aldatu.</string>
+    <string name="backup_err_corrupt">Fitxategia hondatuta dago eta ezin da irakurri. Ez da ezer aldatu.</string>
+    <string name="backup_err_too_large">Fitxategia handiegia da ezarpen-fitxategi bat izateko. Ez da ezer aldatu.</string>
+    <string name="backup_err_newer">Fitxategi hau aplikazioaren bertsio berriago batek sortu du (fitxategi-formatua: %1$d). Eguneratu aplikazioa berreskuratzeko. Ez da ezer aldatu.</string>
+
+    <string name="backup_restored">%1$d berreskuratu dira, %2$d saltatu dira.</string>
+    <string name="backup_restored_consent">Berriro onartu arte desaktibatuta jarraitzen duten etengailuak: %1$d.</string>
+    <string name="backup_restored_regions">Fitxategian zerrendatutako instalatutako mapak: %1$d. Mapak pantailak deskargatzea eskainiko du.</string>
+    <string name="backup_restored_places">Gehitutako lekuak: %1$d, bazeudenak: %2$d, gehitutako ibilbide-grabaketak: %3$d.</string>
+
+    <string name="backup_confirm_title">Ezarpenak inportatu?</string>
+    <string name="backup_confirm_body">Fitxategiko balioekin ordezkatuko diren ezarpenak: %1$d.</string>
+    <string name="backup_confirm_nothing">Fitxategia zure uneko ezarpenekin bat dator. Ez da ezer aldatuko.</string>
+    <string name="backup_confirm_consent">Hauek aktibo zeuden fitxategian. EZ dira aktibatzen: haien oharra berriro onartu beharko duzu.</string>
+    <string name="backup_confirm_regions">Fitxategian zerrendatutako instalatutako mapak: %1$d. Orain ez da ezer deskargatzen; Mapak pantailak eskainiko du.</string>
+    <string name="backup_confirm_skipped">Fitxategiko erabili ezin diren eta saltatuko diren sarrerak: %1$d.</string>
+    <string name="backup_confirm_places">Fitxategiak lekuak, zerrendak eta ibilbide-grabaketak ere baditu. Zureei gehitzen zaizkie; ez da ezer ezabatzen.</string>
+    <string name="backup_confirm_yes">Berreskuratu</string>
+    <string name="backup_confirm_no">Utzi</string>
+
+    <string name="backup_pending_title">Berriro aktibatzeko</string>
+    <string name="backup_pending_body">Hauek zure telefono zaharrean aktibo zeuden. Zure pribatutasunagatik, desaktibatuta jarraitzen dute zuk aktibatu eta hemen haien oharra onartu arte.</string>
+    <string name="backup_pending_dismiss">Baztertu</string>
+
+    <string name="backup_item_cameras_fixed">Radarrak</string>
+    <string name="backup_item_cameras_mobile">Radar mugikorren eremuak</string>
+    <string name="backup_item_incidents">Trafiko-gertakariak</string>
+    <string name="backup_item_v16">V16 balizak</string>
+    <string name="backup_item_roadworks">Obrak</string>
+    <string name="backup_item_fuel">Gasolindegiak</string>
+    <string name="backup_item_other">Beste batzuk</string>
+
+    <string name="backup_group_navigation">Nabigazioa</string>
+    <string name="backup_group_navigation_ui">Nabigazio-pantaila</string>
+    <string name="backup_group_fuel">Gasolindegiak</string>
+    <string name="backup_group_cameras">Radarrak eta gertakariak</string>
+    <string name="backup_group_history">Bilaketa-historia</string>
+    <string name="backup_group_recording">Ibilbide-grabaketa</string>
+    <string name="backup_group_regions">Pribatutasuna eta mapak</string>
+
+    <string name="regions_restored_title">Zure babeskopiako mapak</string>
+    <string name="regions_restored_body">Zure babeskopiako telefono honetan instalatuta ez dauden mapak: %1$d. Ez da ezer deskargatzen zuk eskatu arte.</string>
+    <string name="regions_restored_offline">Lineaz kanpoko modua aktibo dago: desaktibatu deskargatzeko.</string>
+    <string name="regions_restored_unavailable">Uneko katalogoan ez daudenak: %1$d.</string>
+    <string name="regions_restored_download">Deskargatu (%1$s)</string>
+    <string name="regions_restored_dismiss">Baztertu</string>
+</resources>

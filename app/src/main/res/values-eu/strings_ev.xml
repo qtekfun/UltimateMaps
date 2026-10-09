@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Electric chargers: Settings group (inside the Fuel stations category), map card and attribution -->
+    <string name="ev_group_title">Kargagailu elektrikoak</string>
+    <string name="ev_switch_title">Erakutsi kargagailu elektrikoak</string>
+    <string name="ev_switch_body">OpenStreetMap-eko karga-geltokiak erakusten ditu mapan. Datu-fitxategi txiki bat deskargatzen du zure mapa-zerbitzaritik (mapen berbera); zure kokapena ez da inoiz bidaltzen.</string>
+    <string name="ev_sockets_title">Entxufe motak</string>
+    <string name="ev_sockets_body">Lauak hautatuta daudenean geltoki guztiak erakusten dira, entxufe-informaziorik ez dutenak barne. Hautatu gutxiago horietakoren bat adierazten duten geltokiak soilik erakusteko.</string>
+    <string name="ev_socket_type2">2 mota</string>
+    <string name="ev_socket_schuko">Schuko (etxeko entxufea)</string>
+    <string name="ev_socket_type1">1 mota</string>
+    <string name="ev_socket_other">Beste entxufe bat</string>
+    <string name="ev_power_title">Gutxieneko potentzia</string>
+    <string name="ev_power_body">Potentzia ezezaguna duten geltokiak ezkutatzen dira gutxienekoa ezarrita dagoenean.</string>
+    <string name="ev_power_any">Edozein</string>
+    <string name="ev_power_22">22 kW edo gehiago</string>
+    <string name="ev_power_50">50 kW edo gehiago</string>
+    <string name="ev_power_100">100 kW edo gehiago</string>
+    <string name="ev_data_title">Kargagailuen datuak</string>
+    <string name="ev_data_count">%1$d geltoki, datuak: %2$s</string>
+    <string name="ev_data_never">Oraindik ez da kargagailuen daturik deskargatu.</string>
+    <string name="ev_attribution">OpenStreetMap-eko karga-geltoki elektrikoak, © OpenStreetMap-eko laguntzaileak (ODbL).</string>
+
+    <!-- Card of a tapped charger -->
+    <string name="ev_category">Kargagailu elektrikoa</string>
+    <string name="ev_card_title_unknown">Karga-geltoki elektrikoa</string>
+    <string name="ev_card_network">Sarea: %1$s</string>
+    <string name="ev_card_capacity">Karga-puntuak: %1$d</string>
+    <string name="ev_card_sockets">Entxufeak</string>
+    <string name="ev_card_sockets_unknown">Entxufeak: OpenStreetMap-en zehaztu gabe</string>
+    <string name="ev_card_fee_paid">Tarifa: bai</string>
+    <string name="ev_card_fee_free">Tarifa: doakoa</string>
+    <string name="ev_card_fee_unknown">Tarifa: zehaztu gabe</string>
+    <string name="ev_card_hours">Ordutegia: %1$s</string>
+    <string name="ev_card_access_customers">Sarbidea: bezeroentzat soilik</string>
+    <string name="ev_card_access_private">Sarbidea: pribatua edo mugatua</string>
+    <string name="ev_card_access_public">Sarbidea: publikoa</string>
+    <string name="ev_card_auth">Hasteko: %1$s</string>
+    <string name="ev_auth_none">ez da konturik behar</string>
+    <string name="ev_auth_app">aplikazioa</string>
+    <string name="ev_auth_card">bazkide-txartela</string>
+    <string name="ev_auth_nfc">kontakturik gabe</string>
+    <string name="ev_card_note">Komunitateko datuak: eskuragarritasuna, prezioa eta funtzionamendua ez dira ezagutzen. Egiaztatu fidatu aurretik.</string>
+    <string name="ev_card_data_date">Datuak: %1$s</string>
+    <string name="ev_card_close">Itxi</string>
+    <string name="ev_go">Joan</string>
+    <string name="ev_add_stop">Gehitu geldialdia</string>
+
+    <!-- Backup and restore -->
+    <string name="backup_item_chargers">Kargagailu elektrikoak</string>
+    <string name="backup_group_chargers">Kargagailu elektrikoak</string>
+</resources>

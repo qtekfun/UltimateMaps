@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Settings: opt-in switch -->
+    <string name="transit_rt_title">Cercanías en temps real</string>
+    <string name="transit_rt_body">Pregunta al servidor de Renfe pels retards dels trens mentre utilitzes el transport públic. La teva posició no s\'envia mai; Renfe veu la teva adreça IP.</string>
+    <string name="transit_rt_source">Dades: Renfe (CC BY 4.0), data.renfe.com</string>
+
+    <!-- Labels and statuses -->
+    <string name="transit_rt_label">Temps real (Renfe)</string>
+    <plurals name="transit_rt_delayed">
+        <item quantity="one">Retard de %d min</item>
+        <item quantity="many">Retard de %d min</item>
+        <item quantity="other">Retard de %d min</item>
+    </plurals>
+    <plurals name="transit_rt_early">
+        <item quantity="one">%d min d\'avanç</item>
+        <item quantity="many">%d min d\'avanç</item>
+        <item quantity="other">%d min d\'avanç</item>
+    </plurals>
+    <string name="transit_rt_on_time">Puntual</string>
+    <string name="transit_rt_cancelled">Cancel·lat</string>
+    <string name="transit_rt_alert">Alerta: %1$s</string>
+    <string name="transit_rt_skips">No para a %1$s</string>
+    <string name="transit_rt_note">Els horaris són teòrics, extrets dels horaris publicats. Els trams marcats «Temps real (Renfe)» també inclouen els retards que informa Renfe; la resta de trams no té informació en temps real.</string>
+
+    <!-- Backup restore list and connection list -->
+    <string name="backup_item_cercanias_rt">Cercanías en temps real</string>
+    <string name="conn_purpose_transit_rt">Retards de trens (Renfe)</string>
+</resources>

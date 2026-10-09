@@ -27,6 +27,7 @@
     <string name="lists_create">Crear</string>
     <plurals name="lists_place_count">
         <item quantity="one">%d sitio</item>
+        <item quantity="many">%d sitios</item>
         <item quantity="other">%d sitios</item>
     </plurals>
     <string name="list_filter_hint">Buscar en esta lista</string>

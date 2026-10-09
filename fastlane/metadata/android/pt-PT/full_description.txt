@@ -1,0 +1,14 @@
+O UltimateMaps é uma aplicação de mapas offline e privada. O mapa, a pesquisa e as rotas são calculados no teu telemóvel: sem trânsito em direto, sem contas, sem anúncios, sem análise de utilização e sem telemetria. Funciona sem os Serviços Google Play.
+
+Esta é uma versão candidata de um MVP, não uma aplicação terminada. O que funciona hoje:
+
+• Mapa vetorial offline (MapLibre + PMTiles), tema claro e escuro.
+• Transferência de regiões a partir do ecrã Mapas: retomável e verificada com SHA-256. Um modo sem rede bloqueia todas as ligações da aplicação.
+• Pesquisa offline de locais e moradas, com o motor CoMaps.
+• Pré-visualização de rota de carro, a pé ou de bicicleta (ainda sem orientação passo a passo).
+• Locais e listas guardados, com importação e exportação GPX e KML.
+• Abre ligações do Google Maps, Apple Maps, Waze e geo:.
+
+Ainda não há: navegação por voz passo a passo, orientação por faixas e limites de velocidade, um perfil de mota e rotas de curvas, gravação de trajetos, sincronização com o Nextcloud, importação do Google Takeout, Android Auto.
+
+Por agora só está disponível Espanha. Os dados do mapa vêm do OpenStreetMap (© colaboradores do OpenStreetMap, ODbL) e só são transferidos quando o pedires. Software livre, GPL-3.0-or-later.

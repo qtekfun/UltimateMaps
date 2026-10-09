@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Track recording -->
+    <string name="recording_title">Ibilbide-grabaketa</string>
+    <string name="recording_switch_title">Baimendu ibilbide-grabaketa</string>
+    <string name="recording_switch_body">Hasi grabaketa botoia gehitzen du ibilbide-grabaketen zerrendan. Bidaia ibilbide-grabaketa gisa gordetzen da gailu honetan bakarrik eta ez da ezer inora bidaltzen. Puntuak aplikazioa irekita dagoen bitartean edo nabigatzen duzun bitartean gordetzen dira.</string>
+    <string name="recording_delete_all">Ezabatu grabatutako ibilbideak</string>
+    <string name="recording_deleted">Grabatutako ibilbideak ezabatuta.</string>
+    <string name="recording_idle">Ez dago grabatzen</string>
+    <string name="recording_start">Hasi grabaketa</string>
+    <string name="recording_stop">Gelditu eta gorde</string>
+    <string name="recording_status_on">Grabatzen · %1$d puntu · %2$s</string>
+    <string name="recording_status_paused">Etenda, geldirik zaude · %1$d puntu · %2$s</string>
+    <string name="recording_note">Grabaketak aplikazioa irekita dagoen bitartean edo nabigatzen duzun bitartean jarraitzen du, eta bere kabuz eteten da mugitzeari uzten diozunean.</string>
+    <string name="recording_saved">Ibilbide-grabaketa gordeta. Mapan erakutsi dezakezu edo GPX gisa esporta.</string>
+    <string name="recording_too_short">Ez dago gordetzekorik: grabaketa laburregia izan da.</string>
+    <string name="recording_failed">Ezin izan da ibilbide-grabaketa gorde. Puntuak mantendu egiten dira eta hurrengoan hasten zarenean gordeko dira.</string>
+    <string name="recording_could_not_start">Ezin izan da hasi: aurreko grabaketa bat gordetzeko zain dago oraindik.</string>
+    <string name="recording_track_name">Grabatua: %1$s</string>
+    <string name="track_delete">Ezabatu</string>
+</resources>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Adding a stop to the trip in progress -->
+    <string name="nav_stop_adding">Geldialdia gehitzen…</string>
+    <string name="nav_stop_no_route">Ez da ibilbiderik aurkitu geldialdi horretatik. Zure bidaiak lehen bezala jarraitzen du.</string>
+    <string name="nav_stop_limit">Bidaiak %1$d geldialdi ditu aurrean jada. Iritsi bati lehenik.</string>
+    <string name="nav_stop_duplicate">Leku hau bidaiako geldialdi bat da jada.</string>
+    <string name="nav_stop_is_destination">Leku hau bidaiaren helmuga da.</string>
+    <string name="nav_stop_busy">Beste geldialdi bat gehitzen ari da oraindik. Itxaron une bat.</string>
+    <string name="nav_stop_not_navigating">Bidaia amaitu da, beraz geldialdia ez da gehitu.</string>
+</resources>

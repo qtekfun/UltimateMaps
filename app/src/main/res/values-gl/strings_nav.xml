@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Navigation service notification -->
+    <string name="nav_channel_name">Navegación</string>
+    <string name="nav_notification_stop">Parar</string>
+    <string name="nav_notification_open">Abrir</string>
+    <string name="nav_in_distance">%1$s: %2$s</string>
+    <string name="nav_onto_street">%1$s a %2$s</string>
+    <string name="nav_exit_badge">Saída %1$s</string>
+    <string name="nav_exit_toward">%1$s cara a %2$s</string>
+    <string name="nav_waiting_gps">Agardando o sinal GPS…</string>
+    <string name="nav_recalculating">Recalculando a ruta…</string>
+    <string name="nav_arrived">Chegaches</string>
+    <string name="nav_stop_reached">Parada alcanzada</string>
+    <string name="nav_problem_permission">Retirouse o permiso de localización. Permíteo para seguir navegando.</string>
+    <string name="nav_problem_gps_off">A localización está desactivada. Actívaa para seguir navegando.</string>
+    <string name="nav_resumed">Navegación retomada</string>
+    <string name="nav_turn_depart">Inicio</string>
+    <string name="nav_turn_straight">Segue recto</string>
+    <string name="nav_turn_slight_right">Mantente á dereita</string>
+    <string name="nav_turn_right">Xira á dereita</string>
+    <string name="nav_turn_sharp_right">Xiro pechado á dereita</string>
+    <string name="nav_turn_slight_left">Mantente á esquerda</string>
+    <string name="nav_turn_left">Xira á esquerda</string>
+    <string name="nav_turn_sharp_left">Xiro pechado á esquerda</string>
+    <string name="nav_turn_u_turn">Fai un cambio de sentido</string>
+    <string name="nav_turn_roundabout_enter">Entra na rotonda</string>
+    <string name="nav_turn_roundabout_leave">Sae da rotonda</string>
+    <string name="nav_turn_exit_left">Colle a saída da esquerda</string>
+    <string name="nav_turn_exit_right">Colle a saída da dereita</string>
+    <string name="nav_turn_merge">Incorpórate</string>
+    <string name="nav_turn_arrive">Chega ao destino</string>
+    <string name="nav_turn_arrive_left">O destino está á esquerda</string>
+    <string name="nav_turn_arrive_right">O destino está á dereita</string>
+    <!-- Failed routes (policy in RouteFailurePolicy) -->
+    <string name="nav_route_err_no_regions">Non hai rexións instaladas. Descarga unha rexión para calcular rutas sen conexión.</string>
+    <string name="nav_route_err_need_maps">Faltan mapas para esta ruta. Descárgaos en Mapas e téntao de novo.</string>
+    <string name="nav_route_err_need_maps_named">Faltan mapas para esta ruta: %1$s. Descárgaos en Mapas e téntao de novo.</string>
+    <string name="nav_route_err_start">O inicio non está nunha vía dos mapas descargados. Escolle outro punto de partida.</string>
+    <string name="nav_route_err_end">O destino non está nunha vía dos mapas descargados.</string>
+    <string name="nav_route_err_stop">Unha das paradas non está nunha vía dos mapas descargados. Móvea ou quítaa.</string>
+    <string name="nav_route_err_not_found">Non se atopou ruta con estas opcións. Proba outro perfil, outras opcións de evitar ou outros puntos.</string>
+    <string name="nav_route_err_timeout">O cálculo da ruta tardou demasiado. Téntao de novo ou escolle un punto máis próximo.</string>
+    <string name="nav_route_err_core">O motor de rutas tivo un problema e reiniciouse. Téntao de novo.</string>
+    <string name="nav_route_err_core_unavailable">O motor de rutas segue fallando. Téntao de novo dentro dun momento.</string>
+    <string name="nav_route_err_internal">Non se puido calcular a ruta.</string>
+</resources>

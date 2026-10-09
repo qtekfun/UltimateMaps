@@ -19,7 +19,7 @@
     <string name="nav_ui_limit_description">Speed limit %1$d</string>
     <string name="nav_ui_speed_description">Current speed %1$d km/h</string>
     <string name="nav_ui_over_limit">Over the speed limit</string>
-    <string name="nav_ui_speed_unit">km/h</string>
+    <string name="nav_ui_speed_unit" translatable="false">km/h</string>
     <string name="nav_ui_lanes_description">Lanes</string>
     <string name="nav_ui_lane_recommended">recommended lane</string>
     <string name="nav_ui_lane_other">other lane</string>
@@ -28,12 +28,12 @@
     <string name="nav_ui_glove_off_description">Glove mode off. Tap to turn it on</string>
     <!-- Simulation -->
     <string name="nav_ui_simulating">Simulation</string>
-    <string name="nav_ui_sim_speed">%1$d km/h</string>
+    <string name="nav_ui_sim_speed" translatable="false">%1$d km/h</string>
     <string name="nav_ui_sim_faster">Faster</string>
     <string name="nav_ui_sim_slower">Slower</string>
     <!-- 3D view, overview -->
-    <string name="nav_ui_view_3d">3D</string>
-    <string name="nav_ui_view_2d">2D</string>
+    <string name="nav_ui_view_3d" translatable="false">3D</string>
+    <string name="nav_ui_view_2d" translatable="false">2D</string>
     <string name="nav_ui_view3d_on_description">3D view on. Switch to the flat 2D view</string>
     <string name="nav_ui_view2d_on_description">Flat 2D view on. Switch to the 3D view</string>
     <string name="nav_ui_overview">Route</string>

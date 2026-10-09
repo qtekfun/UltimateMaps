@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Settings: Navigation section -->
+    <string name="nav_settings_title">Navegação</string>
+    <string name="nav_voice_title">Orientação por voz</string>
+    <string name="nav_voice_body">Diz as instruções de viragem enquanto navegas.</string>
+    <string name="nav_important_title">Apenas avisos importantes</string>
+    <string name="nav_important_body">Ignora “segue em frente”, curvas ligeiras e avisos distantes.</string>
+    <string name="nav_volume_title">Volume da voz</string>
+    <string name="nav_language_title">Idioma da voz</string>
+    <string name="nav_language_auto">Igual ao da aplicação</string>
+    <string name="nav_language_es">Espanhol</string>
+    <string name="nav_language_en">Inglês</string>
+    <string name="nav_units_title">Unidades</string>
+    <string name="nav_units_auto">Automático (por região)</string>
+    <string name="nav_units_metric">Quilómetros e metros</string>
+    <string name="nav_units_imperial">Milhas e pés</string>
+    <string name="nav_test_voice">Testar voz</string>
+    <string name="nav_voice_ready">O motor de voz está pronto.</string>
+    <string name="nav_voice_starting">A iniciar o motor de voz…</string>
+    <string name="nav_view3d_title">Vista 3D</string>
+    <string name="nav_view3d_body">Durante a navegação, inclina o mapa e olha em frente ao longo da estrada, como a maioria das aplicações de navegação. Desativado: mapa plano.</string>
+    <string name="nav_buildings3d_title">Edifícios em 3D</string>
+    <string name="nav_buildings3d_body">Desenha edifícios com altura na vista 3D a partir do zoom 15. Precisa de mais poder gráfico; desativa se o mapa engasgar.</string>
+    <string name="nav_avoid_title">Evitar por predefinição</string>
+    <string name="nav_avoid_body">Usado quando planeias uma rota. Podes alterá-lo em cada viagem.</string>
+    <string name="nav_avoid_motorways">Autoestradas</string>
+    <string name="nav_avoid_tolls">Estradas com portagem</string>
+    <string name="nav_avoid_ferries">Ferries</string>
+    <string name="nav_avoid_unpaved">Estradas de terra</string>
+
+    <!-- Voice problems -->
+    <string name="voice_lang_es">Espanhol</string>
+    <string name="voice_lang_en">Inglês</string>
+    <string name="voice_problem_no_engine_title">Nenhum motor de voz instalado</string>
+    <string name="voice_problem_no_engine_body">A navegação funciona, mas sem voz. Este dispositivo não tem um motor de síntese de voz, o que é comum sem serviços Google.</string>
+    <string name="voice_problem_lang_title">Sem voz em %1$s</string>
+    <string name="voice_problem_lang_body">Os motores instalados não têm dados de voz em %1$s. Instala-os nas definições do motor ou instala outro motor. A navegação continua sem voz.</string>
+    <string name="voice_problem_failed_title">O motor de voz não responde</string>
+    <string name="voice_problem_failed_body">O motor deixou de responder várias vezes. A navegação continua sem voz. Tenta novamente ou instala outro motor.</string>
+    <string name="voice_problem_init_body">Não foi possível iniciar o motor. A navegação continua sem voz. Tenta novamente ou instala outro motor.</string>
+    <string name="voice_install_intro">Motores livres no F-Droid:</string>
+    <string name="voice_install_engine">Obter %1$s no F-Droid</string>
+    <string name="voice_install_then">Depois de instalares um, escolhe-o nas definições do Android em Saída de síntese de voz, volta aqui e toca em “Tentar novamente”.</string>
+    <string name="voice_install_data">Instalar dados de voz</string>
+    <string name="voice_open_tts_settings">Abrir definições de síntese de voz</string>
+    <string name="voice_retry">Tentar novamente</string>
+    <string name="voice_banner_no_engine">Navegação silenciosa: nenhum motor de voz instalado. Toca para obter ajuda.</string>
+    <string name="voice_banner_lang">Navegação silenciosa: sem voz em %1$s. Toca para obter ajuda.</string>
+    <string name="voice_banner_failed">Navegação silenciosa: o motor de voz não responde. Toca para obter ajuda.</string>
+</resources>

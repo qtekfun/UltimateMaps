@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Adding a stop to the trip in progress -->
+    <string name="nav_stop_adding">Ajout de l\'étape…</string>
+    <string name="nav_stop_no_route">Aucun itinéraire trouvé via cette étape. Votre trajet se poursuit comme avant.</string>
+    <string name="nav_stop_limit">Le trajet compte déjà %1$d étapes à venir. Atteignez-en une d\'abord.</string>
+    <string name="nav_stop_duplicate">Ce lieu est déjà une étape du trajet.</string>
+    <string name="nav_stop_is_destination">Ce lieu est la destination du trajet.</string>
+    <string name="nav_stop_busy">Une autre étape est encore en cours d\'ajout. Patientez un instant.</string>
+    <string name="nav_stop_not_navigating">Le trajet est terminé, l\'étape n\'a donc pas été ajoutée.</string>
+</resources>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Hiking and cycling routes: Settings group (inside the Navigation category), map card and attribution -->
+    <string name="trail_group_title">Itinéraires de randonnée et de cyclisme</string>
+    <string name="trail_switch_title">Afficher les itinéraires de randonnée et de cyclisme</string>
+    <string name="trail_switch_body">Dessine sur la carte les itinéraires balisés de randonnée, de cyclisme et de VTT d\'OpenStreetMap. Un fichier de données de plusieurs Mo est téléchargé depuis votre serveur de cartes (le même que pour les cartes) ; votre position n\'est jamais envoyée.</string>
+    <string name="trail_kinds_title">Types d\'itinéraires</string>
+    <string name="trail_kind_hiking">Itinéraires de randonnée (tirets pleins)</string>
+    <string name="trail_kind_cycling">Itinéraires de cyclisme et de VTT (pointillés)</string>
+    <string name="trail_legend">La couleur indique la portée de l\'itinéraire : violet local, vert régional, orange national, rouge international.</string>
+    <string name="trail_data_title">Données des itinéraires</string>
+    <string name="trail_data_count">%1$d itinéraires, données du %2$s</string>
+    <string name="trail_data_never">Aucune donnée d\'itinéraire téléchargée pour l\'instant.</string>
+    <string name="trail_attribution">Itinéraires de randonnée et de cyclisme issus des relations d\'itinéraires OpenStreetMap, © contributeurs d\'OpenStreetMap (ODbL), simplifiés.</string>
+
+    <!-- Card of a tapped route -->
+    <string name="trail_category">Itinéraire</string>
+    <string name="trail_card_title_unknown">Itinéraire sans nom</string>
+    <string name="trail_card_ref">Référence : %1$s</string>
+    <string name="trail_kind_label_hiking">Itinéraire de randonnée</string>
+    <string name="trail_kind_label_cycling">Itinéraire cyclable</string>
+    <string name="trail_kind_label_mtb">Itinéraire de VTT</string>
+    <string name="trail_level_local">Local</string>
+    <string name="trail_level_regional">Régional</string>
+    <string name="trail_level_national">National</string>
+    <string name="trail_level_international">International</string>
+    <string name="trail_card_operator">Entretenu par : %1$s</string>
+    <string name="trail_card_length">Longueur : %1$s</string>
+    <string name="trail_card_length_measured">Longueur : environ %1$s (mesurée sur la carte, peut être incomplète)</string>
+    <string name="trail_card_note">Données communautaires : l\'itinéraire peut être incomplet, fermé ou mal balisé. Vérifiez avant de vous y fier.</string>
+    <string name="trail_card_data_date">Données du %1$s</string>
+    <string name="trail_card_close">Fermer</string>
+    <string name="trail_go_start">Itinéraire vers le départ</string>
+
+    <!-- Backup and restore -->
+    <string name="backup_item_trails">Itinéraires de randonnée et de cyclisme</string>
+    <string name="backup_group_trails">Itinéraires de randonnée et de cyclisme</string>
+</resources>

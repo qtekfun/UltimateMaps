@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="network_mode_offline">Mode hors ligne : aucune connexion réseau</string>
+    <string name="network_connections_title">Connexions possibles</string>
+    <string name="link_short_needs_resolve">Ce lien court nécessite une requête réseau vers Google pour trouver sa destination. La résolution des liens courts est désactivée, rien n\'a donc été envoyé.</string>
+    <string name="link_not_recognized">Ce lien n\'est pas un lien de carte reconnu.</string>
+
+    <string name="about_title">Données cartographiques</string>
+    <string name="about_osm_body">Données cartographiques © contributeurs d\'OpenStreetMap, disponibles sous la licence Open Database License (ODbL). Style de carte et tuiles de base par Protomaps.</string>
+    <string name="close">Fermer</string>
+
+    <string name="map_locate">Ma position</string>
+    <string name="map_compass">Réorienter la carte vers le nord</string>
+
+    <string name="sheet_description">Panneau d\'informations</string>
+    <string name="sheet_expand">Changer la taille du panneau</string>
+    <string name="sheet_state_collapsed">Réduit</string>
+    <string name="sheet_state_medium">Moitié</string>
+    <string name="sheet_state_full">Plein</string>
+
+    <string name="search_placeholder">Rechercher (bientôt disponible)</string>
+    <string name="no_maps_title">Aucune carte pour l\'instant</string>
+    <string name="no_maps_body">Téléchargez une région depuis Cartes pour voir la carte. En attendant, seul le fond s\'affiche.</string>
+
+    <string name="notice_link_title">Lien de carte</string>
+    <string name="notice_search_title">Recherche : %1$s</string>
+    <string name="notice_search_body">Aucune carte hors ligne n\'est installée, ce lien n\'a donc pu que déplacer la carte.</string>
+    <string name="notice_location_title">Position</string>
+    <string name="location_permission_denied">L\'autorisation de localisation a été refusée. Activez-la dans les réglages du système pour voir où vous êtes.</string>
+    <string name="location_unavailable">Aucun fournisseur de localisation n\'est disponible sur cet appareil.</string>
+
+    <!-- Maps screen (regions) -->
+    <string name="regions_title">Cartes</string>
+    <string name="regions_tab_maps">Cartes</string>
+    <string name="regions_tab_transit">Transports en commun</string>
+    <string name="regions_tab_settings">Téléchargements</string>
+    <string name="regions_tabs_group">Sections des cartes</string>
+    <string name="regions_installed_title">Installées</string>
+    <string name="regions_all_title">Toutes les cartes</string>
+    <string name="regions_search_hint">Rechercher des cartes (p. ex. Catalogne)</string>
+    <string name="regions_search_clear">Effacer la recherche</string>
+    <string name="regions_search_empty">Aucune carte ne correspond à « %1$s ».</string>
+    <string name="sheet_action_expand">Agrandir le panneau</string>
+    <string name="sheet_action_collapse">Réduire le panneau</string>
+    <string name="maps_entry_title">Cartes</string>
+    <string name="maps_entry_body">Télécharger et gérer les régions</string>
+    <string name="offline_title">Mode hors ligne</string>
+    <string name="offline_body">Aucune connexion, pas même pour les téléchargements.</string>
+    <string name="server_title">Serveur de cartes</string>
+    <string name="server_use_default">Utiliser le serveur par défaut</string>
+    <string name="search_restart_needed">Une carte que vous avez supprimée peut encore apparaître dans la recherche jusqu\'au redémarrage de l\'application.</string>
+    <string name="search_link_problem">Certaines cartes téléchargées n\'ont pas pu être rendues disponibles pour la recherche sur ce stockage.</string>
+    <string name="server_save">Enregistrer et actualiser</string>
+    <string name="server_invalid">Saisissez une adresse https:// valide.</string>
+    <string name="server_none_title">Aucun serveur de cartes configuré</string>
+    <string name="server_none_body">Les cartes ne sont téléchargées que depuis un serveur de votre choix. Saisissez ci-dessus l\'adresse d\'un catalogue. Aucun contact n\'est établi tant que vous ne l\'avez pas fait.</string>
+    <string name="storage_title">Stockage</string>
+    <string name="storage_internal">Stockage interne</string>
+    <string name="storage_card">Carte SD</string>
+    <string name="storage_free">%1$s libres sur %2$s</string>
+    <string name="storage_card_warning">Les cartes stockées sur une carte SD peuvent ne pas s\'afficher sur certains appareils.</string>
+    <string name="catalog_loading">Chargement du catalogue…</string>
+    <string name="catalog_error_offline">Le mode hors ligne est activé, le catalogue n\'a donc pas été demandé. Désactivez-le pour actualiser.</string>
+    <string name="catalog_error_denied">Ce serveur n\'est pas autorisé pour les téléchargements.</string>
+    <string name="catalog_error_network">Impossible de charger le catalogue. Vérifiez votre connexion.</string>
+    <string name="catalog_error_invalid">Le serveur a renvoyé un catalogue non valide.</string>
+    <string name="catalog_stale">Affichage de la liste enregistrée. Elle n\'a pas pu être actualisée.</string>
+    <string name="catalog_empty">Le catalogue ne contient aucune région.</string>
+    <string name="region_download">Télécharger</string>
+    <string name="region_pause">Pause</string>
+    <string name="region_resume">Reprendre</string>
+    <string name="region_cancel">Annuler</string>
+    <string name="region_delete">Supprimer</string>
+    <string name="region_update">Mettre à jour</string>
+    <string name="region_retry">Réessayer</string>
+    <string name="region_unavailable">Pas encore disponible</string>
+    <string name="region_queued">En attente…</string>
+    <string name="region_progress">%1$d %% sur %2$s</string>
+    <string name="region_paused">En pause à %1$d %%</string>
+    <string name="region_group_summary">%1$d sur %2$d installées · %3$s</string>
+    <string name="region_installed_size">Installée · %1$s</string>
+    <string name="region_update_available">Mise à jour disponible · %1$s</string>
+    <string name="regions_installed_other">Installées (hors de la liste)</string>
+    <string name="fail_offline">Le mode hors ligne est activé : rien n\'a été téléchargé.</string>
+    <string name="fail_not_allowed">Ce serveur n\'est pas autorisé pour les téléchargements.</string>
+    <string name="fail_no_space">Espace insuffisant : %1$s nécessaires, %2$s libres.</string>
+    <string name="fail_network">Téléchargement interrompu. Réessayez pour reprendre là où il s\'est arrêté.</string>
+    <string name="fail_corrupt">La vérification du fichier a échoué et il a été supprimé. Réessayez.</string>
+    <string name="delete_title">Supprimer %1$s ?</string>
+    <string name="delete_body">Cela libère %1$s. Vous pourrez le télécharger de nouveau plus tard.</string>
+    <string name="regions_channel_name">Téléchargements de cartes</string>
+    <string name="regions_notification_title">Téléchargement des cartes</string>
+    <string name="regions_notification_progress">%1$d %% sur %2$s</string>
+    <string name="regions_notification_waiting">Démarrage…</string>
+    <string name="regions_notification_queued">%1$d autres en attente</string>
+    <string name="regions_pause">Pause</string>
+</resources>

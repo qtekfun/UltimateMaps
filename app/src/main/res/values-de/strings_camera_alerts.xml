@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Visual alert ahead (chip on the map and on the navigation screen) -->
+    <string name="camalert_fixed">Radarkamera voraus</string>
+    <string name="camalert_section">Abschnittskontrolle voraus</string>
+    <string name="camalert_zone">Mobile Radarkontrollen möglich</string>
+    <string name="camalert_v16">Haltendes Fahrzeug voraus (V16)</string>
+    <string name="camalert_accident">Unfall voraus</string>
+    <string name="camalert_closure">Straßensperrung voraus</string>
+    <string name="camalert_congestion">Zähflüssiger Verkehr voraus</string>
+    <string name="camalert_obstacle">Hindernis voraus</string>
+    <string name="camalert_description">%1$s, in %2$s</string>
+    <string name="camalert_description_limit">%1$s, in %2$s, Limit %3$d km/h</string>
+</resources>

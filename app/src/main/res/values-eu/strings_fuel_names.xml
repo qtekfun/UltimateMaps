@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Names of the fuels of the Ministry service, by FuelType id (see FuelNames) -->
+    <string name="fuel_name_g95e5">95 E5 gasolina</string>
+    <string name="fuel_name_g95e10">95 E10 gasolina</string>
+    <string name="fuel_name_g95e25">95 E25 gasolina</string>
+    <string name="fuel_name_g95e85">95 E85 gasolina</string>
+    <string name="fuel_name_g95e5p">95 E5 Premium gasolina</string>
+    <string name="fuel_name_g98e5">98 E5 gasolina</string>
+    <string name="fuel_name_g98e10">98 E10 gasolina</string>
+    <string name="fuel_name_goa">A gasolioa (arrunta)</string>
+    <string name="fuel_name_goap">Premium gasolioa</string>
+    <string name="fuel_name_gob">B gasolioa (nekazaritzakoa)</string>
+    <string name="fuel_name_bie">Bioetanola</string>
+    <string name="fuel_name_bio">Biodiesela</string>
+    <string name="fuel_name_glp">LPG (autogasa)</string>
+    <string name="fuel_name_gnc">GNC (gas natural konprimitua)</string>
+    <string name="fuel_name_gnl">GNL (gas natural likidotua)</string>
+    <string name="fuel_name_h2">Hidrogenoa</string>
+    <string name="fuel_name_dren">Diesel berriztagarria</string>
+    <string name="fuel_name_gren">Gasolina berriztagarria</string>
+    <string name="fuel_name_met">Metanola</string>
+    <string name="fuel_name_amo">Amoniakoa</string>
+    <string name="fuel_name_bgnc">Biogas konprimitua</string>
+    <string name="fuel_name_bgnl">Biogas likidotua</string>
+</resources>

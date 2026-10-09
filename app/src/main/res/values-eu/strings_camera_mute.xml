@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Quick mute of the camera and incident alerts (sound and voice) on the navigation screen -->
+    <string name="nav_ui_alerts_mute">Mututu abisuak</string>
+    <string name="nav_ui_alerts_unmute">Aktibatu abisuak</string>
+    <string name="nav_ui_alerts_mute_description">Radar- eta gertakari-abisuak aktibo. Sakatu haien soinua eta ahotsa mututzeko</string>
+    <string name="nav_ui_alerts_unmute_description">Radar- eta gertakari-abisuak mutututa. Sakatu haien soinua eta ahotsa berriro aktibatzeko</string>
+</resources>

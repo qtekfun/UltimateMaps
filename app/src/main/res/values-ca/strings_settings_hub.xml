@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Hub rows: title, words the search also matches, and the one-line summary of the current state -->
+    <string name="hub_navigation_title">Navegació i veu</string>
+    <string name="hub_navigation_keywords">veu unitats ruta evitar autopistes peatges transbordadors 3d edificis bici carrils bici barra d\'estat distància xip actualització en directe so volum idioma quilòmetres milles senderisme ciclisme senders rutes bicicleta de muntanya</string>
+    <string name="hub_navigation_voice_on">Veu: %1$s, %2$d %%</string>
+    <string name="hub_navigation_voice_off">Veu: desactivada</string>
+    <string name="hub_alerts_title">Avisos</string>
+    <string name="hub_alerts_keywords">radars càmeres velocitat trànsit incidències obres avisos so silenci zona de baixes emissions ZBE</string>
+    <string name="hub_alerts_summary">Radars: %1$s · Trànsit: %2$s</string>
+    <string name="hub_fuel_keywords">gasolina gasoil dièsel combustible preus gasolineres elèctric cotxe carregador càrrega endoll</string>
+    <string name="hub_fuel_off">Desactivat</string>
+    <string name="hub_fuel_no_fuel">Activat, cap combustible triat</string>
+    <plurals name="hub_fuel_count">
+        <item quantity="one">%d combustible</item>
+        <item quantity="many">%d combustibles</item>
+        <item quantity="other">%d combustibles</item>
+    </plurals>
+    <string name="hub_fuel_summary">%1$s, %2$s al mapa</string>
+    <string name="hub_network_title">Mapes i xarxa</string>
+    <string name="hub_network_keywords">fora de línia privadesa connexions internet catàleg servidor regions baixada</string>
+    <string name="hub_network_summary">Mode fora de línia: %1$s</string>
+    <string name="hub_data_title">Dades</string>
+    <string name="hub_data_keywords">historial cerques recents enregistrament de tracks còpia de seguretat restauració exporta importa suprimeix esborra</string>
+    <string name="hub_data_searches">Cerques: %1$s</string>
+    <string name="hub_data_recording">Enregistrament: %1$s</string>
+    <string name="hub_about_title">Quant a</string>
+    <string name="hub_about_keywords">versió llicència atribució openstreetmap codi font crèdits</string>
+    <string name="hub_about_summary">Versió %1$s</string>
+    <string name="hub_about_summary_plain">Llicència i atribucions</string>
+    <string name="hub_on">activat</string>
+    <string name="hub_off">desactivat</string>
+
+    <string name="hub_search_hint">Cerca a la configuració</string>
+    <string name="hub_search_none">Cap configuració coincideix.</string>
+
+    <!-- Group headings inside the category screens -->
+    <string name="hub_group_voice">Veu</string>
+    <string name="hub_group_display">Unitats i vista del mapa</string>
+    <string name="hub_group_route">Valors per defecte de la ruta</string>
+    <string name="hub_group_cameras">Radars</string>
+    <string name="hub_group_incidents">Incidències de trànsit</string>
+    <string name="hub_group_maps">Mapes</string>
+    <string name="hub_advanced">Avançat</string>
+    <string name="hub_advanced_open">Desplegat</string>
+    <string name="hub_advanced_closed">Plegat</string>
+
+    <string name="hub_privacy_note">Aquesta aplicació no té analítiques ni informes d\'errors. Totes les connexions possibles es llisten a continuació, i el mode fora de línia les bloqueja totes.</string>
+
+    <!-- About -->
+    <string name="hub_about_version_title">Versió</string>
+    <string name="hub_about_license_title">Llicència</string>
+    <string name="hub_about_license_body">Programari lliure sota la Llicència Pública General GNU v3 (GPLv3).</string>
+    <string name="about_notice_title">Avisos de tercers</string>
+    <string name="about_notice_show">Mostra les llicències del programari inclòs</string>
+    <string name="about_notice_hide">Amaga les llicències</string>
+    <string name="about_notice_unavailable">El fitxer d\'avisos no està disponible en aquesta compilació.</string>
+    <string name="about_diag_title">Diagnòstic</string>
+    <string name="about_diag_body">Notes que es guarden només en aquest telèfon sobre errors, com ara la manera com han acabat els processos de l\'aplicació i errors inesperats. No contenen llocs ni posicions. No s\'envia res enlloc; copia-les en un informe d\'error si vols.</string>
+    <string name="about_diag_show">Mostra les notes de diagnòstic</string>
+    <string name="about_diag_hide">Amaga les notes de diagnòstic</string>
+    <string name="about_diag_empty">Encara no hi ha res anotat.</string>
+    <string name="about_diag_copy">Copia</string>
+    <string name="about_diag_clear">Esborra les notes</string>
+    <string name="hub_about_source">Codi font: github.com/qtekfun/UltimateMaps</string>
+</resources>

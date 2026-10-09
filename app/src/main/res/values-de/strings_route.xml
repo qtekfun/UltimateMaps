@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Route preview (M4) -->
+    <string name="route_to">Nach %1$s</string>
+    <string name="route_close">Schließen</string>
+    <string name="route_from_current">Von: dein Standort</string>
+    <string name="route_from_point">Von: ausgewählter Punkt</string>
+    <string name="route_from_named">Von: %1$s</string>
+    <string name="route_change_origin">Start ändern</string>
+    <string name="route_use_location">Meinen Standort verwenden</string>
+    <string name="route_pick_hint">Suche den Startort oder tippe auf die Karte.</string>
+    <string name="route_pick_cancel">Abbrechen</string>
+    <string name="route_profile_car">Auto</string>
+    <string name="route_profile_foot">Zu Fuß</string>
+    <string name="route_profile_bike">Fahrrad</string>
+    <string name="route_avoid_motorways">Keine Autobahnen</string>
+    <string name="route_avoid_tolls">Keine Maut</string>
+    <string name="route_avoid_ferries">Keine Fähren</string>
+    <string name="route_avoid_unpaved">Keine unbefestigten</string>
+    <string name="route_computing">Route wird berechnet …</string>
+    <string name="route_elevation_toggle_cd">Anstieg %1$d Meter, Abstieg %2$d Meter. Höhenprofil ein- oder ausblenden.</string>
+    <string name="route_elevation_chart_cd">Höhenprofil: tiefster Punkt %1$d Meter, höchster Punkt %2$d Meter, steilster Anstieg %3$d Prozent.</string>
+    <string name="route_elevation_grade">Steilste: ↑ %1$d %%  ↓ %2$d %%</string>
+    <string name="route_needs_origin">Dein Standort ist nicht verfügbar. Erlaube den Standort oder wähle per Suche oder Tippen auf die Karte einen anderen Startpunkt.</string>
+    <string name="route_err_no_regions">Keine Regionen installiert. Lade eine Region herunter, um Routen offline zu berechnen.</string>
+    <string name="route_err_need_more_maps">Für diese Route fehlen Karten. Lade die Regionen herunter, die sie durchquert.</string>
+    <string name="route_err_start">Der Start liegt nicht an einer Straße in den heruntergeladenen Karten. Wähle einen anderen Startpunkt.</string>
+    <string name="route_err_end">Das Ziel liegt nicht an einer Straße in den heruntergeladenen Karten.</string>
+    <string name="route_err_not_found">Mit diesen Optionen wurde keine Route gefunden. Ändere das Profil oder die Vermeiden-Optionen.</string>
+    <string name="route_err_timeout">Die Routenberechnung hat zu lange gedauert. Versuche es erneut oder wähle einen näheren Punkt.</string>
+    <string name="route_err_internal">Die Route konnte nicht berechnet werden.</string>
+    <string name="route_err_unexpected">Bei der Routenberechnung ist etwas schiefgelaufen. Versuche es erneut oder wähle ein anderes Ziel oder andere Optionen.</string>
+    <string name="route_change_short">Ändern</string>
+    <string name="route_profile_group">Fortbewegungsart</string>
+    <string name="route_options_title">Routenoptionen</string>
+    <string name="route_options_none">Keine</string>
+    <string name="route_options_avoiding">Vermeiden: %1$s</string>
+    <string name="route_avoid_short_motorways">Autobahnen</string>
+    <string name="route_avoid_short_tolls">Maut</string>
+    <string name="route_avoid_short_ferries">Fähren</string>
+    <string name="route_avoid_short_unpaved">Unbefestigtes</string>
+</resources>

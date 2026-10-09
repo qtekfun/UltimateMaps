@@ -70,7 +70,6 @@
     <string name="inc_card_obstacle">Obstáculo en la vía</string>
     <string name="inc_card_weather">Tiempo o estado de la carretera</string>
     <string name="inc_card_roadworks">Obras</string>
-    <string name="inc_card_place">%1$s (%2$s)</string>
     <string name="inc_card_since">Desde %1$s</string>
     <string name="inc_card_until">Hasta %1$s</string>
     <string name="inc_card_downloaded">Datos de tráfico descargados el %1$s. Pueden haber cambiado.</string>

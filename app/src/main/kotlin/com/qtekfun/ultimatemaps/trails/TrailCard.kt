@@ -24,7 +24,6 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import com.qtekfun.ultimatemaps.R
 import com.qtekfun.ultimatemaps.core.cameras.CameraAttribution
-import com.qtekfun.ultimatemaps.core.routes.RouteAttribution
 import com.qtekfun.ultimatemaps.core.routes.Trail
 import com.qtekfun.ultimatemaps.core.routes.TrailKind
 import com.qtekfun.ultimatemaps.core.routes.TrailLevel
@@ -101,7 +100,6 @@ fun TrailCard(
 ) {
     val t = state.trail ?: return
     val locale = LocalConfiguration.current.locales[0]
-    val english = locale.language != "es"
     Column(modifier.fillMaxWidth().verticalScroll(rememberScrollState()).testTag("trail_card")) {
         Row(verticalAlignment = Alignment.Top) {
             Column(Modifier.weight(1f)) {
@@ -144,12 +142,12 @@ fun TrailCard(
             style = Mapas.typography.caption.copy(color = Mapas.colors.secondaryLabel), modifier = Modifier.testTag("trail_note"),
         )
         BasicText(
-            RouteAttribution.text(english),
+            stringResource(R.string.trail_attribution),
             style = Mapas.typography.caption.copy(color = Mapas.colors.secondaryLabel), modifier = Modifier.testTag("trail_card_attribution"),
         )
         generatedMillis?.let {
             BasicText(
-                stringResource(R.string.trail_card_data_date, CameraAttribution.dateText(it, english)),
+                stringResource(R.string.trail_card_data_date, CameraAttribution.dateText(it, locale)),
                 style = Mapas.typography.caption.copy(color = Mapas.colors.secondaryLabel), modifier = Modifier.testTag("trail_data_date"),
             )
         }

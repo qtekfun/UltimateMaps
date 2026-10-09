@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Settings: section -->
+    <string name="cam_title">Radar und Verkehr</string>
+    <string name="cam_intro">Optional, standardmäßig aus. Die Radardaten sind eine kleine Datei aus der Veröffentlichung der Kartendaten; der Verkehr wird nur heruntergeladen, wenn du ihn einschaltest. Dein Standort wird nie gesendet.</string>
+
+    <string name="cam_fixed_title">Feste Radarkameras</string>
+    <string name="cam_fixed_body">Feste Kameras und Abschnittskontrollen, auf der Karte und als Warnung voraus.</string>
+    <string name="cam_mobile_title">Zonen mobiler Radarkontrollen</string>
+    <string name="cam_mobile_body">Straßen, auf denen laut DGT mobile Radarkontrollen stattfinden können. Als Straßenabschnitte dargestellt, nie als Punkte.</string>
+    <string name="cam_incidents_title">Verkehrsstörungen</string>
+    <string name="cam_incidents_body">Unfälle, Sperrungen, zähflüssiger Verkehr, Hindernisse und schlechtes Wetter (DGT, live).</string>
+    <string name="cam_v16_title">V16-Warnleuchten</string>
+    <string name="cam_v16_body">Haltende Fahrzeuge mit vernetzter V16-Warnleuchte (DGT, live).</string>
+    <string name="cam_roadworks_title">Baustellen einbeziehen</string>
+    <string name="cam_roadworks_body">Es können jederzeit Hunderte sein.</string>
+    <string name="cam_only_speeding_title">Nur bei zu hoher Geschwindigkeit warnen</string>
+    <string name="cam_only_speeding_body">Bei Kameras mit bekanntem Limit still bleiben, solange du darunter bist. Kameras mit unbekanntem Limit warnen immer.</string>
+
+    <!-- Settings: legal note and acknowledgement dialog -->
+    <string name="cam_legal_note">Zonen mobiler Radarkontrollen sind die von der DGT veröffentlichten Abschnitte; der genaue Ort einer mobilen Kontrolle wird nie angezeigt. Warnungen dienen nur der Information und können falsch oder veraltet sein. Du bist für dein Fahrverhalten verantwortlich.</string>
+    <string name="cam_confirm_title">Radardaten</string>
+    <string name="cam_confirm_body">Dies schaltet Radarwarnungen ein.\n\n- Quellen: DGT (CC BY) und OpenStreetMap (ODbL). Eine Kamera in der Liste ist möglicherweise nicht in Betrieb.\n- Zonen mobiler Radarkontrollen sind von der DGT veröffentlichte Straßenabschnitte. Keine Live-Daten, Polizeikontrollen oder Nutzermeldungen.\n- Die Datei stammt vom Kartendatenserver, den du gewählt hast; nichts über deinen Standort wird gesendet.\n- Nur zur Information: Sie kann falsch oder veraltet sein.</string>
+    <string name="cam_confirm_yes">Verstanden, einschalten</string>
+    <string name="cam_confirm_no">Abbrechen</string>
+    <string name="cam_incidents_confirm_title">Verkehrsdaten</string>
+    <string name="cam_incidents_confirm_body">Dies lädt die nationale Verkehrsdatei der DGT (etwa 200 KB) von nap.dgt.es herunter, wenn du es einschaltest, auf „Jetzt aktualisieren“ tippst oder die App mit alten Daten öffnest. Sie wird auf deinem Telefon gefiltert: Dein Standort und deine Route werden nie gesendet. Der Offline-Modus blockiert dies.</string>
+    <string name="cam_incidents_confirm_offline">Der Offline-Modus ist aktiv: Es wird nichts heruntergeladen, bis du ihn ausschaltest.</string>
+
+    <!-- Settings: data card -->
+    <string name="cam_data_title">Daten</string>
+    <string name="cam_data_cameras_never">Radardaten: noch nicht heruntergeladen.</string>
+    <string name="cam_data_cameras">Radardaten: %1$d feste Kameras, %2$d Abschnittskontrollen, %3$d Zonen mobiler Radarkontrollen (%4$d darstellbar). Datei vom %5$s.</string>
+    <string name="cam_data_incidents_never">Verkehrsdaten: noch nicht heruntergeladen.</string>
+    <string name="cam_data_incidents">Verkehrsdaten: %1$d aktive Einträge, heruntergeladen %2$s.</string>
+    <string name="cam_refresh_title">Verkehrsdaten aktualisieren alle</string>
+    <string name="cam_refresh_minutes">%1$d Minuten</string>
+    <string name="cam_refresh_hour">1 Stunde</string>
+    <string name="cam_update_now">Jetzt aktualisieren</string>
+    <string name="cam_update_running">Wird aktualisiert …</string>
+    <string name="cam_update_ok">Aktualisiert.</string>
+    <string name="cam_update_error">Aktualisierung nicht möglich (%1$s). Die bisherigen Daten bleiben erhalten.</string>
+    <string name="cam_err_offline">der Offline-Modus ist aktiv</string>
+    <string name="cam_err_not_allowed">Verbindung nicht erlaubt</string>
+    <string name="cam_err_network">Netzwerkfehler</string>
+    <string name="cam_err_timeout">Zeitüberschreitung</string>
+    <string name="cam_err_server">der Server ist ausgefallen</string>
+    <string name="cam_err_too_large">Datei zu groß</string>
+    <string name="cam_err_invalid">ungültige Daten</string>
+    <string name="cam_err_no_catalog">der Kartenkatalog enthält keine Radardatei; öffne Karten und aktualisiere ihn</string>
+
+    <!-- Connection list -->
+    <string name="conn_purpose_traffic">Verkehrsstörungen (DGT)</string>
+
+    <!-- Map cards -->
+    <string name="cam_card_fixed_title">Mögliche feste Radarkamera</string>
+    <string name="cam_card_section_title">Abschnittskontrolle</string>
+    <string name="cam_card_zone_title">Auf diesem Abschnitt können mobile Radarkontrollen stattfinden</string>
+    <string name="cam_card_road">Straße: %1$s</string>
+    <string name="cam_card_limit">Kontrolliertes Limit: %1$d km/h</string>
+    <string name="cam_card_limit_unknown">Tempolimit: nicht veröffentlicht</string>
+    <string name="cam_card_km">Kilometer %1$s bis %2$s</string>
+    <string name="cam_card_zone_note">Von der DGT als Straßenabschnitt veröffentlicht, nicht als Position. Ein Gerät kann dort sein oder nicht, und die gezeichnete Linie ist ungefähr.</string>
+    <string name="cam_card_fixed_note">Die Quelle gibt an, wo eine Kamera sein kann, nicht dass sie eingeschaltet ist.</string>
+    <string name="cam_card_data_date">Kameradatei vom %1$s</string>
+    <string name="inc_card_v16">Haltendes Fahrzeug mit V16-Warnleuchte</string>
+    <string name="inc_card_accident">Unfall</string>
+    <string name="inc_card_closure">Straße oder Fahrbahn gesperrt</string>
+    <string name="inc_card_congestion">Zähflüssiger Verkehr</string>
+    <string name="inc_card_obstacle">Hindernis auf der Straße</string>
+    <string name="inc_card_weather">Wetter- oder Straßenverhältnisse</string>
+    <string name="inc_card_roadworks">Baustelle</string>
+    <string name="inc_card_since">Seit %1$s</string>
+    <string name="inc_card_until">Bis %1$s</string>
+    <string name="inc_card_downloaded">Verkehrsdaten heruntergeladen %1$s. Sie können sich seitdem geändert haben.</string>
+    <string name="hazard_card_close">Schließen</string>
+</resources>

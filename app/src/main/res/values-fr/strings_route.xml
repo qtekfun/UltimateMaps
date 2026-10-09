@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Route preview (M4) -->
+    <string name="route_to">Vers %1$s</string>
+    <string name="route_close">Fermer</string>
+    <string name="route_from_current">De : votre position</string>
+    <string name="route_from_point">De : point sélectionné</string>
+    <string name="route_from_named">De : %1$s</string>
+    <string name="route_change_origin">Changer le départ</string>
+    <string name="route_use_location">Utiliser ma position</string>
+    <string name="route_pick_hint">Recherchez le lieu de départ ou touchez la carte.</string>
+    <string name="route_pick_cancel">Annuler</string>
+    <string name="route_profile_car">Voiture</string>
+    <string name="route_profile_foot">À pied</string>
+    <string name="route_profile_bike">Vélo</string>
+    <string name="route_avoid_motorways">Sans autoroutes</string>
+    <string name="route_avoid_tolls">Sans péages</string>
+    <string name="route_avoid_ferries">Sans ferries</string>
+    <string name="route_avoid_unpaved">Sans pistes</string>
+    <string name="route_computing">Calcul de l\'itinéraire…</string>
+    <string name="route_elevation_toggle_cd">Montée de %1$d mètres, descente de %2$d mètres. Afficher ou masquer le profil d\'altitude.</string>
+    <string name="route_elevation_chart_cd">Profil d\'altitude : minimum %1$d mètres, maximum %2$d mètres, montée la plus raide %3$d pour cent.</string>
+    <string name="route_elevation_grade">Maximum : ↑ %1$d %%  ↓ %2$d %%</string>
+    <string name="route_needs_origin">Votre position n\'est pas disponible. Autorisez la localisation ou choisissez un autre point de départ par la recherche ou en touchant la carte.</string>
+    <string name="route_err_no_regions">Aucune région installée. Téléchargez une région pour calculer des itinéraires hors ligne.</string>
+    <string name="route_err_need_more_maps">Des cartes manquent pour cet itinéraire. Téléchargez les régions qu\'il traverse.</string>
+    <string name="route_err_start">Le départ ne se trouve pas sur une route des cartes téléchargées. Choisissez un autre point de départ.</string>
+    <string name="route_err_end">La destination ne se trouve pas sur une route des cartes téléchargées.</string>
+    <string name="route_err_not_found">Aucun itinéraire trouvé avec ces options. Essayez de changer de profil ou les options d\'évitement.</string>
+    <string name="route_err_timeout">Le calcul de l\'itinéraire a pris trop de temps. Réessayez ou choisissez un point plus proche.</string>
+    <string name="route_err_internal">L\'itinéraire n\'a pas pu être calculé.</string>
+    <string name="route_err_unexpected">Un problème est survenu lors du calcul de l\'itinéraire. Réessayez ou choisissez une autre destination ou d\'autres options.</string>
+    <string name="route_change_short">Modifier</string>
+    <string name="route_profile_group">Mode de déplacement</string>
+    <string name="route_options_title">Options d\'itinéraire</string>
+    <string name="route_options_none">Aucune</string>
+    <string name="route_options_avoiding">Éviter : %1$s</string>
+    <string name="route_avoid_short_motorways">autoroutes</string>
+    <string name="route_avoid_short_tolls">péages</string>
+    <string name="route_avoid_short_ferries">ferries</string>
+    <string name="route_avoid_short_unpaved">pistes</string>
+</resources>

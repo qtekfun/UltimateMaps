@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Itinerary card -->
+    <string name="trip_start">Start</string>
+    <string name="trip_start_description">Dieser Fahrt Schritt für Schritt folgen</string>
+
+    <!-- Banner: what to do now -->
+    <string name="trip_walk_to">Zu Fuß zu %1$s</string>
+    <string name="trip_walk_to_destination">Zu Fuß zu deinem Ziel</string>
+    <string name="trip_walk_detail">%1$s · %2$d Min.</string>
+    <string name="trip_then_board">Dann Linie %1$s um %2$s</string>
+    <string name="trip_board_title">Linie %1$s Richtung %2$s einsteigen</string>
+    <string name="trip_board_title_plain">Linie %1$s einsteigen</string>
+    <string name="trip_wait_detail">Abfahrt um %1$s, in %2$d Min.</string>
+    <string name="trip_wait_now">Abfahrt um %1$s, jetzt</string>
+    <string name="trip_wait_passed">Planmäßig um %1$s</string>
+    <string name="trip_next_stop">Nächste Haltestelle: %1$s</string>
+    <plurals name="trip_get_off_in">
+        <item quantity="one">In %1$d Haltestelle bei %2$s aussteigen</item>
+        <item quantity="other">In %1$d Haltestellen bei %2$s aussteigen</item>
+    </plurals>
+    <string name="trip_get_off_next">An der nächsten Haltestelle aussteigen: %1$s</string>
+    <string name="trip_get_off_detail">Planmäßig um %1$s</string>
+    <string name="trip_change_title">Hier umsteigen: Linie %1$s Richtung %2$s</string>
+    <string name="trip_change_title_plain">Hier umsteigen: Linie %1$s</string>
+    <string name="trip_change_detail">Zu Fuß zu %1$s · %2$s · %3$d Min. · Abfahrt %4$s</string>
+    <string name="trip_change_detail_here">%1$s · Abfahrt %2$s</string>
+    <string name="trip_off_plan_title">Du bist vom Plan abgewichen</string>
+    <string name="trip_off_plan_detail">Plane eine neue Fahrt von deinem Standort aus</string>
+    <string name="trip_arrived_title">Du bist angekommen</string>
+
+    <!-- Status strip -->
+    <string name="trip_no_gps">Warten auf GPS-Signal</string>
+    <string name="trip_estimated">Kein GPS: Position anhand des Fahrplans geschätzt</string>
+    <string name="trip_plan_on">Im Plan</string>
+    <string name="trip_plan_on_estimated">Im Plan (Schätzung)</string>
+    <plurals name="trip_plan_behind">
+        <item quantity="one">Etwa %d Min. hinter dem Plan</item>
+        <item quantity="other">Etwa %d Min. hinter dem Plan</item>
+    </plurals>
+    <plurals name="trip_plan_ahead">
+        <item quantity="one">Etwa %d Min. vor dem Plan</item>
+        <item quantity="other">Etwa %d Min. vor dem Plan</item>
+    </plurals>
+    <string name="trip_connection_risk">Anschluss an Linie %1$s gefährdet</string>
+    <string name="trip_connection_missed">Linie %1$s wird möglicherweise verpasst</string>
+    <string name="trip_replan">Neu planen</string>
+    <string name="trip_replan_description">Eine neue Fahrt von deinem Standort aus planen</string>
+    <string name="trip_replanning">Neue Fahrt wird geplant …</string>
+    <string name="trip_replan_failed">Von hier wurde keine neue Fahrt gefunden</string>
+
+    <!-- Bottom panel -->
+    <string name="trip_stop">Fahrt beenden</string>
+    <string name="trip_done">Fertig</string>
+    <string name="trip_stop_description">Dieser Fahrt nicht mehr folgen</string>
+    <string name="trip_arrive_at">Ankunft %1$s</string>
+    <string name="trip_scheduled_note">Planmäßige Zeiten, keine Echtzeitdaten</string>
+    <string name="trip_stop_passed">passiert</string>
+    <string name="trip_stop_next">nächste Haltestelle</string>
+    <string name="trip_stop_row_description">%1$s, %2$s, planmäßig um %3$s</string>
+    <string name="trip_stops_description">Haltestellen der aktuellen Linie</string>
+
+    <!-- Resume after the app was closed -->
+    <string name="trip_resume_title">Deine ÖPNV-Fahrt fortsetzen?</string>
+    <string name="trip_resume">Fortsetzen</string>
+    <string name="trip_discard">Verwerfen</string>
+
+    <!-- Notification -->
+    <string name="trip_channel_name">ÖPNV-Fahrt</string>
+    <string name="trip_resumed">ÖPNV-Fahrt</string>
+
+    <!-- Status-bar chip (about 7 characters fit) -->
+    <plurals name="trip_chip_stops">
+        <item quantity="one">%d Halt</item>
+        <item quantity="other">%d Halte</item>
+    </plurals>
+    <string name="trip_chip_get_off">Aussteigen</string>
+    <string name="trip_chip_minutes">%d Min.</string>
+    <string name="trip_chip_no_gps">Kein GPS</string>
+    <string name="trip_chip_replan">Neu planen</string>
+
+    <!-- Settings > Navigation -->
+    <string name="trip_prompts_title">Hinweise der ÖPNV-Fahrt</string>
+    <string name="trip_prompts_body">Wie dir eine ÖPNV-Fahrt Schritt für Schritt sagt, wann du einsteigen, umsteigen und aussteigen sollst.</string>
+    <string name="trip_prompts_note">Das Banner auf dem Bildschirm wird immer angezeigt. Stumm der Navigation schaltet Ton und Sprache aus.</string>
+</resources>

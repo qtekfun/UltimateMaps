@@ -67,7 +67,7 @@
 
     <!-- Notification -->
     <string name="trip_channel_name">Transit trip</string>
-    <string name="trip_notification_text">%1$s · %2$s</string>
+    <string name="trip_notification_text" translatable="false">%1$s · %2$s</string>
     <string name="trip_resumed">Transit trip</string>
 
     <!-- Status-bar chip (about 7 characters fit) -->

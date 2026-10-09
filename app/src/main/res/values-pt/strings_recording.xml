@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Track recording -->
+    <string name="recording_title">Gravação de trajetos</string>
+    <string name="recording_switch_title">Permitir gravação de trajetos</string>
+    <string name="recording_switch_body">Adiciona um botão Iniciar gravação à lista de trajetos. A viagem é guardada como trajeto apenas neste dispositivo e nada é enviado para lado nenhum. Os pontos são guardados enquanto a aplicação está aberta ou enquanto navegas.</string>
+    <string name="recording_delete_all">Eliminar trajetos gravados</string>
+    <string name="recording_deleted">Trajetos gravados eliminados.</string>
+    <string name="recording_idle">Sem gravação</string>
+    <string name="recording_start">Iniciar gravação</string>
+    <string name="recording_stop">Parar e guardar</string>
+    <string name="recording_status_on">A gravar · %1$d pontos · %2$s</string>
+    <string name="recording_status_paused">Em pausa, estás parado · %1$d pontos · %2$s</string>
+    <string name="recording_note">A gravação continua enquanto a aplicação está aberta ou enquanto navegas, e pausa sozinha quando deixas de te mover.</string>
+    <string name="recording_saved">Trajeto guardado. Podes mostrá-lo no mapa ou exportá-lo como GPX.</string>
+    <string name="recording_too_short">Nada para guardar: a gravação foi demasiado curta.</string>
+    <string name="recording_failed">Não foi possível guardar o trajeto. Os pontos são mantidos e guardados da próxima vez que iniciares.</string>
+    <string name="recording_could_not_start">Não foi possível iniciar: uma gravação anterior ainda aguarda para ser guardada.</string>
+    <string name="recording_track_name">Gravado %1$s</string>
+    <string name="track_delete">Eliminar</string>
+</resources>

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Search (M2) -->
+    <string name="search_hint">Cerca luoghi e indirizzi</string>
+    <string name="search_preparing">Preparazione della ricerca offline…</string>
+    <string name="search_searching">Ricerca in corso…</string>
+    <string name="search_no_results">Nessun risultato</string>
+    <string name="search_error">Ricerca non riuscita. Riprova.</string>
+    <string name="search_no_regions_title">Nessuna regione installata</string>
+    <string name="search_no_regions_body">Scarica una regione per cercare offline.</string>
+    <string name="tab_search">Cerca</string>
+    <string name="tab_lists">Elenchi</string>
+
+    <!-- Place card -->
+    <string name="place_save">Salva</string>
+    <string name="place_saved">Salvato</string>
+    <string name="place_route">Percorso</string>
+    <string name="place_share">Condividi</string>
+    <string name="place_close">Chiudi</string>
+
+    <!-- Saved places (M3) -->
+    <string name="list_favorites">Preferiti</string>
+    <string name="lists_title">Elenchi</string>
+    <string name="lists_back">Tutti gli elenchi</string>
+    <string name="lists_empty">Ancora nessun luogo salvato</string>
+    <string name="lists_new_hint">Nome del nuovo elenco</string>
+    <string name="lists_create">Crea</string>
+    <plurals name="lists_place_count">
+        <item quantity="one">%d luogo</item>
+        <item quantity="many">%d luoghi</item>
+        <item quantity="other">%d luoghi</item>
+    </plurals>
+    <string name="list_filter_hint">Cerca in questo elenco</string>
+    <string name="list_empty_filter">Nessun luogo corrispondente</string>
+    <string name="list_sort_distance">Per distanza</string>
+    <string name="list_sort_name">Per nome</string>
+    <string name="list_import">Importa</string>
+    <string name="list_export_gpx">Esporta GPX</string>
+    <string name="list_export_kml">Esporta KML</string>
+    <string name="list_delete">Elimina elenco</string>
+    <string name="msg_saved">Salvato in %1$s</string>
+    <string name="msg_removed">Rimosso dai luoghi salvati</string>
+    <string name="msg_imported">Importati %1$d luoghi (%2$d già presenti) e %3$d tracce</string>
+    <string name="msg_import_failed">Impossibile leggere quel file</string>
+    <string name="msg_exported">Esportati %1$d luoghi</string>
+    <string name="msg_export_failed">Impossibile scrivere il file</string>
+</resources>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Category chips under the search field -->
+    <string name="category_pharmacy">Farmacia</string>
+    <string name="category_supermarket">Supermercado</string>
+    <string name="category_restaurant">Restaurante</string>
+    <string name="category_cafe">Café</string>
+    <string name="category_fuel">Combustible</string>
+    <string name="category_atm">Caixeiro automático</string>
+    <string name="category_hospital">Hospital</string>
+    <string name="category_parking">Aparcadoiro</string>
+    <string name="category_lodging">Aloxamento</string>
+    <string name="category_toilets">Aseos</string>
+    <string name="category_drinking_water">Auga potable</string>
+
+    <!-- The category name the search core looks for (not shown to the user; must be a name from its category list) -->
+    <string name="category_query_pharmacy">farmacia</string>
+    <string name="category_query_supermarket">supermercado</string>
+    <string name="category_query_restaurant">restaurante</string>
+    <string name="category_query_cafe">café</string>
+    <string name="category_query_fuel">combustible</string>
+    <string name="category_query_atm">caixeiro automático</string>
+    <string name="category_query_hospital">hospital</string>
+    <string name="category_query_parking">aparcadoiro</string>
+    <string name="category_query_lodging">hotel</string>
+    <string name="category_query_toilets">aseo</string>
+    <string name="category_query_drinking_water">auga potable</string>
+
+    <string name="category_distance_note">As distancias son en liña recta desde a túa localización ou o centro do mapa.</string>
+    <string name="category_none">Non se atopou nada preto nos mapas descargados.</string>
+    <string name="category_chip_description">Explorar %1$s preto</string>
+</resources>

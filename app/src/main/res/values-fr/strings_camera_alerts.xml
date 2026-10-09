@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Visual alert ahead (chip on the map and on the navigation screen) -->
+    <string name="camalert_fixed">Radar fixe en approche</string>
+    <string name="camalert_section">Tronçon à vitesse moyenne en approche</string>
+    <string name="camalert_zone">Radars mobiles possibles en approche</string>
+    <string name="camalert_v16">Véhicule arrêté en approche (V16)</string>
+    <string name="camalert_accident">Accident en approche</string>
+    <string name="camalert_closure">Route fermée en approche</string>
+    <string name="camalert_congestion">Circulation ralentie en approche</string>
+    <string name="camalert_obstacle">Obstacle en approche</string>
+    <string name="camalert_description">%1$s, dans %2$s</string>
+    <string name="camalert_description_limit">%1$s, dans %2$s, limite %3$d km/h</string>
+</resources>
