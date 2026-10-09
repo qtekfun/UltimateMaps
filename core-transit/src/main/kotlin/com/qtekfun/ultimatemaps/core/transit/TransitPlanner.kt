@@ -49,6 +49,16 @@ data class PlannerConfig(
     val alternativeSlackSec: Int = 1800,
     /** When the fastest journey walks more than this, a second search with a smaller access radius looks for a calmer one. */
     val lowWalkPassMinWalkSec: Int = 300,
+    /**
+     * When no vehicle journey exists with the normal [accessRadiusM] (for example because the allowed modes serve no stop
+     * nearby), the access radius grows through these straight-line steps, in metres, up to the walking cap of the request (and [maxAccessWalkSec]).
+     */
+    val accessWidenRadiiM: List<Int> = listOf(1500, 2500, 3500),
+    /**
+     * Absolute ceiling, seconds, of the walk from the origin to the first stop of a journey found with a widened access
+     * radius (1 h). The widening also never exceeds the request's walking cap (the "max walking per trip" setting).
+     */
+    val maxAccessWalkSec: Int = 3600,
 )
 
 /** One stop of a ride with its scheduled times (seconds since midnight of the query service day). */
@@ -211,6 +221,9 @@ class TransitPlanner(val index: TransitIndex, val config: PlannerConfig = Planne
 
     private val patternMode = Array(nPatterns) { TransitMode.ofRouteType(index.lineType[index.patternLine[it]]) }
     private val patAllowed = BooleanArray(nPatterns)
+
+    /** Whether at least one allowed pattern calls at the stop; only such stops can start or end a journey. */
+    private val stopUsable = BooleanArray(nStops)
     private var allowedModes: Set<TransitMode>? = null
 
     private var activeDay = Int.MIN_VALUE
@@ -292,8 +305,8 @@ class TransitPlanner(val index: TransitIndex, val config: PlannerConfig = Planne
             val extCap = max(config.extendedWalkSec, poolCap)
             val extRadius = (extCap * config.walkSpeedMps / config.detourFactor).toInt()
             val pool = ArrayList<Journey>()
-            fun collect(accessR: Int, accessMax: Int, egressR: Int, egressCap: Int) {
-                searchRounds(oLat, oLon, dLat, dLon, departSec, accessR, accessMax, walkCap, egressR, EGRESS_UNLIMITED, egressCap, startBound, true)
+            fun collect(accessR: Int, accessMax: Int, egressR: Int, egressCap: Int, accessCap: Int = walkCap) {
+                searchRounds(oLat, oLon, dLat, dLon, departSec, accessR, accessMax, accessCap, egressR, EGRESS_UNLIMITED, egressCap, startBound, true)
                 for (c in nonDominated(candidates(extCap))) {
                     if (walkOffered && c.arrive > limit) {
                         if (c.arrive < walkArrive) droppedForSaving = true
@@ -308,7 +321,33 @@ class TransitPlanner(val index: TransitIndex, val config: PlannerConfig = Planne
                 // A calmer search: small access and egress radii find the journeys that start and end next to a stop.
                 collect(config.accessRadiusM / 2, config.maxAccessStops / 3, config.accessRadiusM / 2, extCap)
             }
-            out.addAll(alternativesFor(pool, poolCap))
+            var widened = false
+            if (pool.isEmpty() && !droppedForSaving) {
+                // Nothing within the normal access radius: widen it step by step, never beyond the walking cap of the request
+                // (no cap: maxAccessWalkSec) nor beyond maxAccessWalkSec.
+                val accessCapSec = if (walkCap > 0) min(walkCap, config.maxAccessWalkSec) else config.maxAccessWalkSec
+                val maxR = (accessCapSec * config.walkSpeedMps / config.detourFactor).toInt()
+                for (r in config.accessWidenRadiiM.map { min(it, maxR) }.distinct().filter { it > config.accessRadiusM }) {
+                    collect(r, config.maxAccessStops, extRadius, extCap, accessCapSec)
+                    if (pool.isNotEmpty()) {
+                        widened = true
+                        break
+                    }
+                }
+            }
+            val picked = alternativesFor(pool, poolCap)
+            if (widened) {
+                // every journey here starts with a walk longer than the normal radius allows: say so
+                val normalAccessSec = walkSec(config.accessRadiusM.toDouble())
+                out.addAll(
+                    picked.map { j ->
+                        val first = j.legs.first()
+                        if (first is Leg.Walk && first.arriveSec - first.departSec > normalAccessSec) j.copy(note = JourneyNote.LONG_WALK_TO_STATION) else j
+                    },
+                )
+            } else {
+                out.addAll(picked)
+            }
         }
         if (walkOffered) {
             val leg = Leg.Walk(-1, -1, walkReferenceDepartSec, walkArrive, walkMeters)
@@ -581,6 +620,14 @@ class TransitPlanner(val index: TransitIndex, val config: PlannerConfig = Planne
     private fun applyModes(modes: Set<TransitMode>) {
         if (modes == allowedModes) return
         for (p in 0 until nPatterns) patAllowed[p] = patternMode[p] in modes
+        for (s in 0 until nStops) {
+            var usable = false
+            for (e in spStart[s] until spStart[s + 1]) if (patAllowed[spPattern[e]]) {
+                usable = true
+                break
+            }
+            stopUsable[s] = usable
+        }
         allowedModes = modes
     }
 
@@ -788,10 +835,10 @@ class TransitPlanner(val index: TransitIndex, val config: PlannerConfig = Planne
         }
     }
 
-    /** Nearest stops within [radiusM] as `stop shl 32 | walkSeconds`, nearest first, at most [limit]. */
+    /** Nearest stops within [radiusM] served by an allowed mode, as `stop shl 32 | walkSeconds`, nearest first, at most [limit]. */
     private fun nearest(lat: Int, lon: Int, radiusM: Int, limit: Int, maxWalkSec: Int = 0): LongArray {
         val found = ArrayList<Pair<Double, Int>>()
-        forEachNear(lat, lon, radiusM) { s, d -> if (maxWalkSec <= 0 || walkSec(d) <= maxWalkSec) found.add(d to s) }
+        forEachNear(lat, lon, radiusM) { s, d -> if (stopUsable[s] && (maxWalkSec <= 0 || walkSec(d) <= maxWalkSec)) found.add(d to s) }
         found.sortBy { it.first }
         val m = min(limit, found.size)
         return LongArray(m) { (found[it].second.toLong() shl 32) or walkSec(found[it].first).toLong() }

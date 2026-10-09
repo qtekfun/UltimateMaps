@@ -54,6 +54,9 @@ enum class JourneyNote {
 
     /** An alternative that rides less and walks the rest, beyond the "maximum walking per trip" setting. */
     WALK_THE_REST,
+
+    /** The only way found starts with a walk to a more distant station or stop, longer than the normal access radius. */
+    LONG_WALK_TO_STATION,
 }
 
 /**
