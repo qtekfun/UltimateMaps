@@ -155,17 +155,19 @@ class TransitOptionsTest {
         assertTrue(all.any { it.transfers == 1 })
         assertTrue(all.any { j -> j.legs.filterIsInstance<Leg.Ride>().singleOrNull()?.line == 2 })
         // 700 s: access (624 s) is fine, but with the transfer walk and the exit the L1+L2 trip walks about 730 s
-        val some = journeys(700)
+        // (beyond the cap only the marked "walk the rest" extras may appear)
+        val some = journeys(700).filter { it.note != JourneyNote.WALK_THE_REST }
         assertTrue(some.none { it.transfers == 1 }, "the transfer trip walks too much")
         assertTrue(some.isNotEmpty() && some.all { it.walkSec <= 700 })
         // 600 s: even the first walk is too long, nothing can be boarded
-        assertTrue(journeys(600).isEmpty())
+        assertTrue(journeys(600).none { it.note != JourneyNote.WALK_THE_REST })
     }
 
     @Test
     fun `the default cap is fifteen minutes and zero means no cap`() {
         assertEquals(900, PlannerConfig().maxTotalWalkSec)
-        assertTrue(journeys(null).all { it.walkSec <= 900 })
+        assertTrue(journeys(null).filter { it.note != JourneyNote.WALK_THE_REST }.all { it.walkSec <= 900 })
+        assertTrue(journeys(null).filter { it.note == JourneyNote.WALK_THE_REST }.all { it.walkSec > 900 })
         assertTrue(journeys(0).isNotEmpty())
     }
 
@@ -174,7 +176,8 @@ class TransitOptionsTest {
     @Test
     fun `excluding metro leaves the direct bus and drops the trip that needs the metro`() {
         val found = assertIs<TransitPlan.Found>(service().plan(nearA, nearF, at("2026-10-14T07:55:00"), options = PlanOptions(modes = TransitMode.ALL - TransitMode.METRO)))
-        val lines = found.itineraries.flatMap { it.rides }.map { it.line.shortName }.toSet()
+        // (L1 followed by a long walk is a marked extra, not a trip that needs the metro)
+        val lines = found.itineraries.filter { it.note != JourneyNote.WALK_THE_REST }.flatMap { it.rides }.map { it.line.shortName }.toSet()
         assertEquals(setOf("L3"), lines)
     }
 

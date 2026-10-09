@@ -15,7 +15,8 @@ class TransitTest {
     private val nearA = LatLon(40.0001, -3.0)
     private val nearF = LatLon(40.0401, -3.0)
 
-    private fun best(js: List<Journey>) = js.minWith(compareBy({ it.arriveSec }, { it.transfers }))
+    /** The earliest journey within the walking limit (the "walk the rest" extras are alternatives, not the best). */
+    private fun best(js: List<Journey>) = js.filter { it.note != JourneyNote.WALK_THE_REST }.minWith(compareBy({ it.arriveSec }, { it.transfers }))
 
     // ------------------------------------------------------------------ CSV
 
@@ -96,7 +97,9 @@ class TransitTest {
         assertEquals(hms(10, 0), j.legs.filterIsInstance<Leg.Ride>().single().departSec)
         // L2 (weekday only) is not available on Sunday: reaching F is only possible on Monday (next service day)
         val toF = planner.plan(nearA, nearF, sun, hms(9, 0))
-        assertTrue(toF.isNotEmpty() && toF.all { it.arriveSec > 86400 }, toF.joinToString { it.format(planner.index) })
+        // (a ride to C followed by a long walk is an extra alternative, not a way to use L2)
+        val viaMetro = toF.filter { j -> j.legs.any { it is Leg.Ride && planner.index.lineShortName[it.line] == "L2" } }
+        assertTrue(viaMetro.isNotEmpty() && viaMetro.all { it.arriveSec > 86400 }, toF.joinToString { it.format(planner.index) })
     }
 
     @Test
