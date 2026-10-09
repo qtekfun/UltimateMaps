@@ -125,6 +125,7 @@ dependencies {
     implementation(project(":core-geo"))
     implementation(project(":core-net"))
     implementation(project(":core-map"))
+    implementation(project(":mapcore")) // shared map viewer (MapLibre comes transitively); not wired into MapLibreEngine yet, see docs/decisions.md
     implementation(project(":core-search"))
     implementation(project(":core-routing"))
     implementation(project(":core-fuel")) // gas stations: data contract (RF-15)
