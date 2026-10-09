@@ -304,6 +304,7 @@ private fun ItineraryRow(index: Int, it: Itinerary, selected: Boolean, zone: jav
             JourneyNote.LESS_WALKING -> R.string.transit_note_less_walking
             JourneyNote.FEWER_CHANGES -> R.string.transit_note_fewer_changes
             JourneyNote.WALK_THE_REST -> R.string.transit_note_walk_the_rest
+            JourneyNote.LONG_WALK_TO_STATION -> R.string.transit_note_long_walk_to_station
             null -> null
         }
         if (noteText != null) {

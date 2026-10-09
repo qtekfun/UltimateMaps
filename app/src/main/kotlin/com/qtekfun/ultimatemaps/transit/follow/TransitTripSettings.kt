@@ -45,13 +45,13 @@ interface TransitTripSettingsStore {
 object TransitPlanningDefaults {
     const val WALK_ALTERNATIVE_MIN = 20
     const val MIN_SAVING_MIN = 5
-    const val MAX_WALK_MIN = 15
+    const val MAX_WALK_MIN = 60
     val ALL_MODES: Set<TransitMode> = TransitMode.FILTERABLE.toSet()
     val WALK_ALTERNATIVE_CHOICES = listOf(10, 15, 20, 30, 45)
     val MIN_SAVING_CHOICES = listOf(0, 2, 5, 10, 15)
 
     /** 0 = no cap. */
-    val MAX_WALK_CHOICES = listOf(5, 10, 15, 20, 30, 0)
+    val MAX_WALK_CHOICES = listOf(10, 15, 20, 30, 45, 60, 90, 0)
     const val MAX_MINUTES = 120
 
     /** Only the five switchable modes survive; anything else is dropped. */
