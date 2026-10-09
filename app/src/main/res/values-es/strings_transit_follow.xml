@@ -17,6 +17,7 @@
     <string name="trip_next_stop">Próxima parada: %1$s</string>
     <plurals name="trip_get_off_in">
         <item quantity="one">Baja en %2$s dentro de %1$d parada</item>
+        <item quantity="many">Baja en %2$s dentro de %1$d paradas</item>
         <item quantity="other">Baja en %2$s dentro de %1$d paradas</item>
     </plurals>
     <string name="trip_get_off_next">Baja en la próxima parada: %1$s</string>
@@ -36,10 +37,12 @@
     <string name="trip_plan_on_estimated">Según lo previsto (estimado)</string>
     <plurals name="trip_plan_behind">
         <item quantity="one">Unos %d min de retraso sobre el plan</item>
+        <item quantity="many">Unos %d min de retraso sobre el plan</item>
         <item quantity="other">Unos %d min de retraso sobre el plan</item>
     </plurals>
     <plurals name="trip_plan_ahead">
         <item quantity="one">Unos %d min de adelanto sobre el plan</item>
+        <item quantity="many">Unos %d min de adelanto sobre el plan</item>
         <item quantity="other">Unos %d min de adelanto sobre el plan</item>
     </plurals>
     <string name="trip_connection_risk">Conexión con la línea %1$s en riesgo</string>
@@ -72,6 +75,7 @@
     <!-- Status-bar chip (about 7 characters fit) -->
     <plurals name="trip_chip_stops">
         <item quantity="one">%d parada</item>
+        <item quantity="many">%d paradas</item>
         <item quantity="other">%d paradas</item>
     </plurals>
     <string name="trip_chip_get_off">Baja</string>

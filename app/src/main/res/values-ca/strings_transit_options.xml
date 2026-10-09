@@ -21,7 +21,7 @@
     <string name="transit_plan_walk_title">Mostra el recorregut a peu quan duri menys de</string>
     <string name="transit_plan_walk_body">L\'opció a peu sempre apareix al costat de les opcions de transport públic quan la caminada dura menys que això.</string>
     <string name="transit_plan_saving_title">Prefereix anar a peu si el transport públic estalvia menys de</string>
-    <string name="transit_plan_saving_body">Una opció de transport públic que estalvia menys temps que això (o menys del 20% del recorregut a peu) s\'omet quan es llista el recorregut a peu.</string>
+    <string name="transit_plan_saving_body" formatted="false">Una opció de transport públic que estalvia menys temps que això (o menys del 20% del recorregut a peu) s\'omet quan es llista el recorregut a peu.</string>
     <string name="transit_plan_maxwalk_title">Màxim a peu per viatge</string>
     <string name="transit_plan_maxwalk_body">S\'ometen les opcions de transport públic que requereixen en total més caminada que això.</string>
     <string name="transit_plan_maxwalk_none">Sense límit</string>

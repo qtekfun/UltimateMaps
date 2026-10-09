@@ -4,6 +4,15 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 
 ## [Unreleased]
 
+### Added
+
+- **More languages.** The screens are translated into Catalan, Galician, Basque, French, German, Portuguese (European) and Italian, besides English and Spanish; on Android 13 and later the language can be chosen per app (Settings, System, Languages, App languages). Spoken guidance (turn instructions, public-transport prompts, camera and low-emission-zone alerts) now exists in Catalan, Galician, French, German, Portuguese and Italian too, and the "Voice language" setting offers them; with the app in a language that has no spoken guidance (Basque) English is spoken. The translations other than Spanish and English have not been reviewed by native speakers, and the spoken wording has not been heard on a device.
+- Store descriptions (F-Droid metadata) in the new languages.
+
+### Changed
+
+- Fuel names, the data credits of the speed-camera, traffic and low-emission-zone layers, and the dates shown with the camera data follow the app language instead of choosing between Spanish and English.
+
 ## [0.1.0-rc.12] - 2026-10-09
 
 ### Changed

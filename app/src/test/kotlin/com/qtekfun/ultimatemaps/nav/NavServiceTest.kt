@@ -64,7 +64,7 @@ class NavServiceTest {
     }
 
     @Test fun navStringsExistInBothLanguages() {
-        fun keys(f: String) = Regex("<string name=\"([^\"]+)\"").findAll(File(f).readText()).map { it.groupValues[1] }.toSet()
+        fun keys(f: String) = Regex("<string name=\"([^\"]+)\"(?![^>]*translatable=\"false\")").findAll(File(f).readText()).map { it.groupValues[1] }.toSet()
         assertEquals(keys("src/main/res/values/strings_nav.xml"), keys("src/main/res/values-es/strings_nav.xml"))
     }
 

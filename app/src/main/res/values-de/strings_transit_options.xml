@@ -21,7 +21,7 @@
     <string name="transit_plan_walk_title">Fußweg anzeigen, wenn er weniger dauert als</string>
     <string name="transit_plan_walk_body">Die Option zu Fuß wird immer neben den ÖPNV-Optionen aufgeführt, wenn der Fußweg kürzer als dieser Wert dauert.</string>
     <string name="transit_plan_saving_title">Zu Fuß bevorzugen, wenn der ÖPNV weniger spart als</string>
-    <string name="transit_plan_saving_body">Eine ÖPNV-Option, die weniger Zeit spart als dieser Wert (oder weniger als 20 % des Fußwegs), wird weggelassen, wenn der Fußweg aufgeführt ist.</string>
+    <string name="transit_plan_saving_body" formatted="false">Eine ÖPNV-Option, die weniger Zeit spart als dieser Wert (oder weniger als 20 % des Fußwegs), wird weggelassen, wenn der Fußweg aufgeführt ist.</string>
     <string name="transit_plan_maxwalk_title">Maximaler Fußweg pro Fahrt</string>
     <string name="transit_plan_maxwalk_body">ÖPNV-Optionen, die insgesamt mehr Fußweg erfordern als dieser Wert, werden weggelassen.</string>
     <string name="transit_plan_maxwalk_none">Keine Begrenzung</string>

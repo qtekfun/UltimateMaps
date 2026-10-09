@@ -21,7 +21,7 @@
     <string name="transit_plan_walk_title">Mostrar a pé quando demora menos de</string>
     <string name="transit_plan_walk_body">A opção a pé é sempre listada junto das opções de transporte público quando a caminhada demora menos do que isto.</string>
     <string name="transit_plan_saving_title">Preferir a pé se o transporte público poupa menos de</string>
-    <string name="transit_plan_saving_body">Uma opção de transporte público que poupa menos tempo do que isto (ou menos de 20% do percurso a pé) é omitida quando o percurso a pé está listado.</string>
+    <string name="transit_plan_saving_body" formatted="false">Uma opção de transporte público que poupa menos tempo do que isto (ou menos de 20% do percurso a pé) é omitida quando o percurso a pé está listado.</string>
     <string name="transit_plan_maxwalk_title">Máximo a pé por viagem</string>
     <string name="transit_plan_maxwalk_body">As opções de transporte público que exijam, no total, mais caminhada do que isto são omitidas.</string>
     <string name="transit_plan_maxwalk_none">Sem limite</string>

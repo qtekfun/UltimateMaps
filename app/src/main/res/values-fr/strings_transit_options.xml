@@ -21,7 +21,7 @@
     <string name="transit_plan_walk_title">Afficher la marche quand elle dure moins de</string>
     <string name="transit_plan_walk_body">L\'option à pied est toujours listée à côté des options en transports en commun lorsque la marche dure moins que cela.</string>
     <string name="transit_plan_saving_title">Préférer la marche si les transports font gagner moins de</string>
-    <string name="transit_plan_saving_body">Une option en transports en commun qui fait gagner moins de temps que cela (ou moins de 20 % du trajet à pied) est écartée lorsque la marche est listée.</string>
+    <string name="transit_plan_saving_body" formatted="false">Une option en transports en commun qui fait gagner moins de temps que cela (ou moins de 20 % du trajet à pied) est écartée lorsque la marche est listée.</string>
     <string name="transit_plan_maxwalk_title">Marche maximale par trajet</string>
     <string name="transit_plan_maxwalk_body">Les options en transports en commun qui exigent au total plus de marche que cela sont écartées.</string>
     <string name="transit_plan_maxwalk_none">Sans limite</string>

@@ -10,7 +10,7 @@ import kotlin.test.assertTrue
 class PlaceExtrasStringsTest {
     private fun strings(path: String): Map<String, String> =
         Regex("<string name=\"([^\"]+)\"[^>]*>(.*?)</string>", RegexOption.DOT_MATCHES_ALL)
-            .findAll(File(path).readText()).associate { it.groupValues[1] to it.groupValues[2] }
+            .findAll(File(path).readText()).filter { !it.value.contains("translatable=\"false\"") }.associate { it.groupValues[1] to it.groupValues[2] }
 
     private val en = strings("src/main/res/values/strings_place_extras.xml")
     private val es = strings("src/main/res/values-es/strings_place_extras.xml")

@@ -21,7 +21,7 @@
     <string name="transit_plan_walk_title">Erakutsi oinezkoa hau baino gutxiago irauten duenean</string>
     <string name="transit_plan_walk_body">Oinezko aukera beti zerrendatzen da garraio publikoko aukeren ondoan, ibilaldiak hau baino gutxiago irauten duenean.</string>
     <string name="transit_plan_saving_title">Lehenetsi oinez garraio publikoak hau baino gutxiago aurrezten badu</string>
-    <string name="transit_plan_saving_body">Hau baino denbora gutxiago aurrezten duen garraio publikoko aukera bat (edo oinezko ibilbidearen ehuneko 20 baino gutxiago) kentzen da oinezko ibilbidea zerrendatuta dagoenean.</string>
+    <string name="transit_plan_saving_body" formatted="false">Hau baino denbora gutxiago aurrezten duen garraio publikoko aukera bat (edo oinezko ibilbidearen ehuneko 20 baino gutxiago) kentzen da oinezko ibilbidea zerrendatuta dagoenean.</string>
     <string name="transit_plan_maxwalk_title">Bidaia bakoitzeko gehieneko oinezkoa</string>
     <string name="transit_plan_maxwalk_body">Guztira hau baino oinez gehiago behar duten garraio publikoko aukerak kentzen dira.</string>
     <string name="transit_plan_maxwalk_none">Mugarik ez</string>

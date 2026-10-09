@@ -25,6 +25,7 @@
     <string name="transit_direct">Directo</string>
     <plurals name="transit_transfers">
         <item quantity="one">%d transbordo</item>
+        <item quantity="many">%d transbordos</item>
         <item quantity="other">%d transbordos</item>
     </plurals>
     <string name="transit_walk_only">Solo a pie</string>
@@ -35,6 +36,7 @@
     <string name="transit_walk_only_pill">A pie · %1$d min</string>
     <plurals name="transit_walk_description">
         <item quantity="one">Caminar %d minuto</item>
+        <item quantity="many">Caminar %d minutos</item>
         <item quantity="other">Caminar %d minutos</item>
     </plurals>
 
@@ -48,6 +50,7 @@
     <string name="transit_leg_alight">Baja en %1$s</string>
     <plurals name="transit_leg_stops">
         <item quantity="one">%d parada</item>
+        <item quantity="many">%d paradas</item>
         <item quantity="other">%d paradas</item>
     </plurals>
 
