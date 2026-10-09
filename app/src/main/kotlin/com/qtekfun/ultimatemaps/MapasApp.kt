@@ -437,6 +437,13 @@ class MapasApp : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        // Local diagnostic notes of an uncaught exception (class and stack only; Settings, About shows them). Each process
+        // writes its own file, and the previous handler still ends the process as before.
+        if (isMainProcess()) {
+            com.qtekfun.ultimatemaps.diagnostics.Diagnostics.notes(this).installAsUncaughtHandler()
+        } else {
+            com.qtekfun.ultimatemaps.diagnostics.Diagnostics.coreNotes(this).installAsUncaughtHandler()
+        }
         // The native core runs in its own process (`:core`), which also creates an Application: it must not start
         // the main process's housekeeping.
         if (!isMainProcess()) return
