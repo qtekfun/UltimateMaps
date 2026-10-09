@@ -14,7 +14,7 @@ All feeds were downloaded on 2026-10-07 into `~/mapas-data/transit/raw/` (outsid
 
 | Feed | URL (verified, HTTP 200) | Size (zip) | Calendar validity (read from the feed) | Notes |
 |---|---|---|---|---|
-| CRTM Metro de Madrid | `http://crtm.maps.arcgis.com/sharing/rest/content/items/5c7f2951962540d69ffe8f640d94c246/data` | 1,503,773 B | 2025-05-27 .. **2026-05-27 (expired)**; `feed_version` 20250527; portal item last modified 2025-05-30 | 13 routes, 120 trips, **frequency based** (`frequencies.txt`, 790 windows), 2,216 stop_times |
+| CRTM Metro de Madrid | `http://crtm.maps.arcgis.com/sharing/rest/content/items/5c7f2951962540d69ffe8f640d94c246/data` | 1,503,773 B | 2025-05-27 .. **2026-05-27 (expired)**; `feed_version` 20250527; portal item last modified 2025-05-30 (still, 2026-10-09); NAP copy: file 1134, unverified | 13 routes, 120 trips, **frequency based** (`frequencies.txt`, 790 windows), 2,216 stop_times |
 | CRTM Metro Ligero / tranvia | `.../items/aaed26cc0ff64b0c947ac0bc3e033196/data` | 417,242 B | 2026-07-22 .. 2027-07-22; version 20260722; modified 2026-07-29 | 4 routes, 3,001 scheduled trips, 38,983 stop_times |
 | CRTM EMT Madrid buses | `.../items/868df0e58fca47e79b942902dffd7da0/data` | 21,060,726 B | 2026-09-29 .. 2026-12-31 (+ `calendar_dates`); no `feed_info`; modified 2026-09-30 | 235 routes, 86,871 trips, 2,233,315 stop_times, **frequency based** (one `frequencies.txt` row per trip) |
 | CRTM interurban buses | `.../items/885399f83408473c8d815e40c5e702b7/data` | 74,153,792 B | mostly 2026-09-10 .. 2027-10-08; version 20260910; modified 2026-09-30 | 354 routes, 56,118 trips, 1,448,978 stop_times, scheduled |
@@ -197,8 +197,11 @@ network. The risky part is data quality and licensing, not the algorithm.
 
 Conditions before shipping:
 
-1. **Metro de Madrid data.** The published Metro feed expired on 2026-05-27 and was last refreshed in May 2025. Either
-   obtain a current feed (CRTM, or NAP if it carries one: not verified) or ship Madrid without Metro-accurate dates. The
+1. **Metro de Madrid data.** The published Metro feed expired on 2026-05-27 and was last refreshed in May 2025; no newer
+   key-free feed exists (checked 2026-10-09: CRTM portal item unchanged, Comunidad de Madrid catalogue and Mobility Database
+   point at it). The NAP file 1134 (needs the key, unverified) is wired in `scripts/transit/madrid.json` and fetched by the
+   Madrid step of the data workflow; see `docs/decisions.md`, entry 2026-10-09. If it is expired too, ship Madrid without Metro
+   or with flagged old timetables (owner's decision). The
    `ignoreCalendarRange` switch used in this spike is only acceptable for testing.
 2. **Data checks with the publishers**: EMT frequency semantics and the interurban implausible trips (section 3), plus the
    CRTM "always up to date" clause for an offline product (owner's call; see licence table).
