@@ -8,6 +8,8 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 
 ### Added
 
+- **Choose how many vehicle changes you accept.** Public transport planning has a new choice (any, at most one, none), in Settings and as chips in the route panel. When every option found changes vehicle, the planner now also looks farther away for a stop with a line that goes straight there and offers it, even if the walk is longer.
+
 - **"I'm on board" button in the public-transport trip.** One tap tells the app you are (or are not) on the vehicle, and it wins over what the GPS inferred.
 
 ### Fixed
