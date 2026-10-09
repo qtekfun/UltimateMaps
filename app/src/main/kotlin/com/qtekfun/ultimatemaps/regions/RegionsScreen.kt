@@ -114,7 +114,7 @@ fun RegionsScreen(state: RegionsUiState, actions: RegionsActions, modifier: Modi
     val rows = remember(catalog, index, expanded, state.installed, state.downloads, query) {
         when {
             catalog == null || index == null -> emptyList()
-            searching -> RegionsModel.searchRows(index, query, installedVersions, state.downloads)
+            searching -> RegionsModel.searchRows(index, query, installedVersions, state.downloads, expanded.toSet())
             else -> RegionsModel.rows(catalog, expanded.toSet(), installedVersions, state.downloads)
         }
     }
@@ -179,7 +179,7 @@ fun RegionsScreen(state: RegionsUiState, actions: RegionsActions, modifier: Modi
                 }
                 RegionsTab.MAPS -> mapsItems(
                     state, actions, catalog, nameLanguage, query, searching, rows, installedRows, orphans,
-                    expanded, { expanded = it }, { query = "" }, { confirmDelete = it },
+                    expanded, { expanded = it }, { confirmDelete = it },
                 )
             }
             item(key = "end") { Spacer(Modifier.height(24.dp)) }
@@ -205,7 +205,6 @@ private fun LazyListScope.mapsItems(
     orphans: List<InstalledEntry>,
     expanded: List<String>,
     setExpanded: (List<String>) -> Unit,
-    clearQuery: () -> Unit,
     askDelete: (Pair<String, String>) -> Unit,
 ) {
     if (!searching) item(key = "restored") { RestoredRegionsOffer(state, catalog, actions) }
@@ -233,13 +232,8 @@ private fun LazyListScope.mapsItems(
         RegionRowView(
             row, actions, nameLanguage,
             onToggle = {
-                if (row.path != null) {
-                    // A group found by search: leave the search and open it in the tree.
-                    setExpanded((expanded + RegionsModel.ancestors(catalog!!, row.region.id) + row.region.id).distinct())
-                    clearQuery()
-                } else {
-                    setExpanded(if (row.region.id in expanded) expanded - row.region.id else expanded + row.region.id)
-                }
+                // Opening or closing a row never touches the search text.
+                setExpanded(if (row.region.id in expanded) expanded - row.region.id else expanded + row.region.id)
             },
             onAskDelete = { askDelete(row.region.id to row.region.displayName(nameLanguage)) },
         )
