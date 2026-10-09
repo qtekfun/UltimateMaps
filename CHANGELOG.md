@@ -4,6 +4,21 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 
 ## [Unreleased]
 
+## [0.1.0-rc.14] - 2026-10-09
+
+### Added
+
+- **Choose how many vehicle changes you accept.** Public transport planning has a new choice (any, at most one, none), in Settings and as chips in the route panel. When every option found changes vehicle, the planner now also looks farther away for a stop with a line that goes straight there and offers it, even if the walk is longer.
+
+- **"I'm on board" button in the public-transport trip.** One tap tells the app you are (or are not) on the vehicle, and it wins over what the GPS inferred.
+
+### Fixed
+
+- **Re-planning on a train no longer says "take the next train".** Aboard, the new trip starts on the vehicle: it looks at getting off at each of the next stops (and the planned one) and keeps the earliest arrival; staying on the same train is one ride. A fast train whose track curves away from the straight line between stops is now recognised as boarded.
+
+- **Public-transport alerts no longer cover the screen.** During a public-transport trip, several delay or "does not stop" alerts collapse into one chip ("N alerts") with the first one as a preview; tapping it opens a scrollable list limited to a third of the screen, and a Hide button drops the alerts for the rest of the trip (the Cercanías real-time setting stays the permanent switch).
+
+
 ## [0.1.0-rc.13] - 2026-10-09
 
 ### Added

@@ -1,0 +1,1 @@
+Versión candidata: recalcular en un tren parte del propio tren, botón "Voy a bordo", los avisos del transporte público se agrupan en un solo aviso y puedes elegir cuántos transbordos aceptas (el planificador también ofrece una línea directa desde una parada más lejana). Solo España.

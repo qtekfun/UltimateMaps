@@ -83,4 +83,13 @@
     <string name="trip_prompts_title">Indicacións da viaxe en transporte público</string>
     <string name="trip_prompts_body">Como che di unha viaxe en transporte público paso a paso cando subir, cambiar e baixar.</string>
     <string name="trip_prompts_note">O báner da pantalla sempre se mostra. O Silenciar da navegación desactiva o son e a voz.</string>
+    <string name="transit_changes_any">Calquera transbordo</string>
+    <string name="transit_changes_one">Máx. 1 transbordo</string>
+    <string name="transit_changes_none">Sen transbordos</string>
+    <string name="transit_plan_changes_title">Transbordos</string>
+    <string name="transit_plan_changes_body">Cantos transbordos pode ter unha viaxe. Con «Sen transbordos» o planificador tamén busca paradas máis afastadas con liña directa, aínda que se camiñe máis.</string>
+    <string name="trip_on_board">Vou a bordo</string>
+    <string name="trip_not_on_board">Non vou a bordo</string>
+    <string name="trip_on_board_description">Indica á app que vas no vehículo</string>
+    <string name="trip_not_on_board_description">Indica á app que non vas no vehículo</string>
 </resources>
