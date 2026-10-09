@@ -58,6 +58,7 @@
     <!-- Maps screen: section -->
     <string name="transit_maps_title">Public transport</string>
     <string name="transit_maps_intro">Timetables for theoretical routes. Each city or region is a separate download, made only when you press Download; all planning happens on your phone and no position is sent.</string>
+    <string name="transit_maps_none">The catalog offers no public transport cities yet.</string>
     <string name="transit_maps_size">Download size: %1$s</string>
     <string name="transit_maps_valid">Valid %1$s to %2$s</string>
     <string name="transit_maps_expired">Expired on %1$s: the published data is out of date</string>

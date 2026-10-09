@@ -58,6 +58,7 @@
     <!-- Pantalla Mapas: sección -->
     <string name="transit_maps_title">Transporte público</string>
     <string name="transit_maps_intro">Horarios para rutas teóricas. Cada ciudad o región se descarga por separado y solo al pulsar Descargar; todo se calcula en tu teléfono y no se envía ninguna posición.</string>
+    <string name="transit_maps_none">El catálogo aún no ofrece ciudades de transporte público.</string>
     <string name="transit_maps_size">Tamaño de la descarga: %1$s</string>
     <string name="transit_maps_valid">Válido del %1$s al %2$s</string>
     <string name="transit_maps_expired">Caducó el %1$s: los datos publicados están desactualizados</string>

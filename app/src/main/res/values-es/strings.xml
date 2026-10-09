@@ -33,6 +33,12 @@
 
     <!-- Pantalla Mapas (regiones) -->
     <string name="regions_title">Mapas</string>
+    <string name="regions_tab_maps">Mapas</string>
+    <string name="regions_tab_transit">Transporte público</string>
+    <string name="regions_tab_settings">Descargas</string>
+    <string name="regions_tabs_group">Secciones de mapas</string>
+    <string name="regions_installed_title">Instalados</string>
+    <string name="regions_all_title">Todos los mapas</string>
     <string name="regions_search_hint">Buscar mapas (p. ej. Cataluña)</string>
     <string name="regions_search_clear">Borrar la búsqueda</string>
     <string name="regions_search_empty">Ningún mapa coincide con «%1$s».</string>
