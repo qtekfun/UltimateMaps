@@ -33,7 +33,12 @@ import kotlinx.coroutines.withTimeoutOrNull
 enum class RouteStatus { IDLE, NEEDS_ORIGIN, COMPUTING, DONE, ERROR }
 
 /** Why there is no route; mapped to a message by the UI. */
-enum class RouteError { NO_REGIONS, NEED_MORE_MAPS, START_NOT_FOUND, END_NOT_FOUND, STOP_NOT_FOUND, ROUTE_NOT_FOUND, NO_CYCLE_ROUTE, TIMEOUT, INTERNAL }
+enum class RouteError {
+    NO_REGIONS, NEED_MORE_MAPS, START_NOT_FOUND, END_NOT_FOUND, STOP_NOT_FOUND, ROUTE_NOT_FOUND, NO_CYCLE_ROUTE, TIMEOUT, INTERNAL,
+
+    /** The last-resort catch fired: something threw while the route was being calculated or prepared for the screen. */
+    UNEXPECTED,
+}
 
 /** Outcome of [RoutePreviewController.addStop]; everything but [ADDED] leaves the route as it was. */
 enum class StopResult { ADDED, DUPLICATE, SAME_AS_DESTINATION, LIMIT, NO_ROUTE }
@@ -149,11 +154,26 @@ class RoutePreviewController(
     private val lowEmissionZones: (List<LatLon>) -> List<ZbeCrossing> = { emptyList() },
     /** The orange and red weather warnings along a route (optional AEMET alerts, matched on the phone). Empty while off. */
     private val weatherWarnings: (List<LatLon>) -> List<WeatherWarning> = { emptyList() },
+    /** Where an unexpected failure is noted (exception class and stack only, never a message or a position). */
+    private val onFailure: (String, Throwable) -> Unit = { _, _ -> },
 ) {
     val state = RouteState()
 
     private fun zonesOf(geometry: List<LatLon>): List<ZbeCrossing> =
-        if (state.profile == RoutingProfile.CAR) lowEmissionZones(geometry) else emptyList()
+        if (state.profile == RoutingProfile.CAR) guarded("zones", emptyList()) { lowEmissionZones(geometry) } else emptyList()
+
+    /**
+     * Runs one optional extra of a route (heights, zones, warnings, drawing). These only decorate a route that was found,
+     * so when one of them throws the route is still shown and the failure is noted; it must never take the app down.
+     */
+    private fun <T> guarded(what: String, fallback: T, block: () -> T): T = try {
+        block()
+    } catch (e: CancellationException) {
+        throw e
+    } catch (e: Throwable) {
+        onFailure(what, e)
+        fallback
+    }
 
     private var job: Job? = null
     private var altJob: Job? = null
@@ -225,26 +245,32 @@ class RoutePreviewController(
         state.alternativesStatus = AlternativesStatus.FINDING
         altJob = scope.launch {
             val found = mutableListOf<RouteAlternative>()
-            for (kind in kinds) {
-                val options = base.options.withAvoiding(kind)
-                val request = base.copy(options = options)
-                val work = async(io) { mutex.withLock { runNative(request) } }
-                val native = try {
-                    withTimeoutOrNull(timeoutMs) { work.await() }
-                } catch (e: CancellationException) {
-                    work.cancel()
-                    throw e
+            try {
+                for (kind in kinds) {
+                    val options = base.options.withAvoiding(kind)
+                    val request = base.copy(options = options)
+                    val work = async(io) { mutex.withLock { runNative(request) } }
+                    val native = try {
+                        withTimeoutOrNull(timeoutMs) { work.await() }
+                    } catch (e: CancellationException) {
+                        work.cancel()
+                        throw e
+                    }
+                    if (native == null) {
+                        work.cancel()
+                        continue
+                    }
+                    val plan = (native as? Native.Done)?.outcome?.plan ?: continue
+                    if (plan.geometry.size < 2) continue
+                    if (plan.geometry == main.geometry || found.any { it.geometry == plan.geometry }) continue
+                    found += RouteAlternative(kind, options, plan.geometry, plan.distanceMeters, plan.durationSeconds, plan.altitudes)
+                    state.alternatives = found.toList()
+                    redrawAlternatives()
                 }
-                if (native == null) {
-                    work.cancel()
-                    continue
-                }
-                val plan = (native as? Native.Done)?.outcome?.plan ?: continue
-                if (plan.geometry.size < 2) continue
-                if (plan.geometry == main.geometry || found.any { it.geometry == plan.geometry }) continue
-                found += RouteAlternative(kind, options, plan.geometry, plan.distanceMeters, plan.durationSeconds, plan.altitudes)
-                state.alternatives = found.toList()
-                redrawAlternatives()
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Throwable) {
+                onFailure("alternatives", e) // keep what was found; the main route stays as it is
             }
             state.alternativesStatus = AlternativesStatus.DONE
         }
@@ -259,10 +285,12 @@ class RoutePreviewController(
         state.selectedAlternative = index
         state.distanceMeters = alt?.distanceMeters ?: main.distanceMeters
         state.durationSeconds = alt?.durationSeconds ?: main.durationSeconds
-        state.elevation = if (alt != null) ElevationProfile.of(alt.geometry, alt.altitudes) else ElevationProfile.of(main.geometry, main.altitudes)
+        state.elevation = guarded("elevation", null) {
+            if (alt != null) ElevationProfile.of(alt.geometry, alt.altitudes) else ElevationProfile.of(main.geometry, main.altitudes)
+        }
         state.lowEmission = zonesOf(alt?.geometry ?: main.geometry)
-        state.weather = weatherWarnings(alt?.geometry ?: main.geometry)
-        showRoute(alt?.geometry ?: main.geometry)
+        state.weather = guarded("weather", emptyList()) { weatherWarnings(alt?.geometry ?: main.geometry) }
+        guarded("draw", Unit) { showRoute(alt?.geometry ?: main.geometry) }
         redrawAlternatives()
     }
 
@@ -272,7 +300,7 @@ class RoutePreviewController(
             if (selected != null) mainPlan?.let { add(it.geometry) }
             state.alternatives.forEachIndexed { i, a -> if (i != selected) add(a.geometry) }
         }
-        showAlternatives(lines)
+        guarded("draw-alternatives", Unit) { showAlternatives(lines) }
     }
 
     private fun resetAlternatives() {
@@ -285,7 +313,7 @@ class RoutePreviewController(
         state.alternatives = emptyList()
         state.alternativesStatus = AlternativesStatus.NONE
         state.selectedAlternative = null
-        showAlternatives(emptyList())
+        guarded("draw-alternatives", Unit) { showAlternatives(emptyList()) }
     }
 
     fun close() {
@@ -379,7 +407,7 @@ class RoutePreviewController(
             RouteOrigin.Current -> userLocation()
             is RouteOrigin.Picked -> o.point
         }
-        clearRoute()
+        guarded("clear", Unit) { clearRoute() }
         state.error = null
         if (state.transitMode && transit != null) {
             // Public transport has its own planner and result; the car/walk/bike route state stays idle.
@@ -397,32 +425,55 @@ class RoutePreviewController(
         state.status = RouteStatus.COMPUTING
         job = scope.launch {
             val t0 = clock()
-            val work = async(io) { mutex.withLock { runNative(request) } }
-            val native = try {
-                withTimeoutOrNull(timeoutMs) { work.await() }
-            } catch (e: CancellationException) {
-                work.cancel()
-                log.computed(profile, clock() - t0, "cancelled", stops)
-                throw e
-            }
-            if (native == null) {
-                work.cancel() // cannot stop a running native call; its result is dropped
-                finish(profile, stops, clock() - t0, null, RouteError.TIMEOUT)
-                return@launch
-            }
-            when (native) {
-                is Native.Done -> {
-                    val plan = native.outcome.plan
-                    if (plan != null && plan.geometry.size >= 2) {
-                        finish(profile, stops, clock() - t0, plan, null, request)
-                    } else {
-                        finish(profile, stops, clock() - t0, null, errorFor(native.outcome))
-                    }
+            try {
+                val work = async(io) { mutex.withLock { runNative(request) } }
+                val native = try {
+                    withTimeoutOrNull(timeoutMs) { work.await() }
+                } catch (e: CancellationException) {
+                    work.cancel()
+                    log.computed(profile, clock() - t0, "cancelled", stops)
+                    throw e
                 }
-                Native.NoRegions -> finish(profile, stops, clock() - t0, null, RouteError.NO_REGIONS)
-                Native.Failed -> finish(profile, stops, clock() - t0, null, RouteError.INTERNAL)
+                if (native == null) {
+                    work.cancel() // cannot stop a running native call; its result is dropped
+                    finish(profile, stops, clock() - t0, null, RouteError.TIMEOUT)
+                    return@launch
+                }
+                when (native) {
+                    is Native.Done -> {
+                        val plan = native.outcome.plan
+                        if (plan != null && plan.geometry.size >= 2) {
+                            finish(profile, stops, clock() - t0, plan, null, request)
+                        } else {
+                            finish(profile, stops, clock() - t0, null, errorFor(native.outcome))
+                        }
+                    }
+                    Native.NoRegions -> finish(profile, stops, clock() - t0, null, RouteError.NO_REGIONS)
+                    Native.Failed -> finish(profile, stops, clock() - t0, null, RouteError.INTERNAL)
+                }
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Throwable) {
+                // Last resort: a route that fails in any way is a message on screen, never a dead app.
+                failUnexpected(profile, stops, clock() - t0, e)
             }
         }
+    }
+
+    /** The last-resort state: note the failure (class and stack only), forget any half-built route and say so. */
+    private fun failUnexpected(profile: RoutingProfile, stops: Int, millis: Long, e: Throwable) {
+        onFailure("route", e)
+        try {
+            log.computed(profile, millis, "unexpected", stops)
+        } catch (_: Throwable) {
+        }
+        resetAlternatives()
+        try {
+            clearRoute()
+        } catch (_: Throwable) {
+        }
+        state.error = RouteError.UNEXPECTED
+        state.status = RouteStatus.ERROR
     }
 
     private fun finish(
@@ -436,11 +487,11 @@ class RoutePreviewController(
             state.baseDurationSeconds = plan.durationSeconds
             mainPlan = plan
             mainRequest = request
-            state.elevation = ElevationProfile.of(plan.geometry, plan.altitudes)
-            state.lowEmission = if (profile == RoutingProfile.CAR) lowEmissionZones(plan.geometry) else emptyList()
-            state.weather = weatherWarnings(plan.geometry)
+            state.elevation = guarded("elevation", null) { ElevationProfile.of(plan.geometry, plan.altitudes) }
+            state.lowEmission = if (profile == RoutingProfile.CAR) guarded("zones", emptyList()) { lowEmissionZones(plan.geometry) } else emptyList()
+            state.weather = guarded("weather", emptyList()) { weatherWarnings(plan.geometry) }
             state.status = RouteStatus.DONE
-            showRoute(plan.geometry)
+            guarded("draw", Unit) { showRoute(plan.geometry) }
         } else {
             state.error = error
             state.status = RouteStatus.ERROR
@@ -466,7 +517,9 @@ class RoutePreviewController(
             return Native.Done(current.routeDetailed(request))
         } catch (e: CancellationException) {
             throw e
-        } catch (e: Exception) {
+        } catch (e: Throwable) {
+            // Also Errors (OutOfMemoryError, a missing native symbol...): this runs on a worker, where they would be fatal.
+            onFailure("native", e)
             return Native.Failed
         }
     }

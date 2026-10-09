@@ -25,6 +25,9 @@ class AboutSettingsEnv(
     val transitAttributions: () -> List<String> = { emptyList() },
     /** The text of the NOTICE file (third-party notices and licence texts); read only when the user opens it. */
     val notice: () -> String = { "" },
+    /** The local diagnostic notes (how the processes ended, caught failures; no positions or names); read only when the user opens them. */
+    val diagnostics: () -> String = { "" },
+    val clearDiagnostics: () -> Unit = {},
 )
 
 /** Category "About": version, licence, source code and every attribution the app owes (map data, petrol prices, transit data). */
@@ -69,7 +72,49 @@ fun AboutSettingsSection(env: AboutSettingsEnv) {
         )
         TransitAboutBlock(env.transitAttributions())
     }
+    DiagnosticsBlock(env.diagnostics, env.clearDiagnostics)
     NoticeBlock(env.notice)
+}
+
+/**
+ * "Diagnostics": what the app noted locally about failures (never a position, a name or an exception message), collapsed by
+ * default, with Copy for a bug report and Clear. Nothing is sent anywhere.
+ */
+@Composable
+private fun DiagnosticsBlock(diagnostics: () -> String, clear: () -> Unit) {
+    SectionTitle(stringResource(R.string.about_diag_title))
+    Card("about_diag_card") {
+        var shown by remember { mutableStateOf(false) }
+        var text by remember { mutableStateOf("") }
+        val clipboard = androidx.compose.ui.platform.LocalClipboardManager.current
+        BasicText(
+            stringResource(R.string.about_diag_body),
+            style = Mapas.typography.callout.copy(color = Mapas.colors.secondaryLabel),
+        )
+        TextButton(
+            stringResource(if (shown) R.string.about_diag_hide else R.string.about_diag_show),
+            "about_diag_toggle",
+        ) {
+            shown = !shown
+            if (shown) text = diagnostics()
+        }
+        if (shown) {
+            BasicText(
+                text.ifBlank { stringResource(R.string.about_diag_empty) },
+                style = Mapas.typography.callout.copy(color = Mapas.colors.label),
+                modifier = Modifier.testTag("about_diag_text"),
+            )
+            if (text.isNotBlank()) {
+                TextButton(stringResource(R.string.about_diag_copy), "about_diag_copy") {
+                    clipboard.setText(androidx.compose.ui.text.AnnotatedString(text))
+                }
+                DestructiveButton(stringResource(R.string.about_diag_clear), "about_diag_clear") {
+                    clear()
+                    text = ""
+                }
+            }
+        }
+    }
 }
 
 /** "Third-party notices": the NOTICE text (licence texts that the libraries inside the app ask to ship), collapsed by default. */

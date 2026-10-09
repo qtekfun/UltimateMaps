@@ -59,6 +59,8 @@ class NavLauncher(
     private val mutex: Mutex,
     private val request: () -> RouteRequest?,
     private val onStarted: () -> Unit = {},
+    /** Where an unexpected failure is noted (class and stack only; see `CrashNotes`). */
+    private val onFailure: (Throwable) -> Unit = {},
 ) {
     val state = NavLaunchState()
 
@@ -72,28 +74,41 @@ class NavLauncher(
         state.failure = null
         state.simulate = simulate
         job = scope.launch {
-            val timeoutSec = ((runner.timeoutMillis + 999) / 1000).toInt()
-            val engine: DetailedRoutingEngine? = try {
-                withContext(io) { regions.coreMaps()?.let { backend.open(it, timeoutSec) } }
+            try {
+                launchGuided(req, simulate)
             } catch (e: kotlinx.coroutines.CancellationException) {
                 throw e
-            } catch (_: Exception) {
-                null
-            }
-            val run = mutex.withLock { runner.run(req) { engine } }
-            val plan = run.plan
-            if (plan == null) {
-                state.failure = run.failure ?: RouteFailure(RouteFailureKind.INTERNAL, RouteAdvice.RETRY)
-                state.status = LaunchStatus.FAILED
-                return@launch
-            }
-            if (screen.begin(plan, req.via, NavTrip(req.profile, req.options), simulate)) {
-                state.status = LaunchStatus.IDLE
-                onStarted()
-            } else {
+            } catch (e: Throwable) {
+                // Last resort: whatever threw while the guided route was calculated or opened, the card shows a failure.
+                onFailure(e)
                 state.failure = RouteFailure(RouteFailureKind.INTERNAL, RouteAdvice.RETRY)
                 state.status = LaunchStatus.FAILED
             }
+        }
+    }
+
+    private suspend fun launchGuided(req: RouteRequest, simulate: Boolean) {
+        val timeoutSec = ((runner.timeoutMillis + 999) / 1000).toInt()
+        val engine: DetailedRoutingEngine? = try {
+            withContext(io) { regions.coreMaps()?.let { backend.open(it, timeoutSec) } }
+        } catch (e: kotlinx.coroutines.CancellationException) {
+            throw e
+        } catch (_: Throwable) {
+            null
+        }
+        val run = mutex.withLock { runner.run(req) { engine } }
+        val plan = run.plan
+        if (plan == null) {
+            state.failure = run.failure ?: RouteFailure(RouteFailureKind.INTERNAL, RouteAdvice.RETRY)
+            state.status = LaunchStatus.FAILED
+            return
+        }
+        if (screen.begin(plan, req.via, NavTrip(req.profile, req.options), simulate)) {
+            state.status = LaunchStatus.IDLE
+            onStarted()
+        } else {
+            state.failure = RouteFailure(RouteFailureKind.INTERNAL, RouteAdvice.RETRY)
+            state.status = LaunchStatus.FAILED
         }
     }
 
