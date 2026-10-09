@@ -13,6 +13,7 @@
     <string name="transit_note_less_walking">Menos caminata</string>
     <string name="transit_note_fewer_changes">Menos transbordos</string>
     <string name="transit_note_walk_the_rest">El resto andando</string>
+    <string name="transit_note_long_walk_to_station">Caminata más larga hasta la estación</string>
 
     <!-- Settings: public-transport planning -->
     <string name="transit_plan_title">Planificación de transporte público</string>

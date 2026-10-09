@@ -134,9 +134,9 @@ class TransitTripSettingsTest {
         val p = prefs()
         val s = PrefsTransitTripSettings(p)
         assertEquals(TransitPlanningDefaults.ALL_MODES, s.allowedModes.value)
-        assertEquals(listOf(20, 5, 15), listOf(s.walkAlternativeMin.value, s.minSavingMin.value, s.maxWalkMin.value))
+        assertEquals(listOf(20, 5, 60), listOf(s.walkAlternativeMin.value, s.minSavingMin.value, s.maxWalkMin.value))
         val options = s.planOptions()
-        assertEquals(listOf(1200, 300, 900), listOf(options.walkAlternativeMaxSec, options.minTransitSavingSec, options.maxTotalWalkSec))
+        assertEquals(listOf(1200, 300, 3600), listOf(options.walkAlternativeMaxSec, options.minTransitSavingSec, options.maxTotalWalkSec))
         assertEquals(com.qtekfun.ultimatemaps.core.transit.TransitMode.ALL, options.modes)
 
         s.setAllowedModes(setOf(TransitMode.BUS, TransitMode.TRAM, TransitMode.OTHER)) // OTHER is not switchable: dropped
@@ -158,7 +158,7 @@ class TransitTripSettingsTest {
         p.edit().putInt(PrefsTransitTripSettings.KEY_MODES, 3).putString(PrefsTransitTripSettings.KEY_WALK_ALT, "x").putInt(PrefsTransitTripSettings.KEY_MIN_SAVING, -4).putInt(PrefsTransitTripSettings.KEY_MAX_WALK, 9999).commit()
         val d = PrefsTransitTripSettings(p)
         assertEquals(TransitPlanningDefaults.ALL_MODES, d.allowedModes.value)
-        assertEquals(listOf(20, 5, 15), listOf(d.walkAlternativeMin.value, d.minSavingMin.value, d.maxWalkMin.value))
+        assertEquals(listOf(20, 5, 60), listOf(d.walkAlternativeMin.value, d.minSavingMin.value, d.maxWalkMin.value))
     }
 
     @Test fun reloadReadsARestoredPlannerChoice() {
@@ -176,7 +176,7 @@ class TransitTripSettingsTest {
         assertEquals(setOf("BUS", "METRO", "TRAM", "TRAIN", "FERRY"), modes.default)
         assertEquals(setOf("BUS"), modes.sanitize(setOf("BUS", "OTHER", "x")))
         for ((key, default) in listOf(
-            PrefsTransitTripSettings.KEY_WALK_ALT to 20, PrefsTransitTripSettings.KEY_MIN_SAVING to 5, PrefsTransitTripSettings.KEY_MAX_WALK to 15,
+            PrefsTransitTripSettings.KEY_WALK_ALT to 20, PrefsTransitTripSettings.KEY_MIN_SAVING to 5, PrefsTransitTripSettings.KEY_MAX_WALK to 60,
         )) {
             val spec = assertNotNull(SettingsSchema.find(SettingsSchema.GROUP_NAVIGATION, key))
             assertEquals(PrefsTransitTripSettings.PREFS, spec.prefsName)
