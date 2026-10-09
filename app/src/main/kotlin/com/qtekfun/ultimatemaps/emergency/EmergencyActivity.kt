@@ -10,7 +10,6 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.isSystemInDarkTheme
 import com.qtekfun.ultimatemaps.R
-import com.qtekfun.ultimatemaps.location.AndroidLocationSource
 import com.qtekfun.ultimatemaps.ui.theme.MapasTheme
 
 /**
@@ -27,7 +26,7 @@ class EmergencyActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        val location = AndroidLocationSource(this)
+        val location = com.qtekfun.ultimatemaps.platform.PlatformServices.locationSource(this)
         controller = EmergencyController(location, hasPermission = ::hasLocationPermission, providerAvailable = { location.isAvailable })
         setContent {
             MapasTheme(darkTheme = isSystemInDarkTheme()) {

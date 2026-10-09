@@ -2,7 +2,8 @@
 <!--
     Launcher app shortcuts (long-press on the icon). Each one starts MainActivity with a custom action that
     com.qtekfun.ultimatemaps.shortcuts.AppShortcuts maps to a screen. The package name is repeated here because XML
-    resources cannot use the application id; a unit test checks that it still matches.
+    resources cannot use the application id; a unit test checks that it still matches. The play flavor has its own copy
+    (app/src/play/res/xml) with its application id.
 -->
 <shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
     <shortcut

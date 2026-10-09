@@ -31,7 +31,8 @@ jobs:
       - name: No proprietary dependencies (Play Services, Firebase)
         run: |
           if grep -rEi "play-services|firebase|com\.google\.android\.gms" \
-              --include='*.gradle' --include='*.kts' --include='*.toml' . --exclude-dir=third_party; then
+              --include='*.gradle' --include='*.kts' --include='*.toml' . --exclude-dir=third_party \
+              --exclude-dir=gms --exclude=foss-guard.gradle.kts; then
             echo "Proprietary dependency detected: not allowed in the foss flavor"
             exit 1
           fi
@@ -49,6 +50,10 @@ jobs:
           ./gradlew --no-daemon
           :core-geo:test :core-data:test :core-net:test :core-regions:test :core-map:test :core-search:test
           :core-routing:test :core-fuel:test :core-nav:test :core-voice:test :core-cameras:test :core-transit:test
+
+      # The text check above only sees build files; this one looks at what the foss flavor really resolves.
+      - name: The foss flavor has no proprietary Google SDK on its classpath
+        run: ./gradlew --no-daemon :app:verifyFossHasNoGms
 
       - name: Upload reports
         if: failure()

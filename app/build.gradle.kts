@@ -70,6 +70,13 @@ android {
     flavorDimensions += "dist"
     productFlavors {
         create("foss") { dimension = "dist" }
+        // Optional build for GitHub (never F-Droid) that uses Google Play Services when the phone has it: Fused Location and
+        // activity recognition, from the :gms module. Another application id, so both can be installed side by side.
+        create("play") {
+            dimension = "dist"
+            applicationIdSuffix = ".play"
+            versionNameSuffix = "-play"
+        }
     }
 
     buildFeatures { compose = true }
@@ -143,6 +150,7 @@ dependencies {
     implementation(libs.androidx.sqlite.framework) // Android SQLite driver for :core-data (M3)
     implementation(project(":core-regions"))
     implementation(project(":core-fuel")) // gas stations: data and settings (F2b)
+    "playImplementation"(project(":gms")) // Google Play Services: the `play` flavor only, never `foss`
 
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.compose.ui)
@@ -158,3 +166,6 @@ dependencies {
     debugImplementation(platform(libs.androidx.compose.bom))
     debugImplementation(libs.androidx.compose.ui.test.manifest)
 }
+
+// Fails the build of any foss variant if a proprietary Google SDK reaches its classpath (see gradle/foss-guard.gradle.kts).
+apply(from = rootProject.file("gradle/foss-guard.gradle.kts"))

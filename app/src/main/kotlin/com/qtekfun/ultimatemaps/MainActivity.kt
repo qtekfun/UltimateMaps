@@ -33,7 +33,8 @@ import com.qtekfun.ultimatemaps.core.map.MapTheme
 import com.qtekfun.ultimatemaps.link.LinkHandler
 import com.qtekfun.ultimatemaps.link.LinkOutcome
 import com.qtekfun.ultimatemaps.link.pinPoint
-import com.qtekfun.ultimatemaps.location.AndroidLocationSource
+import com.qtekfun.ultimatemaps.core.map.AvailableLocationSource
+import com.qtekfun.ultimatemaps.platform.PlatformServices
 import com.qtekfun.ultimatemaps.map.MapFiles
 import com.qtekfun.ultimatemaps.map.MapLibreEngine
 import com.qtekfun.ultimatemaps.map.PrefsCameraStateStore
@@ -53,10 +54,23 @@ class MainActivity : ComponentActivity() {
     private val state = MapScreenState()
     private lateinit var files: MapFiles
     private lateinit var engine: MapLibreEngine
-    private lateinit var location: AndroidLocationSource
+    private lateinit var location: AvailableLocationSource
     private var centerOnNextFix = false
     private lateinit var panel: PanelHost
     private lateinit var navHost: NavHost
+
+    /** The movement hint's permission (`play` flavor only), asked once per run when a transit trip starts; the trip works either way. */
+    private var movementPermissionAsked = false
+    private val movementPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+        if (granted) (application as MapasApp).transitTripRestartHint()
+    }
+
+    private fun askMovementPermissionOnce() {
+        val permission = (application as MapasApp).movementHint.permission ?: return
+        if (movementPermissionAsked || checkSelfPermission(permission) == android.content.pm.PackageManager.PERMISSION_GRANTED) return
+        movementPermissionAsked = true
+        movementPermissionLauncher.launch(permission)
+    }
 
     private val permissionLauncher = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { grants ->
         (application as MapasApp).refreshCameraAlerts() // free-driving alerts need the permission too
@@ -67,7 +81,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         files = MapFiles(this)
-        location = AndroidLocationSource(this)
+        location = PlatformServices.locationSource(this)
         // The engine is built before the first composition so the first frame shows the last saved camera.
         engine = MapLibreEngine(
             context = this,
@@ -107,6 +121,7 @@ class MainActivity : ComponentActivity() {
             LaunchedEffect(dark) { engine.setTheme(if (dark) MapTheme.DARK else MapTheme.LIGHT) }
             val navUi by navHost.uiState()
             val tripUi by app.transitTrip.ui.collectAsState()
+            LaunchedEffect(tripUi.active) { if (tripUi.active) askMovementPermissionOnce() }
             CompositionLocalProvider(
                 LocalAlertBanner provides app.alertBanner.state, LocalIncidentBanner provides app.incidentBanner,
                 com.qtekfun.ultimatemaps.zbe.LocalZbeBanner provides app.zbeBanner,

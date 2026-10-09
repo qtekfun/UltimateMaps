@@ -30,6 +30,34 @@ interface LocationSource {
     fun stop()
 }
 
+/** A [LocationSource] that can say whether it can work at all on this device (a provider exists). */
+interface AvailableLocationSource : LocationSource {
+    val isAvailable: Boolean
+}
+
+/**
+ * A hint about how the device is moving, from the system's activity recognition when the build has it (the optional `play`
+ * flavor) and from nothing otherwise. Only ever a weak extra evidence: [inVehicle] is true when the device is probably in a
+ * vehicle, false when it is probably on foot or still, null when unknown. Cheap to call (a cached value).
+ */
+interface MovementHint {
+    fun inVehicle(): Boolean?
+
+    /** The runtime permission the hint needs before [start] does anything, or null when it needs none. */
+    val permission: String?
+
+    fun start()
+    fun stop()
+}
+
+/** No hint: the default and the only one in the `foss` flavor. */
+object NoMovementHint : MovementHint {
+    override fun inVehicle(): Boolean? = null
+    override val permission: String? = null
+    override fun start() {}
+    override fun stop() {}
+}
+
 /** Deterministic [LocationSource] for tests and route simulation: emit fixes with [emit]. */
 class SimulatedLocationSource : LocationSource {
     private var listener: LocationSource.Listener? = null

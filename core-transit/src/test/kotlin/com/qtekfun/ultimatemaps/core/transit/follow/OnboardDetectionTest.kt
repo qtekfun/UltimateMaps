@@ -53,6 +53,29 @@ class OnboardDetectionTest {
         assertNotNull(f.boardedRide())
     }
 
+    private fun slowTrainFixes(f: ItineraryFollower) {
+        clock.sec = 400
+        f.onFix(fix(metroStops[0].point))
+        val east = -3.005
+        for (k in 0 until 4) {
+            clock.sec = 600L + k * 5
+            f.onFix(fix(LatLon(40.0060 + k * 0.0004, east), speed = 4f)) // 14 km/h, far from the straight line
+        }
+    }
+
+    @Test
+    fun `a slow train off the line is boarded only when the system says the device is in a vehicle`() {
+        val without = follower()
+        slowTrainFixes(without)
+        assertNull(without.boardedRide())
+        val hinted = ItineraryFollower(FollowFixtures.itinerary(), FollowerConfig(), clock::millis, inVehicle = { true })
+        slowTrainFixes(hinted)
+        assertNotNull(hinted.boardedRide())
+        val onFoot = ItineraryFollower(FollowFixtures.itinerary(), FollowerConfig(), clock::millis, inVehicle = { false })
+        slowTrainFixes(onFoot)
+        assertNull(onFoot.boardedRide())
+    }
+
     @Test
     fun `walking along the track at walking speed is never taken for a train`() {
         val f = follower()
