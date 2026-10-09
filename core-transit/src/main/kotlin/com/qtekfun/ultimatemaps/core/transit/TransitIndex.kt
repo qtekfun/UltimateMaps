@@ -10,6 +10,11 @@ data class FeedSource(
     val attribution: String,
     /** True when the calendar range was ignored at build time (expired feed, spike shortcut). */
     val calendarRangeIgnored: Boolean,
+    /**
+     * True when the build projected an expired calendar forward (see [projectCalendar]): the times are those of an old
+     * timetable repeated week after week, so the app must say so.
+     */
+    val calendarProjected: Boolean = false,
 )
 
 /**
