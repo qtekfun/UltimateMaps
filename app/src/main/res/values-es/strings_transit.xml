@@ -55,6 +55,7 @@
     <!-- Honestidad y datos -->
     <string name="transit_theoretical_note">Los horarios son teóricos, tomados de los horarios publicados. No incluyen retrasos, cancelaciones ni información en tiempo real.</string>
     <string name="transit_valid_range">Horarios válidos del %1$s al %2$s.</string>
+    <string name="transit_projected_note">Los horarios del Metro son de 2025 (no se publican datos más recientes): las horas pueden diferir.</string>
     <string name="transit_unverified">Parte de estos datos no se pudo comprobar con su calendario.</string>
     <string name="transit_link_description">Abrir %1$s</string>
 

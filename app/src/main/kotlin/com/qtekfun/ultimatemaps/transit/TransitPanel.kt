@@ -585,6 +585,7 @@ private fun TransitFooter(s: TransitState, realTimeNote: Boolean = false) {
             PanelNote(stringResource(R.string.transit_valid_range, TransitFormat.date(from, locale), TransitFormat.date(to, locale)), "transit_validity")
         }
         if (s.unverifiedFeeds > 0) PanelNote(stringResource(R.string.transit_unverified), "transit_unverified")
+        if (s.projectedFeeds > 0) PanelNote(stringResource(R.string.transit_projected_note), "transit_projected")
         AttributionLines(s.attribution, "transit_attribution")
     }
 }

@@ -10,7 +10,7 @@ import java.io.OutputStream
  *
  * ```
  * magic "UMTI", u8 version
- * sources:   n, then [label, version, calStart(zz), calEnd(zz), attribution, ignoredFlag]
+ * sources:   n, then [label, version, calStart(zz), calEnd(zz), attribution, flags (bit 0 range ignored, bit 1 calendar projected)]
  * headsigns: n, then UTF strings
  * stops:     n, then [name, lat(i32), lon(i32), group+1]
  * lines:     n, then [short, long, color+1, textColor+1, type]
@@ -41,7 +41,7 @@ object TransitIndexIo {
             w.zigzag(clampDay(s.calendarStartDay))
             w.zigzag(clampDay(s.calendarEndDay))
             w.utf(s.attribution)
-            w.varint(if (s.calendarRangeIgnored) 1 else 0)
+            w.varint((if (s.calendarRangeIgnored) 1 else 0) or (if (s.calendarProjected) 2 else 0))
         }
         w.varint(index.headsigns.size)
         for (h in index.headsigns) w.utf(h)
@@ -127,7 +127,15 @@ object TransitIndexIo {
         require(String(magic, Charsets.US_ASCII) == "UMTI") { "Not a transit index" }
         require(r.inp.readUnsignedByte() == VERSION) { "Unsupported transit index version" }
         val sources = List(r.varint()) {
-            FeedSource(r.utf(), r.utf(), unclampDay(r.zigzag()), unclampDay(r.zigzag()), r.utf(), r.varint() == 1)
+            run {
+                val label = r.utf()
+                val version = r.utf()
+                val start = unclampDay(r.zigzag())
+                val end = unclampDay(r.zigzag())
+                val attribution = r.utf()
+                val flags = r.varint()
+                FeedSource(label, version, start, end, attribution, flags and 1 != 0, flags and 2 != 0)
+            }
         }
         val headsigns = Array(r.varint()) { r.utf() }
         val nStops = r.varint()
