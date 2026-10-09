@@ -1,5 +1,6 @@
 package com.qtekfun.ultimatemaps.settings
 
+import com.qtekfun.ultimatemaps.voice.voiceLanguagePrefLabel
 import com.qtekfun.ultimatemaps.fuel.fuelName
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Canvas
@@ -131,13 +132,7 @@ private fun onOff(on: Boolean) = stringResource(if (on) R.string.hub_on else R.s
 private fun navigationSummary(env: NavigationSettingsEnv): String {
     val s by env.store.settings.collectAsState()
     if (!s.voiceEnabled) return stringResource(R.string.hub_navigation_voice_off)
-    val language = stringResource(
-        when (s.voiceLanguage) {
-            VoiceLanguagePref.AUTO -> R.string.nav_language_auto
-            VoiceLanguagePref.ES -> R.string.nav_language_es
-            VoiceLanguagePref.EN -> R.string.nav_language_en
-        },
-    )
+    val language = voiceLanguagePrefLabel(s.voiceLanguage)
     return stringResource(R.string.hub_navigation_voice_on, language, s.volumePercent)
 }
 

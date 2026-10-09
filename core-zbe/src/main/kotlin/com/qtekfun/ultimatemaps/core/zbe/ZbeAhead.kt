@@ -13,7 +13,9 @@ import com.qtekfun.ultimatemaps.core.voice.NavSettings
 import com.qtekfun.ultimatemaps.core.voice.Utterance
 import com.qtekfun.ultimatemaps.core.voice.VoiceGuide
 import com.qtekfun.ultimatemaps.core.voice.VoiceLanguage
+import com.qtekfun.ultimatemaps.core.voice.VoicePacks
 import com.qtekfun.ultimatemaps.core.voice.VoicePriority
+import com.qtekfun.ultimatemaps.core.voice.fill
 import kotlinx.coroutines.flow.StateFlow
 import java.util.Locale
 
@@ -85,11 +87,15 @@ class ZbeAheadMachine {
     }
 }
 
-/** The spoken sentence, Spanish and English. It never says anything about which vehicles are affected. */
+/** The spoken sentence, Spanish and English here and the other languages from their voice packs. It never says anything about which vehicles are affected. */
 object ZbePhrases {
     fun ahead(e: ZbeAhead, units: DistanceUnits, language: VoiceLanguage): String {
         val lead = InstructionText.lead(e.distanceMeters, units, language)
-        return if (language == VoiceLanguage.ES) "$lead, zona de bajas emisiones. Consulta las normas de acceso" else "$lead, low-emission zone. Check the access rules"
+        return when (language) {
+            VoiceLanguage.ES -> "$lead, zona de bajas emisiones. Consulta las normas de acceso"
+            VoiceLanguage.EN -> "$lead, low-emission zone. Check the access rules"
+            else -> VoicePacks.of(language)?.zbeAhead?.fill("lead" to lead) ?: "$lead, low-emission zone. Check the access rules"
+        }
     }
 }
 

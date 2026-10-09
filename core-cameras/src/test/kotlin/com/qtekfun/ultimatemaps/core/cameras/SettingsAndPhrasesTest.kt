@@ -72,6 +72,22 @@ class SettingsAndPhrasesTest {
         assertEquals("En 400 metros, obstáculo en la vía", es(event(AlertCategory.OBSTACLE, 400)))
     }
 
+    @Test fun theOtherLanguagesSpeakEveryCategoryWithTheLimitAndTheSlowDownTail() {
+        val others = VoiceLanguage.entries.filter { it != VoiceLanguage.ES && it != VoiceLanguage.EN }
+        for (l in others) for (c in AlertCategory.entries) {
+            val plain = AlertPhrases.of(event(c, 400), DistanceUnits.METRIC, l)
+            assertTrue(plain.isNotBlank() && '{' !in plain && '}' !in plain, "$l $c: $plain")
+            assertTrue(plain != AlertPhrases.of(event(c, 400), DistanceUnits.METRIC, VoiceLanguage.EN), "$l $c is translated")
+            val limited = AlertPhrases.of(event(c, 400, limit = 80), DistanceUnits.METRIC, l)
+            val hasLimit = c == AlertCategory.FIXED_CAMERA || c == AlertCategory.SECTION
+            assertEquals(hasLimit, limited.contains("80"), "$l $c: $limited")
+            val slow = AlertPhrases.of(event(c, 100, AlertStage.NEAR, speeding = true), DistanceUnits.METRIC, l)
+            assertTrue(slow.length > AlertPhrases.of(event(c, 100, AlertStage.NEAR), DistanceUnits.METRIC, l).length, "$l $c: $slow")
+        }
+        assertEquals("Dans 400 mètres, radar fixe possible. Limite 80", AlertPhrases.of(event(AlertCategory.FIXED_CAMERA, 400, limit = 80), DistanceUnits.METRIC, VoiceLanguage.FR))
+        assertEquals("In 100 Metern, Unfall. Bitte langsamer fahren", AlertPhrases.of(event(AlertCategory.ACCIDENT, 100, AlertStage.NEAR, speeding = true), DistanceUnits.METRIC, VoiceLanguage.DE))
+    }
+
     @Test fun englishPhrasesAndLimitOnlyForCameras() {
         fun en(e: AlertEvent, u: DistanceUnits = DistanceUnits.METRIC) = AlertPhrases.of(e, u, VoiceLanguage.EN)
         assertEquals("In 800 meters, possible fixed speed camera. Limit 70", en(event(AlertCategory.FIXED_CAMERA, 800, limit = 70)))
