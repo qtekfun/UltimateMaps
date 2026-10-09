@@ -67,11 +67,15 @@ class PlacesController(
 
     // --- Place card ---
 
+    /** The "is it already saved?" lookup of the open card; Save waits for it, so a late answer can never overwrite it. */
+    private var savedLookup: Job? = null
+
     fun showCard(info: PlaceInfo) {
         state.message = null
         state.card = info
         state.cardSavedId = null
-        scope.launch {
+        savedLookup?.cancel()
+        savedLookup = scope.launch {
             val id = withContext(io) { service.value.savedId(info) }
             if (state.card == info) state.cardSavedId = id
         }
@@ -84,8 +88,12 @@ class PlacesController(
 
     fun toggleSaved() {
         val info = state.card ?: return
-        val savedId = state.cardSavedId
         scope.launch {
+            // Decide only after the lookup of this card finished: otherwise a quick tap read a still-null id (saving a
+            // saved place again) and the late lookup answer overwrote the id that Save had just set.
+            savedLookup?.join()
+            if (state.card != info) return@launch
+            val savedId = state.cardSavedId
             if (savedId != null) {
                 withContext(io) { service.value.unsave(savedId) }
                 if (state.card == info) state.cardSavedId = null
