@@ -119,6 +119,15 @@ class SettingsAndPhrasesTest {
         assertEquals("2026-10-07 12:30", CameraAttribution.dateText(1_791_376_200_000L, true, ZoneId.of("UTC")))
     }
 
+    @Test fun datesKeepTheSpanishAndEnglishStylesAndUseTheLocaleStyleForOtherLanguages() {
+        val utc = ZoneId.of("UTC")
+        val at = 1_791_376_200_000L
+        assertEquals("07/10/2026 12:30", CameraAttribution.dateText(at, Locale.forLanguageTag("es-ES"), utc))
+        assertEquals("2026-10-07 12:30", CameraAttribution.dateText(at, Locale.forLanguageTag("en-GB"), utc))
+        val german = CameraAttribution.dateText(at, Locale.GERMANY, utc)
+        assertTrue(german.contains("07.10.") && german.contains("12:30"), german)
+    }
+
     @Test fun zonesAreOnlyAlertTargetsWhenTheyHaveALine() {
         val line = listOf(LatLon(40.0, -3.0), LatLon(40.01, -3.0))
         val data = CameraDataset(

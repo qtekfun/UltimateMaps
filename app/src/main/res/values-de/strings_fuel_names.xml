@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Names of the fuels of the Ministry service, by FuelType id (see FuelNames) -->
+    <string name="fuel_name_g95e5">Benzin 95 E5</string>
+    <string name="fuel_name_g95e10">Benzin 95 E10</string>
+    <string name="fuel_name_g95e25">Benzin 95 E25</string>
+    <string name="fuel_name_g95e85">Benzin 95 E85</string>
+    <string name="fuel_name_g95e5p">Benzin 95 E5 Premium</string>
+    <string name="fuel_name_g98e5">Benzin 98 E5</string>
+    <string name="fuel_name_g98e10">Benzin 98 E10</string>
+    <string name="fuel_name_goa">Diesel A (Standard)</string>
+    <string name="fuel_name_goap">Diesel Premium</string>
+    <string name="fuel_name_gob">Diesel B (landwirtschaftlich)</string>
+    <string name="fuel_name_bie">Bioethanol</string>
+    <string name="fuel_name_bio">Biodiesel</string>
+    <string name="fuel_name_glp">LPG (Autogas)</string>
+    <string name="fuel_name_gnc">CNG (komprimiertes Erdgas)</string>
+    <string name="fuel_name_gnl">LNG (verflüssigtes Erdgas)</string>
+    <string name="fuel_name_h2">Wasserstoff</string>
+    <string name="fuel_name_dren">Erneuerbarer Diesel</string>
+    <string name="fuel_name_gren">Erneuerbares Benzin</string>
+    <string name="fuel_name_met">Methanol</string>
+    <string name="fuel_name_amo">Ammoniak</string>
+    <string name="fuel_name_bgnc">Komprimiertes Biogas</string>
+    <string name="fuel_name_bgnl">Verflüssigtes Biogas</string>
+</resources>
