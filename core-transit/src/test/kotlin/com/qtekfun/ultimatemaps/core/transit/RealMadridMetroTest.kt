@@ -41,4 +41,30 @@ class RealMadridMetroTest {
         val rides = journeys.flatMap { it.legs }.filterIsInstance<Leg.Ride>()
         assertTrue(rides.isNotEmpty() && rides.all { index.lineType[it.line] == 1 }, "Sol to T4 by metro found no metro ride on $day")
     }
+
+    /**
+     * With an index built from the projected Metro calendar (UM_MADRID_METRO_INDEX=.../transit-madrid.umti, made by
+     * scripts/build-transit.sh): the Metro is flagged as projected and runs on a weekday, a Saturday and a Sunday of next week.
+     */
+    @Test
+    fun `a projected metro calendar has service on a weekday a Saturday and a Sunday of next week`() {
+        if (!file.exists()) return
+        val index = file.inputStream().buffered().use { TransitIndexIo.read(it) }
+        if (index.sources.none { it.calendarProjected }) return
+        val metroLines = (0 until index.lineCount).filter { index.lineType[it] == 1 }
+        assertTrue(metroLines.size >= 12, "Metro lines: ${metroLines.map { index.lineShortName[it] }}")
+        val monday = LocalDate.now().plusWeeks(1).with(DayOfWeek.MONDAY)
+        val planner = TransitPlanner(index)
+        val options = PlanOptions(modes = setOf(TransitMode.METRO))
+        for (offset in listOf(0L, 5L, 6L)) {
+            val d = monday.plusDays(offset)
+            assertTrue(d.toEpochDay().toInt() in index.validity()!!, "$d outside the validity window")
+            val journeys = planner.plan(stop(index, "Sol"), stop(index, "Aeropuerto T4"), d.toEpochDay().toInt(), 10 * 3600, options)
+            val rides = journeys.flatMap { it.legs }.filterIsInstance<Leg.Ride>()
+            assertTrue(rides.isNotEmpty() && rides.all { index.lineType[it.line] == 1 }, "Sol to T4 found no metro ride on $d (${d.dayOfWeek})")
+            println("METRO ${d.dayOfWeek} $d: Sol -> T4 first journey ${journeys.first().legs.size} legs")
+        }
+        val names = index.stopName.toSet()
+        println("METRO stations: Barrio del Pilar=${names.any { it.contains("Barrio del Pilar", true) }} Monforte=${names.any { it.contains("Monforte", true) }}")
+    }
 }
