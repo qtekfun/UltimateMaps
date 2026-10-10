@@ -1,0 +1,1 @@
+Versión candidata: la flecha usa la brújula del móvil cuando estás parado o a paso lento y el GPS no tiene dirección. Solo España.
