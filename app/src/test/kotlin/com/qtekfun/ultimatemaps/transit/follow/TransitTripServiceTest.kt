@@ -44,7 +44,8 @@ class TransitTripServiceTest {
         controller.get().onStartCommand(null, 0, 1)
         val host = (app as MapasApp).transitTrip
         assertTrue(host.active, "the trip was resumed from disk")
-        assertEquals("Delta", host.ui.value.trip!!.follow.nextStopName)
+        // the controller (synchronous), not the host's ui flow, which is derived on another thread and may not have caught up yet
+        assertEquals("Delta", host.controller.state.value!!.follow.nextStopName)
         val n = shadowOf(controller.get()).lastForegroundNotification
         assertNotNull(n) // the first notification exists at once; the watcher refreshes it with the trip text afterwards
         controller.destroy()
