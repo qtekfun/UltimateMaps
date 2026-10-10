@@ -22,11 +22,11 @@ class AlertSoundTest {
         for (k in ChimeKind.entries) {
             val pcm = ChimeSynth.pcm(k)
             assertEquals(ChimeSynth.length(), pcm.size)
-            assertEquals(2 * 5_292 + 1_764, pcm.size, "120 ms + 40 ms + 120 ms at 44.1 kHz")
-            assertEquals(280, ChimeSynth.durationMillis())
+            assertEquals(2 * 7_056 + 1_764, pcm.size, "160 ms + 40 ms + 160 ms at 44.1 kHz")
+            assertEquals(360, ChimeSynth.durationMillis())
             val peak = pcm.maxOf { abs(it.toInt()) }
             assertTrue(peak <= (ChimeSynth.AMPLITUDE * Short.MAX_VALUE).toInt() + 1, "peak $peak keeps the headroom")
-            assertTrue(peak > 0.5 * Short.MAX_VALUE, "it is audible: peak $peak")
+            assertTrue(peak > 0.9 * Short.MAX_VALUE, "it is loud: peak $peak")
         }
     }
 
@@ -177,8 +177,9 @@ class AlertSoundTest {
         imminent = false
         r.voice.onAlert(event(AlertCategory.FIXED_CAMERA))
         assertEquals(1, r.player.played.size)
-        val muted = Rig(all, NavSettings(voiceEnabled = false), { false })
-        muted.voice.onAlert(event(AlertCategory.FIXED_CAMERA))
-        assertTrue(muted.player.played.isEmpty() && muted.guide.spoken.isEmpty(), "the navigation Mute silences the chime too")
+        // The guidance Mute button does not silence the alerts (they have their own mute).
+        val guidanceMuted = Rig(all, NavSettings(voiceEnabled = false), { false })
+        guidanceMuted.voice.onAlert(event(AlertCategory.FIXED_CAMERA))
+        assertEquals(1, guidanceMuted.player.played.size, "the chime still plays with the guidance muted")
     }
 }

@@ -202,7 +202,7 @@ class NavigationAddStopTest {
         assertEquals(2, seen[0].via.size)
         val off = pt(900.0, 2000.0) // east of the road near the end: between the old stop and the destination
         val rideOn = first.plan!!
-        ride(source, rideOn, 5)
+        ride(source, rideOn, 2) // few fixes: this test is about the stop, not about leaving the route
         assertEquals(AddStopResult.ADDED, c.addStop(off).result)
         assertEquals(off, seen[1].via.last(), "from=${seen[1].from} via=${seen[1].via}")
         c.stop()

@@ -107,7 +107,7 @@ class SettingsAndPhrasesTest {
         override fun shutdown() {}
     }
 
-    @Test fun theVoiceHonoursTheNavigationVoiceSettings() {
+    @Test fun theVoiceHonoursTheNavigationLanguageAndUnitsButNotTheGuidanceMute() {
         val guide = FakeGuide()
         val settings = InMemoryNavSettingsStore(NavSettings(voiceLanguage = VoiceLanguagePref.EN))
         val voice = AlertVoice(guide, settings.settings) { Locale.forLanguageTag("es-ES") }
@@ -117,7 +117,7 @@ class SettingsAndPhrasesTest {
         assertEquals("alert:t", guide.spoken.single().key)
         settings.update { it.copy(voiceEnabled = false) }
         voice.onAlert(event(AlertCategory.ACCIDENT, 800))
-        assertEquals(1, guide.spoken.size, "voice off: informational alerts are dropped")
+        assertEquals(2, guide.spoken.size, "the guidance Mute (voice off) does not drop the alerts")
         settings.update { it.copy(voiceEnabled = true, voiceLanguage = VoiceLanguagePref.AUTO) }
         voice.onAlert(event(AlertCategory.V16, 800))
         assertEquals("En 800 metros, vehículo detenido con baliza V16", guide.spoken.last().text)

@@ -64,4 +64,6 @@
     <string name="nav_engine_title">Voice engine</string>
     <string name="nav_engine_note">If the voice speaks in the wrong language (the engine some phones come with does), pick another installed engine and press Test voice.</string>
     <string name="nav_engine_default">System default</string>
+    <string name="nav_engine_only_one">Only one voice engine is installed. To use another one (for example Google\'s), choose or install it in the phone\'s own settings.</string>
+    <string name="nav_engine_system_settings">Open the phone\'s voice settings</string>
 </resources>

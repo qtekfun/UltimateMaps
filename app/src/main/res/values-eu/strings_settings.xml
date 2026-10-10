@@ -63,4 +63,6 @@
     <string name="nav_engine_title">Ahots-motorea</string>
     <string name="nav_engine_note">Ahotsak beste hizkuntza batean hitz egiten badu (telefono batzuen motorrari gertatzen zaio), aukeratu instalatutako beste motor bat eta sakatu Probatu ahotsa.</string>
     <string name="nav_engine_default">Sistemaren lehenetsia</string>
+    <string name="nav_engine_only_one">Ahots-motor bakarra dago instalatuta. Beste bat erabiltzeko (adibidez Google-rena), aukeratu edo instalatu telefonoaren ezarpenetan.</string>
+    <string name="nav_engine_system_settings">Ireki telefonoaren ahots-ezarpenak</string>
 </resources>

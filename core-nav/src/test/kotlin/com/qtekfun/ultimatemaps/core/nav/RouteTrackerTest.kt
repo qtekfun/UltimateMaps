@@ -172,16 +172,34 @@ class RouteTrackerTest {
         assertEquals(run.states[59].traveledMeters, run.states[60].traveledMeters, 1e-9)
     }
 
-    @Test fun threeConsecutiveFarFixesDoTriggerOffRoute() {
+    @Test fun twoConsecutiveFarFixesDoTriggerOffRoute() {
         val plan = straightPlan()
         val tracker = RouteTracker(plan)
         tracker.onFix(fix(pt(0.0, 100.0), 1000))
-        for (i in 1..2) {
-            tracker.onFix(fix(pt(500.0, 100.0 + i * 10), 1000L + i * 1000))
-            assertEquals(NavStatus.ON_ROUTE, tracker.status, "after $i far fixes")
-        }
-        tracker.onFix(fix(pt(500.0, 130.0), 4000))
+        tracker.onFix(fix(pt(500.0, 110.0), 2000))
+        assertEquals(NavStatus.ON_ROUTE, tracker.status, "after one far fix")
+        tracker.onFix(fix(pt(500.0, 120.0), 3000))
         assertEquals(NavStatus.OFF_ROUTE, tracker.status)
+    }
+
+    @Test fun aTurnOntoAnotherRoadIsConfirmedInTwoFixesNotFive() {
+        val plan = straightPlan()
+        val tracker = RouteTracker(plan)
+        tracker.onFix(fix(pt(0.0, 500.0), 1000, speed = 15f, bearing = 0f))
+        // a left or right turn at 54 km/h: 25 m to the side after the first fix, heading 90 degrees from the route
+        tracker.onFix(fix(pt(25.0, 510.0), 2000, speed = 15f, bearing = 90f))
+        assertEquals(NavStatus.ON_ROUTE, tracker.status, "one fix is not a decision")
+        tracker.onFix(fix(pt(40.0, 512.0), 3000, speed = 15f, bearing = 90f))
+        assertEquals(NavStatus.OFF_ROUTE, tracker.status, "two diverging fixes are")
+    }
+
+    @Test fun drivingParallelToTheRouteJustOffTheLineIsNotATurn() {
+        val plan = straightPlan()
+        val tracker = RouteTracker(plan)
+        tracker.onFix(fix(pt(0.0, 500.0), 1000, speed = 15f, bearing = 0f))
+        // 28 m off but heading along the road: GPS offset, not a turn (needs the normal confirmation)
+        for (i in 1..2) tracker.onFix(fix(pt(28.0, 500.0 + i * 15.0), 1000L + i * 1000L, speed = 15f, bearing = 0f))
+        assertEquals(NavStatus.ON_ROUTE, tracker.status)
     }
 
     @Test fun leavingTheRouteIsConfirmedOnlyAfterEnoughFixesAndTime() {
@@ -196,7 +214,7 @@ class RouteTrackerTest {
             status = tracker.status
             if (status == NavStatus.OFF_ROUTE && confirmedAt < 0) confirmedAt = i
         }
-        assertEquals(5, confirmedAt, "needs ${NavConfig().offRouteFixes} fixes")
+        assertEquals(NavConfig().offRouteFixes, confirmedAt, "needs ${NavConfig().offRouteFixes} fixes")
     }
 
     @Test fun slowFixRateStillConfirmsAfterTheTimeLimit() {

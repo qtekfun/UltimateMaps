@@ -456,8 +456,8 @@ private fun SimulationBar(ui: NavUi, actions: NavActions) {
 @Composable
 private fun MuteToggle(ui: NavUi, actions: NavActions) {
     val c = NavTheme.colors
-    NavButton(
-        stringResource(if (ui.voiceOn) R.string.nav_ui_mute else R.string.nav_ui_unmute), { actions.onVoice(!ui.voiceOn) }, Modifier.testTag("nav_mute"),
+    NavIconButton(
+        NavIcons.speaker(muted = !ui.voiceOn), { actions.onVoice(!ui.voiceOn) }, Modifier.testTag("nav_mute"),
         container = if (ui.voiceOn) c.panel else c.laneRecommended, content = if (ui.voiceOn) c.onPanel else c.onLaneRecommended,
         description = stringResource(if (ui.voiceOn) R.string.nav_ui_mute_description else R.string.nav_ui_unmute_description),
     )
@@ -467,8 +467,8 @@ private fun MuteToggle(ui: NavUi, actions: NavActions) {
 @Composable
 private fun CameraMuteToggle(ui: NavUi, actions: NavActions) {
     val c = NavTheme.colors
-    NavButton(
-        stringResource(if (ui.cameraVoiceOn) R.string.nav_ui_alerts_mute else R.string.nav_ui_alerts_unmute), { actions.onCameraVoice(!ui.cameraVoiceOn) }, Modifier.testTag("nav_camera_mute"),
+    NavIconButton(
+        NavIcons.alerts(muted = !ui.cameraVoiceOn), { actions.onCameraVoice(!ui.cameraVoiceOn) }, Modifier.testTag("nav_camera_mute"),
         container = if (ui.cameraVoiceOn) c.panel else c.laneRecommended, content = if (ui.cameraVoiceOn) c.onPanel else c.onLaneRecommended,
         description = stringResource(if (ui.cameraVoiceOn) R.string.nav_ui_alerts_mute_description else R.string.nav_ui_alerts_unmute_description),
     )
@@ -550,6 +550,30 @@ private fun BoxScope.ResumeCard(actions: NavActions) {
             NavButton(stringResource(R.string.nav_ui_resume), actions.onResume, Modifier.weight(1f).testTag("nav_resume"), container = Mapas.colors.accent, content = Mapas.colors.onAccent)
             NavButton(stringResource(R.string.nav_ui_discard), actions.onDiscard, Modifier.weight(1f).testTag("nav_discard"))
         }
+    }
+}
+
+/** Rounded icon button of the navigation screen (same shape and touch target as [NavButton]); [description] is read by screen readers. */
+@Composable
+private fun NavIconButton(
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    container: Color = NavTheme.colors.panel,
+    content: Color = NavTheme.colors.onPanel,
+    description: String,
+) {
+    val d = NavTheme.dimens
+    Box(
+        modifier
+            .size(d.touchTarget)
+            .clip(RoundedCornerShape(14.dp))
+            .background(container)
+            .clickable(role = Role.Button, onClick = onClick)
+            .semantics { contentDescription = description },
+        contentAlignment = Alignment.Center,
+    ) {
+        Image(icon, null, colorFilter = ColorFilter.tint(content), modifier = Modifier.size(d.touchTarget - 20.dp))
     }
 }
 

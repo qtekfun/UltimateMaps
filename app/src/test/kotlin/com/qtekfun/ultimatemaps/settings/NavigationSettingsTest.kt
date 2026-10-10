@@ -90,10 +90,15 @@ class NavigationSettingsTest {
         assertTrue(s.routeOptions().avoidUnpaved)
     }
 
-    @Test fun theVoiceEngineCardIsHiddenWithOneEngineOrNone() {
+    @Test fun withOneEngineTheCardOnlyOffersThePhonesOwnVoiceSettings() {
         engines = listOf("only.tts" to "Only")
-        show()
-        rule.onNodeWithTag("nav_engine_card").assertDoesNotExist()
+        var opened = 0
+        val env = NavigationSettingsEnv(store, guide, { locale }, voiceEngines = { engines }, openTtsSettings = { opened++ })
+        rule.setContent { MapasTheme(darkTheme = false) { Column(androidx.compose.ui.Modifier.verticalScroll(rememberScrollState())) { NavigationSection(env) } } }
+        rule.onNodeWithTag("nav_engine_only_one").assertExists()
+        rule.onNodeWithTag("nav_engine_default").assertDoesNotExist()
+        click("nav_engine_system_settings")
+        assertEquals(1, opened)
     }
 
     @Test fun choosingAnotherVoiceEngineStoresItAndRestartsTheVoice() {

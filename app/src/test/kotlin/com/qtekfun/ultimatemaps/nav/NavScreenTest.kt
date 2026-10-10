@@ -277,12 +277,12 @@ class NavScreenTest {
 
     @Test fun `the mute button shows the state, describes it, and asks for the opposite`() {
         show(driving().copy(voiceOn = true))
-        assertEquals("Mute", text("nav_mute"))
+        assertEquals("", text("nav_mute"), "an icon button: no text, the state is in its description")
         rule.onNodeWithTag("nav_mute").assertContentDescriptionEquals("Voice on. Tap to mute the spoken guidance")
         rule.onNodeWithTag("nav_mute").performClick()
         ui = driving().copy(voiceOn = false)
         rule.waitForIdle()
-        assertEquals("Unmute", text("nav_mute"))
+        assertEquals("", text("nav_mute"))
         rule.onNodeWithTag("nav_mute").assertContentDescriptionEquals("Voice muted. Tap to turn the spoken guidance back on")
         rule.onNodeWithTag("nav_mute").performClick()
         assertEquals(listOf("voice:false", "voice:true"), calls)
