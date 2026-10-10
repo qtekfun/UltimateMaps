@@ -910,3 +910,8 @@ Format: date · decision · reason · discarded alternatives · how to revert it
 - **Why this and not `LocationManager.addProximityAlert`:** that API is deprecated, depends on the provider in use and cannot be tested on the JVM; lowering the rate is plain logic with a test.
 - **Unchanged assumptions:** the follower tolerates gaps (signal-gap 45 s, derived speed from fixes up to 30 s apart, two agreeing fixes to skip stops) and the timetable fills tunnels; a 5 s pace is well inside those. A bus ride is followed the same way; if it proves too coarse in town it is one constant.
 - **Not verified:** battery saving and the 5 s cadence on a device.
+
+## 2026-10-10 · Map downloads only from Settings (branch `feat/maps-download-in-settings`, no phone)
+- **Request (owner):** the Maps button on the main screen is inconsistent; downloads belong in Settings, Maps.
+- **Decision:** the "Maps" tab button of the main sheet and the old `MapsEntry` row are removed; the existing *Settings, Maps and network, Open Maps* button (which opens the same Maps screen with the catalog, downloads, storage and offline mode) is the way in. The "no map installed" card on the main screen is now tappable and opens Settings (its text says where to go, in all nine languages). The launcher shortcut "Maps" and links to the Maps screen are unchanged.
+- **Discarded:** embedding the whole Maps screen inside Settings (it has its own controller, sections and search; two copies would drift) and a first-run dialog.

@@ -524,7 +524,6 @@ class PanelHost(
             onImport = documents::pickFile,
             onExport = { format: GeoFormat -> documents.createFile(format, EXPORT_NAME) },
             onFocusField = { screen.detent = SheetDetent.FULL },
-            onOpenMaps = { screen.onOpenMaps() },
             onUseLocation = { route.useCurrentLocation(); onRequestLocation() },
             onCategoryOpened = { screen.detent = SheetDetent.MEDIUM },
             onDial = ::dial,

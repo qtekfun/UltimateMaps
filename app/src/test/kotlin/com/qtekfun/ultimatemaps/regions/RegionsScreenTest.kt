@@ -256,15 +256,6 @@ class RegionsScreenTest {
         assertEquals("loc=card1", log.last())
     }
 
-    @Test
-    fun mapScreenOffersTheMapsEntry() {
-        val s = MapScreenState()
-        s.onOpenMaps = { log += "open" }
-        rule.setContent { MapasTheme(darkTheme = false) { MapScreen(s, onLocate = {}, onResetNorth = {}) {} } }
-        rule.onNodeWithTag("open_maps").performClick()
-        assertEquals("open", log.last())
-    }
-
     private fun loadedForSearch() {
         state = RegionsUiState(
             CatalogState.Loaded(catalog), storage = listOf(storage()),

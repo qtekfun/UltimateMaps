@@ -4,6 +4,10 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 
 ## [Unreleased]
 
+### Changed
+
+- **Downloading maps lives in Settings, under Maps and network.** The "Maps" button on the main screen is gone; with no map installed, the card that says so opens Settings. Nothing else changed in the Maps screen.
+
 ## [0.1.0-rc.16] - 2026-10-10
 
 ### Changed

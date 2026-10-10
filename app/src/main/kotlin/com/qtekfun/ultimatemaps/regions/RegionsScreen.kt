@@ -681,23 +681,3 @@ private fun DeleteDialog(name: String, size: String, onConfirm: () -> Unit, onDi
     }
 }
 
-/** Entry shown in the map's bottom sheet. Lives here so the shared screen needs a single call. */
-@Composable
-fun MapsEntry(onClick: () -> Unit, modifier: Modifier = Modifier) {
-    Row(
-        modifier
-            .fillMaxWidth()
-            .clip(Mapas.shapes.control)
-            .background(Mapas.colors.field)
-            .clickable(role = Role.Button, onClick = onClick)
-            .padding(12.dp)
-            .testTag("open_maps"),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Column(Modifier.weight(1f)) {
-            BasicText(stringResource(R.string.maps_entry_title), style = Mapas.typography.callout.copy(color = Mapas.colors.label))
-            BasicText(stringResource(R.string.maps_entry_body), style = Mapas.typography.callout.copy(color = Mapas.colors.secondaryLabel))
-        }
-        BasicText("›", style = Mapas.typography.title.copy(color = Mapas.colors.secondaryLabel))
-    }
-}

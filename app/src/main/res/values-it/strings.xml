@@ -20,7 +20,7 @@
 
     <string name="search_placeholder">Cerca (prossimamente)</string>
     <string name="no_maps_title">Ancora nessuna mappa</string>
-    <string name="no_maps_body">Scarica una regione da Mappe per vedere la mappa. Fino ad allora viene mostrato solo lo sfondo.</string>
+    <string name="no_maps_body">Scarica una regione in Impostazioni, sotto Mappe e rete, per vedere la mappa. Fino ad allora viene mostrato solo lo sfondo.</string>
 
     <string name="notice_link_title">Link di mappa</string>
     <string name="notice_search_title">Ricerca: %1$s</string>
@@ -42,8 +42,6 @@
     <string name="regions_search_empty">Nessuna mappa corrisponde a “%1$s”.</string>
     <string name="sheet_action_expand">Espandi pannello</string>
     <string name="sheet_action_collapse">Comprimi pannello</string>
-    <string name="maps_entry_title">Mappe</string>
-    <string name="maps_entry_body">Scarica e gestisci le regioni</string>
     <string name="offline_title">Modalità offline</string>
     <string name="offline_body">Nessuna connessione, nemmeno per i download.</string>
     <string name="server_title">Server delle mappe</string>
