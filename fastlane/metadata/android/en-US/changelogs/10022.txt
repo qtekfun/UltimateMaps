@@ -1,0 +1,1 @@
+Release candidate: the arrow now uses the phone's compass when you are standing or crawling and the GPS has no direction. Spain only.
