@@ -24,7 +24,12 @@ object Diagnostics {
         CrashNotes(File(context.applicationContext.noBackupFilesDir, "$DIR/$CORE_FILE"))
 
     /** Everything the About screen shows: how the processes ended recently, then both note files. Empty text when there is nothing. */
-    fun report(context: Context): String = buildString {
+    fun report(context: Context, alerts: List<String> = emptyList()): String = buildString {
+        if (alerts.isNotEmpty()) {
+            append("Alerts (cameras, zones, incidents)\n")
+            alerts.forEach { append("  ").append(it).append('\n') }
+            append('\n')
+        }
         val exits = ExitReasons.lines(context)
         if (exits.isNotEmpty()) {
             append("Recent process exits (newest first)\n")

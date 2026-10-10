@@ -89,7 +89,9 @@ class SettingsActivity : ComponentActivity() {
                 version = runCatching { packageManager.getPackageInfo(packageName, 0).versionName }.getOrNull().orEmpty(),
                 transitAttributions = { app.transit.attributions },
                 notice = { runCatching { assets.open("NOTICE.txt").bufferedReader().use { it.readText() } }.getOrDefault("") },
-                diagnostics = { com.qtekfun.ultimatemaps.diagnostics.Diagnostics.report(this) },
+                diagnostics = {
+                    com.qtekfun.ultimatemaps.diagnostics.Diagnostics.report(this, (application as MapasApp).alertStats.describe(System.currentTimeMillis()))
+                },
                 clearDiagnostics = { com.qtekfun.ultimatemaps.diagnostics.Diagnostics.clear(this) },
             ),
         )
