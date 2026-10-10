@@ -14,8 +14,9 @@ enum class AlertSoundMode { SOUND, VOICE, SILENT }
 enum class AlertDelivery { CHIME, SPEAK, NONE }
 
 /**
- * The pure decision "chime / speak / nothing". Order of precedence: the navigation voice switch (the navigation Mute)
- * silences everything; the alerts' quick mute silences both categories without touching their modes; a maneuver that is
+ * The pure decision "chime / speak / nothing". Order of precedence: [navigationVoiceOn] false silences everything (the
+ * public-transport trip prompts pass the guidance switch; the camera and incident alerts always pass true, so the guidance
+ * Mute does not silence them); the alerts' quick mute silences both categories without touching their modes; a maneuver that is
  * being announced or about to be wins over any alert (the visual alert still shows, nothing is queued for later).
  */
 object AlertDeliveryPolicy {
@@ -53,12 +54,12 @@ fun interface AlertSoundPlayer {
  */
 object ChimeSynth {
     const val SAMPLE_RATE = 44_100
-    const val TONE_MILLIS = 120
+    const val TONE_MILLIS = 160
     const val GAP_MILLIS = 40
     const val FADE_MILLIS = 10
 
-    /** Peak amplitude as a fraction of full scale; leaves headroom, loudness comes from the volume setting. */
-    const val AMPLITUDE = 0.6
+    /** Peak amplitude as a fraction of full scale. Near the top: a sine chime at 0.6 was too quiet over road noise and music. */
+    const val AMPLITUDE = 0.95
 
     /** The two tone frequencies in Hz, in playing order. */
     fun tonesHz(kind: ChimeKind): Pair<Int, Int> = when (kind) {

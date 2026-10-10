@@ -63,4 +63,6 @@
     <string name="nav_engine_title">Motor de veu</string>
     <string name="nav_engine_note">Si la veu parla en un altre idioma (li passa al motor que porten alguns mòbils), tria un altre motor instal·lat i prem Prova la veu.</string>
     <string name="nav_engine_default">Predeterminat del sistema</string>
+    <string name="nav_engine_only_one">Només hi ha un motor de veu instal·lat. Per fer servir-ne un altre (per exemple el de Google), tria\'l o instal·la\'l als ajustos del mateix mòbil.</string>
+    <string name="nav_engine_system_settings">Obre els ajustos de veu del mòbil</string>
 </resources>

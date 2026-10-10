@@ -74,10 +74,10 @@ class AlertVoiceMuteTest {
         assertNotNull(r.banner.state.value, "the visual alert keeps showing")
     }
 
-    @Test fun theNavigationMuteStillSilencesEverythingEvenWhenAlertVoiceIsOn() {
+    @Test fun theGuidanceMuteDoesNotSilenceTheAlerts() {
         val r = rig(on, NavSettings(voiceEnabled = false))
         r.approach()
-        assertTrue(r.guide.spoken.isEmpty(), "navigation Mute overrides the alerts' voice switch")
+        assertEquals(1, r.guide.spoken.size, "muting the spoken directions leaves the alerts on; they have their own mute")
         assertNotNull(r.banner.state.value)
     }
 

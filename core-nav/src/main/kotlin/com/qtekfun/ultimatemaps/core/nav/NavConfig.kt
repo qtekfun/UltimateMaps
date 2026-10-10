@@ -33,11 +33,19 @@ data class NavConfig(
     // Off route
     val offRouteMinMeters: Double = 30.0,
     val accuracyFactor: Double = 2.0,
-    val offRouteFixes: Int = 5,
-    val offRouteMinMillis: Long = 3_000L,
-    val offRouteMaxMillis: Long = 10_000L,
-    val farFactor: Double = 3.0,
-    val farFixes: Int = 3,
+    val offRouteFixes: Int = 3,
+    val offRouteMinMillis: Long = 2_000L,
+    val offRouteMaxMillis: Long = 8_000L,
+    val farFactor: Double = 2.5,
+    val farFixes: Int = 2,
+    /**
+     * A turn off the route: moving at least [divergeMinSpeedMps], heading more than [divergeDegrees] away from the route
+     * and already past [divergeBand] of the off-route threshold for [divergeFixes] fixes in a row is a decision, not noise.
+     */
+    val divergeDegrees: Double = 60.0,
+    val divergeMinSpeedMps: Double = 5.0,
+    val divergeBand: Double = 0.8,
+    val divergeFixes: Int = 2,
     val onRouteBand: Double = 0.7,
     val wrongWayDegrees: Double = 135.0,
     val wrongWayMinSpeedMps: Double = 3.0,

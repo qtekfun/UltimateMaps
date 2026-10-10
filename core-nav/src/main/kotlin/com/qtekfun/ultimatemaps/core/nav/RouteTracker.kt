@@ -75,6 +75,7 @@ class RouteTracker(
     private var lastFixTime = -1L
     private var speed = 0.0
     private var offCount = 0
+    private var divergeCount = 0
     private var offStart = 0L
     private var offDistance = 0.0
     private var stillSince = -1L
@@ -168,13 +169,17 @@ class RouteTracker(
         }
 
         var resync = first || wasNoSignal || dt > 10.0 || forceResync
+        val diverging = !heading.isNaN() && !match.segmentBearing.isNaN() && movingSpeed >= config.divergeMinSpeedMps &&
+            d > threshold * config.divergeBand && angleDiff(heading, match.segmentBearing) > config.divergeDegrees
+        if (diverging) divergeCount++ else divergeCount = 0
         if (d > threshold || wrongWay) {
             if (offCount == 0) offStart = t
             offCount++
             val duration = t - offStart
             val confirmed = (offCount >= config.offRouteFixes && duration >= config.offRouteMinMillis) ||
                 (offCount >= 2 && duration >= config.offRouteMaxMillis) ||
-                (d > threshold * config.farFactor && offCount >= config.farFixes)
+                (d > threshold * config.farFactor && offCount >= config.farFixes) ||
+                (diverging && divergeCount >= config.divergeFixes)
             if (confirmed && status == NavStatus.ON_ROUTE) status = NavStatus.OFF_ROUTE
             if (!fixSpeed.isNaN()) speed = fixSpeed
             return

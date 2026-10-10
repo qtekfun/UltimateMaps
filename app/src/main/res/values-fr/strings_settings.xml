@@ -63,4 +63,6 @@
     <string name="nav_engine_title">Moteur vocal</string>
     <string name="nav_engine_note">Si la voix parle dans une autre langue (cela arrive avec le moteur de certains téléphones), choisissez un autre moteur installé puis appuyez sur Tester la voix.</string>
     <string name="nav_engine_default">Par défaut du système</string>
+    <string name="nav_engine_only_one">Un seul moteur vocal est installé. Pour en utiliser un autre (par exemple celui de Google), choisissez-le ou installez-le dans les réglages du téléphone.</string>
+    <string name="nav_engine_system_settings">Ouvrir les réglages vocaux du téléphone</string>
 </resources>

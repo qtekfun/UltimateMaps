@@ -134,7 +134,7 @@ class CameraAlertsEndToEndTest {
         r.controller.stop()
     }
 
-    @Test fun mutedVoiceStillShowsTheVisualAlertAndImportantOnlyDoesNotSilenceIt() = runTest {
+    @Test fun mutedGuidanceDoesNotSilenceTheAlertsAndImportantOnlyDoesNotEither() = runTest {
         val muted = Rig(this, on, listOf(camera("c", 3000.0)), NavSettings(voiceEnabled = false))
         muted.controller.start(plan())
         muted.feed.start()
@@ -142,8 +142,8 @@ class CameraAlertsEndToEndTest {
         val shown = ArrayList<AlertBannerState?>()
         ride(muted, 60, 1500.0, 25.0, shown)
         assertEquals(1, muted.alerts.size)
-        assertTrue(muted.guide.spoken.isEmpty(), "Mute is the navigation voice switch: nothing is spoken")
-        assertTrue(shown.any { it != null }, "but the alert is on screen")
+        assertEquals(1, muted.guide.spoken.size, "the guidance Mute does not silence the alerts: they have their own mute")
+        assertTrue(shown.any { it != null }, "and the alert is on screen")
         muted.controller.stop()
 
         val important = Rig(this, on, listOf(camera("c", 3000.0)), NavSettings(importantOnly = true))

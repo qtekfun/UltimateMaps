@@ -4,6 +4,13 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 
 ## [Unreleased]
 
+### Changed
+
+- **Mute buttons are icons.** In navigation, the two text buttons became two icon buttons: a loudspeaker (spoken guidance) and a warning triangle (camera and incident alerts), each crossed out and highlighted while muted. Their descriptions for screen readers are unchanged.
+- **Alerts are no longer silenced by muting the guidance.** The loudspeaker button mutes only the spoken directions; the warning-triangle button mutes the alerts. The alert chime is louder (higher peak level and a longer tone).
+- **Faster re-routing.** Leaving the route is confirmed after three fixes and two seconds instead of five and three; a clear turn onto another road (moving, heading more than 60 degrees off the route and already past most of the threshold) after two fixes; far-off positions after two fixes instead of three.
+- **The voice engine card is always shown** in Settings, Navigation, with a button to the phone's own voice settings when there is only one engine to choose from.
+
 ## [0.1.0-rc.19] - 2026-10-10
 
 ### Added

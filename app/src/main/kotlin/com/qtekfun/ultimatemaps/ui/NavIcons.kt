@@ -81,6 +81,27 @@ object NavIcons {
         LaneDirection.U_TURN -> Spec(false, laneUTurn)
     }
 
+    // Mute buttons of the navigation screen: a loudspeaker (voice guidance) and a warning triangle (camera and incident alerts),
+    // each with a slash when muted.
+    private val speakerBody = p("M7 19H14L25 11V37L14 29H7Z")
+    private val speakerWaves = listOf(p("M31 18Q36 24 31 30"), p("M36 13Q44 24 36 35"))
+    private val warningTriangle = listOf(p("M24 7L43 40H5Z"), p("M24 20V28"), dot(24, 34, 2))
+    private val slash = p("M8 8L40 40")
+
+    private val muteCache = HashMap<String, ImageVector>()
+
+    /** A loudspeaker with waves, or with a slash when [muted]; drawn in black, tint it with a colour filter. */
+    @Synchronized
+    fun speaker(muted: Boolean): ImageVector = muteCache.getOrPut("speaker_$muted") {
+        build("speaker_$muted", Spec(false, if (muted) listOf(speakerBody, slash) else listOf(speakerBody) + speakerWaves))
+    }
+
+    /** A warning triangle (alerts), or crossed out when [muted]; drawn in black, tint it with a colour filter. */
+    @Synchronized
+    fun alerts(muted: Boolean): ImageVector = muteCache.getOrPut("alerts_$muted") {
+        build("alerts_$muted", Spec(false, if (muted) warningTriangle + slash else warningTriangle))
+    }
+
     private val turnCache = HashMap<TurnType, ImageVector>()
     private val laneCache = HashMap<LaneDirection, ImageVector>()
 

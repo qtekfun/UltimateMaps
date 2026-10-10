@@ -63,4 +63,6 @@
     <string name="nav_engine_title">Motor de voz</string>
     <string name="nav_engine_note">Si la voz habla en otro idioma (le pasa al motor que traen algunos móviles), elige otro motor instalado y pulsa Probar voz.</string>
     <string name="nav_engine_default">Predeterminado del sistema</string>
+    <string name="nav_engine_only_one">Solo hay un motor de voz instalado. Para usar otro (por ejemplo el de Google), elígelo o instálalo en los ajustes del propio móvil.</string>
+    <string name="nav_engine_system_settings">Abrir los ajustes de voz del móvil</string>
 </resources>

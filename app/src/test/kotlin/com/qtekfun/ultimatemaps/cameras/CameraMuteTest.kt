@@ -61,12 +61,12 @@ class CameraMuteTest {
 
     @Test fun theButtonShowsTheStateDescribesItAndAsksForTheOpposite() {
         show(driving())
-        assertEquals("Mute alerts", text("nav_camera_mute"))
+        assertEquals("", text("nav_camera_mute"), "an icon button: no text, the state is in its description")
         rule.onNodeWithTag("nav_camera_mute").assertContentDescriptionEquals("Camera and incident alerts on. Tap to mute their sound and voice")
         rule.onNodeWithTag("nav_camera_mute").performClick()
         ui = driving(cameraVoiceOn = false)
         rule.waitForIdle()
-        assertEquals("Unmute alerts", text("nav_camera_mute"))
+        assertEquals("", text("nav_camera_mute"))
         rule.onNodeWithTag("nav_camera_mute").assertContentDescriptionEquals("Camera and incident alerts muted. Tap to turn their sound and voice back on")
         rule.onNodeWithTag("nav_camera_mute").performClick()
         assertEquals(listOf("camera:false", "camera:true"), calls, "it never touches the navigation voice")
