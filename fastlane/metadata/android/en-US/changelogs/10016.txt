@@ -1,0 +1,1 @@
+Release candidate: public-transport trips use less battery on long rides, and the "play" build watches the stops with Google geofences. Spain only.
