@@ -60,4 +60,7 @@
     <string name="fuel_confirm_offline">O modo offline está ativo, por isso nada se ligará até o desativares.</string>
     <string name="fuel_confirm_yes">Ativar</string>
     <string name="fuel_confirm_no">Cancelar</string>
+    <string name="nav_engine_title">Motor de voz</string>
+    <string name="nav_engine_note">Se a voz fala noutro idioma (acontece com o motor de alguns telemóveis), escolha outro motor instalado e prima Testar voz.</string>
+    <string name="nav_engine_default">Predefinição do sistema</string>
 </resources>

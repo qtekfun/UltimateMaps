@@ -46,6 +46,23 @@ class AlertStats {
 
     fun scanEnd() { lastTargetsInRange = inRange }
 
+    @Volatile private var mapZoom = Double.NaN
+    @Volatile private var mapPins = -1
+    @Volatile private var mapLines = -1
+    @Volatile private var dataFixed = -1
+    @Volatile private var dataSections = 0
+    @Volatile private var dataZones = 0
+
+    /** The map layer's last decision: the zoom it saw, what it drew, and what the loaded data holds (numbers only). */
+    fun mapLayer(zoom: Double, pins: Int, lines: Int, fixed: Int, sections: Int, zones: Int) {
+        mapZoom = zoom
+        mapPins = pins
+        mapLines = lines
+        dataFixed = fixed
+        dataSections = sections
+        dataZones = zones
+    }
+
     fun alertRaised(atMs: Long) {
         raised.incrementAndGet()
         lastAlertAtMs = atMs
@@ -64,6 +81,9 @@ class AlertStats {
             "Skipped fixes: ${skippedSwitchesOff.get()} everything off, ${skippedSlow.get()} too slow, ${skippedNoHeading.get()} no direction",
             "Targets ahead at the last fix: $lastTargetsInRange",
             "Alerts raised: ${raised.get()}; last ${age(lastAlertAtMs)}",
+            if (mapPins < 0) "Map layer: no viewport seen yet"
+            else "Map layer: zoom ${"%.1f".format(mapZoom)} (draws from 8), drew $mapPins pins and $mapLines lines; data holds " +
+                "$dataFixed fixed cameras, $dataSections sections, $dataZones zones",
         )
     }
 }

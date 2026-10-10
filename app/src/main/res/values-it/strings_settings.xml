@@ -60,4 +60,7 @@
     <string name="fuel_confirm_offline">La modalità offline è attiva, quindi non ci sarà alcuna connessione finché non la disattivi.</string>
     <string name="fuel_confirm_yes">Attiva</string>
     <string name="fuel_confirm_no">Annulla</string>
+    <string name="nav_engine_title">Motore vocale</string>
+    <string name="nav_engine_note">Se la voce parla in un\'altra lingua (succede con il motore di alcuni telefoni), scegli un altro motore installato e premi Prova la voce.</string>
+    <string name="nav_engine_default">Predefinito del sistema</string>
 </resources>

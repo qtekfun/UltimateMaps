@@ -60,4 +60,7 @@
     <string name="fuel_confirm_offline">O modo sen conexión está activado, así que non se conectará nada ata que o desactives.</string>
     <string name="fuel_confirm_yes">Activar</string>
     <string name="fuel_confirm_no">Cancelar</string>
+    <string name="nav_engine_title">Motor de voz</string>
+    <string name="nav_engine_note">Se a voz fala noutro idioma (pásalle ao motor que traen algúns móbiles), escolle outro motor instalado e preme Probar a voz.</string>
+    <string name="nav_engine_default">Predeterminado do sistema</string>
 </resources>

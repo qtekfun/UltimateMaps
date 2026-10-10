@@ -60,4 +60,7 @@
     <string name="fuel_confirm_offline">El modo sin red está activo, así que no se conectará nada hasta que lo apagues.</string>
     <string name="fuel_confirm_yes">Activar</string>
     <string name="fuel_confirm_no">Cancelar</string>
+    <string name="nav_engine_title">Motor de voz</string>
+    <string name="nav_engine_note">Si la voz habla en otro idioma (le pasa al motor que traen algunos móviles), elige otro motor instalado y pulsa Probar voz.</string>
+    <string name="nav_engine_default">Predeterminado del sistema</string>
 </resources>

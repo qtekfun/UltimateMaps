@@ -39,6 +39,8 @@ class NavigationSettingsEnv(
     val transitTrip: com.qtekfun.ultimatemaps.transit.follow.TransitTripSettingsStore? = null,
     /** Opens the system Do Not Disturb settings (no permission needed); a no-op in tests. */
     val openDoNotDisturb: () -> Unit = {},
+    /** The installed text-to-speech engines as (package, label); empty hides the card. */
+    val voiceEngines: () -> List<Pair<String, String>> = { emptyList() },
 )
 
 /**
@@ -88,6 +90,22 @@ fun NavigationSection(env: NavigationSettingsEnv) {
                     env.store.update { it.copy(voiceLanguage = l) }
                     env.guide.prepare(l.resolve(env.locale())) // checks that this language has a voice
                 }
+            }
+        }
+    }
+    val engines = env.voiceEngines()
+    if (engines.size > 1) {
+        Spacer(Modifier.height(10.dp))
+        Card("nav_engine_card") {
+            BasicText(stringResource(R.string.nav_engine_title), style = Mapas.typography.body.copy(color = Mapas.colors.label))
+            BasicText(stringResource(R.string.nav_engine_note), style = Mapas.typography.callout.copy(color = Mapas.colors.secondaryLabel))
+            val choose = { pkg: String ->
+                env.store.update { it.copy(voiceEngine = pkg) }
+                env.guide.retry(s.voiceLanguage.resolve(env.locale())) // starts the chosen engine and checks the language
+            }
+            ChoiceRow(stringResource(R.string.nav_engine_default), s.voiceEngine.isEmpty(), radio = true, tag = "nav_engine_default") { choose("") }
+            engines.forEach { (pkg, label) ->
+                ChoiceRow(label, s.voiceEngine == pkg, radio = true, tag = "nav_engine_$pkg") { choose(pkg) }
             }
         }
     }
