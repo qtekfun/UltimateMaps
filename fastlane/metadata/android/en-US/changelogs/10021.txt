@@ -1,0 +1,1 @@
+Release candidate: the diagnostics now list how long the last reroutes took, to find out why a new route line is slow to appear. Spain only.

@@ -1,0 +1,1 @@
+Versión candidata: el diagnóstico muestra cuánto tardaron los últimos recálculos de ruta, para averiguar por qué la nueva línea tarda en aparecer. Solo España.

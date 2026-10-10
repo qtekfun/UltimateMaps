@@ -4,6 +4,8 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 
 ## [Unreleased]
 
+## [0.1.0-rc.21] - 2026-10-10
+
 ### Added
 
 - **Reroute timings in the diagnostics.** Settings, About, Diagnostics lists the last reroutes: how long the native core took to calculate the new route, how long after that the screen got the line, and how long handing it to the map took. Numbers only. It is there to find out where the seconds go when a new line takes long to appear.
