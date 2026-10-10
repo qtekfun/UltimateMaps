@@ -4,6 +4,8 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 
 ## [Unreleased]
 
+## [0.1.0-rc.18] - 2026-10-10
+
 ### Added
 
 - **Alternative routes that are really different roads.** "Show alternatives" now also looks for routes through a point on the left and on the right of the middle of the main route, and offers them (up to three alternatives in all, labelled "Another way (to the left / right)") when they share less than three quarters of the road with the main route and cost at most 50 % more time and 70 % more distance. Starting an alternative drives through the same point. Only when you have not added stops of your own.
