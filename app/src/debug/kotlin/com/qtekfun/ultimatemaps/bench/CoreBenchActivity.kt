@@ -40,9 +40,28 @@ class CoreBenchActivity : Activity() {
         val tunnels = intent?.getBooleanExtra("tunnels", false) == true
         // `--ez exits true`: routes that leave a motorway by an exit and logs the exit number / signposted road and place.
         val exits = intent?.getBooleanExtra("exits", false) == true
+        // `--es search "<query>" [--es near "lat,lon"]`: runs the free-text search of the core and logs every result (name,
+        // address, category, rank); used to look at how addresses with a house number are answered.
+        val searchQuery = intent?.getStringExtra("search")
         thread(name = "umbench") {
-            runCatching { if (exits) dumpExits() else if (tunnels) dumpTunnels() else if (reroute) dumpReroute() else if (matrix) dumpMatrix() else if (guidanceOnly) dumpGuidance() else run() }.onFailure { Log.e(tag, "FAILED: $it", it) }
+            runCatching { if (searchQuery != null) dumpSearch(searchQuery, intent?.getStringExtra("near")) else if (exits) dumpExits() else if (tunnels) dumpTunnels() else if (reroute) dumpReroute() else if (matrix) dumpMatrix() else if (guidanceOnly) dumpGuidance() else run() }.onFailure { Log.e(tag, "FAILED: $it", it) }
         }
+    }
+
+    /** One free-text search, every result logged. The near point (if any) is only used to bias the ranking and is not logged. */
+    private fun dumpSearch(query: String, near: String?) {
+        val core = CoMapsCore()
+        core.init(applicationInfo.sourceDir, File(filesDir, "maps-core").absolutePath, cacheDir.absolutePath, "es")
+        Log.i(tag, "search init maps=${core.refreshMaps()}")
+        val point = near?.split(',')?.takeIf { it.size == 2 }?.let { LatLon(it[0].trim().toDouble(), it[1].trim().toDouble()) }
+        val engine = core.searchEngine("es")
+        for (q in query.split('|')) {
+            val t0 = SystemClock.elapsedRealtime()
+            val results = engine.search(q, point, 20)
+            Log.i(tag, "search q='$q' near=${point != null} ms=${SystemClock.elapsedRealtime() - t0} results=${results.size}")
+            results.forEachIndexed { i, r -> Log.i(tag, "search   #$i name='${r.name}' address='${r.address}' category='${r.category}'") }
+        }
+        Log.i(tag, "FIN search")
     }
 
     /** Native heap and total PSS in MB. */
