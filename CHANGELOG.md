@@ -6,7 +6,7 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 
 ### Added
 
-- **An optional `play` build that uses Google Play Services when the phone has it** (GitHub only, never F-Droid; application id `com.qtekfun.ultimatemaps.play`, so it installs next to the normal one). Position comes from Google's Fused Location Provider (GPS plus Wi-Fi and cell positioning), and activity recognition ("in a vehicle") helps the public-transport trip notice that you are aboard a train; the permission is asked once when a trip starts and the trip works without it. The normal `foss` build is unchanged and the build fails if it ever gets a Google SDK. Not seen on a device.
+- **An optional `play` build that uses Google Play Services when the phone has it** (GitHub only, never F-Droid; application id `com.qtekfun.ultimatemaps.play`, so it installs next to the normal one). Position comes from Google's Fused Location Provider (GPS plus Wi-Fi and cell positioning), and activity recognition ("in a vehicle") helps the public-transport trip notice that you are aboard a train; the permission is asked once when a trip starts and the trip works without it. From the next release every GitHub Release also carries the `play` APK (`UltimateMaps-X.Y.Z-play.apk`). The normal `foss` build is unchanged and the build fails if it ever gets a Google SDK. Not seen on a device.
 
 ## [0.1.0-rc.14] - 2026-10-09
 
