@@ -166,6 +166,7 @@ class NavigationSession(
         revision++
         tracker = RouteTracker(plan, config, revision, 0.0, ::emitEvent, tunnelSpans, stopGo, ::emitAnnouncement)
         _route.value = tracker.plan
+        NavDiagnostics.routeAdopted(revision, clock())
         lastFix?.let(tracker::onFix)
         publish()
     }
@@ -194,6 +195,7 @@ class NavigationSession(
 
     private fun startReroute(reroute: Rerouter, from: LatLon, bearing: Float?) {
         val generation = ++rerouteGeneration
+        NavDiagnostics.rerouteStarted(clock())
         rerouteJob = scope.launch {
             var found: RoutePlan? = null
             for (attempt in 0 until config.reroute.maxAttempts) {
@@ -207,6 +209,7 @@ class NavigationSession(
                 }
                 if (found != null) break
             }
+            NavDiagnostics.rerouteFinished(clock(), found != null)
             rerouteResult.send(RerouteDone(generation, found))
             inbox.trySend(Wake)
         }

@@ -108,7 +108,11 @@ class NavHost(
             buildingsShown = buildings
         }
         if (nav.routeRevision != routeRevisionShown) {
-            screen.navigation.route.value?.let { engine.showRoute(it.geometry, fit = false) }
+            screen.navigation.route.value?.let {
+                val before = now()
+                engine.showRoute(it.geometry, fit = false)
+                com.qtekfun.ultimatemaps.core.nav.NavDiagnostics.routePainted(nav.routeRevision, System.currentTimeMillis(), now() - before)
+            }
             routeRevisionShown = nav.routeRevision
         }
         if (ui.overview && !wasOverview) {
