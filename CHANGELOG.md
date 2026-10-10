@@ -4,6 +4,10 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 
 ## [Unreleased]
 
+### Changed
+
+- **Public-transport trips use less battery.** On a long ride, while the stop where you get off is more than four minutes away, the position is asked for every five seconds instead of every second; it goes back to every second when the stop is three minutes away or less. Waiting, walking and changing are unchanged.
+
 ### Added
 
 - **`play` build: geofences on the stops of a public-transport trip.** The system itself watches the stop where you get off and the next one where you board, so "get off now" still arrives when position updates are throttled (tunnels, battery saving). It only tells you; reaching the stop is still confirmed by a real position. No background-location permission is requested. Not seen on a device.
