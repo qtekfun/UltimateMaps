@@ -386,6 +386,14 @@ class RouteTracker(
         onAnnouncement?.invoke(Announcement(maneuvers[index], kind, distance.roundToInt().coerceAtLeast(0)))
     }
 
+    /**
+     * How close the next maneuver must be for its lanes to be shown: about [LANE_SECONDS] at the current speed, between
+     * [LANE_MIN_METERS] and [LANE_MAX_METERS]. Far from a junction the lane that suits the maneuver (the exit lane of a
+     * motorway, a turn lane that only starts later) is not a lane the driver can or should be in yet; showing it early read
+     * as "get into this lane now".
+     */
+    private fun laneShowMeters(): Double = (speed * LANE_SECONDS).coerceIn(LANE_MIN_METERS, LANE_MAX_METERS)
+
     fun snapshot(): NavState {
         val total = geometry.totalMeters
         val remaining = max(0.0, total - progress)
@@ -403,7 +411,7 @@ class RouteTracker(
             followingManeuver = following,
             speedLimitKmh = if (limit > 0) limit else null,
             overSpeedLimit = overSpeed,
-            lanes = next?.maneuver?.lanes ?: emptyList(),
+            lanes = next?.takeIf { it.distanceMeters <= laneShowMeters() }?.maneuver?.lanes ?: emptyList(),
             estimated = estimated,
             speedMps = speed,
             offRouteMeters = if (lastFixTime < 0) 0.0 else offDistance,
@@ -416,6 +424,9 @@ class RouteTracker(
     }
 
     private companion object {
+        const val LANE_SECONDS = 12.0
+        const val LANE_MIN_METERS = 200.0
+        const val LANE_MAX_METERS = 450.0
         const val LEVEL_FAR = 0
         const val LEVEL_NEAR = 1
         const val LEVEL_NOW = 2
