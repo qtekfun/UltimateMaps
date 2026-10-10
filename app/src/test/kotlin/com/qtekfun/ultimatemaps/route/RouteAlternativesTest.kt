@@ -56,6 +56,8 @@ class RouteAlternativesTest {
             else -> RoutePlan(mainLine, 25_000.0, 1_200.0) // 20 min, 25 km
         }
     }
+    /** What the "native" side answers for a route through a via point; by default the same road as the main route. */
+    private var viaAnswer: (LatLon) -> RoutePlan? = { RoutePlan(mainLine, 25_000.0, 1_200.0) }
     private val requests = mutableListOf<RouteRequest>()
     private val mainDrawn = mutableListOf<List<LatLon>>()
     private val altDrawn = mutableListOf<List<List<LatLon>>>()
@@ -67,7 +69,7 @@ class RouteAlternativesTest {
             object : DetailedRoutingEngine {
                 override fun routeDetailed(request: RouteRequest): RouteOutcome {
                     requests += request
-                    val plan = answers(request.options)
+                    val plan = if (request.via.isNotEmpty()) viaAnswer(request.via.first()) else answers(request.options)
                     return if (plan != null) RouteOutcome(RouteCode.NO_ERROR, plan) else RouteOutcome(RouteCode.ROUTE_NOT_FOUND, null)
                 }
                 override fun route(request: RouteRequest) = routeDetailed(request).plan
@@ -136,7 +138,7 @@ class RouteAlternativesTest {
         route.findAlternatives()
         assertEquals(AlternativesStatus.DONE, route.state.alternativesStatus)
         assertTrue(route.state.alternatives.isEmpty())
-        assertEquals(3, requests.size)
+        assertEquals(5, requests.size) // the main route, the two restrictions, and one try through each side
     }
 
     @Test fun selectingAnAlternativeSwapsTheFiguresTheLineAndTheStartRequest() {
@@ -205,6 +207,32 @@ class RouteAlternativesTest {
         startMain()
         route.findAlternatives()
         rule.setContent { MapasTheme(darkTheme = false) { AlternativesSection(route) } }
-        rule.onNodeWithText("No different route found with other restrictions.").assertIsDisplayed()
+        rule.onNodeWithText("No different route found.").assertIsDisplayed()
+    }
+
+    @Test fun aDifferentRoadThroughAPointOnEachSideIsOfferedAndStartsThroughThatPoint() {
+        // the restrictions give nothing new; the road through the left point is another way, 10 % slower
+        answers = { RoutePlan(mainLine, 25_000.0, 1_200.0) }
+        val westRoad = listOf(home, LatLon(40.1, -3.35), dest.point)
+        viaAnswer = { via -> if (via.lon < -3.1) RoutePlan(westRoad, 27_000.0, 1_320.0) else RoutePlan(mainLine, 25_000.0, 1_200.0) }
+        startMain()
+        route.findAlternatives()
+        assertEquals(listOf(AlternativeKind.VIA_LEFT), route.state.alternatives.map { it.kind })
+        val alt = route.state.alternatives.single()
+        assertEquals(1, alt.via.size)
+        route.selectAlternative(0)
+        assertEquals(alt.via, route.currentRequest()!!.via, "starting it goes through the same point")
+        route.selectAlternative(null)
+        assertTrue(route.currentRequest()!!.via.isEmpty())
+    }
+
+    @Test fun aDetourThatIsMuchSlowerOrTheSameRoadIsNotOffered() {
+        val main = RoutePlan(mainLine, 25_000.0, 1_200.0)
+        val other = listOf(home, LatLon(40.1, -3.4), dest.point)
+        assertTrue(!RoutePreviewController.worthOffering(main, RoutePlan(other, 26_000.0, 1_900.0), emptyList()), "58 % slower")
+        assertTrue(!RoutePreviewController.worthOffering(main, RoutePlan(other, 50_000.0, 1_300.0), emptyList()), "twice the distance")
+        assertTrue(!RoutePreviewController.worthOffering(main, RoutePlan(mainLine, 25_000.0, 1_200.0), emptyList()), "the same road")
+        assertTrue(RoutePreviewController.worthOffering(main, RoutePlan(other, 26_000.0, 1_300.0), emptyList()))
+        assertTrue(!RoutePreviewController.worthOffering(main, RoutePlan(other, 26_000.0, 1_300.0), listOf(other)), "already offered")
     }
 }
