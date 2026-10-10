@@ -266,6 +266,9 @@ class MapasApp : Application() {
      */
     val incidentBanner = IncidentBannerMachine({ incidents.repository }, { cameraSettings.settings.value }, System::currentTimeMillis)
 
+    /** What the alert warner has seen (counts and ages only); shown in Settings, About, Diagnostics. */
+    val alertStats = com.qtekfun.ultimatemaps.core.cameras.AlertStats()
+
     /** Alerts ahead (cameras, zones, incidents): route-based while navigating, free-driving while the app is on screen. */
     val cameraAlerts: CameraAlerts by lazy {
         val voice by lazy {
@@ -283,7 +286,10 @@ class MapasApp : Application() {
             cameras = cameraData.repository,
             incidents = incidents.repository,
             navigation = navigation,
-            location = { com.qtekfun.ultimatemaps.platform.PlatformServices.locationSource(this) },
+            location = {
+                com.qtekfun.ultimatemaps.platform.PlatformServices.locationSource(this).also { alertStats.source = it.javaClass.simpleName }
+            },
+            stats = alertStats,
             hasLocationPermission = {
                 checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION) == android.content.pm.PackageManager.PERMISSION_GRANTED ||
                     checkSelfPermission(android.Manifest.permission.ACCESS_COARSE_LOCATION) == android.content.pm.PackageManager.PERMISSION_GRANTED

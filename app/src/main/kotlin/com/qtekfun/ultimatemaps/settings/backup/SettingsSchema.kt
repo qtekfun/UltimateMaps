@@ -270,6 +270,7 @@ object SettingsSchema {
             "old shared voice flag, only read to migrate to the per-category alert modes (which are exported)",
         "${PrefsCameraSettingsStore.PREFS}/${PrefsCameraSettingsStore.KEY_ACK}" to
             "consent: the camera notice must be accepted again on the new phone",
+        "mapas_nav/${PrefsNavSettingsStore.KEY_VOICE_ENGINE}" to "package name of a text-to-speech engine installed on this phone; another phone may not have it",
         "${RegionsController.PREFS}/install_location" to "device-specific storage id (card or internal)",
         "camera/lat" to "a position (the last map camera)",
         "camera/lon" to "a position (the last map camera)",

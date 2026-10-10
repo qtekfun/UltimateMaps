@@ -100,6 +100,8 @@ class SpeechDirector(
     private val scheduler: Scheduler,
     private val config: DirectorConfig = DirectorConfig(),
     private val clock: () -> Long = System::currentTimeMillis,
+    /** The engine the user chose in Settings (its package), or null for the system default; read each time an engine is started from scratch. */
+    private val preferredEngine: () -> String? = { null },
 ) : VoiceGuide {
     private val _status = MutableStateFlow<VoiceStatus>(VoiceStatus.Idle)
     override val status: StateFlow<VoiceStatus> = _status.asStateFlow()
@@ -133,7 +135,7 @@ class SpeechDirector(
 
     override fun prepare(language: VoiceLanguage) = onThread {
         wanted = language
-        if (engine == null && restartTimer == null && _status.value !is VoiceStatus.Failed) startEngine(enginePackage)
+        if (engine == null && restartTimer == null && _status.value !is VoiceStatus.Failed) startEngine(enginePackage ?: safePreferred())
         else if (engineUp) checkLanguage(language)
     }
 
@@ -154,7 +156,7 @@ class SpeechDirector(
         enginePackage = null
         discardEngine()
         wanted = language
-        startEngine(null)
+        startEngine(safePreferred())
     }
 
     override fun shutdown() = onThread {
@@ -172,6 +174,8 @@ class SpeechDirector(
     }
 
     // ------------------------------------------------------------------ Starting
+
+    private fun safePreferred(): String? = try { preferredEngine()?.takeIf { it.isNotEmpty() } } catch (_: Exception) { null }
 
     private fun startEngine(pkg: String?) {
         discardEngine()
@@ -245,7 +249,7 @@ class SpeechDirector(
         if (u.text.isBlank()) return
         if (engine == null && restartTimer == null) {
             wanted = u.language
-            startEngine(enginePackage)
+            startEngine(enginePackage ?: safePreferred())
         }
         val q = Queued(u, clock())
         when (u.priority) {

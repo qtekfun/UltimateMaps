@@ -60,4 +60,7 @@
     <string name="fuel_confirm_offline">Lineaz kanpoko modua aktibo dago, beraz ez da ezer konektatuko desaktibatu arte.</string>
     <string name="fuel_confirm_yes">Aktibatu</string>
     <string name="fuel_confirm_no">Utzi</string>
+    <string name="nav_engine_title">Ahots-motorea</string>
+    <string name="nav_engine_note">Ahotsak beste hizkuntza batean hitz egiten badu (telefono batzuen motorrari gertatzen zaio), aukeratu instalatutako beste motor bat eta sakatu Probatu ahotsa.</string>
+    <string name="nav_engine_default">Sistemaren lehenetsia</string>
 </resources>

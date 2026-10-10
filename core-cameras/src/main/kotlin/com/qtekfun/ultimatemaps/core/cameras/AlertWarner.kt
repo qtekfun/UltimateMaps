@@ -41,6 +41,8 @@ data class AlertEvent(
 class AlertWarner(
     private val sources: List<AlertSource>,
     private val settings: () -> CameraSettings,
+    /** Counters for the diagnostics screen (null: none). */
+    private val stats: AlertStats? = null,
     private val onAlert: (AlertEvent) -> Unit,
 ) {
     private class Warned(var stage: AlertStage, var lat: Double, var lon: Double)
@@ -83,7 +85,11 @@ class AlertWarner(
     fun onFreeFix(lat: Double, lon: Double, headingDeg: Float?, speedMps: Float?, nowMillis: Long) {
         val heading = headingDeg?.toDouble()?.takeIf { it in 0.0..360.0 } ?: deriveHeading(lat, lon)
         updatePrev(lat, lon)
-        if (heading.isNaN()) return
+        stats?.fix(true, nowMillis, speedMps, headingDeg != null)
+        if (heading.isNaN()) {
+            stats?.skippedNoHeading()
+            return
+        }
         if (!begin(lat, lon, heading, speedMps)) return
         route = null
         scan(freeVisitor)
@@ -93,6 +99,7 @@ class AlertWarner(
     /** Navigating: the position projected on [geometry] (metres [alongMeters] from its start) and the speed. */
     @Synchronized
     fun onRouteFix(geometry: RouteGeometry, alongMeters: Double, lat: Double, lon: Double, speedMps: Float?, nowMillis: Long) {
+        stats?.fix(false, nowMillis, speedMps, true)
         if (!begin(lat, lon, Double.NaN, speedMps)) return
         route = geometry
         curAlong = alongMeters
@@ -118,10 +125,14 @@ class AlertWarner(
         cfg = settings()
         if (!cfg.anything) {
             if (warned.isNotEmpty()) warned.clear()
+            stats?.skippedSwitchesOff()
             return false
         }
         val speed = speedMps?.toDouble()?.takeIf { it >= 0 } ?: Double.NaN
-        if (!speed.isNaN() && speed < MIN_SPEED_MPS) return false
+        if (!speed.isNaN() && speed < MIN_SPEED_MPS) {
+            stats?.skippedSlow()
+            return false
+        }
         curLat = lat; curLon = lon; curHeading = heading; curSpeed = speed
         curLookahead = (if (speed.isNaN()) MIN_LOOKAHEAD_METERS else speed * LOOKAHEAD_SECONDS)
             .coerceIn(MIN_LOOKAHEAD_METERS, MAX_LOOKAHEAD_METERS)
@@ -132,7 +143,9 @@ class AlertWarner(
     }
 
     private fun scan(visitor: AlertSource.Visitor) {
+        stats?.scanStart()
         for (s in sources) s.forEachNear(curLat, curLon, curLookahead + SCAN_MARGIN_METERS, visitor)
+        stats?.scanEnd()
     }
 
     private fun prune() {
@@ -172,6 +185,7 @@ class AlertWarner(
         val toTarget = TargetGrid.bearingDegrees(curLat, curLon, t.lat, t.lon)
         if (TargetGrid.angleDiff(toTarget, curHeading) > CONE_DEGREES) return
         if (!directionOk(t, curHeading)) return
+        stats?.targetInRange()
         offer(t, d)
     }
 
@@ -183,6 +197,7 @@ class AlertWarner(
         val ahead = match.along - curAlong
         if (ahead < 0 || ahead > curLookahead) return
         if (!directionOk(t, match.segmentBearing)) return
+        stats?.targetInRange()
         offer(t, ahead)
     }
 
@@ -227,6 +242,7 @@ class AlertWarner(
         val w = warned[t.group]
         if (w == null) warned[t.group] = Warned(bestStage, t.lat, t.lon) else { w.stage = bestStage; w.lat = t.lat; w.lon = t.lon }
         val kmh = if (curSpeed.isNaN()) null else Math.round(curSpeed * 3.6).toInt()
+        stats?.alertRaised(now)
         onAlert(AlertEvent(t, bestStage, bestDistance.toInt(), t.limitKmh, kmh, isSpeeding(t)))
         bestTarget = null
     }

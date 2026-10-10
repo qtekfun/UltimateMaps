@@ -39,6 +39,8 @@ object VoiceModule {
             engines = { pkg -> AndroidSpeechEngine(app, pkg) },
             audio = AndroidAudioFocus(app),
             scheduler = HandlerScheduler(),
+            // the user's choice, only while that engine is still installed
+            preferredEngine = { settings(app).settings.value.voiceEngine.takeIf { it.isNotEmpty() && it in VoiceInstall.installedEngines(app) } },
         ).also { voiceGuide = it }
     }
 

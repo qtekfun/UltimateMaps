@@ -4,6 +4,11 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 
 ## [Unreleased]
 
+### Added
+
+- **Choose the voice engine.** Settings, Navigation, Voice engine (shown when the phone has more than one text-to-speech engine): pick which one speaks the guidance, for phones whose own engine speaks Spanish with a voice of another language; "Test voice" and the language check start the chosen engine. The choice is per phone and is not part of the settings backup.
+- **Diagnostics for the alerts.** Settings, About, Diagnostics now starts with a short report of what the alert system sees: the position source, the free-driving feed state and why it may be stopped, fixes seen and why some were skipped (too slow, no direction, everything off), targets ahead, alerts raised, and what the map layer drew with how many cameras the loaded data holds. Only counts and ages, never a position.
+
 ## [0.1.0-rc.18] - 2026-10-10
 
 ### Added
