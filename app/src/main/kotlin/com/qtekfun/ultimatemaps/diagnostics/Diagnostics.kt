@@ -30,6 +30,10 @@ object Diagnostics {
             alerts.forEach { append("  ").append(it).append('\n') }
             append('\n')
         }
+        val reroutes = com.qtekfun.ultimatemaps.core.nav.NavDiagnostics.describe()
+        append("Reroutes\n")
+        reroutes.forEach { append("  ").append(it).append('\n') }
+        append('\n')
         val exits = ExitReasons.lines(context)
         if (exits.isNotEmpty()) {
             append("Recent process exits (newest first)\n")
