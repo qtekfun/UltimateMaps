@@ -1,0 +1,1 @@
+Versión candidata: la guía de carriles solo se muestra cuando el cruce está cerca, y "Mostrar alternativas" ofrece también otras carreteras (por un punto a cada lado). Solo España.
