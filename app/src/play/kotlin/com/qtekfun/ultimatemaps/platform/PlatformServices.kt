@@ -2,9 +2,12 @@ package com.qtekfun.ultimatemaps.platform
 
 import android.content.Context
 import com.qtekfun.ultimatemaps.core.map.AvailableLocationSource
+import com.qtekfun.ultimatemaps.core.map.Geofencer
 import com.qtekfun.ultimatemaps.core.map.MovementHint
+import com.qtekfun.ultimatemaps.core.map.NoGeofencer
 import com.qtekfun.ultimatemaps.core.map.NoMovementHint
 import com.qtekfun.ultimatemaps.gms.GmsAvailability
+import com.qtekfun.ultimatemaps.gms.GmsGeofencer
 import com.qtekfun.ultimatemaps.gms.GmsLocationSource
 import com.qtekfun.ultimatemaps.gms.GmsMovementHint
 import com.qtekfun.ultimatemaps.location.AndroidLocationSource
@@ -22,6 +25,9 @@ object PlatformServices {
 
     fun movementHint(context: Context): MovementHint =
         if (GmsAvailability.isAvailable(context)) GmsMovementHint(context) else NoMovementHint
+
+    fun geofencer(context: Context): Geofencer =
+        if (GmsAvailability.isAvailable(context)) GmsGeofencer(context) else NoGeofencer
 
     fun googleServicesInUse(context: Context): Boolean = GmsAvailability.isAvailable(context)
 }
