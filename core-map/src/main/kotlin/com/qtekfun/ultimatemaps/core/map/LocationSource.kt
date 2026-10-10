@@ -28,6 +28,12 @@ interface LocationSource {
 
     /** Stops updates; safe to call when not started. */
     fun stop()
+
+    /**
+     * Asks for a different time between fixes (milliseconds) from now on, also while started. A hint: a source that cannot
+     * change it ignores it. Used to save battery while nothing needs a fix every second.
+     */
+    fun setPace(intervalMillis: Long) {}
 }
 
 /** A [LocationSource] that can say whether it can work at all on this device (a provider exists). */
@@ -83,6 +89,14 @@ class SimulatedLocationSource : LocationSource {
     private var last: LocationFix? = null
 
     val isStarted: Boolean get() = listener != null
+
+    /** The last pace asked for with [setPace], for tests. */
+    var paceMillis: Long? = null
+        private set
+
+    override fun setPace(intervalMillis: Long) {
+        paceMillis = intervalMillis
+    }
 
     override fun lastKnown(): LocationFix? = last
 

@@ -119,6 +119,8 @@ class TransitTripController(
         runCatching { movementHint.stop() }
         runCatching { geofencer.clear() }
         geofenceKey = ""
+        slowPace = false
+        runCatching { location.setPace(FAST_PACE_MS) }
         follower = null
         _state.value = null
         store.clear()
@@ -136,6 +138,8 @@ class TransitTripController(
         saveLocked(force = true)
         geofenceKey = ""
         updateGeofences(f)
+        slowPace = false
+        runCatching { location.setPace(FAST_PACE_MS) }
         // A listener that is replaced by a restart must not feed a stale follower: it always reads the current one.
         runCatching { location.start { fix -> onFix(fix) } }
         runCatching { movementHint.start() }
@@ -181,10 +185,30 @@ class TransitTripController(
             val snap = f.snapshot()
             saveLocked(force = false, key = "${snap.legIndex}|${snap.boarded}|${snap.progress.toInt()}")
             updateGeofences(f)
+            updatePace(update.state)
         }
     }
 
     private var geofenceKey = ""
+    private var slowPace = false
+
+    /**
+     * Saves battery on a long ride: while aboard with plenty of time before the stop to get off at, a fix every
+     * [SLOW_PACE_MS] is enough (the follower tolerates gaps and the timetable fills them); back to every second when the stop is
+     * near, and for everything else (waiting, walking, changing). The two limits differ so it does not flap.
+     */
+    private fun updatePace(s: FollowState) {
+        val aboard = s.phase == FollowPhase.ON_BOARD
+        val left = s.alightAt?.let { it - clock() / 1000 }
+        val slow = when {
+            !aboard || left == null -> false
+            slowPace -> left > SLOW_PACE_EXIT_SEC
+            else -> left > SLOW_PACE_ENTER_SEC
+        }
+        if (slow == slowPace) return
+        slowPace = slow
+        runCatching { location.setPace(if (slow) SLOW_PACE_MS else FAST_PACE_MS) }
+    }
 
     /**
      * Watches the stop where the traveller gets off (while on or about to be on a ride) and the stop where they board next. The
@@ -354,6 +378,12 @@ class TransitTripController(
         /** What a geofence entry is worth as a fix: a fix this far before the alighting stop, this accurate (see [onGeofence]). */
         const val GEOFENCE_APPROACH_M = 110.0
         const val GEOFENCE_FIX_ACCURACY_M = 30f
+
+        /** Time between fixes on a long ride far from the stop to get off at, and normally; see [updatePace]. */
+        const val SLOW_PACE_MS = 5_000L
+        const val FAST_PACE_MS = 1_000L
+        const val SLOW_PACE_ENTER_SEC = 240L
+        const val SLOW_PACE_EXIT_SEC = 180L
 
         fun destinationOf(itinerary: Itinerary): LatLon = when (val last = itinerary.legs.last()) {
             is ItineraryLeg.Walk -> last.to
