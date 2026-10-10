@@ -3,12 +3,14 @@
     <!-- Alternative routes in the route panel -->
     <string name="route_alt_find">Erakutsi alternatibak</string>
     <string name="route_alt_finding">Alternatibak bilatzen…</string>
-    <string name="route_alt_none">Ez da beste murrizketekin ibilbide desberdinik aurkitu.</string>
-    <string name="route_alt_title">Ibilbideak (alternatiba bakoitzak errepide-mota bat gehiago saihesten du)</string>
+    <string name="route_alt_none">Ez da beste ibilbide desberdinik aurkitu.</string>
+    <string name="route_alt_title">Ibilbideak</string>
     <string name="route_alt_main">Zure ibilbidea</string>
     <string name="route_alt_same_time">denbora berdina</string>
     <string name="route_alt_avoid_motorways">Autobideak saihestuz</string>
     <string name="route_alt_avoid_tolls">Ordainpeko bideak saihestuz</string>
     <string name="route_alt_avoid_unpaved">Asfaltatu gabeko bideak saihestuz</string>
     <string name="route_alt_avoid_ferries">Ferryak saihestuz</string>
+    <string name="route_alt_via_left">Beste bide bat (ezkerretik)</string>
+    <string name="route_alt_via_right">Beste bide bat (eskuinetik)</string>
 </resources>

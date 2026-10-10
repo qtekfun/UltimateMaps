@@ -3,12 +3,14 @@
     <!-- Alternative routes in the route panel -->
     <string name="route_alt_find">Mostra alternatives</string>
     <string name="route_alt_finding">Cercant alternatives…</string>
-    <string name="route_alt_none">No s\'ha trobat cap ruta diferent amb altres restriccions.</string>
-    <string name="route_alt_title">Rutes (cada alternativa evita un tipus de via més)</string>
+    <string name="route_alt_none">No s\'ha trobat cap ruta diferent.</string>
+    <string name="route_alt_title">Rutes</string>
     <string name="route_alt_main">La teva ruta</string>
     <string name="route_alt_same_time">mateix temps</string>
     <string name="route_alt_avoid_motorways">Evitant autopistes</string>
     <string name="route_alt_avoid_tolls">Evitant peatges</string>
     <string name="route_alt_avoid_unpaved">Evitant vies sense asfaltar</string>
     <string name="route_alt_avoid_ferries">Evitant transbordadors</string>
+    <string name="route_alt_via_left">Un altre camí (per l\'esquerra)</string>
+    <string name="route_alt_via_right">Un altre camí (per la dreta)</string>
 </resources>

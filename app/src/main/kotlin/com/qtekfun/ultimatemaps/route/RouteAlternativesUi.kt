@@ -114,6 +114,8 @@ private fun labelOf(kind: AlternativeKind): Int = when (kind) {
     AlternativeKind.AVOID_TOLLS -> R.string.route_alt_avoid_tolls
     AlternativeKind.AVOID_UNPAVED -> R.string.route_alt_avoid_unpaved
     AlternativeKind.AVOID_FERRIES -> R.string.route_alt_avoid_ferries
+    AlternativeKind.VIA_LEFT -> R.string.route_alt_via_left
+    AlternativeKind.VIA_RIGHT -> R.string.route_alt_via_right
 }
 
 @Composable
