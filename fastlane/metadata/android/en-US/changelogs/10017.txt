@@ -1,0 +1,1 @@
+Release candidate: maps are downloaded from Settings (the Maps button of the main screen is gone), public-transport trips use less battery, and the "play" build watches the stops with Google geofences. Spain only.

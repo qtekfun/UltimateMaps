@@ -4,14 +4,11 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 
 ## [Unreleased]
 
+## [0.1.0-rc.17] - 2026-10-10
+
 ### Changed
 
 - **Downloading maps lives in Settings, under Maps and network.** The "Maps" button on the main screen is gone; with no map installed, the card that says so opens Settings. Nothing else changed in the Maps screen.
-
-## [0.1.0-rc.16] - 2026-10-10
-
-### Changed
-
 - **Public-transport trips use less battery.** On a long ride, while the stop where you get off is more than four minutes away, the position is asked for every five seconds instead of every second; it goes back to every second when the stop is three minutes away or less. Waiting, walking and changing are unchanged.
 
 ### Added
