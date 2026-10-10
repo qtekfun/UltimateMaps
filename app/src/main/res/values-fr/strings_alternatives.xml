@@ -3,12 +3,14 @@
     <!-- Alternative routes in the route panel -->
     <string name="route_alt_find">Afficher les alternatives</string>
     <string name="route_alt_finding">Recherche d\'alternatives…</string>
-    <string name="route_alt_none">Aucun itinéraire différent trouvé avec d\'autres restrictions.</string>
-    <string name="route_alt_title">Itinéraires (chaque alternative évite un type de route de plus)</string>
+    <string name="route_alt_none">Aucun autre itinéraire trouvé.</string>
+    <string name="route_alt_title">Itinéraires</string>
     <string name="route_alt_main">Votre itinéraire</string>
     <string name="route_alt_same_time">même durée</string>
     <string name="route_alt_avoid_motorways">Sans autoroutes</string>
     <string name="route_alt_avoid_tolls">Sans péages</string>
     <string name="route_alt_avoid_unpaved">Sans routes non goudronnées</string>
     <string name="route_alt_avoid_ferries">Sans ferries</string>
+    <string name="route_alt_via_left">Un autre chemin (par la gauche)</string>
+    <string name="route_alt_via_right">Un autre chemin (par la droite)</string>
 </resources>

@@ -6,6 +6,7 @@ import androidx.compose.runtime.setValue
 import com.qtekfun.ultimatemaps.core.geo.LatLon
 import com.qtekfun.ultimatemaps.core.geo.distanceTo
 import com.qtekfun.ultimatemaps.core.routing.BikeCycleways
+import com.qtekfun.ultimatemaps.core.routing.Detours
 import com.qtekfun.ultimatemaps.core.routing.RouteOptions
 import com.qtekfun.ultimatemaps.core.routing.ElevationProfile
 import com.qtekfun.ultimatemaps.core.zbe.ZbeCrossing
@@ -55,7 +56,12 @@ sealed interface RouteOrigin {
  * The one extra restriction an alternative route was calculated with. The CoMaps core has no alternative-route search,
  * so an alternative is the best route under the user's options plus this one (see `docs/phase2/categories-alternatives.md`).
  */
-enum class AlternativeKind { AVOID_MOTORWAYS, AVOID_TOLLS, AVOID_UNPAVED, AVOID_FERRIES }
+enum class AlternativeKind {
+    AVOID_MOTORWAYS, AVOID_TOLLS, AVOID_UNPAVED, AVOID_FERRIES,
+
+    /** A different road: the route through a point on the left / right of the middle of the main one (see [com.qtekfun.ultimatemaps.core.routing.Detours]). */
+    VIA_LEFT, VIA_RIGHT,
+}
 
 /** A route calculated with one more restriction than the main one; [options] are the full options it was made with. */
 data class RouteAlternative(
@@ -64,6 +70,8 @@ data class RouteAlternative(
     val geometry: List<LatLon>,
     val distanceMeters: Double,
     val durationSeconds: Double,
+    /** The point a [AlternativeKind.VIA_LEFT]/[AlternativeKind.VIA_RIGHT] route goes through; empty for the others. */
+    val via: List<LatLon> = emptyList(),
     /** Raw heights of [geometry] (see `RoutePlan.altitudes`); empty when the maps gave none. */
     val altitudes: List<Double> = emptyList(),
 )
@@ -263,9 +271,37 @@ class RoutePreviewController(
                     val plan = (native as? Native.Done)?.outcome?.plan ?: continue
                     if (plan.geometry.size < 2) continue
                     if (plan.geometry == main.geometry || found.any { it.geometry == plan.geometry }) continue
-                    found += RouteAlternative(kind, options, plan.geometry, plan.distanceMeters, plan.durationSeconds, plan.altitudes)
+                    found += RouteAlternative(kind, options, plan.geometry, plan.distanceMeters, plan.durationSeconds, altitudes = plan.altitudes)
                     state.alternatives = found.toList()
                     redrawAlternatives()
+                }
+                // Different roads, not only different restrictions: through a point on each side of the middle of the main
+                // route. Only without stops of the user (the point would have to be placed among them).
+                if (base.via.isEmpty()) {
+                    for (side in listOf(Detours.Side.LEFT, Detours.Side.RIGHT)) {
+                        if (found.size >= MAX_ALTERNATIVES_TOTAL) break
+                        val via = Detours.viaPoint(main.geometry, side) ?: continue
+                        val request = base.copy(via = listOf(via))
+                        val work = async(io) { mutex.withLock { runNative(request) } }
+                        val native = try {
+                            withTimeoutOrNull(timeoutMs) { work.await() }
+                        } catch (e: CancellationException) {
+                            work.cancel()
+                            throw e
+                        }
+                        if (native == null) {
+                            work.cancel()
+                            continue
+                        }
+                        val plan = (native as? Native.Done)?.outcome?.plan ?: continue
+                        if (!worthOffering(main, plan, found.map { it.geometry })) continue
+                        found += RouteAlternative(
+                            if (side == Detours.Side.LEFT) AlternativeKind.VIA_LEFT else AlternativeKind.VIA_RIGHT,
+                            base.options, plan.geometry, plan.distanceMeters, plan.durationSeconds, listOf(via), plan.altitudes,
+                        )
+                        state.alternatives = found.toList()
+                        redrawAlternatives()
+                    }
                 }
             } catch (e: CancellationException) {
                 throw e
@@ -395,8 +431,9 @@ class RoutePreviewController(
             RouteOrigin.Current -> userLocation()
             is RouteOrigin.Picked -> o.point
         } ?: return null
-        val options = state.selectedAlternative?.let { state.alternatives.getOrNull(it)?.options } ?: state.options
-        return RouteRequest(from, to.point, via = state.stops.map { it.point }, profile = state.profile, options = options)
+        val alt = state.selectedAlternative?.let { state.alternatives.getOrNull(it) }
+        val options = alt?.options ?: state.options
+        return RouteRequest(from, to.point, via = state.stops.map { it.point } + (alt?.via ?: emptyList()), profile = state.profile, options = options)
     }
 
     private fun compute() {
@@ -530,8 +567,24 @@ class RoutePreviewController(
         /** Generous because the spike measured ~18 s for a long route; the R12 target is 2 s. */
         const val TIMEOUT_MS = 30_000L
 
-        /** Extra routes offered besides the main one. */
+        /** Extra routes offered besides the main one: up to this many restriction-based ones... */
         const val MAX_ALTERNATIVES = 2
+
+        /** ...and different-road ones fill up to this many in all. */
+        const val MAX_ALTERNATIVES_TOTAL = 3
+
+        /** A detour is worth showing when it is really another road and not much worse than the main route. */
+        const val DETOUR_MAX_SHARED = 0.75
+        const val DETOUR_MAX_TIME_FACTOR = 1.5
+        const val DETOUR_MAX_DISTANCE_FACTOR = 1.7
+
+        /** [plan] differs from [main] and from the [others] already offered, and costs at most 50 % more time and 70 % more distance. */
+        fun worthOffering(main: RoutePlan, plan: RoutePlan, others: List<List<LatLon>>): Boolean =
+            plan.geometry.size >= 2 &&
+                plan.durationSeconds <= main.durationSeconds * DETOUR_MAX_TIME_FACTOR &&
+                plan.distanceMeters <= main.distanceMeters * DETOUR_MAX_DISTANCE_FACTOR &&
+                Detours.sharedFraction(main.geometry, plan.geometry) < DETOUR_MAX_SHARED &&
+                others.none { Detours.sharedFraction(it, plan.geometry) >= 0.9 }
 
         /** The restrictions to try, in order: the ones that apply to [profile] and the user has not turned on yet. */
         fun alternativeKinds(profile: RoutingProfile, options: RouteOptions): List<AlternativeKind> {
@@ -548,6 +601,7 @@ class RoutePreviewController(
             AlternativeKind.AVOID_TOLLS -> copy(avoidTolls = true)
             AlternativeKind.AVOID_UNPAVED -> copy(avoidUnpaved = true)
             AlternativeKind.AVOID_FERRIES -> copy(avoidFerries = true)
+            AlternativeKind.VIA_LEFT, AlternativeKind.VIA_RIGHT -> this
         }
 
         /** Intermediate stops allowed (the native router does one leg per stop, so the time grows with them). */
