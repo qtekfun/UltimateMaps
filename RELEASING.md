@@ -34,7 +34,7 @@ Without those variables, `./gradlew :app:assembleFossRelease` produces an **unsi
    ```sh
    git tag vX.Y.Z && git push origin vX.Y.Z
    ```
-4. The workflow checks that the tag matches `appVersion` and that there are notes, runs `test` and `lintFossRelease`, builds the signed APK and publishes the Release with `UltimateMaps-X.Y.Z.apk` and its `.sha256`. Release candidates (`-rc.N`) are published as pre-releases.
+4. The workflow checks that the tag matches `appVersion` and that there are notes, runs `test` and `lintFossRelease`, builds the signed APKs and publishes the Release with `UltimateMaps-X.Y.Z.apk` (the `foss` build, the one for F-Droid) and `UltimateMaps-X.Y.Z-play.apk` (the optional `play` build that uses Google Play Services when the phone has it; application id `com.qtekfun.ultimatemaps.play`, installs next to the other one), each with its `.sha256`, both signed with the same key. Release candidates (`-rc.N`) are published as pre-releases.
 
 ## Releases are signed with the project key only (owner decision, 2026-10-08)
 
