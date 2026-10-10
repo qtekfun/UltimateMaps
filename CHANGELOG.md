@@ -4,6 +4,8 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 
 ## [Unreleased]
 
+## [0.1.0-rc.19] - 2026-10-10
+
 ### Added
 
 - **Choose the voice engine.** Settings, Navigation, Voice engine (shown when the phone has more than one text-to-speech engine): pick which one speaks the guidance, for phones whose own engine speaks Spanish with a voice of another language; "Test voice" and the language check start the chosen engine. The choice is per phone and is not part of the settings backup.

@@ -1,0 +1,1 @@
+Versión candidata: elige el motor de voz en Ajustes (para móviles cuyo motor habla otro idioma) y un informe de diagnóstico de los avisos. Solo España.
