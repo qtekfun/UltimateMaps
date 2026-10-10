@@ -4,6 +4,10 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 
 ## [Unreleased]
 
+### Added
+
+- **`play` build: geofences on the stops of a public-transport trip.** The system itself watches the stop where you get off and the next one where you board, so "get off now" still arrives when position updates are throttled (tunnels, battery saving). It only tells you; reaching the stop is still confirmed by a real position. No background-location permission is requested. Not seen on a device.
+
 ## [0.1.0-rc.15] - 2026-10-10
 
 ### Changed
