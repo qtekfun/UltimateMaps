@@ -74,7 +74,6 @@ class PanelActions(
     val onImport: () -> Unit,
     val onExport: (GeoFormat) -> Unit,
     val onFocusField: () -> Unit,
-    val onOpenMaps: () -> Unit = {},
     val onUseLocation: () -> Unit = {},
     /** A category chip was tapped (the host raises the sheet so the list is visible). */
     val onCategoryOpened: () -> Unit = {},
@@ -163,10 +162,6 @@ fun SheetPanel(
                 PanelButton(
                     stringResource(R.string.tab_lists), { places.showMode(PanelMode.LISTS) },
                     Modifier.weight(1f), primary = places.state.mode == PanelMode.LISTS, tag = "tab_lists",
-                )
-                PanelButton(
-                    stringResource(R.string.maps_entry_title), actions.onOpenMaps,
-                    Modifier.weight(1f), primary = false, tag = "open_maps",
                 )
             }
             Spacer(Modifier.height(8.dp))

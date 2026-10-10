@@ -92,6 +92,16 @@ class MapScreenTest {
     }
 
     @Test
+    fun theMainScreenHasNoMapsButtonAndTheNoMapsCardOpensSettings() {
+        var opened = 0
+        val state = MapScreenState().apply { hasTiles = false; onOpenSettings = { opened++ } }
+        show(state)
+        rule.onAllNodesWithTagCount("open_maps", 0) // downloads live in Settings, Maps and network
+        rule.onNodeWithTag("card_no_maps").performClick()
+        assertEquals(1, opened)
+    }
+
+    @Test
     fun noMapsHintShownOnlyWithoutTiles() {
         val state = MapScreenState().apply { hasTiles = false }
         show(state)

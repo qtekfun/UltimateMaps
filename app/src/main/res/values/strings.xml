@@ -22,7 +22,7 @@
 
     <string name="search_placeholder">Search (coming soon)</string>
     <string name="no_maps_title">No maps yet</string>
-    <string name="no_maps_body">Download a region from Maps to see the map. Until then it shows only the background.</string>
+    <string name="no_maps_body">Download a region in Settings, under Maps and network, to see the map. Until then it shows only the background.</string>
 
     <string name="notice_link_title">Map link</string>
     <string name="notice_search_title">Search: %1$s</string>
@@ -44,8 +44,6 @@
     <string name="regions_search_empty">No maps match “%1$s”.</string>
     <string name="sheet_action_expand">Expand panel</string>
     <string name="sheet_action_collapse">Collapse panel</string>
-    <string name="maps_entry_title">Maps</string>
-    <string name="maps_entry_body">Download and manage regions</string>
     <string name="offline_title">Offline mode</string>
     <string name="offline_body">No connections at all, not even for downloads.</string>
     <string name="server_title">Map server</string>

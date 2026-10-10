@@ -20,7 +20,7 @@
 
     <string name="search_placeholder">Suche (demnächst)</string>
     <string name="no_maps_title">Noch keine Karten</string>
-    <string name="no_maps_body">Lade unter Karten eine Region herunter, um die Karte zu sehen. Bis dahin wird nur der Hintergrund angezeigt.</string>
+    <string name="no_maps_body">Lade in den Einstellungen unter Karten und Netzwerk eine Region herunter, um die Karte zu sehen. Bis dahin wird nur der Hintergrund angezeigt.</string>
 
     <string name="notice_link_title">Kartenlink</string>
     <string name="notice_search_title">Suche: %1$s</string>
@@ -42,8 +42,6 @@
     <string name="regions_search_empty">Keine Karte passt zu „%1$s“.</string>
     <string name="sheet_action_expand">Feld erweitern</string>
     <string name="sheet_action_collapse">Feld einklappen</string>
-    <string name="maps_entry_title">Karten</string>
-    <string name="maps_entry_body">Regionen herunterladen und verwalten</string>
     <string name="offline_title">Offline-Modus</string>
     <string name="offline_body">Überhaupt keine Verbindungen, auch nicht für Downloads.</string>
     <string name="server_title">Kartenserver</string>

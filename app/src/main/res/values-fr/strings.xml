@@ -20,7 +20,7 @@
 
     <string name="search_placeholder">Rechercher (bientôt disponible)</string>
     <string name="no_maps_title">Aucune carte pour l\'instant</string>
-    <string name="no_maps_body">Téléchargez une région depuis Cartes pour voir la carte. En attendant, seul le fond s\'affiche.</string>
+    <string name="no_maps_body">Téléchargez une région dans Réglages, sous Cartes et réseau, pour voir la carte. En attendant, seul le fond s\'affiche.</string>
 
     <string name="notice_link_title">Lien de carte</string>
     <string name="notice_search_title">Recherche : %1$s</string>
@@ -42,8 +42,6 @@
     <string name="regions_search_empty">Aucune carte ne correspond à « %1$s ».</string>
     <string name="sheet_action_expand">Agrandir le panneau</string>
     <string name="sheet_action_collapse">Réduire le panneau</string>
-    <string name="maps_entry_title">Cartes</string>
-    <string name="maps_entry_body">Télécharger et gérer les régions</string>
     <string name="offline_title">Mode hors ligne</string>
     <string name="offline_body">Aucune connexion, pas même pour les téléchargements.</string>
     <string name="server_title">Serveur de cartes</string>

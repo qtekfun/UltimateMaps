@@ -20,7 +20,7 @@
 
     <string name="search_placeholder">Bilatu (laster)</string>
     <string name="no_maps_title">Oraindik maparik ez</string>
-    <string name="no_maps_body">Deskargatu eskualde bat Mapak atalean mapa ikusteko. Ordura arte atzealdea bakarrik erakusten da.</string>
+    <string name="no_maps_body">Deskargatu eskualde bat Ezarpenak > Mapak eta sarea atalean mapa ikusteko. Ordura arte atzealdea bakarrik erakusten da.</string>
 
     <string name="notice_link_title">Mapa-esteka</string>
     <string name="notice_search_title">Bilaketa: %1$s</string>
@@ -42,8 +42,6 @@
     <string name="regions_search_empty">Ez dago “%1$s” bilaketarekin bat datorren maparik.</string>
     <string name="sheet_action_expand">Zabaldu panela</string>
     <string name="sheet_action_collapse">Tolestu panela</string>
-    <string name="maps_entry_title">Mapak</string>
-    <string name="maps_entry_body">Deskargatu eta kudeatu eskualdeak</string>
     <string name="offline_title">Lineaz kanpoko modua</string>
     <string name="offline_body">Konexiorik ez, deskargetarako ere ez.</string>
     <string name="server_title">Mapen zerbitzaria</string>
