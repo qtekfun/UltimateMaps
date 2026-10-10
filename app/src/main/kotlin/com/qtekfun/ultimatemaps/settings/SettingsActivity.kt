@@ -49,6 +49,10 @@ class SettingsActivity : ComponentActivity() {
             pkg to (runCatching { packageManager.getApplicationLabel(packageManager.getApplicationInfo(pkg, 0)).toString() }.getOrNull() ?: pkg)
         }.sortedBy { it.second.lowercase() }
 
+    private fun openTtsSettings() {
+        com.qtekfun.ultimatemaps.voice.VoiceInstall.open(this, com.qtekfun.ultimatemaps.voice.VoiceInstall.ttsSettingsIntent())
+    }
+
     private fun openDoNotDisturbSettings() {
         val intents = listOf(Intent("android.settings.ZEN_MODE_PRIORITY_SETTINGS"), Intent(android.provider.Settings.ACTION_SOUND_SETTINGS))
         for (i in intents) if (runCatching { startActivity(i) }.isSuccess) return
@@ -78,7 +82,7 @@ class SettingsActivity : ComponentActivity() {
             setOffline = regions::setOfflineMode,
             catalogUrl = { regions.serverUrl },
             openMaps = { startActivity(Intent(this, RegionsActivity::class.java)) },
-            navigation = NavigationSettingsEnv(VoiceModule.settings(this), VoiceModule.guide(this), transitTrip = app.transitTripSettings, openDoNotDisturb = ::openDoNotDisturbSettings, voiceEngines = ::installedVoiceEngines),
+            navigation = NavigationSettingsEnv(VoiceModule.settings(this), VoiceModule.guide(this), transitTrip = app.transitTripSettings, openDoNotDisturb = ::openDoNotDisturbSettings, voiceEngines = ::installedVoiceEngines, openTtsSettings = ::openTtsSettings),
             history = HistorySettingsEnv(PrefsHistorySettings(this), clear = ::clearSearchHistory),
             cameras = CamerasSettingsEnv(
                 app.cameraSettings, app.cameraData, app.incidents, offline = { regions.offline }, onChanged = app::ensureCameraAlerts,

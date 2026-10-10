@@ -85,14 +85,15 @@ class AlertVoice(
     private val locale: () -> Locale = Locale::getDefault,
 ) {
     /**
-     * Chimes or speaks [e] as its category's mode says, unless the navigation voice is off or muted (the same switch as the
-     * Mute button), the alerts are quick-muted or a maneuver is imminent. It does not depend on "important prompts only",
+     * Chimes or speaks [e] as its category's mode says, unless the alerts are quick-muted or a maneuver is imminent. The
+     * navigation voice switch (the guidance Mute button) does NOT silence the alerts: a driver who mutes the spoken
+     * directions still wants the warning about a camera, and has the alerts' own mute for that. It does not depend on "important prompts only",
      * which is about maneuvers. Spoken alerts use [VoicePriority.ADVISORY]: they wait behind every driving instruction and
      * never interrupt or discard one.
      */
     fun onAlert(e: AlertEvent) {
         val s = settings.value
-        val delivery = AlertDeliveryPolicy.decide(modeFor(e.target.category), alertsMuted(), s.voiceEnabled, maneuverImminent())
+        val delivery = AlertDeliveryPolicy.decide(modeFor(e.target.category), alertsMuted(), navigationVoiceOn = true, maneuverImminent())
         if (delivery == AlertDelivery.NONE) return
         if (delivery == AlertDelivery.CHIME) {
             player.play(e.target.category.chimeKind, s.volumePercent)

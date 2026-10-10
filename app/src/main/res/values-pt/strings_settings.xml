@@ -63,4 +63,6 @@
     <string name="nav_engine_title">Motor de voz</string>
     <string name="nav_engine_note">Se a voz fala noutro idioma (acontece com o motor de alguns telemóveis), escolha outro motor instalado e prima Testar voz.</string>
     <string name="nav_engine_default">Predefinição do sistema</string>
+    <string name="nav_engine_only_one">Só está instalado um motor de voz. Para usar outro (por exemplo o da Google), escolha-o ou instale-o nas definições do próprio telemóvel.</string>
+    <string name="nav_engine_system_settings">Abrir as definições de voz do telemóvel</string>
 </resources>

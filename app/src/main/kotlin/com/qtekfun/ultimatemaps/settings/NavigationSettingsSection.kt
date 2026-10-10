@@ -41,6 +41,8 @@ class NavigationSettingsEnv(
     val openDoNotDisturb: () -> Unit = {},
     /** The installed text-to-speech engines as (package, label); empty hides the card. */
     val voiceEngines: () -> List<Pair<String, String>> = { emptyList() },
+    /** Opens the phone's own text-to-speech settings (where the default engine and its voices are chosen and installed). */
+    val openTtsSettings: () -> Unit = {},
 )
 
 /**
@@ -94,11 +96,11 @@ fun NavigationSection(env: NavigationSettingsEnv) {
         }
     }
     val engines = env.voiceEngines()
-    if (engines.size > 1) {
-        Spacer(Modifier.height(10.dp))
-        Card("nav_engine_card") {
-            BasicText(stringResource(R.string.nav_engine_title), style = Mapas.typography.body.copy(color = Mapas.colors.label))
-            BasicText(stringResource(R.string.nav_engine_note), style = Mapas.typography.callout.copy(color = Mapas.colors.secondaryLabel))
+    Spacer(Modifier.height(10.dp))
+    Card("nav_engine_card") {
+        BasicText(stringResource(R.string.nav_engine_title), style = Mapas.typography.body.copy(color = Mapas.colors.label))
+        BasicText(stringResource(R.string.nav_engine_note), style = Mapas.typography.callout.copy(color = Mapas.colors.secondaryLabel))
+        if (engines.size > 1) {
             val choose = { pkg: String ->
                 env.store.update { it.copy(voiceEngine = pkg) }
                 env.guide.retry(s.voiceLanguage.resolve(env.locale())) // starts the chosen engine and checks the language
@@ -107,7 +109,11 @@ fun NavigationSection(env: NavigationSettingsEnv) {
             engines.forEach { (pkg, label) ->
                 ChoiceRow(label, s.voiceEngine == pkg, radio = true, tag = "nav_engine_$pkg") { choose(pkg) }
             }
+        } else {
+            // One engine (or none) to choose from: the way out is the phone's own settings, to pick or install another one.
+            BasicText(stringResource(R.string.nav_engine_only_one), style = Mapas.typography.callout.copy(color = Mapas.colors.secondaryLabel), modifier = Modifier.testTag("nav_engine_only_one"))
         }
+        TextButton(stringResource(R.string.nav_engine_system_settings), "nav_engine_system_settings", onClick = env.openTtsSettings)
     }
     Spacer(Modifier.height(10.dp))
     Card("nav_test_card") {

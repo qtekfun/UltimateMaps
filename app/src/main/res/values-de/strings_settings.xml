@@ -63,4 +63,6 @@
     <string name="nav_engine_title">Sprachmotor</string>
     <string name="nav_engine_note">Spricht die Stimme in der falschen Sprache (der Motor mancher Telefone tut das), wählen Sie einen anderen installierten Motor und tippen Sie auf Stimme testen.</string>
     <string name="nav_engine_default">Systemstandard</string>
+    <string name="nav_engine_only_one">Es ist nur ein Sprachmotor installiert. Um einen anderen zu verwenden (zum Beispiel den von Google), wählen oder installieren Sie ihn in den Einstellungen des Telefons.</string>
+    <string name="nav_engine_system_settings">Spracheinstellungen des Telefons öffnen</string>
 </resources>
