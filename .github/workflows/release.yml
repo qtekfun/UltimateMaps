@@ -60,7 +60,7 @@ jobs:
           test -n "$UM_KEYSTORE_BASE64" || { echo "Missing the UM_KEYSTORE_BASE64 secret"; exit 1; }
           export UM_KEYSTORE_FILE="$RUNNER_TEMP/release.jks"
           echo "$UM_KEYSTORE_BASE64" | base64 -d > "$UM_KEYSTORE_FILE"
-          ./gradlew test :app:lintFossRelease :app:assembleFossRelease
+          ./gradlew test :app:lintFossRelease :app:assembleFossRelease :app:assemblePlayRelease
           rm -f "$UM_KEYSTORE_FILE"
 
       - name: Publicar la GitHub Release
@@ -71,6 +71,10 @@ jobs:
           apk="UltimateMaps-$version.apk"
           cp app/build/outputs/apk/foss/release/app-foss-release.apk "$apk"
           sha256sum "$apk" > "$apk.sha256"
+          # The optional build that uses Google Play Services when the phone has it (another application id, installs next to the normal one).
+          playApk="UltimateMaps-$version-play.apk"
+          cp app/build/outputs/apk/play/release/app-play-release.apk "$playApk"
+          sha256sum "$playApk" > "$playApk.sha256"
           prerelease=""
           case "$version" in *-rc.*) prerelease="--prerelease" ;; esac
-          gh release create "$GITHUB_REF_NAME" "$apk" "$apk.sha256" --title "Mapas $version" --notes-file notes.md $prerelease
+          gh release create "$GITHUB_REF_NAME" "$apk" "$apk.sha256" "$playApk" "$playApk.sha256" --title "Mapas $version" --notes-file notes.md $prerelease
