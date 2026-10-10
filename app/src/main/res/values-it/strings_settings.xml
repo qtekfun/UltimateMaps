@@ -65,4 +65,6 @@
     <string name="nav_engine_default">Predefinito del sistema</string>
     <string name="nav_engine_only_one">È installato un solo motore vocale. Per usarne un altro (per esempio quello di Google), sceglilo o installalo nelle impostazioni del telefono.</string>
     <string name="nav_engine_system_settings">Apri le impostazioni vocali del telefono</string>
+    <string name="nav_compass_title">Bussola del telefono per la freccia</string>
+    <string name="nav_compass_body">Da fermo o a passo d\'uomo il GPS non dà una direzione, quindi la freccia ruota secondo la bussola del telefono (dove punta: il bordo superiore se è piatto, il retro se è verticale su un supporto). Disattivala se la bussola non è affidabile nella tua auto.</string>
 </resources>

@@ -65,4 +65,6 @@
     <string name="nav_engine_default">Par défaut du système</string>
     <string name="nav_engine_only_one">Un seul moteur vocal est installé. Pour en utiliser un autre (par exemple celui de Google), choisissez-le ou installez-le dans les réglages du téléphone.</string>
     <string name="nav_engine_system_settings">Ouvrir les réglages vocaux du téléphone</string>
+    <string name="nav_compass_title">Boussole du téléphone pour la flèche</string>
+    <string name="nav_compass_body">À l\'arrêt ou au pas, le GPS n\'a pas de direction : la flèche tourne alors selon la boussole du téléphone (là où il pointe : le bord supérieur à plat, le dos s\'il est vertical sur un support). Désactivez-la si la boussole n\'est pas fiable dans votre voiture.</string>
 </resources>

@@ -65,4 +65,6 @@
     <string name="nav_engine_default">Predeterminado do sistema</string>
     <string name="nav_engine_only_one">Só hai un motor de voz instalado. Para usar outro (por exemplo o de Google), escóllao ou instálao nos axustes do propio móbil.</string>
     <string name="nav_engine_system_settings">Abrir os axustes de voz do móbil</string>
+    <string name="nav_compass_title">Brúxula do móbil para a frecha</string>
+    <string name="nav_compass_body">Parado ou a paso lento o GPS non dá dirección, así que a frecha xira segundo a brúxula do móbil (cara onde apunta: o bordo superior se está plano, a parte traseira se vai vertical nun soporte). Desactívao se a brúxula non é fiable no teu coche.</string>
 </resources>

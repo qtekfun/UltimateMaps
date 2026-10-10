@@ -26,6 +26,13 @@ import kotlin.math.max
 class NavPoseDriver(private val engine: MapEngine) {
     val puck = PuckInterpolator()
 
+    /**
+     * The phone's compass heading (degrees from true north), or null when there is none or it is switched off. While the vehicle
+     * is (almost) standing the arrow shows it instead of the course the route implies, so a driver who is facing the wrong
+     * way at the start sees it.
+     */
+    var deviceHeading: () -> Float? = { null }
+
     private var following = false
     private var hasTarget = false
     private var tauMillis = FOLLOW_TAU_MILLIS
@@ -155,7 +162,8 @@ class NavPoseDriver(private val engine: MapEngine) {
             offLon *= keep
             if (abs(tgtZoom - zoom) < EPS_ZOOM && abs(offLat) < EPS_OFFSET_DEG && abs(offLon) < EPS_OFFSET_DEG) tauMillis = FOLLOW_TAU_MILLIS
         }
-        val heading = if (following && hasTarget) camBearing else puck.bearing
+        val driven = if (following && hasTarget) camBearing else puck.bearing
+        val heading = if (puck.speedMps < COMPASS_BELOW_MPS) deviceHeading()?.toDouble() ?: driven else driven
         val puckMoved = puck.lat != pushedLat || puck.lon != pushedLon
         val headingMoved = pushedHeading.isNaN() || NavCameraPlanner.angularDistance(heading, pushedHeading) > EPS_DEG / 4
         if (puckMoved || headingMoved || pushedHeading.isNaN()) {
@@ -201,6 +209,9 @@ class NavPoseDriver(private val engine: MapEngine) {
 
         /** Beyond this the fix is not on the route (the matched position is a guess): the marker follows the course. */
         const val OFF_ROUTE_METERS = 40.0
+
+        /** Below this speed the compass, not the route, turns the arrow. */
+        const val COMPASS_BELOW_MPS = 1.5
 
         private const val EPS_ZOOM = 0.002
         private const val EPS_DEG = 0.05
