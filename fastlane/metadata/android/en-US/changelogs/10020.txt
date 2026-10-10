@@ -1,0 +1,1 @@
+Release candidate: camera alerts are louder and no longer muted with the guidance voice, the two mute buttons are icons, re-routing is detected sooner, and the voice engine card is always shown. Spain only.

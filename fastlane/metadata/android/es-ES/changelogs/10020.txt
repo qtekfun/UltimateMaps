@@ -1,0 +1,1 @@
+Versión candidata: los avisos de radares suenan más fuerte y ya no se silencian con la voz de guiado, los dos botones de silencio son iconos, el recálculo de ruta se detecta antes y la tarjeta del motor de voz se muestra siempre. Solo España.

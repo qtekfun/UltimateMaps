@@ -4,6 +4,8 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 
 ## [Unreleased]
 
+## [0.1.0-rc.20] - 2026-10-10
+
 ### Changed
 
 - **Mute buttons are icons.** In navigation, the two text buttons became two icon buttons: a loudspeaker (spoken guidance) and a warning triangle (camera and incident alerts), each crossed out and highlighted while muted. Their descriptions for screen readers are unchanged.
