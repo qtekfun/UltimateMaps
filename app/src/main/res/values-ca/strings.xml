@@ -20,7 +20,7 @@
 
     <string name="search_placeholder">Cerca (aviat)</string>
     <string name="no_maps_title">Encara no hi ha mapes</string>
-    <string name="no_maps_body">Descarrega una regió des de Mapes per veure el mapa. Fins llavors només es mostra el fons.</string>
+    <string name="no_maps_body">Descarrega una regió a Configuració, a Mapes i xarxa, per veure el mapa. Fins llavors només es mostra el fons.</string>
 
     <string name="notice_link_title">Enllaç de mapa</string>
     <string name="notice_search_title">Cerca: %1$s</string>
@@ -42,8 +42,6 @@
     <string name="regions_search_empty">Cap mapa coincideix amb «%1$s».</string>
     <string name="sheet_action_expand">Expandeix el tauler</string>
     <string name="sheet_action_collapse">Plega el tauler</string>
-    <string name="maps_entry_title">Mapes</string>
-    <string name="maps_entry_body">Descarrega i gestiona regions</string>
     <string name="offline_title">Mode fora de línia</string>
     <string name="offline_body">Cap connexió, ni tan sols per a les baixades.</string>
     <string name="server_title">Servidor de mapes</string>

@@ -20,7 +20,7 @@
 
     <string name="search_placeholder">Buscar (en breve)</string>
     <string name="no_maps_title">Aínda non hai mapas</string>
-    <string name="no_maps_body">Descarga unha rexión en Mapas para ver o mapa. Ata entón só se mostra o fondo.</string>
+    <string name="no_maps_body">Descarga unha rexión en Configuración, en Mapas e rede, para ver o mapa. Ata entón só se mostra o fondo.</string>
 
     <string name="notice_link_title">Ligazón de mapa</string>
     <string name="notice_search_title">Busca: %1$s</string>
@@ -42,8 +42,6 @@
     <string name="regions_search_empty">Ningún mapa coincide con «%1$s».</string>
     <string name="sheet_action_expand">Despregar o panel</string>
     <string name="sheet_action_collapse">Pregar o panel</string>
-    <string name="maps_entry_title">Mapas</string>
-    <string name="maps_entry_body">Descargar e xestionar rexións</string>
     <string name="offline_title">Modo sen conexión</string>
     <string name="offline_body">Ningunha conexión, nin sequera para as descargas.</string>
     <string name="server_title">Servidor de mapas</string>

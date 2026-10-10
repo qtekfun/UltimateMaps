@@ -208,20 +208,13 @@ private fun SheetContent(state: MapScreenState, panel: (@Composable () -> Unit)?
             )
         }
         Spacer(Modifier.height(12.dp))
-        if (!state.hasTiles) InfoCard(stringResource(R.string.no_maps_title), stringResource(R.string.no_maps_body), "card_no_maps")
-        MapsEntryRow(state)
+        if (!state.hasTiles) InfoCard(stringResource(R.string.no_maps_title), stringResource(R.string.no_maps_body), "card_no_maps", onClick = state.onOpenSettings)
         state.notice?.let { n ->
             Spacer(Modifier.height(8.dp))
             val (title, body) = noticeText(n)
             InfoCard(title, body, "card_notice")
         }
     }
-}
-
-@Composable
-private fun MapsEntryRow(state: MapScreenState) {
-    Spacer(Modifier.height(8.dp))
-    com.qtekfun.ultimatemaps.regions.MapsEntry(onClick = state.onOpenMaps)
 }
 
 @Composable
@@ -234,12 +227,13 @@ private fun noticeText(n: Notice): Pair<String, String> = when (n) {
 }
 
 @Composable
-private fun InfoCard(title: String, body: String, tag: String) {
+private fun InfoCard(title: String, body: String, tag: String, onClick: (() -> Unit)? = null) {
     Column(
         Modifier
             .fillMaxWidth()
             .clip(Mapas.shapes.control)
             .background(Mapas.colors.field)
+            .let { if (onClick != null) it.clickable(role = androidx.compose.ui.semantics.Role.Button, onClick = onClick) else it }
             .padding(12.dp)
             .testTag(tag),
     ) {
