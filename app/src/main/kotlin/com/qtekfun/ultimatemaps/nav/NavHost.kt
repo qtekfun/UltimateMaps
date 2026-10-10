@@ -57,6 +57,17 @@ class NavHost(
     /** The next camera move is an ease into a new view (start, recenter, 2D/3D switch): slower than a follow update. */
     private var easePending = true
 
+    /** Where the phone's compass heading comes from (null: none); the arrow uses it while the vehicle is standing. */
+    fun setDeviceHeading(provider: () -> Float?) {
+        pose.deviceHeading = provider
+    }
+
+    /** The compass moved: a standing vehicle has no frame loop running, so draw the arrow now. */
+    fun onDeviceHeadingChanged() {
+        if (!active) return
+        pose.frame(now())
+    }
+
     /** True while there is a navigation (or its arrival summary) on screen. */
     val active: Boolean get() = screen.ui.value.active
 

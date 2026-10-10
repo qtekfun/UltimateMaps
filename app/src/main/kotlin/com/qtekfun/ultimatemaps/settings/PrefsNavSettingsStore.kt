@@ -46,6 +46,7 @@ class PrefsNavSettingsStore(private val prefs: SharedPreferences) : NavSettingsS
             .putBoolean(KEY_MOTION_TUNNELS, next.motionSensorsInTunnels)
             .putBoolean(KEY_HIDE_STATUS_BAR, next.hideStatusBar)
             .putString(KEY_VOICE_ENGINE, next.voiceEngine)
+            .putBoolean(KEY_COMPASS_ARROW, next.compassArrow)
             .apply()
         state.value = next
     }
@@ -69,6 +70,7 @@ class PrefsNavSettingsStore(private val prefs: SharedPreferences) : NavSettingsS
             motionSensorsInTunnels = bool(KEY_MOTION_TUNNELS, d.motionSensorsInTunnels),
             hideStatusBar = bool(KEY_HIDE_STATUS_BAR, d.hideStatusBar),
             voiceEngine = runCatching { prefs.getString(KEY_VOICE_ENGINE, "") }.getOrNull().orEmpty(),
+            compassArrow = bool(KEY_COMPASS_ARROW, d.compassArrow),
         ).normalized()
     }
 
@@ -87,6 +89,7 @@ class PrefsNavSettingsStore(private val prefs: SharedPreferences) : NavSettingsS
 
         /** Device-specific (an installed package), so it is not part of the settings backup. */
         const val KEY_VOICE_ENGINE = "voice_engine"
+        const val KEY_COMPASS_ARROW = "compass_arrow"
         const val KEY_AVOID_MOTORWAYS = "avoid_motorways"
         const val KEY_AVOID_TOLLS = "avoid_tolls"
         const val KEY_AVOID_FERRIES = "avoid_ferries"

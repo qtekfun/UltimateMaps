@@ -65,4 +65,6 @@
     <string name="nav_engine_default">Predefinição do sistema</string>
     <string name="nav_engine_only_one">Só está instalado um motor de voz. Para usar outro (por exemplo o da Google), escolha-o ou instale-o nas definições do próprio telemóvel.</string>
     <string name="nav_engine_system_settings">Abrir as definições de voz do telemóvel</string>
+    <string name="nav_compass_title">Bússola do telemóvel para a seta</string>
+    <string name="nav_compass_body">Parado ou muito devagar o GPS não dá direção, por isso a seta roda segundo a bússola do telemóvel (para onde aponta: o bordo superior se estiver plano, a parte de trás se estiver vertical num suporte). Desative se a bússola não for fiável no seu carro.</string>
 </resources>

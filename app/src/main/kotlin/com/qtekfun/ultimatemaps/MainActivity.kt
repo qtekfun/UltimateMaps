@@ -56,6 +56,36 @@ class MainActivity : ComponentActivity() {
     private lateinit var engine: MapLibreEngine
     private lateinit var location: AvailableLocationSource
     private var centerOnNextFix = false
+
+    /** The phone's compass: the last heading and when it arrived (SystemClock.elapsedRealtime). Null/old: not available. */
+    private var compassHeading: Float? = null
+    private var compassAt = 0L
+    private var lastPoint: LatLon? = null
+
+    private fun compassOn() = com.qtekfun.ultimatemaps.voice.VoiceModule.settings(this).settings.value.compassArrow
+
+    private fun freshCompass(): Float? =
+        compassHeading?.takeIf { compassOn() && android.os.SystemClock.elapsedRealtime() - compassAt < COMPASS_FRESH_MILLIS }
+
+    private fun startCompass() {
+        val app = application as MapasApp
+        if (!compassOn()) {
+            app.headingSource.stop()
+            compassHeading = null
+            if (!navHost.active) engine.setUserHeading(null)
+            return
+        }
+        app.headingSource.start { h ->
+            compassHeading = h
+            compassAt = android.os.SystemClock.elapsedRealtime()
+            if (navHost.active) {
+                navHost.onDeviceHeadingChanged()
+            } else lastPoint?.let { // the map's own dot becomes an arrow that follows the phone's direction
+                engine.setUserHeading(h)
+                engine.showUserLocation(it)
+            }
+        }
+    }
     private lateinit var panel: PanelHost
     private lateinit var navHost: NavHost
 
@@ -167,6 +197,8 @@ class MainActivity : ComponentActivity() {
         (application as MapasApp).navScreen.refreshResumable() // a trip interrupted by the process dying
         (application as MapasApp).transitTrip.refreshResumable() // the same for a step-by-step transit trip
         if (state.locating && hasLocationPermission()) startLocation()
+        navHost.setDeviceHeading(::freshCompass)
+        startCompass()
     }
 
     override fun onDestroy() {
@@ -176,6 +208,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onStop() {
         location.stop() // no background location in the viewer; navigation will use a foreground service
+        (application as MapasApp).headingSource.stop()
         super.onStop()
     }
 
@@ -228,6 +261,8 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun onFix(point: LatLon) {
+        lastPoint = point
+        (application as MapasApp).lastKnownPlace = point
         panel.userLocation = point
         if (navHost.active) return // while navigating the map shows the follower's position and camera
         engine.showUserLocation(point)
@@ -245,6 +280,8 @@ class MainActivity : ComponentActivity() {
         (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
 
     private companion object {
+        /** A compass reading older than this is not shown (the sensor stopped, the screen was off). */
+        const val COMPASS_FRESH_MILLIS = 3_000L
         const val DEFAULT_LINK_ZOOM = 15.0
     }
 }

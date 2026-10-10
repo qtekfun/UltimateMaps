@@ -266,6 +266,12 @@ class MapasApp : Application() {
      */
     val incidentBanner = IncidentBannerMachine({ incidents.repository }, { cameraSettings.settings.value }, System::currentTimeMillis)
 
+    /** The phone's compass (rotation-vector sensor): where the GPS has no course (standing, slow). Declination from the last known place. */
+    @Volatile var lastKnownPlace: com.qtekfun.ultimatemaps.core.geo.LatLon? = null
+    val headingSource: com.qtekfun.ultimatemaps.core.map.HeadingSource by lazy {
+        com.qtekfun.ultimatemaps.location.AndroidHeadingSource(this, place = { lastKnownPlace })
+    }
+
     /** What the alert warner has seen (counts and ages only); shown in Settings, About, Diagnostics. */
     val alertStats = com.qtekfun.ultimatemaps.core.cameras.AlertStats()
 

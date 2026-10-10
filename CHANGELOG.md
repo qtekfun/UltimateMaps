@@ -4,6 +4,10 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 
 ## [Unreleased]
 
+### Added
+
+- **The phone's compass.** The app used no compass at all: the arrow took its direction only from the GPS course, which does not exist when you stand still or crawl. Now, standing or below about 5 km/h, the arrow of the navigation screen turns by the phone's compass (rotation-vector sensor, corrected to true north, smoothed; it knows whether the phone lies flat or is upright in a mount), and on the map screen the location dot becomes a direction arrow. Moving, nothing changes: the arrow follows the route. Settings, Navigation, *Phone compass for the arrow* (on by default) switches it off. Needs no permission. Not seen on a phone.
+
 ## [0.1.0-rc.21] - 2026-10-10
 
 ### Added

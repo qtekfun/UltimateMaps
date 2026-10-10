@@ -174,6 +174,16 @@ fun NavigationSection(env: NavigationSettingsEnv) {
         }
     }
     Spacer(Modifier.height(10.dp))
+    Card("nav_compass_card") {
+        SwitchRow(
+            title = stringResource(R.string.nav_compass_title),
+            body = stringResource(R.string.nav_compass_body),
+            checked = s.compassArrow,
+            tag = "nav_compass_switch",
+            onChange = { on -> env.store.update { it.copy(compassArrow = on) } },
+        )
+    }
+    Spacer(Modifier.height(10.dp))
     Card("nav_motion_tunnels_card") {
         SwitchRow(
             title = stringResource(R.string.nav_motion_tunnels_title),
