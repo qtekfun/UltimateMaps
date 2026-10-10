@@ -60,4 +60,7 @@
     <string name="fuel_confirm_offline">Der Offline-Modus ist aktiv, daher wird keine Verbindung hergestellt, bis du ihn ausschaltest.</string>
     <string name="fuel_confirm_yes">Einschalten</string>
     <string name="fuel_confirm_no">Abbrechen</string>
+    <string name="nav_engine_title">Sprachmotor</string>
+    <string name="nav_engine_note">Spricht die Stimme in der falschen Sprache (der Motor mancher Telefone tut das), wählen Sie einen anderen installierten Motor und tippen Sie auf Stimme testen.</string>
+    <string name="nav_engine_default">Systemstandard</string>
 </resources>

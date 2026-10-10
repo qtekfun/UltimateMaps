@@ -45,6 +45,8 @@ class HazardMapLayer(
     private val minZoom: Double = MIN_ZOOM,
     /** Emits when the cameras or incidents data changes (defaults to both repositories' update times). */
     private val dataChanged: Flow<Any?> = combine(cameras.generatedMillis, incidents.lastUpdateMillis) { a, b -> a to b },
+    /** Numbers for the diagnostics screen (null: none). */
+    private val stats: com.qtekfun.ultimatemaps.core.cameras.AlertStats? = null,
 ) {
     private class Viewport(val bounds: GeoBounds, val zoom: Double)
     private data class Drawn(val pins: List<HazardPin>, val lines: List<HazardLine>)
@@ -83,6 +85,8 @@ class HazardMapLayer(
         job = scope.launch {
             if (delayMs > 0) delay(delayMs)
             val drawn = if (!config.anything || vp.zoom < minZoom) Drawn(emptyList(), emptyList()) else withContext(io) { compute(vp, config) }
+            val d = cameras.data
+            stats?.mapLayer(vp.zoom, drawn.pins.size, drawn.lines.size, d.fixed.size, d.sections.size, d.zones.size)
             if (drawn != shown) {
                 shown = drawn
                 render(drawn.pins, drawn.lines)

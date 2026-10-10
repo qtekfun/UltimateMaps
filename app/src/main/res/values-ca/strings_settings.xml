@@ -60,4 +60,7 @@
     <string name="fuel_confirm_offline">El mode fora de línia està activat, així que no es connectarà res fins que el desactivis.</string>
     <string name="fuel_confirm_yes">Activa</string>
     <string name="fuel_confirm_no">Cancel·la</string>
+    <string name="nav_engine_title">Motor de veu</string>
+    <string name="nav_engine_note">Si la veu parla en un altre idioma (li passa al motor que porten alguns mòbils), tria un altre motor instal·lat i prem Prova la veu.</string>
+    <string name="nav_engine_default">Predeterminat del sistema</string>
 </resources>

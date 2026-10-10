@@ -78,6 +78,11 @@ data class NavSettings(
     val motionSensorsInTunnels: Boolean = true,
     /** Hide the system status bar (other apps' notification icons) while a navigation is active; a swipe from the top shows it briefly. */
     val hideStatusBar: Boolean = false,
+    /**
+     * Package of the text-to-speech engine the guidance uses; empty means the system default. Some phones' own engine speaks
+     * Spanish with a voice of another language: choosing another installed engine fixes it.
+     */
+    val voiceEngine: String = "",
 ) {
     fun normalized(): NavSettings = copy(volumePercent = volumePercent.coerceIn(MIN_VOLUME, 100))
 

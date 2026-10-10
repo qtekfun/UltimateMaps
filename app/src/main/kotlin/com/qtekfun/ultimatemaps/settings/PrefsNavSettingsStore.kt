@@ -45,6 +45,7 @@ class PrefsNavSettingsStore(private val prefs: SharedPreferences) : NavSettingsS
             .putBoolean(KEY_LIVE_UPDATE_CHIP, next.liveUpdateChip)
             .putBoolean(KEY_MOTION_TUNNELS, next.motionSensorsInTunnels)
             .putBoolean(KEY_HIDE_STATUS_BAR, next.hideStatusBar)
+            .putString(KEY_VOICE_ENGINE, next.voiceEngine)
             .apply()
         state.value = next
     }
@@ -67,6 +68,7 @@ class PrefsNavSettingsStore(private val prefs: SharedPreferences) : NavSettingsS
             liveUpdateChip = bool(KEY_LIVE_UPDATE_CHIP, d.liveUpdateChip),
             motionSensorsInTunnels = bool(KEY_MOTION_TUNNELS, d.motionSensorsInTunnels),
             hideStatusBar = bool(KEY_HIDE_STATUS_BAR, d.hideStatusBar),
+            voiceEngine = runCatching { prefs.getString(KEY_VOICE_ENGINE, "") }.getOrNull().orEmpty(),
         ).normalized()
     }
 
@@ -82,6 +84,9 @@ class PrefsNavSettingsStore(private val prefs: SharedPreferences) : NavSettingsS
         const val KEY_VOLUME = "voice_volume"
         const val KEY_UNITS = "units"
         const val KEY_LANGUAGE = "voice_language"
+
+        /** Device-specific (an installed package), so it is not part of the settings backup. */
+        const val KEY_VOICE_ENGINE = "voice_engine"
         const val KEY_AVOID_MOTORWAYS = "avoid_motorways"
         const val KEY_AVOID_TOLLS = "avoid_tolls"
         const val KEY_AVOID_FERRIES = "avoid_ferries"

@@ -60,4 +60,7 @@
     <string name="fuel_confirm_offline">Le mode hors ligne est activé, aucune connexion n\'aura donc lieu tant que vous ne le désactivez pas.</string>
     <string name="fuel_confirm_yes">Activer</string>
     <string name="fuel_confirm_no">Annuler</string>
+    <string name="nav_engine_title">Moteur vocal</string>
+    <string name="nav_engine_note">Si la voix parle dans une autre langue (cela arrive avec le moteur de certains téléphones), choisissez un autre moteur installé puis appuyez sur Tester la voix.</string>
+    <string name="nav_engine_default">Par défaut du système</string>
 </resources>

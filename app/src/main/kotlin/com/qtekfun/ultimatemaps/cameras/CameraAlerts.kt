@@ -1,6 +1,7 @@
 package com.qtekfun.ultimatemaps.cameras
 
 import com.qtekfun.ultimatemaps.core.cameras.AlertBannerTracker
+import com.qtekfun.ultimatemaps.core.cameras.AlertStats
 import com.qtekfun.ultimatemaps.core.cameras.AlertEvent
 import com.qtekfun.ultimatemaps.core.cameras.AlertWarner
 import com.qtekfun.ultimatemaps.core.cameras.CameraDataRepository
@@ -47,11 +48,14 @@ class CameraAlerts(
     val incidentBanner: IncidentBannerMachine = IncidentBannerMachine({ incidents }, { settings.settings.value }, clock),
     /** Ticks of the banner's countdown, collected only while it shows; tests pass a hand-driven flow. */
     ticker: Flow<Unit> = flow { while (true) { delay(INCIDENT_TICK_MILLIS); emit(Unit) } },
+    /** Counters for the About screen's diagnostics. */
+    val stats: AlertStats = AlertStats(),
 ) {
     private val navigationState = navigation.state
     private val warner = AlertWarner(
         listOf(cameras.alertSource { settings.settings.value }, incidents.alertSource { settings.settings.value.incidentKinds() }),
         { settings.settings.value },
+        stats,
     ) { e ->
         // On a trip the incidents have their own banner (route-based, five seconds); the chip stays for cameras.
         if (e.target.category.isCamera || !navigating) banner.onAlert(e)
@@ -102,7 +106,15 @@ class CameraAlerts(
     /** Call when the switches or the permission may have changed (settings closed, permission answered). */
     @Synchronized
     fun refreshFree() {
-        val want = foreground && !navigating && settings.settings.value.anything && hasLocationPermission()
+        val permission = hasLocationPermission()
+        val want = foreground && !navigating && settings.settings.value.anything && permission
+        stats.freeFeed = when {
+            !foreground -> "stopped (app not on screen)"
+            navigating -> "stopped (a navigation is active: route alerts)"
+            !settings.settings.value.anything -> "stopped (every alert switch is off)"
+            !permission -> "stopped (no location permission)"
+            else -> "running"
+        }
         if (want) {
             (freeFeed ?: FreeDrivingFeed(newLocation(), warner, banner, clock).also { freeFeed = it }).start()
         } else {

@@ -386,6 +386,7 @@ class PanelHost(
             incidents = h.incidents,
             settings = h.settings,
             render = engine::showHazards,
+            stats = (activity.application as com.qtekfun.ultimatemaps.MapasApp).alertStats,
         )
     }
 

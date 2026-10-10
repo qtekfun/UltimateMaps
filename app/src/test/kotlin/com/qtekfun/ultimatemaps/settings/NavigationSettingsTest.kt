@@ -57,8 +57,10 @@ class NavigationSettingsTest {
     private var guide = FakeGuide()
     private var locale = Locale.forLanguageTag("es-ES")
 
+    private var engines = emptyList<Pair<String, String>>()
+
     private fun show() {
-        val env = NavigationSettingsEnv(store, guide, { locale })
+        val env = NavigationSettingsEnv(store, guide, { locale }, voiceEngines = { engines })
         rule.setContent { MapasTheme(darkTheme = false) { Column(androidx.compose.ui.Modifier.verticalScroll(rememberScrollState())) { NavigationSection(env) } } }
     }
 
@@ -86,6 +88,23 @@ class NavigationSettingsTest {
         val s = store.settings.value
         assertTrue(s.avoidMotorways && s.avoidTolls && s.avoidFerries && s.avoidUnpaved)
         assertTrue(s.routeOptions().avoidUnpaved)
+    }
+
+    @Test fun theVoiceEngineCardIsHiddenWithOneEngineOrNone() {
+        engines = listOf("only.tts" to "Only")
+        show()
+        rule.onNodeWithTag("nav_engine_card").assertDoesNotExist()
+    }
+
+    @Test fun choosingAnotherVoiceEngineStoresItAndRestartsTheVoice() {
+        engines = listOf("vendor.tts" to "Vendor voice", "google.tts" to "Speech Services")
+        show()
+        assertEquals("", store.settings.value.voiceEngine)
+        click("nav_engine_google.tts")
+        assertEquals("google.tts", store.settings.value.voiceEngine)
+        assertEquals(1, guide.retried.size, "the chosen engine is started and its language checked")
+        click("nav_engine_default")
+        assertEquals("", store.settings.value.voiceEngine)
     }
 
     @Test fun volumeUnitsAndLanguageAreChosenWithRadios() {

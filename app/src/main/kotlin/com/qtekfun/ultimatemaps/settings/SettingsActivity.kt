@@ -43,6 +43,12 @@ class SettingsActivity : ComponentActivity() {
     }
 
     /** The system Do Not Disturb screens need no permission; falls back to the sound settings, then does nothing. */
+    /** The installed text-to-speech engines with the name the user knows them by. */
+    private fun installedVoiceEngines(): List<Pair<String, String>> =
+        com.qtekfun.ultimatemaps.voice.VoiceInstall.installedEngines(this).map { pkg ->
+            pkg to (runCatching { packageManager.getApplicationLabel(packageManager.getApplicationInfo(pkg, 0)).toString() }.getOrNull() ?: pkg)
+        }.sortedBy { it.second.lowercase() }
+
     private fun openDoNotDisturbSettings() {
         val intents = listOf(Intent("android.settings.ZEN_MODE_PRIORITY_SETTINGS"), Intent(android.provider.Settings.ACTION_SOUND_SETTINGS))
         for (i in intents) if (runCatching { startActivity(i) }.isSuccess) return
@@ -72,7 +78,7 @@ class SettingsActivity : ComponentActivity() {
             setOffline = regions::setOfflineMode,
             catalogUrl = { regions.serverUrl },
             openMaps = { startActivity(Intent(this, RegionsActivity::class.java)) },
-            navigation = NavigationSettingsEnv(VoiceModule.settings(this), VoiceModule.guide(this), transitTrip = app.transitTripSettings, openDoNotDisturb = ::openDoNotDisturbSettings),
+            navigation = NavigationSettingsEnv(VoiceModule.settings(this), VoiceModule.guide(this), transitTrip = app.transitTripSettings, openDoNotDisturb = ::openDoNotDisturbSettings, voiceEngines = ::installedVoiceEngines),
             history = HistorySettingsEnv(PrefsHistorySettings(this), clear = ::clearSearchHistory),
             cameras = CamerasSettingsEnv(
                 app.cameraSettings, app.cameraData, app.incidents, offline = { regions.offline }, onChanged = app::ensureCameraAlerts,
@@ -89,7 +95,9 @@ class SettingsActivity : ComponentActivity() {
                 version = runCatching { packageManager.getPackageInfo(packageName, 0).versionName }.getOrNull().orEmpty(),
                 transitAttributions = { app.transit.attributions },
                 notice = { runCatching { assets.open("NOTICE.txt").bufferedReader().use { it.readText() } }.getOrDefault("") },
-                diagnostics = { com.qtekfun.ultimatemaps.diagnostics.Diagnostics.report(this) },
+                diagnostics = {
+                    com.qtekfun.ultimatemaps.diagnostics.Diagnostics.report(this, (application as MapasApp).alertStats.describe(System.currentTimeMillis()))
+                },
                 clearDiagnostics = { com.qtekfun.ultimatemaps.diagnostics.Diagnostics.clear(this) },
             ),
         )
