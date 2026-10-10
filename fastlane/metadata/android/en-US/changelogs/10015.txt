@@ -1,0 +1,1 @@
+Release candidate: the map runs on a shared viewer (tested, not yet seen on a phone), and an optional "play" build uses Google Play Services when available. Spain only.
