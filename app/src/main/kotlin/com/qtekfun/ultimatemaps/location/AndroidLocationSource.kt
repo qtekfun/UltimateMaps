@@ -38,8 +38,9 @@ object ProviderChoice {
 class AndroidLocationSource(
     context: Context,
     private val sdkInt: Int = Build.VERSION.SDK_INT,
-    private val intervalMillis: Long = 1000L,
+    intervalMillis: Long = 1000L,
 ) : AvailableLocationSource {
+    @Volatile private var intervalMillis: Long = intervalMillis
     private val lm = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
     private val mainExecutor = androidx.core.content.ContextCompat.getMainExecutor(context)
     private var active: LocationListener? = null
@@ -101,6 +102,19 @@ class AndroidLocationSource(
     override fun stop() {
         active?.let { lm.removeUpdates(it) }
         active = null
+    }
+
+    /** Takes effect at once while started: the requests are made again with the new interval, on the same listener. */
+    override fun setPace(intervalMillis: Long) {
+        if (intervalMillis == this.intervalMillis) return
+        this.intervalMillis = intervalMillis
+        val l = active ?: return
+        try {
+            lm.removeUpdates(l)
+            for (p in providers()) request(p, l)
+        } catch (_: SecurityException) {
+            active = null
+        }
     }
 
     private fun Location.toFix(): LocationFix? {

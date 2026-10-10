@@ -27,7 +27,9 @@ object GmsAvailability {
  * permission before [start]. Fixes are never logged. [lastKnown] is the latest fix delivered since [start], or the one the
  * client had cached when it started.
  */
-class GmsLocationSource(context: Context, private val intervalMillis: Long = 1000L) : AvailableLocationSource {
+class GmsLocationSource(context: Context, intervalMillis: Long = 1000L) : AvailableLocationSource {
+    @Volatile private var intervalMillis: Long = intervalMillis
+    private var listener: LocationSource.Listener? = null
     private val client = LocationServices.getFusedLocationProviderClient(context.applicationContext)
     private val available = GmsAvailability.isAvailable(context)
 
@@ -41,6 +43,7 @@ class GmsLocationSource(context: Context, private val intervalMillis: Long = 100
     @SuppressLint("MissingPermission")
     override fun start(listener: LocationSource.Listener) {
         stop()
+        this.listener = listener
         val cb = object : LocationCallback() {
             override fun onLocationResult(result: LocationResult) {
                 for (l in result.locations) {
@@ -75,5 +78,12 @@ class GmsLocationSource(context: Context, private val intervalMillis: Long = 100
     override fun stop() {
         callback?.let { runCatching { client.removeLocationUpdates(it) } }
         callback = null
+    }
+
+    override fun setPace(intervalMillis: Long) {
+        if (intervalMillis == this.intervalMillis) return
+        this.intervalMillis = intervalMillis
+        val l = listener ?: return
+        if (callback != null) start(l)
     }
 }
