@@ -426,6 +426,7 @@ class MapasApp : Application() {
             scope = scope,
             location = com.qtekfun.ultimatemaps.platform.PlatformServices.locationSource(this),
             movementHint = movementHint,
+            geofencer = com.qtekfun.ultimatemaps.platform.PlatformServices.geofencer(this),
             store = com.qtekfun.ultimatemaps.core.transit.follow.TransitTripStore(File(noBackupFilesDir, "transit/trip.bin")),
             replanner = replanner,
             realTime = cercaniasRealTime,

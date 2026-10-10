@@ -58,6 +58,25 @@ object NoMovementHint : MovementHint {
     override fun stop() {}
 }
 
+/** A circle the system watches by itself, cheaply, even with the screen off: [id] comes back when the device enters it. */
+data class GeofenceTarget(val id: String, val point: com.qtekfun.ultimatemaps.core.geo.LatLon, val radiusMeters: Float)
+
+/**
+ * Watches a few circles for the system (the `play` flavor uses Google's geofencing, which needs no continuous GPS) and tells
+ * when the device enters one. Weak help for the public-transport trip: "get off at the next stop" still arrives when position
+ * updates are throttled. [set] replaces the whole list; [clear] stops watching. May call [onEnter] from any thread.
+ */
+interface Geofencer {
+    fun set(targets: List<GeofenceTarget>, onEnter: (id: String) -> Unit)
+    fun clear()
+}
+
+/** No geofencing: the default and the only one in the `foss` flavor. */
+object NoGeofencer : Geofencer {
+    override fun set(targets: List<GeofenceTarget>, onEnter: (id: String) -> Unit) {}
+    override fun clear() {}
+}
+
 /** Deterministic [LocationSource] for tests and route simulation: emit fixes with [emit]. */
 class SimulatedLocationSource : LocationSource {
     private var listener: LocationSource.Listener? = null

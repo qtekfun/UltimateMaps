@@ -1,9 +1,13 @@
 package com.qtekfun.ultimatemaps.core.transit.follow
 
 import com.qtekfun.ultimatemaps.core.geo.LatLon
+import com.qtekfun.ultimatemaps.core.geo.distanceTo
 import com.qtekfun.ultimatemaps.core.map.LocationFix
+import com.qtekfun.ultimatemaps.core.map.GeofenceTarget
+import com.qtekfun.ultimatemaps.core.map.Geofencer
 import com.qtekfun.ultimatemaps.core.map.LocationSource
 import com.qtekfun.ultimatemaps.core.map.MovementHint
+import com.qtekfun.ultimatemaps.core.map.NoGeofencer
 import com.qtekfun.ultimatemaps.core.map.NoMovementHint
 import com.qtekfun.ultimatemaps.core.transit.Itinerary
 import com.qtekfun.ultimatemaps.core.transit.ItineraryLeg
@@ -63,6 +67,8 @@ class TransitTripController(
     private val realTime: RideRealTime = RideRealTime.NONE,
     /** The system's movement hint (activity recognition in the `play` flavor); started with a trip and stopped with it. */
     private val movementHint: MovementHint = NoMovementHint,
+    /** Geofences on the stop to get off at and the stop to board (the `play` flavor); cleared with the trip. */
+    private val geofencer: Geofencer = NoGeofencer,
 ) {
     private val _state = MutableStateFlow<TransitTripState?>(null)
     private val _prompts = MutableSharedFlow<FollowPrompt>(extraBufferCapacity = 16)
@@ -111,6 +117,8 @@ class TransitTripController(
         replanJob = null
         location.stop()
         runCatching { movementHint.stop() }
+        runCatching { geofencer.clear() }
+        geofenceKey = ""
         follower = null
         _state.value = null
         store.clear()
@@ -126,6 +134,8 @@ class TransitTripController(
         follower = f
         _state.value = TransitTripState(itinerary, f.state, zone)
         saveLocked(force = true)
+        geofenceKey = ""
+        updateGeofences(f)
         // A listener that is replaced by a restart must not feed a stale follower: it always reads the current one.
         runCatching { location.start { fix -> onFix(fix) } }
         runCatching { movementHint.start() }
@@ -165,10 +175,62 @@ class TransitTripController(
             ticker = null
             location.stop()
             runCatching { movementHint.stop() }
+            runCatching { geofencer.clear() }
+            geofenceKey = ""
         } else {
             val snap = f.snapshot()
             saveLocked(force = false, key = "${snap.legIndex}|${snap.boarded}|${snap.progress.toInt()}")
+            updateGeofences(f)
         }
+    }
+
+    private var geofenceKey = ""
+
+    /**
+     * Watches the stop where the traveller gets off (while on or about to be on a ride) and the stop where they board next. The
+     * list only changes when the leg or the boarded state does. An entry is turned into a fix at that stop: the system says the
+     * device is inside the circle, which is exactly what the follower needs when ordinary position updates are throttled.
+     */
+    private fun updateGeofences(f: ItineraryFollower) {
+        val s = f.snapshot()
+        val key = "${s.legIndex}|${s.boarded}"
+        if (key == geofenceKey) return
+        geofenceKey = key
+        val legs = f.itinerary.legs
+        val targets = ArrayList<GeofenceTarget>(2)
+        val ride = legs.getOrNull(s.legIndex) as? ItineraryLeg.Ride
+        val nextRide = (s.legIndex until legs.size).firstNotNullOfOrNull { legs[it] as? ItineraryLeg.Ride }
+        if (ride != null) targets.add(GeofenceTarget("alight:${s.legIndex}", ride.alighting.point, GEOFENCE_RADIUS_M))
+        if (!s.boarded && nextRide != null) {
+            targets.add(GeofenceTarget("board:${legs.indexOf(nextRide)}", nextRide.boarding.point, GEOFENCE_RADIUS_M))
+        }
+        if (nextRide != null && nextRide !== ride) {
+            targets.add(GeofenceTarget("alight:${legs.indexOf(nextRide)}", nextRide.alighting.point, GEOFENCE_RADIUS_M))
+        }
+        runCatching { geofencer.set(targets.distinctBy { it.id }) { id -> onGeofence(id) } }
+    }
+
+    private fun onGeofence(id: String) {
+        synchronized(lock) {
+            val f = follower ?: return
+            val index = id.substringAfter(':').toIntOrNull() ?: return
+            val ride = f.itinerary.legs.getOrNull(index) as? ItineraryLeg.Ride ?: return
+            // Boarding: the device is at the stop. Getting off: "within about 150 m of the stop", so the fix goes a little
+            // before it on the line (inside the follower's get-off distance, outside its arrival distance): the traveller is
+            // told to get off, and the ride ends when a real fix says the stop was reached.
+            val point = if (id.startsWith("alight:")) before(ride) else ride.boarding.point
+            apply(f.onFix(LocationFix(point, accuracyMeters = GEOFENCE_FIX_ACCURACY_M)))
+        }
+    }
+
+    /** The point [GEOFENCE_APPROACH_M] before the alighting stop on the way from the previous stop (halfway on a shorter hop). */
+    private fun before(ride: ItineraryLeg.Ride): LatLon {
+        val end = ride.alighting.point
+        val prev = ride.stops.getOrNull(ride.stops.size - 2)?.point ?: return end
+        val d = prev.distanceTo(end)
+        if (d <= 1.0) return end
+        val frac = if (d > 2 * GEOFENCE_APPROACH_M) GEOFENCE_APPROACH_M / d else 0.5
+        return LatLon(end.lat + frac * (prev.lat - end.lat), end.lon + frac * (prev.lon - end.lon))
     }
 
     private fun saveLocked(force: Boolean, key: String = "") {
@@ -236,6 +298,8 @@ class TransitTripController(
                         follower = nf
                         _state.value = TransitTripState(found.itinerary, nf.state, zoneId)
                         saveLocked(force = true)
+                        geofenceKey = ""
+                        updateGeofences(nf)
                         location.lastKnown()?.let { onFixLocked(nf, it) }
                     }
                 }
@@ -283,6 +347,13 @@ class TransitTripController(
     companion object {
         /** How many of the next stops are tried as the place to get off when re-planning aboard (the planned one is always tried). */
         const val ALIGHT_CANDIDATES = 5
+
+        /** Radius of the geofences on stops: at least about 100 m for the system to deliver them reliably. */
+        const val GEOFENCE_RADIUS_M = 150f
+
+        /** What a geofence entry is worth as a fix: a fix this far before the alighting stop, this accurate (see [onGeofence]). */
+        const val GEOFENCE_APPROACH_M = 110.0
+        const val GEOFENCE_FIX_ACCURACY_M = 30f
 
         fun destinationOf(itinerary: Itinerary): LatLon = when (val last = itinerary.legs.last()) {
             is ItineraryLeg.Walk -> last.to
