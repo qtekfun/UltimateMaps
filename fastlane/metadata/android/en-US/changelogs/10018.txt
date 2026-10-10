@@ -1,0 +1,1 @@
+Release candidate: lane guidance shows the lanes only when the junction is near, and "Show alternatives" also offers different roads (through a point on each side). Spain only.
