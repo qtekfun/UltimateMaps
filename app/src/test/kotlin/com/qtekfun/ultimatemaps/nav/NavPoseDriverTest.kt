@@ -111,4 +111,35 @@ class NavPoseDriverTest {
         repeat(60) { driver.frame(t); t += 16 }
         assertTrue(engine.users.last()!!.lat > nav.position.lat) // went north along the course
     }
+
+    private class HeadingRec : MapEngine {
+        val headings = mutableListOf<Float?>()
+        override fun setCamera(center: LatLon, zoom: Double) = Unit
+        override fun camera() = LatLon(0.0, 0.0) to 1.0
+        override fun animateTo(state: CameraState, durationMillis: Int) = Unit
+        override fun showUserLocation(point: LatLon?, accuracyMeters: Float?) = Unit
+        override fun setUserHeading(degrees: Float?) { headings += degrees }
+        override fun close() = Unit
+    }
+
+    @Test fun `standing still the arrow follows the phone compass and moving it follows the route`() {
+        val rec = HeadingRec()
+        val d = NavPoseDriver(rec).apply { setRoute(east) }
+        var compass: Float? = 200f
+        d.deviceHeading = { compass }
+        fun nav(speed: Double, along: Double) = navState(speedMps = speed).copy(position = east.pointAt(along), traveledMeters = along, bearingDegrees = 90f, offRouteMeters = 0.0)
+        d.onFix(nav(0.0, 100.0), 0)
+        d.frame(0)
+        assertEquals(200f, rec.headings.last(), "stopped: the compass, not the route (90)")
+        compass = 215f
+        d.frame(100)
+        assertEquals(215f, rec.headings.last())
+        compass = null
+        d.frame(200)
+        assertEquals(90f, rec.headings.last()!!, 1f, "no compass: the route's direction")
+        compass = 300f
+        d.onFix(nav(12.0, 110.0), 1000)
+        d.frame(1000)
+        assertEquals(90f, rec.headings.last()!!, 1f, "moving: the route even if a compass is there")
+    }
 }

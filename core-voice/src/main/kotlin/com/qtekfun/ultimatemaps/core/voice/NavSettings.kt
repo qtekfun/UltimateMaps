@@ -83,6 +83,8 @@ data class NavSettings(
      * Spanish with a voice of another language: choosing another installed engine fixes it.
      */
     val voiceEngine: String = "",
+    /** Turn the arrow by the phone's compass while the vehicle is (almost) standing, when the GPS has no course. */
+    val compassArrow: Boolean = true,
 ) {
     fun normalized(): NavSettings = copy(volumePercent = volumePercent.coerceIn(MIN_VOLUME, 100))
 

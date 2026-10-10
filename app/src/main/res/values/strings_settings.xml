@@ -66,4 +66,6 @@
     <string name="nav_engine_default">System default</string>
     <string name="nav_engine_only_one">Only one voice engine is installed. To use another one (for example Google\'s), choose or install it in the phone\'s own settings.</string>
     <string name="nav_engine_system_settings">Open the phone\'s voice settings</string>
+    <string name="nav_compass_title">Phone compass for the arrow</string>
+    <string name="nav_compass_body">While you are standing or crawling the GPS has no direction, so the arrow turns by the phone\'s compass (the way the phone points: top edge when flat, the back when upright in a mount). Switch it off if the compass is unreliable in your car.</string>
 </resources>

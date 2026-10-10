@@ -153,6 +153,7 @@ object SettingsSchema {
         int(GROUP_NAVIGATION, navPrefs, PrefsNavSettingsStore.KEY_VOLUME, nav.volumePercent) { it in NavSettings.MIN_VOLUME..100 },
         enum(GROUP_NAVIGATION, navPrefs, PrefsNavSettingsStore.KEY_UNITS, nav.units, UnitsPref.entries.map { it.name }),
         enum(GROUP_NAVIGATION, navPrefs, PrefsNavSettingsStore.KEY_LANGUAGE, nav.voiceLanguage, VoiceLanguagePref.entries.map { it.name }),
+        bool(GROUP_NAVIGATION, navPrefs, PrefsNavSettingsStore.KEY_COMPASS_ARROW, nav.compassArrow),
         bool(GROUP_NAVIGATION, navPrefs, PrefsNavSettingsStore.KEY_AVOID_MOTORWAYS, nav.avoidMotorways),
         bool(GROUP_NAVIGATION, navPrefs, PrefsNavSettingsStore.KEY_AVOID_TOLLS, nav.avoidTolls),
         bool(GROUP_NAVIGATION, navPrefs, PrefsNavSettingsStore.KEY_AVOID_FERRIES, nav.avoidFerries),

@@ -65,4 +65,6 @@
     <string name="nav_engine_default">Sistemaren lehenetsia</string>
     <string name="nav_engine_only_one">Ahots-motor bakarra dago instalatuta. Beste bat erabiltzeko (adibidez Google-rena), aukeratu edo instalatu telefonoaren ezarpenetan.</string>
     <string name="nav_engine_system_settings">Ireki telefonoaren ahots-ezarpenak</string>
+    <string name="nav_compass_title">Telefonoaren iparrorratza gezirako</string>
+    <string name="nav_compass_body">Geldirik edo poliki zoazenean GPSak ez du norabiderik ematen; gezia telefonoaren iparrorratzaren arabera biratzen da (telefonoak adierazten duen aldera: goiko ertza lau badago, atzealdea euskarri batean zutik badago). Desaktibatu iparrorratza fidagarria ez bada zure autoan.</string>
 </resources>

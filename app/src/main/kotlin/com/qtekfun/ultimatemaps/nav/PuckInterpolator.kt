@@ -57,6 +57,9 @@ class PuckInterpolator {
     private var dAlong = 0.0
 
     /** The route the `along` values of the fixes refer to; call it before the fix that comes with a new route. */
+    /** The speed of the last fix, m/s. */
+    val speedMps: Double get() = speed
+
     fun setRoute(geometry: RouteGeometry?) {
         route = geometry
     }
