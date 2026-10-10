@@ -1,0 +1,1 @@
+Versión candidata: el mapa usa un visor compartido (probado, aún no visto en un móvil) y hay una versión "play" opcional que usa Google Play Services si existen. Solo España.
