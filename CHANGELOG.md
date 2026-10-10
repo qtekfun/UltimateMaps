@@ -4,6 +4,10 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 
 ## [Unreleased]
 
+### Fixed
+
+- **Lane guidance no longer shows the exit lane too early.** The lanes of the next maneuver are shown only when it is about twelve seconds away at your speed (at least 200 m, at most 450 m), so the lane of a motorway exit that only starts later is not read as "be in this lane now".
+
 ## [0.1.0-rc.17] - 2026-10-10
 
 ### Changed

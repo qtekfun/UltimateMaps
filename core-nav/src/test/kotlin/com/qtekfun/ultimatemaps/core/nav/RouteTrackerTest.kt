@@ -398,10 +398,29 @@ class RouteTrackerTest {
         val plan = b.plan(listOf(Maneuver(corner, TurnType.RIGHT, lanes = lanes), maneuver(b.lastIndex, TurnType.ARRIVE)))
         val tracker = RouteTracker(plan)
         tracker.onFix(fix(pt(0.0, 10.0), 1000))
-        assertEquals(lanes, tracker.snapshot().lanes)
+        assertEquals(emptyList(), tracker.snapshot().lanes, "490 m before the junction the lanes are not shown yet")
+        val near = RouteTracker(plan)
+        near.onFix(fix(pt(0.0, 330.0), 1000)) // 170 m before it
+        assertEquals(lanes, near.snapshot().lanes)
         val tracker2 = RouteTracker(plan)
         RouteSimulator(plan.geometry, 10.0, startAlongMeters = 450.0).fixes().take(10).forEach(tracker2::onFix)
         assertEquals(emptyList(), tracker2.snapshot().lanes)
+    }
+
+    @Test fun fasterTrafficSeesTheLanesEarlierButNeverFarAway() {
+        val lanes = listOf(Lane(setOf(LaneDirection.SLIGHT_RIGHT), recommended = true))
+        val b = RouteBuilder().lineTo(0.0, 1000.0)
+        val exit = b.lastIndex
+        b.lineTo(300.0, 1300.0)
+        val plan = b.plan(listOf(Maneuver(exit, TurnType.RIGHT, lanes = lanes), maneuver(b.lastIndex, TurnType.ARRIVE)))
+        fun lanesAt(y: Double, speed: Float): List<Lane> {
+            val t = RouteTracker(plan)
+            t.onFix(fix(pt(0.0, y), 1000, speed = speed))
+            return t.snapshot().lanes
+        }
+        assertEquals(emptyList(), lanesAt(500.0, 30f), "500 m at 108 km/h is more than 12 s away")
+        assertEquals(lanes, lanesAt(650.0, 30f), "350 m at 108 km/h is inside 12 s")
+        assertEquals(emptyList(), lanesAt(650.0, 8f), "the same place at city speed is too far")
     }
 
     @Test fun remainingTimeScalesWithRemainingDistance() {
