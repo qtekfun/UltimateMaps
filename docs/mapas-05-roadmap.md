@@ -14,6 +14,7 @@ Durations are rough part-time estimates and are revised when the spike ends. The
 | **F5. Polish and release** | Performance, style, accessibility, Chinese ROMs, F-Droid metadata, reproducible builds | 1-2 months | Published on F-Droid and GitHub |
 | **F6. Android Auto** | **Dropped (2026-10-08, owner decision):** needs Google's proprietary host app, against the no-Google rule. Analysis kept in `docs/phase2/android-auto.md` | - | - |
 | **F2b. Petrol stations** | Fuel prices (LPG, petrol, diesel…) downloaded according to Settings, the price over each station on the map, a card on tap and adding it to the route as destination or stop | 2-3 weeks (estimate) | With a fuel chosen, prices show on the map and you can go to a station or stop at it |
+| **F8. Appearance** | Customisable map style (a lighter dark map, presets, theme choice) and cursor (shape, colour, size; generic shapes, no Google Maps artwork). Plan and open decisions in `docs/phase2/appearance.md` | To be estimated | The owner can pick a dark map he finds readable at night and a cursor; judged on the phone |
 | **F7. Optional data** | Real-time public transport: **Cercanías** (the metro is dropped). Can be turned on and configured in Settings, off by default | To be estimated | It can be turned on, configured and turned off in Settings; with everything off there is no new connection |
 
 Rough total up to F5: 6-12 months. Each phase ends with a usable version.
