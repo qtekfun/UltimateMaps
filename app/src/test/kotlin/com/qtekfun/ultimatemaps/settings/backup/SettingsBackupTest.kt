@@ -110,6 +110,7 @@ class SettingsBackupTest {
         rest.forEach { assertEquals(a.read(it), b.read(it), it.id) }
         // The acknowledgement is not a key of the schema at all, so it can never be restored.
         assertEquals(null, SettingsSchema.find("cameras", "acknowledged"))
+        assertEquals(false, SettingsSchema.find("cameras", "enforcement_direction")?.default, "exported, and off by default")
     }
 
     @Test fun anOffSwitchInTheFileTurnsAnEnabledOneOff() {

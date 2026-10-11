@@ -16,6 +16,8 @@
     <string name="cam_roadworks_body">Possono essercene centinaia in qualsiasi momento.</string>
     <string name="cam_only_speeding_title">Avvisa solo se superi il limite</string>
     <string name="cam_only_speeding_body">Per gli autovelox con limite noto, resta in silenzio finché sei sotto il limite. Gli autovelox con limite sconosciuto avvisano sempre.</string>
+    <string name="cam_enforcement_dir_title">Usa il senso controllato secondo OpenStreetMap (sperimentale)</string>
+    <string name="cam_enforcement_dir_body">Quando OpenStreetMap indica quale senso di marcia controlla un autovelox, avvisa solo in quel senso. Pochi autovelox hanno questo dato.</string>
 
     <!-- Settings: legal note and acknowledgement dialog -->
     <string name="cam_legal_note">Le zone di autovelox mobili sono i tratti pubblicati dalla DGT; il punto esatto di un controllo mobile non viene mai mostrato. Gli avvisi sono solo informativi e possono essere errati o non aggiornati. Sei responsabile di come guidi.</string>

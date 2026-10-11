@@ -1,6 +1,6 @@
 # Speed-camera data file and how the weekly data release builds it
 
-Status: 2026-10-07. The converter and the reader are tested on the JVM and with real downloaded data (counts below). The
+Status: 2026-10-07 (enforced direction from OSM relations added 2026-10-11, section 6). The converter and the reader are tested on the JVM and with real downloaded data (counts below). The
 weekly workflow of `qtekfun/ultimate-maps-data` now has an optional step for it (added afterwards, outside this repository; it skips itself while `scripts/build-cameras.py` is not on the default branch of this repository): this document is the
 instruction for whoever changes it. Anything marked "not verified" was not confirmed.
 
@@ -23,7 +23,7 @@ Not in it, ever: crowd-sourced reports, police controls, exact positions of mobi
 ## 2. Binary layout (version 1, big endian)
 
 ```
-u32 magic 0x554D4341 ("UMCA")   u16 version (1)   i64 generated (epoch seconds)   u8 source flags (1 = DGT, 2 = OSM)
+u32 magic 0x554D4341 ("UMCA")   u16 version (1)   i64 generated (epoch seconds)   u8 source flags (1 = DGT, 2 = OSM, 4 = some fixed record has a direction derived from an OSM enforcement relation)
 u32 n_fixed   u32 n_sections   u32 n_zones
 fixed   x n_fixed:    i32 lat_e6, i32 lon_e6, u8 src, u8 maxspeed (0 = unknown), i16 axis (degrees 0..359, -1 = unknown), u8 sense, utf road
 section x n_sections: i32 lat_e6, i32 lon_e6, i32 lat_e6, i32 lon_e6, u8 src, u8 maxspeed, utf road
@@ -32,7 +32,9 @@ u32 crc32 of everything before it
 ```
 
 `utf` = u16 length + UTF-8 bytes (what Java's `writeUTF` reads for BMP text). `sense`: 0 both directions, 1 only traffic
-travelling along `axis`, 2 only against it. The reader (`:core-cameras`, `CameraFile`) rejects as a whole anything with a bad
+travelling along `axis`, 2 only against it; bit `0x80` of that byte marks a direction derived from an OSM enforcement
+relation and bit `0x40` that the axis too came only from it (section 6). Layout version stays 1: an older reader maps any
+value above 2 to "both", so it keeps reading the file and treats such a camera like an axis-only one. The reader (`:core-cameras`, `CameraFile`) rejects as a whole anything with a bad
 checksum, size, count, magic, version, position or trailing bytes. It is tested against a file written by the Python
 converter (`core-cameras/src/test/resources/cameras/sample.bin`, regenerated with
 `UM_WRITE_CAMERAS_SAMPLE=<path> python3 scripts/test_build_cameras.py`).
@@ -93,9 +95,9 @@ booth keeps the DGT axis and sense (before 2026-10-11 the OSM axis overwrote the
 
 What is lost: a DGT booth that is not in the report (or not matched within 20 m) has no sense at all, and every OSM-only
 camera has "both" with an axis. Those cannot be told from the camera of the opposite carriageway by direction; the app
-uses their offset from the route instead (see `cameras-implementation.md`). Proposal, not done: OSM `relation=enforcement`
-(`from`, `to`, `device`) carries the monitored direction explicitly; it would need a new extract step in the weekly job and
-sits under the same ODbL attribution as the nodes.
+uses their offset from the route instead (see `cameras-implementation.md`). OSM `type=enforcement` relations (`from`, `to`,
+`device`) carry the monitored direction explicitly; since 2026-10-11 the converter can use them (section 6), needing one more
+extract step in the weekly job, under the same ODbL attribution as the nodes.
 
 ## 5. Licence and attribution
 
@@ -105,3 +107,60 @@ sits under the same ODbL attribution as the nodes.
 - OSM: ODbL 1.0; the derived camera database keeps attribution and share-alike. Attribution shown only when the file
   contains OSM records (source flag 2).
 - Where it is shown: Settings (Speed cameras and traffic), the card of every marker, `LICENSES.md`, `PRIVACY.md`.
+
+## 6. Enforced direction from OSM `type=enforcement` relations (optional, experimental, 2026-10-11)
+
+**What the OSM data says.** A relation `type=enforcement` + `enforcement=maxspeed` has members with roles `device` (the camera
+node), `from` and `to` (the way or node the monitored traffic comes from and goes to; the direction of travel is from `from`
+towards `to`) and optionally `force`, `via`. Other `enforcement=` values (traffic lights, average speed) are ignored.
+(Source: OSM wiki `Relation:enforcement`; the roles' exact semantics were **not** re-verified against current mapping practice.)
+
+**What the converter does** (`scripts/build-cameras.py --osm-enforcement FILE...`; the input is an OSM XML file or an Overpass
+JSON that contains the relations *with* their member ways and the nodes of those ways):
+
+1. Per relation, `from` way + `to` way that share a node which is an END of both: the bearing is taken from a point up to 50 m
+   along the `from` way, to the shared node, to a point up to 50 m along the `to` way. `from` node + `to` node: the bearing
+   between them (at least 8 m apart). `from` = `to` = the same way: only when the way is `oneway` (`yes`/`-1`), using its node order.
+   Anything else (not connected, junction inside a way, a way and a node, a member missing from the extract, a way shorter than
+   8 m) is dropped and counted under `enforcement_unresolved` in the summary, by reason.
+2. Per device node: several relations that agree (within 30 degrees) give one direction; two groups that are opposite give
+   "both directions"; anything else is dropped (`device_directions_disagree`).
+3. The device is matched to the camera node by OSM id (Overpass JSON) or by exact position (an `osmium export` geojsonseq has no
+   ids by default).
+4. The direction is written into the camera's `axis` and `sense`, relative to the axis it already had (the OSM `direction` or the
+   DGT road bearing): along when the travel bearing is within 45 degrees of it, against within 45 degrees of the opposite; when
+   it is neither, the relation is not used (`relation_axis_conflict`). A camera that had no axis gets the travel bearing as axis
+   and sense along, flagged `0x40` as well. "Both" keeps sense 0 (flagged `0x80`).
+5. A DGT sense that came from the report is **never** overridden: it is published data. How often the relation disagrees is
+   counted (`relation_disagrees_with_dgt`).
+
+The summary adds `enforcement_relations`, `enforcement_maxspeed_relations`, `enforcement_resolved`, `enforcement_unresolved`
+(by reason), `enforcement_devices_with_direction`, `enforcement_devices_matched_to_camera_nodes`,
+`enforcement_cameras_with_relation_direction`, `enforcement_cameras_relation_both`, `fixed_with_relation_direction`. **No count on
+real data exists yet** (no extract was available when this was written; the tests use small synthetic extracts).
+
+**Weekly job change (outside this repository; do not edit `.github/workflows` here).** In the step that already downloads
+`spain.osm.pbf` and runs `osmium tags-filter ... n/highway=speed_camera`, add, before `rm -f spain.osm.pbf`:
+
+```sh
+# relations come with their member ways and nodes (osmium's default: referenced objects are kept)
+{ osmium tags-filter spain.osm.pbf r/type=enforcement -o enforcement.osm.pbf --overwrite \
+  && osmium cat enforcement.osm.pbf -f osm -o enforcement.osm --overwrite; } || rm -f enforcement.osm
+[ -s enforcement.osm ] && ARGS="$ARGS --osm-enforcement enforcement.osm"
+```
+
+The ready patch against `.github/workflows/weekly-data.yml` of `qtekfun/ultimate-maps-data` is
+`docs/phase2/weekly-data-enforcement.patch` (checked with `patch --dry-run` against the job as of 2026-10-11; apply with
+`git apply` or `patch -p1` from the root of that repository, review it, commit it there, and read the new
+`enforcement_*` counts in the next `speedcams-summary.json` before enabling the app setting). The step is optional: without the argument the file is exactly what it was. The argument is new, so
+the job must run the converter of the release that has it (the job checks out the app repository's default branch).
+
+**In the app** the data is used only when "Use the enforced direction from OpenStreetMap (experimental)" is on (default off, see
+`cameras-implementation.md`). The flagged records are in the file either way, so switching it on later needs no data release.
+
+**Attribution and network.** The relations are OSM data (ODbL 1.0): the OSM credit already shown with the cameras covers them
+(source flag 2 is set for these cameras). The app does not download anything new; it is the same file, from the same place,
+through `NetworkPolicy`.
+
+**Test files.** `core-cameras/src/test/resources/cameras/sample-enforcement.bin` is written by
+`UM_WRITE_CAMERAS_ENFORCEMENT_SAMPLE=<path> python3 scripts/test_build_cameras.py EnforcementTest`.

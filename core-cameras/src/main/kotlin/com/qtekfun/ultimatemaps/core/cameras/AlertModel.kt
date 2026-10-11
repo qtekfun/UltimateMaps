@@ -16,6 +16,10 @@ enum class AlertCategory {
  * per fix. [group] ties records that must be announced once together (the two ends of one incident). [axisDeg] with
  * [sense] and [toleranceDeg] say which travel directions are affected (null axis: all). [limitKmh] is the enforced
  * limit when known.
+ *
+ * [relationSense] / [relationAxisDeg]: the direction derived from an OSM enforcement relation, kept apart from
+ * [axisDeg] / [sense] (which stay what the target was without it) and used by the warner only when
+ * [CameraSettings.useEnforcementDirection] is on. Null: the target has no such direction.
  */
 class AlertTarget(
     val id: String,
@@ -27,6 +31,8 @@ class AlertTarget(
     val sense: AxisSense,
     val toleranceDeg: Int,
     val limitKmh: Int?,
+    val relationSense: AxisSense? = null,
+    val relationAxisDeg: Int? = null,
 )
 
 /** Where the warner finds what is near. Implementations must not allocate per call (the visitor is the only callback). */
@@ -106,7 +112,16 @@ object CameraTargets {
         val out = ArrayList<AlertTarget>()
         if (settings.fixedEnabled) {
             for (c in data.fixed) {
-                out += AlertTarget(c.id, c.id, AlertCategory.FIXED_CAMERA, c.location.lat, c.location.lon, c.axisDeg, c.sense, ROAD_TOLERANCE_DEG, c.maxSpeedKmh)
+                if (c.directionFromRelation && c.axisDeg != null) {
+                    // What it was without the relation: both directions, with the axis only if it had one of its own.
+                    out += AlertTarget(
+                        c.id, c.id, AlertCategory.FIXED_CAMERA, c.location.lat, c.location.lon,
+                        c.axisDeg.takeUnless { c.axisFromRelationOnly }, AxisSense.BOTH, ROAD_TOLERANCE_DEG, c.maxSpeedKmh,
+                        relationSense = c.sense, relationAxisDeg = c.axisDeg,
+                    )
+                } else {
+                    out += AlertTarget(c.id, c.id, AlertCategory.FIXED_CAMERA, c.location.lat, c.location.lon, c.axisDeg, c.sense, ROAD_TOLERANCE_DEG, c.maxSpeedKmh)
+                }
             }
             for (s in data.sections) {
                 val end = s.endLocation

@@ -39,6 +39,34 @@ class CameraFileTest {
         assertEquals("Zaragoza", withLine.single().province)
     }
 
+    @Test fun readsRelationDerivedDirectionsFromTheConverterSample() {
+        // sample-enforcement.bin: regenerate with UM_WRITE_CAMERAS_ENFORCEMENT_SAMPLE=<path> python3 scripts/test_build_cameras.py
+        val d = CameraFile.parse(javaClass.getResourceAsStream("/cameras/sample-enforcement.bin")!!.readBytes())
+        assertEquals(CameraSources.OSM or CameraSources.ENFORCEMENT_DIRECTION, d.sourceFlags)
+        assertEquals(3, d.fixed.size)
+        val withRelation = d.fixed.single { it.maxSpeedKmh == 90 }
+        assertTrue(withRelation.directionFromRelation)
+        assertFalse(withRelation.axisFromRelationOnly)
+        assertEquals(0, withRelation.axisDeg)
+        assertEquals(AxisSense.ALONG, withRelation.sense)
+        val plain = d.fixed.single { it.axisDeg == 90 }
+        assertFalse(plain.directionFromRelation)
+        assertEquals(AxisSense.BOTH, plain.sense)
+        val axisOnly = d.fixed.single { it.axisFromRelationOnly }
+        assertTrue(axisOnly.directionFromRelation)
+        assertEquals(180, axisOnly.axisDeg)
+        assertEquals(AxisSense.ALONG, axisOnly.sense)
+    }
+
+    @Test fun relationFlagsOnlyCountWithAnAxis() {
+        val bytes = build(nf = 1) { o ->
+            o.writeInt(40_000_000); o.writeInt(-3_000_000); o.writeByte(2); o.writeByte(0); o.writeShort(-1); o.writeByte(0xC1); o.writeUTF("")
+        }
+        val c = CameraFile.parse(bytes).fixed.single()
+        assertFalse(c.directionFromRelation)
+        assertEquals(AxisSense.BOTH, c.sense)
+    }
+
     /**
      * Optional: point `UM_REAL_CAMERAS_FILE` at a `speedcams-es.bin` built by `scripts/build-cameras.py` from the real DGT and
      * OSM data. Does nothing when it is not set, so the suite never depends on a file.

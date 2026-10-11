@@ -142,7 +142,7 @@ class AndroidSettingsStorageTest {
         val oldFuel = PrefsFuelSettingsStore(prefs("old", PrefsFuelSettingsStore.PREFS))
         oldFuel.update { it.copy(enabled = true, downloadedFuels = setOf("g95e5"), refreshMinutes = 180) }
         val oldCameras = PrefsCameraSettingsStore(prefs("old", PrefsCameraSettingsStore.PREFS))
-        oldCameras.update { it.copy(acknowledged = true, fixedEnabled = true, warnOnlyIfSpeeding = true, incidentRefreshMinutes = 30) }
+        oldCameras.update { it.copy(acknowledged = true, fixedEnabled = true, warnOnlyIfSpeeding = true, useEnforcementDirection = true, incidentRefreshMinutes = 30) }
         val exported = SettingsBackup.export(storage("old"), emptyList(), "1", 0L)
 
         // The new phone: stores created BEFORE the restore (as the app does), and re-read by onFinish.
@@ -157,7 +157,7 @@ class AndroidSettingsStorageTest {
         assertEquals(NavSettings(units = UnitsPref.IMPERIAL, volumePercent = 50, avoidTolls = true), nav.settings.value)
         // Preferences restored; the consent-gated switch stays off and the notice stays unaccepted.
         assertEquals(FuelSettings(enabled = false, downloadedFuels = setOf("g95e5"), mapFuel = "g95e5", refreshMinutes = 180), fuel.settings.value)
-        assertEquals(CameraSettings(warnOnlyIfSpeeding = true, incidentRefreshMinutes = 30), cameras.settings.value)
+        assertEquals(CameraSettings(warnOnlyIfSpeeding = true, useEnforcementDirection = true, incidentRefreshMinutes = 30), cameras.settings.value)
         assertFalse(cameras.settings.value.acknowledged)
         assertEquals(setOf("fuel/enabled", "cameras/fixed"), pending.consent)
         assertEquals(2, result.needConsent)

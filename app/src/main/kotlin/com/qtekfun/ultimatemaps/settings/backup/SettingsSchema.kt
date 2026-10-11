@@ -205,6 +205,7 @@ object SettingsSchema {
         bool(GROUP_CAMERAS, camPrefs, PrefsCameraSettingsStore.KEY_V16, cameras.v16Enabled, RestorePolicy.NEEDS_CONSENT),
         bool(GROUP_CAMERAS, camPrefs, PrefsCameraSettingsStore.KEY_ROADWORKS, cameras.roadworksEnabled, RestorePolicy.NEEDS_CONSENT),
         bool(GROUP_CAMERAS, camPrefs, PrefsCameraSettingsStore.KEY_ONLY_SPEEDING, cameras.warnOnlyIfSpeeding),
+        bool(GROUP_CAMERAS, camPrefs, PrefsCameraSettingsStore.KEY_ENFORCEMENT_DIRECTION, cameras.useEnforcementDirection),
         enum(GROUP_CAMERAS, camPrefs, PrefsCameraSettingsStore.KEY_CAM_MODE, cameras.cameraAlertMode, AlertSoundMode.entries.map { it.name }),
         enum(GROUP_CAMERAS, camPrefs, PrefsCameraSettingsStore.KEY_INCIDENT_MODE, cameras.incidentAlertMode, AlertSoundMode.entries.map { it.name }),
         int(GROUP_CAMERAS, camPrefs, PrefsCameraSettingsStore.KEY_REFRESH, cameras.incidentRefreshMinutes) { it >= MIN_INCIDENT_REFRESH_MINUTES },

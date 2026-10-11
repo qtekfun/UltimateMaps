@@ -31,6 +31,8 @@ data class AlertEvent(
  * In both, a target with a known axis and sense counts only when the travel direction agrees with it
  * ([AlertTarget.sense]). A target with no direction (DGT gives none; OSM `direction` is an axis) cannot be told from
  * the other carriageway by direction, so it counts only when it is close to the driver's line, tighter on the left.
+ * With [CameraSettings.useEnforcementDirection] on, a target that carries a direction derived from an OSM
+ * enforcement relation uses it instead (and then gets the wide allowance, like any known direction).
  * Trade-off: such a camera whose published position is off by more than the allowance is missed; a known-direction
  * one keeps the wide allowance.
  *
@@ -182,13 +184,20 @@ class AlertWarner(
         AlertCategory.ACCIDENT, AlertCategory.CLOSURE, AlertCategory.CONGESTION, AlertCategory.OBSTACLE -> cfg.incidentsEnabled
     }
 
+    /** Whether the experimental enforced-direction data applies to [t] on this fix (switch on and the target has it). */
+    private fun useRelation(t: AlertTarget): Boolean = cfg.useEnforcementDirection && t.relationSense != null
+
+    private fun axisOf(t: AlertTarget): Int? = if (useRelation(t)) t.relationAxisDeg else t.axisDeg
+
+    private fun senseOf(t: AlertTarget): AxisSense = if (useRelation(t)) t.relationSense ?: t.sense else t.sense
+
     /** Whether travelling at [travel] degrees is a direction [t] applies to. NaN travel: unknown, so yes. */
     private fun directionOk(t: AlertTarget, travel: Double): Boolean {
-        val axis = t.axisDeg ?: return true
+        val axis = axisOf(t) ?: return true
         if (travel.isNaN()) return true
         val along = TargetGrid.angleDiff(travel, axis.toDouble()) <= t.toleranceDeg
         val against = TargetGrid.angleDiff(travel, axis + 180.0) <= t.toleranceDeg
-        return when (t.sense) {
+        return when (senseOf(t)) {
             AxisSense.BOTH -> along || against
             AxisSense.ALONG -> along
             AxisSense.AGAINST -> against
@@ -196,7 +205,7 @@ class AlertWarner(
     }
 
     /** Whether [t] carries a real travel direction (not just an axis that both senses share). */
-    private fun hasDirection(t: AlertTarget): Boolean = t.axisDeg != null && t.sense != AxisSense.BOTH
+    private fun hasDirection(t: AlertTarget): Boolean = axisOf(t) != null && senseOf(t) != AxisSense.BOTH
 
     /**
      * How far from the route (or the line of travel) a target may be and still count as being on the driver's road.

@@ -16,6 +16,8 @@
     <string name="cam_roadworks_body">En pot haver centenars en qualsevol moment.</string>
     <string name="cam_only_speeding_title">Avisa només si excedeixes la velocitat</string>
     <string name="cam_only_speeding_body">Als radars amb límit conegut, es manté en silenci mentre estiguis per sota. Els radars amb límit desconegut sempre avisen.</string>
+    <string name="cam_enforcement_dir_title">Utilitza el sentit controlat segons OpenStreetMap (experimental)</string>
+    <string name="cam_enforcement_dir_body">Quan OpenStreetMap indica quin sentit de la circulació vigila un radar, avisa només en aquest sentit. Pocs radars tenen aquesta dada.</string>
 
     <!-- Settings: legal note and acknowledgement dialog -->
     <string name="cam_legal_note">Les zones de radars mòbils són els trams que publica la DGT; mai es mostra el lloc exacte d\'un control mòbil. Els avisos són informatius i poden ser erronis o estar desactualitzats. Ets responsable de com condueixes.</string>

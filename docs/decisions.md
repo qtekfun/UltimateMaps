@@ -1057,3 +1057,26 @@ Format: date · decision · reason · discarded alternatives · how to revert it
   display frame, which is what makes 30 acceptable); 45 (a quarter less, not a third).
 - **Owner decision:** this reverses the "default stays 60" of the frame-rate entry above; it was not judged by eye on a moving car.
   Existing installs that saved their navigation settings keep the 60 they stored.
+
+## 2026-10-11 · Enforced direction of speed cameras from OpenStreetMap relations, optional and off (branch `feat/camera-enforcement-direction`, no phone)
+- **Decision:** the converter reads OSM `type=enforcement` + `enforcement=maxspeed` relations (member roles `device`, `from`, `to`; `force` and
+  others ignored) and turns `from` -> `to` into the travel bearing the device enforces. It is written with the existing `axis` and `sense`
+  fields plus two flag bits in the sense byte (`0x80` direction from a relation, `0x40` the axis too) and a header flag (4). The file layout
+  version stays 1: an older app reads the flagged sense as "both" with the axis, which is what it did with those cameras. A new setting,
+  "Use the enforced direction from OpenStreetMap (experimental)" (`CameraSettings.useEnforcementDirection`, key `cameras/enforcement_direction`,
+  in the settings backup, applied at the next fix), makes the warner use it: a flagged camera then alerts only when the route or travel
+  direction matches, with the wide 35 m allowance of a known direction. **Default OFF**; with it off the warner is exactly the 2026-10-11 logic
+  above (`AlertTarget` keeps the pre-relation axis and sense apart from the relation ones).
+- **Reason:** DGT publishes no direction and OSM `direction` only says where the device faces, so OSM-only cameras were "both" with an axis and
+  were told from the other carriageway by their lateral offset (with misses). The relation says which traffic is checked. Shipping the data flag
+  now means enabling the setting later needs no data release; nothing about it has been seen on the road, hence off.
+- **Rules in the converter:** a DGT sense that came from the report is never overridden (the disagreements are counted in the summary);
+  a camera whose own axis contradicts the relation by more than 45 degrees is left alone (counted); two relations in opposite directions give
+  "both"; relations that disagree, missing members, unconnected ways and a `from` = `to` way that is not a one-way are dropped and counted.
+- **Discarded:** always on (an unverified data source would change alerts for everyone; the lateral rule of 2026-10-11 stays as the safe base);
+  a layout version 2 with a separate field (older apps would reject the whole file); resolving direction from way geometry and `device`
+  alone without `from`/`to` (a device on a two-way road says nothing about the traffic).
+- **Data job:** needs one extra extract step in the weekly job of `ultimate-maps-data` (outside this repository; recipe and patch in
+  `docs/phase2/cameras-data.md` section 6). No new network access in the app: same file, same download.
+- **Not verified:** nothing on a device; the converter was not run on a real OSM extract (none on disk, no osmium installed here), so the
+  share of Spanish cameras that have a relation is unknown. OSM attribution (ODbL) is already shown; the relation data is OSM data under the same terms.

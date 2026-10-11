@@ -159,6 +159,22 @@ class CamerasSettingsTest {
         assertTrue(store.settings.value.roadworksEnabled && store.settings.value.warnOnlyIfSpeeding)
     }
 
+    @Test fun enforcedDirectionOptionIsExperimentalOffByDefaultAndPersisted() {
+        show()
+        assertEquals(0, count("cam_enforcement_dir_switch"), "only with a camera category on")
+        assertFalse(store.settings.value.useEnforcementDirection, "off until it has been seen to work on the road")
+        store.update { it.copy(acknowledged = true, fixedEnabled = true) }
+        rule.waitForIdle()
+        rule.onNodeWithTag("cam_enforcement_dir_switch").performScrollTo().performClick()
+        rule.waitForIdle()
+        assertTrue(store.settings.value.useEnforcementDirection)
+        val prefs = ctx.getSharedPreferences("cam-enforcement-test", Context.MODE_PRIVATE)
+        prefs.edit().clear().commit()
+        PrefsCameraSettingsStore(prefs).update { it.copy(useEnforcementDirection = true) }
+        assertTrue(prefs.getBoolean(PrefsCameraSettingsStore.KEY_ENFORCEMENT_DIRECTION, false))
+        assertTrue(PrefsCameraSettingsStore(prefs).settings.value.useEnforcementDirection, "survives a restart")
+    }
+
     @Test fun eachCategoryHasItsOwnThreeWayAlertModeShownWhileTheCategoryIsOn() {
         show()
         assertEquals(0, count("cam_alert_mode_card"), "nothing to announce while every category is off")
