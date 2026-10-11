@@ -18,19 +18,20 @@ import com.qtekfun.ultimatemaps.core.map.HazardKind
 import com.qtekfun.ultimatemaps.core.map.HazardLine
 import com.qtekfun.ultimatemaps.core.map.HazardPin
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.junit.After
 import org.junit.Test
 import java.util.concurrent.CopyOnWriteArrayList
-import java.util.concurrent.TimeUnit
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class HazardMapLayerTest {
-    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+    // Virtual time: the layer's debounce and its background query run on a test scheduler, so nothing depends on threads or the clock.
+    private val scheduler = kotlinx.coroutines.test.TestCoroutineScheduler()
+    private val dispatcher = kotlinx.coroutines.test.StandardTestDispatcher(scheduler)
+    private val scope = CoroutineScope(SupervisorJob() + dispatcher)
     private val view = GeoBounds(40.0, -4.0, 41.0, -3.0)
     private val pins = CopyOnWriteArrayList<List<HazardPin>>()
     private val lines = CopyOnWriteArrayList<List<HazardLine>>()
@@ -64,17 +65,14 @@ class HazardMapLayerTest {
     private val incidents = IncidentDataRepository().also { it.install(incidentData) }
 
     private fun layer(settings: MutableStateFlow<CameraSettings>, debounce: Long = 10) =
-        HazardMapLayer(scope, Dispatchers.IO, cameras, incidents, settings, { p, l -> pins += p; lines += l }, debounce).also { it.start() }
+        HazardMapLayer(scope, dispatcher, cameras, incidents, settings, { p, l -> pins += p; lines += l }, debounce).also { it.start() }
 
     private fun await(what: String, cond: () -> Boolean) {
-        val end = System.nanoTime() + TimeUnit.SECONDS.toNanos(5)
-        while (!cond()) {
-            check(System.nanoTime() < end) { "timeout waiting for $what" }
-            Thread.sleep(5)
-        }
+        scheduler.advanceUntilIdle() // runs every pending task and debounce, in order
+        check(cond()) { "condition not reached: $what" }
     }
 
-    private fun settle() = Thread.sleep(150)
+    private fun settle() = scheduler.advanceUntilIdle()
 
     @After fun tearDown() = scope.cancel()
 

@@ -14,19 +14,20 @@ import com.qtekfun.ultimatemaps.core.geo.LatLon
 import com.qtekfun.ultimatemaps.core.map.ChargerPin
 import com.qtekfun.ultimatemaps.core.map.GeoBounds
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import org.junit.After
 import org.junit.Test
 import java.util.concurrent.CopyOnWriteArrayList
-import java.util.concurrent.TimeUnit
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 /** The layer's decisions on the JVM: off by default, minimum zoom, filters, thinning, redraw only on change. */
 class ChargerMapLayerTest {
-    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+    // Virtual time: the layer's debounce and its background query run on a test scheduler, so nothing depends on threads or the clock.
+    private val scheduler = kotlinx.coroutines.test.TestCoroutineScheduler()
+    private val dispatcher = kotlinx.coroutines.test.StandardTestDispatcher(scheduler)
+    private val scope = CoroutineScope(SupervisorJob() + dispatcher)
 
     private fun charger(id: String, lat: Double, lon: Double, vararg sockets: ChargerSocket) = Charger(
         id, LatLon(lat, lon), "Op $id", "", "", 0, sockets.toList(), ChargerFee.UNKNOWN, ChargerAccess.UNKNOWN, 0, "",
@@ -47,25 +48,22 @@ class ChargerMapLayerTest {
     private fun repo(list: List<Charger> = three) = ChargerRepository().also { it.install(ChargerDataset(1_700_000_000L, 1, list)) }
 
     private fun layer(repository: ChargerRepository, store: InMemoryChargerSettingsStore, debounce: Long = 10) =
-        ChargerMapLayer(scope, Dispatchers.IO, repository, store.settings, { drawn += it }, debounce).also { it.start() }
+        ChargerMapLayer(scope, dispatcher, repository, store.settings, { drawn += it }, debounce).also { it.start() }
 
     private fun on(s: ChargerSettings = ChargerSettings()) = InMemoryChargerSettingsStore(s.copy(enabled = true))
 
     private fun await(what: String, cond: () -> Boolean) {
-        val end = System.nanoTime() + TimeUnit.SECONDS.toNanos(5)
-        while (!cond()) {
-            check(System.nanoTime() < end) { "timeout waiting for $what" }
-            Thread.sleep(5)
-        }
+        scheduler.advanceUntilIdle() // runs every pending task and debounce, in order
+        check(cond()) { "condition not reached: $what" }
     }
 
     /** Lets any pending debounce expire, to assert that nothing happened. */
-    private fun settle() = Thread.sleep(150)
+    private fun settle() = scheduler.advanceUntilIdle()
 
     @After fun tearDown() = scope.cancel()
 
     @Test fun offByDefaultItDrawsNothing() {
-        val l = ChargerMapLayer(scope, Dispatchers.IO, repo(), InMemoryChargerSettingsStore().settings, { drawn += it }, 10).also { it.start() }
+        val l = ChargerMapLayer(scope, dispatcher, repo(), InMemoryChargerSettingsStore().settings, { drawn += it }, 10).also { it.start() }
         l.onViewport(view, 14.0)
         settle()
         assertTrue(drawn.isEmpty(), "nothing is rendered, not even an empty list")

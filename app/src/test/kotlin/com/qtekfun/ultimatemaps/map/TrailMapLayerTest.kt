@@ -11,19 +11,20 @@ import com.qtekfun.ultimatemaps.core.routes.TrailDataset
 import com.qtekfun.ultimatemaps.core.routes.TrailKind
 import com.qtekfun.ultimatemaps.core.routes.TrailLevel
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import org.junit.After
 import org.junit.Test
 import java.util.concurrent.CopyOnWriteArrayList
-import java.util.concurrent.TimeUnit
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 /** The layer's decisions on the JVM: off by default, minimum zoom, kinds, redraw only on change; and the style tables. */
 class TrailMapLayerTest {
-    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+    // Virtual time: the layer's debounce and its background query run on a test scheduler, so nothing depends on threads or the clock.
+    private val scheduler = kotlinx.coroutines.test.TestCoroutineScheduler()
+    private val dispatcher = kotlinx.coroutines.test.StandardTestDispatcher(scheduler)
+    private val scope = CoroutineScope(SupervisorJob() + dispatcher)
 
     private fun line(lat: Double, lon: Double): IntArray = intArrayOf((lat * 1e6).toInt(), (lon * 1e6).toInt(), ((lat + 0.01) * 1e6).toInt(), ((lon + 0.01) * 1e6).toInt())
 
@@ -40,24 +41,21 @@ class TrailMapLayerTest {
     private fun repo() = RouteRepository().also { it.install(data) }
 
     private fun layer(store: InMemoryRouteSettingsStore) =
-        TrailMapLayer(scope, Dispatchers.IO, repo(), store.settings, { drawn += it }, 10).also { it.start() }
+        TrailMapLayer(scope, dispatcher, repo(), store.settings, { drawn += it }, 10).also { it.start() }
 
     private fun on(s: RouteSettings = RouteSettings()) = InMemoryRouteSettingsStore(s.copy(enabled = true))
 
     private fun await(what: String, cond: () -> Boolean) {
-        val end = System.nanoTime() + TimeUnit.SECONDS.toNanos(5)
-        while (!cond()) {
-            check(System.nanoTime() < end) { "timeout waiting for $what" }
-            Thread.sleep(5)
-        }
+        scheduler.advanceUntilIdle() // runs every pending task and debounce, in order
+        check(cond()) { "condition not reached: $what" }
     }
 
-    private fun settle() = Thread.sleep(150)
+    private fun settle() = scheduler.advanceUntilIdle()
 
     @After fun tearDown() = scope.cancel()
 
     @Test fun offByDefaultItDrawsNothing() {
-        val l = TrailMapLayer(scope, Dispatchers.IO, repo(), InMemoryRouteSettingsStore().settings, { drawn += it }, 10).also { it.start() }
+        val l = TrailMapLayer(scope, dispatcher, repo(), InMemoryRouteSettingsStore().settings, { drawn += it }, 10).also { it.start() }
         l.onViewport(view, 12.0)
         settle()
         assertTrue(drawn.isEmpty(), "nothing is rendered, not even an empty list")
