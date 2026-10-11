@@ -67,4 +67,7 @@
     <string name="nav_engine_system_settings">Spracheinstellungen des Telefons öffnen</string>
     <string name="nav_compass_title">Kompass des Telefons für den Pfeil</string>
     <string name="nav_compass_body">Im Stand oder im Schritttempo liefert das GPS keine Richtung; dann dreht sich der Pfeil nach dem Kompass des Telefons (wohin es zeigt: die Oberkante, wenn es flach liegt, die Rückseite, wenn es senkrecht in einer Halterung steckt). Ausschalten, wenn der Kompass in Ihrem Auto unzuverlässig ist.</string>
+    <string name="nav_frame_rate_title">Flüssigkeit und Akku der Navigation</string>
+    <string name="nav_frame_rate_body">Pfeil und Kamera werden während der Navigation so oft pro Sekunde neu gezeichnet, und das Display wird um dieselbe Bildwiederholrate gebeten. Weniger schont den Akku (am deutlichsten auf Displays mit variabler Rate), mehr ist flüssiger. Der Energiesparmodus begrenzt es immer auf 30.</string>
+    <string name="nav_frame_rate_option">%1$d pro Sekunde</string>
 </resources>
