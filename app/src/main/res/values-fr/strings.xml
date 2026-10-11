@@ -92,4 +92,5 @@
     <string name="regions_notification_waiting">Démarrage…</string>
     <string name="regions_notification_queued">%1$d autres en attente</string>
     <string name="regions_pause">Pause</string>
+    <string name="search_number_missing">Les données de la carte n\'ont pas le numéro %1$s à cet endroit : les rues correspondantes sont affichées.</string>
 </resources>

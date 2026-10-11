@@ -95,4 +95,5 @@
     <string name="regions_notification_waiting">Starting…</string>
     <string name="regions_notification_queued">%1$d more waiting</string>
     <string name="regions_pause">Pause</string>
+    <string name="search_number_missing">The map data has no address number %1$s there, so the matching streets are shown.</string>
 </resources>

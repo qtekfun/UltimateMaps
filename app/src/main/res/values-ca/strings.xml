@@ -92,4 +92,5 @@
     <string name="regions_notification_waiting">Iniciant…</string>
     <string name="regions_notification_queued">%1$d més en espera</string>
     <string name="regions_pause">Pausa</string>
+    <string name="search_number_missing">Les dades del mapa no tenen el número %1$s allà, així que es mostren els carrers que coincideixen.</string>
 </resources>

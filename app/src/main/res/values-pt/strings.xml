@@ -92,4 +92,5 @@
     <string name="regions_notification_waiting">A iniciar…</string>
     <string name="regions_notification_queued">Mais %1$d em espera</string>
     <string name="regions_pause">Pausar</string>
+    <string name="search_number_missing">Os dados do mapa não têm o número %1$s aí, por isso são mostradas as ruas correspondentes.</string>
 </resources>
