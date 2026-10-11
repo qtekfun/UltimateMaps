@@ -4,6 +4,10 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 
 ## [Unreleased]
 
+### Added
+
+- **Enforced direction of speed cameras (experimental, off by default).** Settings, Speed cameras and traffic, has a new switch that uses the direction of traffic a camera enforces when OpenStreetMap says it (an `enforcement` relation), so a camera of the other carriageway does not alert. Off, alerts work exactly as before. The data carries the direction only after the weekly data job adds the extra extract step; nothing was tried on a phone or with a real OpenStreetMap extract yet.
+
 ## [0.1.0-rc.25] - 2026-10-11
 
 ### Fixed

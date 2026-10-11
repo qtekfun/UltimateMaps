@@ -16,6 +16,8 @@
     <string name="cam_roadworks_body">There can be hundreds at any time.</string>
     <string name="cam_only_speeding_title">Warn only if speeding</string>
     <string name="cam_only_speeding_body">For cameras with a known limit, stay quiet while you are under it. Cameras with an unknown limit always warn.</string>
+    <string name="cam_enforcement_dir_title">Use the enforced direction from OpenStreetMap (experimental)</string>
+    <string name="cam_enforcement_dir_body">When OpenStreetMap says which direction of traffic a camera watches, warn only for that direction. Few cameras have this data.</string>
 
     <!-- Settings: legal note and acknowledgement dialog -->
     <string name="cam_legal_note">Mobile-radar zones are the stretches the DGT publishes; the exact spot of a mobile control is never shown. Alerts are informational and can be wrong or out of date. You are responsible for how you drive.</string>

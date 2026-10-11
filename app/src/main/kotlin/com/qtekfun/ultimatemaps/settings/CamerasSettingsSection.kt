@@ -78,6 +78,10 @@ fun CamerasSection(env: CamerasSettingsEnv) {
             SwitchRow(
                 stringResource(R.string.cam_only_speeding_title), stringResource(R.string.cam_only_speeding_body), s.warnOnlyIfSpeeding, "cam_only_speeding_switch",
             ) { on -> env.store.update { it.copy(warnOnlyIfSpeeding = on) } }
+            Spacer(Modifier.height(12.dp))
+            SwitchRow(
+                stringResource(R.string.cam_enforcement_dir_title), stringResource(R.string.cam_enforcement_dir_body), s.useEnforcementDirection, "cam_enforcement_dir_switch",
+            ) { on -> env.store.update { it.copy(useEnforcementDirection = on) } }
         }
     }
     if (s.anyCamera) {

@@ -440,6 +440,21 @@ class EnforcementTest(unittest.TestCase):
             _, _, _, sense = self.one(fh.read())
         self.assertEqual(bc.SENSE_ALONG | bc.SENSE_FLAG_RELATION, sense)
 
+    def test_write_enforcement_sample_for_kotlin_when_asked(self):
+        target = os.environ.get("UM_WRITE_CAMERAS_ENFORCEMENT_SAMPLE")
+        if not target:
+            self.skipTest("only used to regenerate the Kotlin test resource")
+        f, t = self.straight_case(direction="180", maxspeed="90")  # northbound relation, axis 0 -> ALONG
+        self.camera(9100, 5000, lon=-1.9, direction="270")         # no relation: unchanged
+        self.camera(9200, 9000, lon=-1.8)                          # relation, no axis of its own
+        self.nodes[301] = (40.0 + 9100 * M_LAT, -1.8)
+        self.nodes[302] = (40.0 + 8900 * M_LAT, -1.8)
+        self.rel(50, [("node", 9000, "device"), ("way", f, "from"), ("way", t, "to")])
+        self.rel(51, [("node", 9200, "device"), ("node", 301, "from"), ("node", 302, "to")])  # southbound
+        data, _ = self.build()
+        with open(target, "wb") as fh:
+            fh.write(data)
+
     def test_dgt_report_sense_is_kept_and_not_flagged(self):
         # A DGT booth with a report sense at the camera position; the relation says southbound (the report says "Creciente", so the DGT sense must win).
         radars = os.path.join(self.tmp, "r.xml")

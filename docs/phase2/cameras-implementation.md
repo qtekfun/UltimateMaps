@@ -194,3 +194,27 @@ It sits under the maneuver banner on the navigation screen and under the map con
 
 Not verified: everything on a device (see `camera-alerts-checklist.md`); how the chip looks over real maps; whether the 10 s guard
 is the right threshold; the timing numbers of section 2.
+
+## 10. Enforced direction from OSM relations (2026-10-11, branch `feat/camera-enforcement-direction`, no phone)
+
+Optional and **off by default**. Settings, Speed cameras and traffic, "Use the enforced direction from OpenStreetMap
+(experimental)" (shown while a camera category is on; key `cameras/enforcement_direction`, in the settings backup, read at every
+fix so it applies live). Data side and its limits: `cameras-data.md` section 6.
+
+- `CameraFile` reads the sense byte as bits 0-1 sense, `0x80` direction from a relation, `0x40` axis from the relation only
+  (`SpeedCamera.directionFromRelation`, `axisFromRelationOnly`); the header flag `CameraSources.ENFORCEMENT_DIRECTION` (4) is only
+  informative. A flag without an axis is ignored.
+- `CameraTargets` keeps, for a flagged camera, what it was **without** the relation in `AlertTarget.axisDeg` / `sense` (both
+  directions, and no axis at all when the axis came only from the relation) and the relation values apart in `relationAxisDeg` /
+  `relationSense`.
+- `AlertWarner`: with the switch off nothing changes. With it on, a target that has `relationSense` uses the relation axis and sense
+  for the direction test, and, when that sense is along or against, the wide 35 m lateral allowance (no 18/28 m tightening, which
+  exists only to tell an undirected camera from the other carriageway's). A relation that says "both" behaves as before (axis test,
+  tight lateral). Cameras without a relation are unchanged. Free driving and route mode both go through the same functions.
+- Tests: `EnforcementDirectionTest` (on/off, same and opposite direction, both, missing relation, no lateral tightening, axis only
+  from the relation, live switch), `CameraFileTest` (flags, cross-checked with the Python converter's file),
+  `CamerasSettingsTest` and `SettingsFileAndStorageTest` (default off, persisted, restored), Python `EnforcementTest`
+  (relation present, missing member, both directions, role variants, no relation, oneway, DGT sense kept, Overpass JSON,
+  geojsonseq without ids).
+- Not verified: anything on a device or with real OSM relations (how many Spanish cameras have one, whether their `from`/`to` are
+  mapped consistently, whether the bearing from 50 m of way is right at junctions and roundabouts). It stays off until the owner has seen it work on the road.

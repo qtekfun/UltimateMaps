@@ -37,6 +37,7 @@ class PrefsCameraSettingsStore(private val prefs: SharedPreferences) : CameraSet
             .putBoolean(KEY_V16, next.v16Enabled)
             .putBoolean(KEY_ROADWORKS, next.roadworksEnabled)
             .putBoolean(KEY_ONLY_SPEEDING, next.warnOnlyIfSpeeding)
+            .putBoolean(KEY_ENFORCEMENT_DIRECTION, next.useEnforcementDirection)
             .putBoolean(KEY_ACK, next.acknowledged)
             .putString(KEY_CAM_MODE, next.cameraAlertMode.name)
             .putString(KEY_INCIDENT_MODE, next.incidentAlertMode.name)
@@ -63,6 +64,7 @@ class PrefsCameraSettingsStore(private val prefs: SharedPreferences) : CameraSet
             v16Enabled = bool(KEY_V16, d.v16Enabled),
             roadworksEnabled = bool(KEY_ROADWORKS, d.roadworksEnabled),
             warnOnlyIfSpeeding = bool(KEY_ONLY_SPEEDING, d.warnOnlyIfSpeeding),
+            useEnforcementDirection = bool(KEY_ENFORCEMENT_DIRECTION, d.useEnforcementDirection),
             acknowledged = bool(KEY_ACK, d.acknowledged),
             cameraAlertMode = mode(KEY_CAM_MODE, legacy),
             incidentAlertMode = mode(KEY_INCIDENT_MODE, legacy),
@@ -79,6 +81,7 @@ class PrefsCameraSettingsStore(private val prefs: SharedPreferences) : CameraSet
         const val KEY_V16 = "v16"
         const val KEY_ROADWORKS = "roadworks"
         const val KEY_ONLY_SPEEDING = "only_if_speeding"
+        const val KEY_ENFORCEMENT_DIRECTION = "enforcement_direction"
         const val KEY_ACK = "acknowledged"
         const val KEY_CAM_MODE = "cam_alert_mode"
         const val KEY_INCIDENT_MODE = "incident_alert_mode"

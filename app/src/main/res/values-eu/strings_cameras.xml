@@ -16,6 +16,8 @@
     <string name="cam_roadworks_body">Ehunka egon daitezke edozein unetan.</string>
     <string name="cam_only_speeding_title">Abisatu abiadura gainditzen bada bakarrik</string>
     <string name="cam_only_speeding_body">Muga ezaguna duten radarretan, isilik egon muga azpitik zauden bitartean. Muga ezezaguna duten radarrek beti abisatzen dute.</string>
+    <string name="cam_enforcement_dir_title">Erabili OpenStreetMap-ek adierazitako zaindutako norabidea (esperimentala)</string>
+    <string name="cam_enforcement_dir_body">OpenStreetMap-ek radar batek zein zirkulazio-norabide zaintzen duen adierazten duenean, norabide horretan bakarrik abisatu. Radar gutxik dute datu hori.</string>
 
     <!-- Settings: legal note and acknowledgement dialog -->
     <string name="cam_legal_note">Radar mugikorren eremuak DGT-k argitaratzen dituen tarteak dira; kontrol mugikor baten toki zehatza ez da inoiz erakusten. Abisuak informaziorako dira eta okerrak edo zaharkituak izan daitezke. Zeu zara zure gidatzeko moduaren arduraduna.</string>
