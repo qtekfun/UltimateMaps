@@ -1,0 +1,1 @@
+Versión candidata: la tecla de búsqueda busca, interfaz en apaisado, la flecha sigue la ruta en los giros y avisos de radar solo en tu sentido. Solo España.

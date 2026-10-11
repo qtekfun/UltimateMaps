@@ -172,7 +172,9 @@ class NavPoseDriver(private val engine: MapEngine) {
             offLon *= keep
             if (abs(tgtZoom - zoom) < EPS_ZOOM && abs(offLat) < EPS_OFFSET_DEG && abs(offLon) < EPS_OFFSET_DEG) tauMillis = FOLLOW_TAU_MILLIS
         }
-        val driven = if (following && hasTarget) camBearing else puck.bearing
+        // The arrow is drawn flat on the map: its heading is a course over the ground, the route tangent at the marker
+        // (never the camera bearing, which is smoothed over seconds and lags in every turn).
+        val driven = puck.bearing
         val heading = if (puck.speedMps < COMPASS_BELOW_MPS) deviceHeading()?.toDouble() ?: driven else driven
         val puckMoved = puck.lat != pushedLat || puck.lon != pushedLon
         val headingMoved = pushedHeading.isNaN() || NavCameraPlanner.angularDistance(heading, pushedHeading) > EPS_DEG / 4

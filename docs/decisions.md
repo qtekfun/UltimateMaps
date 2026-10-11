@@ -994,3 +994,56 @@ Format: date · decision · reason · discarded alternatives · how to revert it
   navigation CPU, at the cost of the smoothness asked for in rc.11.
 - **Not verified:** a real drive and the navigation foreground service; the Pixel 8; the `play` flavor; how 30 redraws a second look
   in a moving car.
+
+## 2026-10-11 · Speed-camera alerts for the opposite direction of travel (branch `fix/camera-alerts-direction`, no phone)
+- **Report (owner):** radar alerts also fire for cameras that face the other direction (the other carriageway).
+- **Causes found (code and data review, reproduced in tests):** (1) route mode accepted any camera within 35 m of the route, wider than
+  the half-separation of many carriageways, and a camera without a travel sense (every OSM-only camera, every DGT booth not
+  matched to the report: "both" with at most an axis) then passed the direction test as well; (2) free driving had only a 35
+  degree cone, which is 290 m of lateral offset at 500 m, so any camera on the other carriageway or a parallel road counted;
+  (3) the converter overwrote a DGT sense with "both" whenever an OSM node was merged into the booth (up to 608 of 2,608 cameras: those merged, if their OSM node had a direction, on
+  the 2026-10-07 data); (4) the direction was compared with one polyline segment's bearing, noisy at kinks and roundabouts. The
+  sense/axis themselves were not 180 degrees off (both are "increasing kilometre"; checked in `build-cameras.py`).
+- **Decision:** a target with a known direction keeps 35 m lateral and is filtered by sense against the route bearing smoothed over
+  25 m each side; one without a direction counts only within 28 m to the right and 18 m to the left of the driver (plus half
+  the GPS accuracy, at most 8 m). Free driving applies the same lateral test to the line of travel; for unknown-direction
+  targets with no heading-noise allowance. The converter keeps the DGT axis and sense on merge. New `AlertDirectionTest`
+  (same direction, opposite sense, other carriageway at 30 m, crossing road, unknown, both, 0/360 wrap, roundabout, free driving).
+- **Trade-off (policy):** unknown-direction data cannot be separated from the other carriageway by direction, so the offset
+  decides; a real camera whose published position is more than about 18 m left or 28 m right of the route is missed (old
+  limit 35 m), and a camera in a median or on a gantry across both carriageways may be missed or announced late in free
+  driving. Cameras with a known direction were not tightened. The other way (alert for both carriageways) is what the owner
+  reported.
+- **Discarded:** dropping all alerts for unknown-direction cameras (loses real alerts); using GPS heading in route mode (the
+  route bearing is steadier); a left/right rule for known-direction targets (the sense already decides).
+- **Data proposal (not done, needs the owner):** read OSM `relation=enforcement` for the monitored direction; today OSM `direction`
+  is only the camera facing. DGT publishes no direction at all.
+- **Not verified:** nothing on a device; thresholds are design values, not measured against real GPS tracks.
+
+## 2026-10-11 · Landscape layouts: side panels instead of portrait-sized banners and sheets (branch `fix/landscape-layouts`, no phone)
+- **Report (owner):** in landscape "everything overlaps".
+- **Cause (code review plus a layout test that fails on the old code):** every overlay was built for a 360 to 411 dp wide, 800 dp high window. On a 360 dp high window the navigation banner (full width, top) and the button column (up to six buttons stacked at the bottom end) overlapped and the column even started above the top edge; the speed cluster, the ETA panel and the buttons shared the bottom; the search sheet was full width (46 % of 360 dp = 165 dp at MEDIUM, about 270 dp at FULL, the full-width field and chips in a strip of a few lines); the place card did not scroll; the map buttons, attribution and weather chip ignored the cutout and side bars; Settings and the emergency screen stretched their rows across the width.
+- **Decision:** one geometric rule, `LandscapeLayout`: when the window is wider than it is tall, the search sheet, the navigation screen and the transit trip screen use a **start-side column of at most 380 dp (and 46 % of the width)**; the map stays visible beside it.
+  - Map screen: the bottom sheet keeps its three detents but is that column (MEDIUM 62 % of the height, FULL reaches the status bar); the attribution, scale bar and the weather and camera chips start after it (`LocalSidePanelReserve`); the map buttons keep to the end side and respect cutouts and side bars; route framing leaves the left `panel + 32 dp` free (`RoutePadding.computeLandscape`).
+  - Navigation and transit trip: the column holds the banner, strips and alerts (scrolls when it does not fit) and the ETA panel with Stop at the bottom; the speed and limit sign sit at the bottom of the map beside it; the buttons are two short columns at the end side. The arrival summary and the resume card are at most 480 dp wide.
+  - Place card scrolls (hours, phone and website are taller than a low sheet); the About dialog scrolls; Settings and the emergency screen keep a 640 dp centred column and respect the side insets.
+  - Portrait is unchanged (same composables, same numbers).
+- **Discarded:** `WindowSizeClass` (it needs the material3 window-size dependency for one rule and calls a phone on its side "compact height" while a tablet in portrait would not change: the aspect test is what the reported bug is about); a transparent full-width overlay with smaller paddings (still piles up at 360 dp); moving the sheet to the end side (the map buttons and the thumb of the right hand are there).
+- **Verified:** JVM Compose tests at 800 x 360 dp (`LandscapeLayoutTest`, `NavScreenLandscapeTest`, `TransitTripLandscapeTest`) assert that the key nodes do not overlap and stay inside the window, with every nav control on screen, glove mode and the arrival and resume cards; the same navigation test fails on the old layout (banner over the recenter button). The full unit suite passes.
+- **Not verified:** nothing was seen on a screen or a device (no emulator image with a GPU was used and the phones are not for this task). The IME in landscape (the field sits at the top of the column, so the keyboard covers the list, not the field), a cutout on the left, a navigation bar at the side and RTL are by code reading only.
+- **Open:** the navigation follow camera and the overview framing in `NavHost` still centre on the full width (the arrow sits at 50 % of the width: 400 dp on an 800 dp window, right of a 380 dp column, so it is visible); the overview `frameRemainingRoute` should leave the left column free like `RoutePadding.computeLandscape` (left untouched because `NavHost` belongs to the battery work in progress).
+
+## 2026-10-11 · The position arrow follows the route line in turns (branch `fix/arrow-follows-route`, no phone)
+- **Report (owner):** in the navigation simulations the arrow often does not point along the route line, especially in turns.
+- **Cause:** `NavPoseDriver.frame` drew the arrow with the camera bearing while the follow camera was on. That bearing is the route direction smoothed once per fix (half the difference per second) and then eased again by the camera, so it trails every turn by seconds; the arrow is drawn flat on the map, so it must show the course over the ground, not the camera. The marker position was already computed along the polyline and stayed on the line (0.02 m in the tests); only the heading was wrong. Secondary: the heading target was the tangent at the marker, which at a vertex only switches after the marker is past it, and the 250 ms smoothing made it later still.
+- **Decision:** the arrow heading is always `PuckInterpolator.bearing`: the route tangent 0.15 s of travel ahead of the marker (1.5 to 4 m), approached by the shortest angle with a 100 ms time constant and at most 720 degrees per second (a one-vertex corner turns over several frames). Off route or without a route it still follows the fix course; the compass below 1.5 m/s is unchanged. The camera is unchanged.
+- **Numbers (virtual time, 1 Hz fixes, 60 Hz frames, max angle between arrow and route within 4 m of the marker, `ArrowFollowsRouteTest`):** right angle at 14 m/s 90 to 0.9 degrees, at 25 m/s 90 to 3.2; hairpin 63 to 0.1; roundabout 63 to 0.1; turn across north 56 to 0.6; S curve 20 to 0.1. Lateral offset from the line stayed at 0.02 m.
+- **Discarded:** rotating the arrow with the camera (it then points up the screen and not along the line while the map catches up); a longer look-ahead (the arrow would point into the corner while still well before it).
+- **Not verified:** nothing on a device; the look and feel of the 100 ms turn is judged from numbers only.
+
+## 2026-10-11 · Search: the keyboard's blue search key now runs the search (branch `feat/search-redesign`, no phone)
+- **Report (owner):** the blue search button invites a press and then does nothing.
+- **Root cause (read from the code, not reproduced on a device):** the search field asks the keyboard for `ImeAction.Search` (the blue key) but the search pane passed an empty `onDone`, so the key was wired to a no-op. The only search was the debounced as-you-type one (250 ms), so pressing the key neither showed progress nor moved anything; with results already listed, nothing at all changed.
+- **Decision:** `SearchCoordinator.submit()` runs the typed text at once (no debounce, cancels the pending live query), sets PREPARING/SEARCHING immediately and flags `SearchState.submitted`; the panel then shows the "Searching…" or "Preparing…" note even while older results are listed, and ends in results, "No results", the error note or the no-maps note. The key also drops the keyboard so the list is visible. Live suggestions are unchanged (debounced, results stay on screen while typing, no note flicker). A typed position (coordinates, Plus Code) and blank text are answered or idle already, so the key only dismisses the keyboard; a second press after an error retries.
+- **Discarded:** a separate visible "Search" button next to the field (the keyboard key is the standard one and a second control adds clutter); a spinner on every keystroke (flicker while typing).
+- **Not verified:** the look and feel on a device (JVM tests cover the state machine with virtual time).

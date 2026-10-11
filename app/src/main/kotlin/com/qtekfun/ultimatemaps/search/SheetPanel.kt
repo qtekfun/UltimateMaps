@@ -32,6 +32,7 @@ import com.qtekfun.ultimatemaps.places.PanelMode
 import com.qtekfun.ultimatemaps.places.PanelNote
 import com.qtekfun.ultimatemaps.places.PanelRow
 import com.qtekfun.ultimatemaps.places.PanelTextField
+import androidx.compose.ui.platform.LocalFocusManager
 import com.qtekfun.ultimatemaps.places.PlaceCard
 import com.qtekfun.ultimatemaps.places.TrackLayerController
 import com.qtekfun.ultimatemaps.places.PlaceInfo
@@ -152,6 +153,7 @@ fun SheetPanel(
                 onSetWork = quick?.let { q -> { q.setFromCard(SpecialSlot.WORK, card) } },
                 onDial = actions.onDial,
                 onOpenWebsite = actions.onOpenWebsite,
+                modifier = Modifier.weight(1f, fill = false),
             )
         } else {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -222,12 +224,16 @@ private fun SearchPane(
     whenEmpty: LazyListScope.() -> Unit = {},
 ) {
     val state = search.state
+    val focus = LocalFocusManager.current
     Column(modifier) {
         PanelTextField(
             value = state.query,
             onValueChange = search::onQueryChange,
             hint = stringResource(R.string.search_hint),
             onFocus = actions.onFocusField,
+            // The keyboard's search key: runs the query now (no debounce, visible progress) and drops the keyboard so
+            // the results are on screen. Blank text or a typed position just dismisses it.
+            onDone = { search.submit(); focus.clearFocus() },
             tag = "search_input",
         )
         Spacer(Modifier.height(8.dp))
@@ -238,7 +244,7 @@ private fun SearchPane(
         when {
             state.regionsAvailable == false || state.status == SearchStatus.NO_REGIONS -> NoRegions()
             state.status == SearchStatus.PREPARING -> PanelNote(stringResource(R.string.search_preparing), "search_status")
-            state.status == SearchStatus.SEARCHING && state.results.isEmpty() ->
+            state.status == SearchStatus.SEARCHING && (state.results.isEmpty() || state.submitted) ->
                 PanelNote(stringResource(R.string.search_searching), "search_status")
             state.status == SearchStatus.ERROR -> PanelNote(stringResource(R.string.search_error), "search_status")
             state.status == SearchStatus.DONE && state.results.isEmpty() ->

@@ -1,5 +1,7 @@
 package com.qtekfun.ultimatemaps.emergency
 
+import androidx.compose.foundation.layout.widthIn
+import com.qtekfun.ultimatemaps.ui.horizontalSafePadding
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -46,6 +48,7 @@ fun EmergencyScreen(
             .fillMaxSize()
             .background(Mapas.colors.sheet)
             .windowInsetsPadding(WindowInsets.statusBars)
+            .horizontalSafePadding()
             .testTag("emergency_screen"),
     ) {
         Row(Modifier.fillMaxWidth().padding(horizontal = 8.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -58,6 +61,8 @@ fun EmergencyScreen(
         Column(
             Modifier
                 .weight(1f)
+                .align(Alignment.CenterHorizontally)
+                .widthIn(max = com.qtekfun.ultimatemaps.ui.MAX_CONTENT_WIDTH)
                 .verticalScroll(rememberScrollState())
                 .windowInsetsPadding(WindowInsets.navigationBars)
                 .padding(horizontal = Mapas.dimens.screenMargin),
