@@ -989,3 +989,13 @@ Format: date · decision · reason · discarded alternatives · how to revert it
 - **Decision:** `SearchCoordinator.submit()` runs the typed text at once (no debounce, cancels the pending live query), sets PREPARING/SEARCHING immediately and flags `SearchState.submitted`; the panel then shows the "Searching…" or "Preparing…" note even while older results are listed, and ends in results, "No results", the error note or the no-maps note. The key also drops the keyboard so the list is visible. Live suggestions are unchanged (debounced, results stay on screen while typing, no note flicker). A typed position (coordinates, Plus Code) and blank text are answered or idle already, so the key only dismisses the keyboard; a second press after an error retries.
 - **Discarded:** a separate visible "Search" button next to the field (the keyboard key is the standard one and a second control adds clutter); a spinner on every keystroke (flicker while typing).
 - **Not verified:** the look and feel on a device (JVM tests cover the state machine with virtual time).
+
+## 2026-10-11 · Navigation redraws at 30 a second by default (branch `fix/nav-frame-rate-default`, measured on the OPPO CPH2841)
+- **Decision:** `NavSettings.DEFAULT_FRAME_RATE` goes from 60 to 30 (60 and 45 stay in Settings, Navigation). On a simulated 3D navigation the
+  app used 78 to 84 % of a core at 60, 64 % at 45 and 53 % at 30 (render thread 61 to 68, 52 and 40 %): a third less CPU. The display
+  is asked for the same rate, so the panel goes to its nearest mode as before.
+- **Reason:** the navigation cost is the map's per-frame render, linear in the frame rate; nothing else moved it as much (`docs/battery.md`).
+- **Discarded:** keeping 60 (the owner asked for smoothness in rc.11, when the marker moved once a second; since then it is interpolated every
+  display frame, which is what makes 30 acceptable); 45 (a quarter less, not a third).
+- **Owner decision:** this reverses the "default stays 60" of the frame-rate entry above; it was not judged by eye on a moving car.
+  Existing installs that saved their navigation settings keep the 60 they stored.

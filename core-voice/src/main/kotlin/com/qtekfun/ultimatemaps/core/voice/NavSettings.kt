@@ -101,7 +101,8 @@ data class NavSettings(
 
     companion object {
         const val MIN_VOLUME = 10
-        const val DEFAULT_FRAME_RATE = 60
+        /** 30: about a third less CPU in navigation than 60 (docs/battery.md); 60 and 45 stay in the settings. */
+        const val DEFAULT_FRAME_RATE = 30
         val FRAME_RATE_CHOICES = listOf(60, 45, 30)
 
         /** 0: do not lower it while cruising. */
