@@ -1,0 +1,1 @@
+Release candidate: navigation redraws at 30 a second by default to save battery, and the idle map and the compass use less power. Spain only.
