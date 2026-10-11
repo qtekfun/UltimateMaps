@@ -87,10 +87,13 @@ data class NavSettings(
     val compassArrow: Boolean = true,
     /** Pushes per second of the arrow and the camera while navigating (and the refresh rate asked of the display): fewer is gentler on the battery. */
     val frameRate: Int = DEFAULT_FRAME_RATE,
+    /** Redraws a second while cruising (fast, straight, far from a maneuver); [CRUISE_SAME] never lowers the rate. */
+    val cruiseFrameRate: Int = DEFAULT_CRUISE_FRAME_RATE,
 ) {
     fun normalized(): NavSettings = copy(
         volumePercent = volumePercent.coerceIn(MIN_VOLUME, 100),
         frameRate = if (frameRate in FRAME_RATE_CHOICES) frameRate else DEFAULT_FRAME_RATE,
+        cruiseFrameRate = if (cruiseFrameRate in CRUISE_FRAME_RATE_CHOICES) cruiseFrameRate else DEFAULT_CRUISE_FRAME_RATE,
     )
 
     /** The "avoid by default" settings as the options the routing engine understands. */
@@ -100,6 +103,11 @@ data class NavSettings(
         const val MIN_VOLUME = 10
         const val DEFAULT_FRAME_RATE = 60
         val FRAME_RATE_CHOICES = listOf(60, 45, 30)
+
+        /** 0: do not lower it while cruising. */
+        const val CRUISE_SAME = 0
+        const val DEFAULT_CRUISE_FRAME_RATE = 1
+        val CRUISE_FRAME_RATE_CHOICES = listOf(1, 2, 5, CRUISE_SAME)
         val VOLUME_CHOICES = listOf(25, 50, 75, 100)
     }
 }

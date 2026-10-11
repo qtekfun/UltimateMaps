@@ -142,4 +142,22 @@ class NavPoseDriverTest {
         d.frame(1000)
         assertEquals(90f, rec.headings.last()!!, 1f, "moving: the route even if a compass is there")
     }
+
+    @Test fun `at one frame a second the marker keeps up only when a frame may cover the whole gap`() {
+        fun lagAfter(maxStep: Long): Double {
+            val e = Rec()
+            val d = NavPoseDriver(e).apply { setRoute(east); maxStepMillis = maxStep }
+            fun nav(t: Long, along: Double) = navState(speedMps = 30.0).copy(position = east.pointAt(along), traveledMeters = along, bearingDegrees = 90f, offRouteMeters = 0.0)
+            var worst = 0.0
+            for (k in 0..30) {
+                val t = k * 1000L
+                d.onFix(nav(t, 100.0 + k * 30.0), t)
+                d.frame(t, 998)
+                if (k >= 5) worst = maxOf(worst, e.users.last()!!.distanceTo(east.pointAt(100.0 + k * 30.0)))
+            }
+            return worst
+        }
+        assertTrue(lagAfter(2_000) < 5.0, "with the gap covered the marker is on the fix: ${lagAfter(2_000)} m")
+        assertTrue(lagAfter(250) > 15.0, "with the old 250 ms limit it would trail the vehicle: ${lagAfter(250)} m")
+    }
 }

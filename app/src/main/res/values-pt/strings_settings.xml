@@ -70,4 +70,7 @@
     <string name="nav_frame_rate_title">Fluidez e bateria da navegação</string>
     <string name="nav_frame_rate_body">A seta e a câmara são redesenhadas esta quantidade de vezes por segundo durante a navegação, e é pedida ao ecrã a mesma frequência. Menos poupa bateria (nota-se mais em ecrãs que baixam a frequência); mais é mais fluido. A poupança de bateria limita-a sempre a 30.</string>
     <string name="nav_frame_rate_option">%1$d por segundo</string>
+    <string name="nav_cruise_title">Em estradas longas e retas</string>
+    <string name="nav_cruise_body">Rápido, num troço reto e longe da próxima curva a seta e a câmara precisam de poucos redesenhos, e o ecrã pode baixar a frequência. Antes de qualquer curva volta à velocidade total. 1 por segundo poupa mais; a seta move-se então aos saltos.</string>
+    <string name="nav_cruise_same">Igual ao de cima</string>
 </resources>
