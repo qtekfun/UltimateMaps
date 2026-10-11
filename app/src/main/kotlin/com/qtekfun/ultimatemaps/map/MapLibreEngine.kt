@@ -266,12 +266,25 @@ class MapLibreEngine(
         if (map == null) return
         val point = pendingUser
         if (point == null) {
+            idleFilter.reset()
             source.setGeoJson(EMPTY_COLLECTION)
-        } else {
-            source.setGeoJson(
-                Feature.fromGeometry(Point.fromLngLat(point.lon, point.lat)).apply { addNumberProperty(USER_BEARING, heading ?: 0f) },
-            )
+            return
         }
+        val now = SystemClock.uptimeMillis()
+        // The idle map: a standing phone's GPS wobbles by a few metres and its compass by a few degrees (see [IdleMarkerFilter]).
+        if (!idleFilter.shouldShow(point, heading ?: 0f, now, navigating = navigating)) return
+        source.setGeoJson(
+            Feature.fromGeometry(Point.fromLngLat(point.lon, point.lat)).apply { addNumberProperty(USER_BEARING, heading ?: 0f) },
+        )
+    }
+
+    private val idleFilter = IdleMarkerFilter()
+
+    /** A navigation is on screen: every marker change goes to the map (see [IdleMarkerFilter]). */
+    private var navigating = false
+
+    override fun setNavigating(enabled: Boolean) {
+        navigating = enabled
     }
 
     override fun setBuildings3d(enabled: Boolean) {
@@ -1020,6 +1033,7 @@ class MapLibreEngine(
                 "skipped=${built.skipped} json_kb=${built.json.length / 1024} build_ms=$styleBuildMs " +
                 "style_load_ms=${SystemClock.elapsedRealtime() - styleT0 - styleBuildMs}",
         )
+        idleFilter.reset() // a new source starts empty
         val user = GeoJsonSource(USER_SOURCE).also { userSource = it }
         val pin = GeoJsonSource(PIN_SOURCE).also { pinSource = it }
         addZoneLayer(style, wanted == MapTheme.DARK) // low-emission zones: below everything drawn on top of the map

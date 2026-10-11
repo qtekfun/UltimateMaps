@@ -71,6 +71,9 @@ class NavPoseDriver(private val engine: MapEngine) {
     private var pushedTop = Double.NaN
     private var pushedHeading = Double.NaN
 
+    /** True while the marker's arrow follows the phone's compass (the vehicle is nearly standing): only then a compass reading changes what is drawn. */
+    val usesCompass: Boolean get() = puck.hasPose && puck.speedMps < COMPASS_BELOW_MPS
+
     fun setRoute(geometry: RouteGeometry?) = puck.setRoute(geometry)
 
     /** A new snapshot of the navigation, received at [nowMillis]. */

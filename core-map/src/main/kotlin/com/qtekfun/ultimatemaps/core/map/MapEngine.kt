@@ -240,6 +240,12 @@ interface MapEngine : AutoCloseable {
      */
     fun setBuildings3d(enabled: Boolean) {}
 
+    /**
+     * A navigation is on screen (true) or not (false). The engine may skip marker updates nobody can see while the map is idle
+     * (a phone lying still); while navigating every update goes through. A default of "nothing to skip".
+     */
+    fun setNavigating(enabled: Boolean) {}
+
     // --- Low-emission zones (optional layer) ---
 
     /** Draws exactly these zone polygons (translucent fill and outline, under the route line); an empty list removes them. */

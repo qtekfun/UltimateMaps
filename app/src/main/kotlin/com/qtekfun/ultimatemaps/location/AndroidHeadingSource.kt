@@ -64,7 +64,8 @@ class AndroidHeadingSource(
             override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) = Unit
         }
         listener = l
-        return manager.registerListener(l, sensor, SensorManager.SENSOR_DELAY_UI)
+        // 10 Hz is the most the arrow ever uses ([minIntervalMillis]); SENSOR_DELAY_UI would deliver about 15 events a second that are dropped.
+        return manager.registerListener(l, sensor, SAMPLING_PERIOD_MICROS)
     }
 
     override fun stop() {
@@ -72,6 +73,10 @@ class AndroidHeadingSource(
         listener = null
         smoothed = null
         lastReported = null
+    }
+
+    private companion object {
+        const val SAMPLING_PERIOD_MICROS = 100_000
     }
 
     /** The magnetic declination, recomputed at most every ten minutes (it hardly changes as one drives). */

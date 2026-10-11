@@ -85,7 +85,10 @@ class NavHost(
     /** The compass moved: a standing vehicle has no frame loop running, so draw the arrow now. */
     fun onDeviceHeadingChanged() {
         if (!active) return
-        pose.frame(now())
+        // A moving vehicle's arrow follows the course, not the compass: the reading changes nothing, and drawing for it would
+        // bypass the frame rate (and the cruise rate) with a push per sensor event.
+        if (!pose.usesCompass) return
+        pose.frame(now(), PowerSavePolicy.minIntervalMillis(fpsFor(navSettings()), frames.saverOn))
     }
 
     /** True while there is a navigation (or its arrival summary) on screen. */
@@ -115,6 +118,7 @@ class NavHost(
                 geometryRevision = -1
                 engine.clearRoute()
                 engine.setBuildings3d(false)
+                engine.setNavigating(false)
                 engine.setUserHeading(null)
                 engine.showUserLocation(null)
                 // Ease back to the flat north-up view (no tilt, no padding), keeping the centre and the zoom.
@@ -133,6 +137,7 @@ class NavHost(
             easePending = true
             return
         }
+        if (!wasActive) engine.setNavigating(true)
         wasActive = true
         val nav = ui.nav ?: return
         val buildings = ui.view3d && ui.buildings3d
@@ -209,6 +214,7 @@ class NavHost(
     private inner class FrameLoop : android.view.Choreographer.FrameCallback {
         private var posted = false
         private var saver = false
+        val saverOn: Boolean get() = saver
         private var saverCheckedAt = Long.MIN_VALUE
         private var lastFrameAt = Long.MIN_VALUE
 
