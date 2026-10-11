@@ -449,7 +449,9 @@ def build(args):
             c["src"] |= SRC_OSM
             if ms and not c["maxspeed"]:
                 c["maxspeed"] = ms
-            if axis is not None:
+            # Keep the DGT direction (axis + sense from the report) when it has one: the OSM `direction` is only an
+            # axis (which way the camera faces, not which traffic it enforces), so it must not erase a real sense.
+            if axis is not None and c["axis"] is None:
                 c["axis"], c["sense"] = axis, SENSE_BOTH
             merged += 1
         else:
