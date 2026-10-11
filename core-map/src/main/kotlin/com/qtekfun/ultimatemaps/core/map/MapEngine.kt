@@ -240,6 +240,12 @@ interface MapEngine : AutoCloseable {
      */
     fun setBuildings3d(enabled: Boolean) {}
 
+    /**
+     * A navigation is on screen and the camera follows the user: the engine may drop visual extras that cost a redraw for every frame
+     * (labels fading in and out) while it is on. Off again when the navigation ends. A default of "nothing to drop".
+     */
+    fun setPowerSaving(enabled: Boolean) {}
+
     // --- Low-emission zones (optional layer) ---
 
     /** Draws exactly these zone polygons (translucent fill and outline, under the route line); an empty list removes them. */

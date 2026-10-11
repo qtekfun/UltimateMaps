@@ -118,6 +118,7 @@ class NavHost(
                 geometryRevision = -1
                 engine.clearRoute()
                 engine.setBuildings3d(false)
+                engine.setPowerSaving(false)
                 engine.setUserHeading(null)
                 engine.showUserLocation(null)
                 // Ease back to the flat north-up view (no tilt, no padding), keeping the centre and the zoom.
@@ -136,6 +137,7 @@ class NavHost(
             easePending = true
             return
         }
+        if (!wasActive) engine.setPowerSaving(true) // labels do not fade while the camera follows the vehicle
         wasActive = true
         val nav = ui.nav ?: return
         val buildings = ui.view3d && ui.buildings3d

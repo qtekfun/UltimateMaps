@@ -261,17 +261,49 @@ class MapLibreEngine(
         style.getLayer(USER_ARROW_LAYER)?.setProperties(visibility(if (arrow) Property.VISIBLE else Property.NONE))
     }
 
+    /** The marker is handed to the map at most this often (about every second display frame at 60 Hz): see [MinIntervalGate]. */
+    private val userGate = MinIntervalGate(USER_PUSH_MIN_MILLIS)
+    private var userTrailPosted = false
+    private val userTrail = Runnable {
+        userTrailPosted = false
+        pushUser()
+    }
+
     private fun pushUser() {
         val source = userSource ?: return
         if (map == null) return
         val point = pendingUser
         if (point == null) {
             source.setGeoJson(EMPTY_COLLECTION)
-        } else {
-            source.setGeoJson(
-                Feature.fromGeometry(Point.fromLngLat(point.lon, point.lat)).apply { addNumberProperty(USER_BEARING, heading ?: 0f) },
-            )
+            return
         }
+        val now = SystemClock.uptimeMillis()
+        if (!userGate.ready(now)) {
+            // Too soon: the last position still goes out when the gate opens (a standing car must not keep an old place).
+            if (!userTrailPosted) {
+                userTrailPosted = true
+                main.postDelayed(userTrail, userGate.waitMillis(now))
+            }
+            return
+        }
+        userGate.pass(now)
+        source.setGeoJson(
+            Feature.fromGeometry(Point.fromLngLat(point.lon, point.lat)).apply { addNumberProperty(USER_BEARING, heading ?: 0f) },
+        )
+    }
+
+    private var powerSaving = false
+
+    override fun setPowerSaving(enabled: Boolean) {
+        powerSaving = enabled
+        applyPowerSaving()
+    }
+
+    /** Symbols that appear or disappear as the camera moves fade for 300 ms by default; every fading frame is a redraw of all labels. */
+    private fun applyPowerSaving() {
+        val style = map?.style ?: return
+        val t = style.transition
+        style.transition = org.maplibre.android.style.layers.TransitionOptions(t.duration, t.delay, !powerSaving)
     }
 
     override fun setBuildings3d(enabled: Boolean) {
@@ -1020,6 +1052,7 @@ class MapLibreEngine(
                 "skipped=${built.skipped} json_kb=${built.json.length / 1024} build_ms=$styleBuildMs " +
                 "style_load_ms=${SystemClock.elapsedRealtime() - styleT0 - styleBuildMs}",
         )
+        applyPowerSaving()
         val user = GeoJsonSource(USER_SOURCE).also { userSource = it }
         val pin = GeoJsonSource(PIN_SOURCE).also { pinSource = it }
         addZoneLayer(style, wanted == MapTheme.DARK) // low-emission zones: below everything drawn on top of the map
@@ -1141,6 +1174,7 @@ class MapLibreEngine(
     }
 
     private companion object {
+        const val USER_PUSH_MIN_MILLIS = 30L
         const val METRICS_TAG = "UMSTYLE"
         const val USER_SOURCE ="mapas-user-src"
         const val USER_LAYER = "mapas-user"
