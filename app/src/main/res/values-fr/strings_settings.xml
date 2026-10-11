@@ -67,4 +67,7 @@
     <string name="nav_engine_system_settings">Ouvrir les réglages vocaux du téléphone</string>
     <string name="nav_compass_title">Boussole du téléphone pour la flèche</string>
     <string name="nav_compass_body">À l\'arrêt ou au pas, le GPS n\'a pas de direction : la flèche tourne alors selon la boussole du téléphone (là où il pointe : le bord supérieur à plat, le dos s\'il est vertical sur un support). Désactivez-la si la boussole n\'est pas fiable dans votre voiture.</string>
+    <string name="nav_frame_rate_title">Fluidité et batterie de la navigation</string>
+    <string name="nav_frame_rate_body">La flèche et la caméra sont redessinées autant de fois par seconde pendant la navigation, et l\'écran reçoit la même demande de fréquence. Moins ménage la batterie (surtout sur les écrans à fréquence variable) ; plus est plus fluide. Le mode économie d\'énergie la limite toujours à 30.</string>
+    <string name="nav_frame_rate_option">%1$d par seconde</string>
 </resources>

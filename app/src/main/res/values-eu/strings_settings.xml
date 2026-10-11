@@ -67,4 +67,7 @@
     <string name="nav_engine_system_settings">Ireki telefonoaren ahots-ezarpenak</string>
     <string name="nav_compass_title">Telefonoaren iparrorratza gezirako</string>
     <string name="nav_compass_body">Geldirik edo poliki zoazenean GPSak ez du norabiderik ematen; gezia telefonoaren iparrorratzaren arabera biratzen da (telefonoak adierazten duen aldera: goiko ertza lau badago, atzealdea euskarri batean zutik badago). Desaktibatu iparrorratza fidagarria ez bada zure autoan.</string>
+    <string name="nav_frame_rate_title">Nabigazioaren leuntasuna eta bateria</string>
+    <string name="nav_frame_rate_body">Gezia eta kamera segundoko hainbat aldiz marrazten dira nabigatzen ari zarenean, eta pantailari maiztasun bera eskatzen zaio. Gutxiagok bateria gutxiago gastatzen du (pantailak maiztasuna jaisten dutenean nabarmenago); gehiagok leunagoa da. Bateria-aurrezteak beti 30era mugatzen du.</string>
+    <string name="nav_frame_rate_option">%1$d segundoko</string>
 </resources>

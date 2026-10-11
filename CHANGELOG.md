@@ -6,6 +6,10 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 
 ### Added
 
+- **Navigation smoothness and battery.** Settings, Navigation: how many times a second the arrow and the camera are redrawn while navigating (60, 45 or 30; 60 as before), and the display is asked for the same refresh rate while the navigation is on screen, so a screen that can lower its rate (like the LTPO panel of the Pixel 8) can save power. Battery saver still limits it to 30. Nothing was measured on a phone: lower should be gentler on the battery, higher smoother.
+
+### Added
+
 - **The search says when a house number is not in the map data.** Searching "calle del pensamiento 2" where the map has the street but no address number 2 now shows a note above the streets ("The map data has no address number 2 there, so the matching streets are shown") instead of only the street. The numbers come from OpenStreetMap; where it has none, none can be found.
 
 ## [0.1.0-rc.22] - 2026-10-10

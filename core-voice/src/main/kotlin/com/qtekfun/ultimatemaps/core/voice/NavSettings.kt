@@ -85,14 +85,21 @@ data class NavSettings(
     val voiceEngine: String = "",
     /** Turn the arrow by the phone's compass while the vehicle is (almost) standing, when the GPS has no course. */
     val compassArrow: Boolean = true,
+    /** Pushes per second of the arrow and the camera while navigating (and the refresh rate asked of the display): fewer is gentler on the battery. */
+    val frameRate: Int = DEFAULT_FRAME_RATE,
 ) {
-    fun normalized(): NavSettings = copy(volumePercent = volumePercent.coerceIn(MIN_VOLUME, 100))
+    fun normalized(): NavSettings = copy(
+        volumePercent = volumePercent.coerceIn(MIN_VOLUME, 100),
+        frameRate = if (frameRate in FRAME_RATE_CHOICES) frameRate else DEFAULT_FRAME_RATE,
+    )
 
     /** The "avoid by default" settings as the options the routing engine understands. */
     fun routeOptions(): RouteOptions = RouteOptions(avoidMotorways, avoidTolls, avoidFerries, avoidUnpaved, bikeCycleways)
 
     companion object {
         const val MIN_VOLUME = 10
+        const val DEFAULT_FRAME_RATE = 60
+        val FRAME_RATE_CHOICES = listOf(60, 45, 30)
         val VOLUME_CHOICES = listOf(25, 50, 75, 100)
     }
 }

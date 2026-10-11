@@ -67,4 +67,7 @@
     <string name="nav_engine_system_settings">Obre els ajustos de veu del mòbil</string>
     <string name="nav_compass_title">Brúixola del mòbil per a la fletxa</string>
     <string name="nav_compass_body">Parat o a poc a poc el GPS no dona direcció, així que la fletxa gira segons la brúixola del mòbil (cap on apunta: la vora superior si és pla, la part posterior si va vertical en un suport). Desactiva-ho si la brúixola no és fiable al cotxe.</string>
+    <string name="nav_frame_rate_title">Fluïdesa i bateria de la navegació</string>
+    <string name="nav_frame_rate_body">La fletxa i la càmera es redibuixen tantes vegades per segon mentre navegues, i es demana a la pantalla la mateixa freqüència. Menys gasta menys bateria (es nota més en pantalles que baixen la seva freqüència); més és més fluid. L\'estalvi de bateria sempre ho limita a 30.</string>
+    <string name="nav_frame_rate_option">%1$d per segon</string>
 </resources>
