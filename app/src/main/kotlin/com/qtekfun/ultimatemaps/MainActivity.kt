@@ -60,6 +60,7 @@ class MainActivity : ComponentActivity() {
     /** The phone's compass: the last heading and when it arrived (SystemClock.elapsedRealtime). Null/old: not available. */
     private var compassHeading: Float? = null
     private var compassAt = 0L
+    private var started = false
     private var lastPoint: LatLon? = null
 
     private fun compassOn() = com.qtekfun.ultimatemaps.voice.VoiceModule.settings(this).settings.value.compassArrow
@@ -67,25 +68,41 @@ class MainActivity : ComponentActivity() {
     private fun freshCompass(): Float? =
         compassHeading?.takeIf { compassOn() && android.os.SystemClock.elapsedRealtime() - compassAt < COMPASS_FRESH_MILLIS }
 
-    private fun startCompass() {
+    private var compassRunning = false
+    private var shownHeading: Float? = null
+
+    /**
+     * The compass runs only while something shows it: a navigation (the arrow turns by it while the vehicle stands) or the map's own
+     * dot (an arrow that follows the phone's direction). With no position there is nothing to turn, so the sensor stays off.
+     */
+    private fun updateCompass() {
         val app = application as MapasApp
-        if (!compassOn()) {
-            app.headingSource.stop()
+        val want = compassOn() && started && (navHost.active || (state.locating && lastPoint != null))
+        if (!want) {
+            if (compassRunning) app.headingSource.stop()
+            compassRunning = false
             compassHeading = null
-            if (!navHost.active) engine.setUserHeading(null)
+            shownHeading = null
+            if (!compassOn() && !navHost.active) engine.setUserHeading(null)
             return
         }
-        app.headingSource.start { h ->
+        if (compassRunning) return
+        compassRunning = app.headingSource.start { h ->
             compassHeading = h
             compassAt = android.os.SystemClock.elapsedRealtime()
             if (navHost.active) {
                 navHost.onDeviceHeadingChanged()
             } else lastPoint?.let { // the map's own dot becomes an arrow that follows the phone's direction
+                // A redraw of the whole map for every degree of sensor noise is not worth it: the dot's arrow moves in steps of a few degrees.
+                val shown = shownHeading
+                if (shown != null && kotlin.math.abs(com.qtekfun.ultimatemaps.core.map.CompassMath.delta(shown, h)) < IDLE_COMPASS_MIN_DEGREES) return@let
+                shownHeading = h
                 engine.setUserHeading(h)
                 engine.showUserLocation(it)
             }
         }
     }
+
     private lateinit var panel: PanelHost
     private lateinit var navHost: NavHost
 
@@ -152,6 +169,7 @@ class MainActivity : ComponentActivity() {
             val navUi by navHost.uiState()
             val tripUi by app.transitTrip.ui.collectAsState()
             LaunchedEffect(tripUi.active) { if (tripUi.active) askMovementPermissionOnce() }
+            LaunchedEffect(navUi.active) { updateCompass() } // the sensor is only registered while a navigation or the map's dot shows it
             CompositionLocalProvider(
                 LocalAlertBanner provides app.alertBanner.state, LocalIncidentBanner provides app.incidentBanner,
                 com.qtekfun.ultimatemaps.zbe.LocalZbeBanner provides app.zbeBanner,
@@ -201,8 +219,9 @@ class MainActivity : ComponentActivity() {
         (application as MapasApp).navScreen.refreshResumable() // a trip interrupted by the process dying
         (application as MapasApp).transitTrip.refreshResumable() // the same for a step-by-step transit trip
         if (state.locating && hasLocationPermission()) startLocation()
+        started = true
         navHost.setDeviceHeading(::freshCompass)
-        startCompass()
+        updateCompass()
     }
 
     override fun onDestroy() {
@@ -212,7 +231,8 @@ class MainActivity : ComponentActivity() {
 
     override fun onStop() {
         location.stop() // no background location in the viewer; navigation will use a foreground service
-        (application as MapasApp).headingSource.stop()
+        started = false
+        updateCompass()
         super.onStop()
     }
 
@@ -265,7 +285,9 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun onFix(point: LatLon) {
+        val first = lastPoint == null
         lastPoint = point
+        if (first) updateCompass() // there is a dot to turn now
         (application as MapasApp).lastKnownPlace = point
         panel.userLocation = point
         if (navHost.active) return // while navigating the map shows the follower's position and camera
@@ -286,6 +308,9 @@ class MainActivity : ComponentActivity() {
     private companion object {
         /** A compass reading older than this is not shown (the sensor stopped, the screen was off). */
         const val COMPASS_FRESH_MILLIS = 3_000L
+
+        /** The idle map's arrow follows the compass in steps of at least this many degrees (each step redraws the map). */
+        const val IDLE_COMPASS_MIN_DEGREES = 4f
         const val DEFAULT_LINK_ZOOM = 15.0
     }
 }
