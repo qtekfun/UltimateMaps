@@ -4,6 +4,15 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 
 ## [Unreleased]
 
+## [0.1.0-rc.25] - 2026-10-11
+
+### Fixed
+
+- **Search key.** The keyboard's search key now runs the search at once instead of doing nothing: it shows "Searching", then the results, "No results" or the error, and puts the keyboard away so the list is visible. Typing still shows suggestions as before. Tested on a phone only as far as the keyboard closing; the rest is covered by unit tests.
+- **Landscape.** Every screen was sized for portrait and piled up when turned. In landscape the search sheet, the place card, the navigation screen and the transit trip screen are now a column on the start side with the map beside it; settings and emergency use a centred column; buttons, attribution and chips respect the display cutout and the system bars; the search field stays above the keyboard. Only the map screen layout was seen on a phone; navigation, alerts, glove mode and transit are covered by layout tests.
+- **Arrow in turns.** The arrow was drawn with the lagging camera bearing, so it pointed away from the route line in every turn. It now follows the route direction a few metres ahead and turns by the shortest way. In simulated turns the error went from 20-90 degrees to under 4 degrees. Not seen on a phone.
+- **Speed camera alerts only in your direction.** Alerts fired also for cameras of the other carriageway. Cameras without a known direction now count only when they are close to your side of the route, and merging OpenStreetMap data no longer overwrites the direction published by the DGT. A camera whose published position is more than about 18 m to the left or 28 m to the right of the route may now be missed or announced late; thresholds are design values, not measured on real tracks. The fixed converter only reaches the phone with the next rebuilt data release.
+
 ## [0.1.0-rc.24] - 2026-10-11
 
 ## [0.1.0-rc.23] - 2026-10-11
