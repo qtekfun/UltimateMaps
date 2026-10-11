@@ -1,0 +1,16 @@
+--- a/.github/workflows/weekly-data.yml
++++ b/.github/workflows/weekly-data.yml
+@@ -217,8 +217,13 @@
+           curl -sSL --connect-timeout 30 --max-time 1800 --retry 3 -o spain.osm.pbf https://download.geofabrik.de/europe/spain-latest.osm.pbf
+           osmium tags-filter spain.osm.pbf n/highway=speed_camera -o cams.osm.pbf --overwrite
+           osmium export -f geojsonseq cams.osm.pbf -o cams.geojsonseq --overwrite
++          # Enforcement relations (direction of the traffic a camera checks), with their member ways and nodes.
++          # Optional: if this fails the file is built without the enforced direction, as before.
++          { osmium tags-filter spain.osm.pbf r/type=enforcement -o enforcement.osm.pbf --overwrite \
++            && osmium cat enforcement.osm.pbf -f osm -o enforcement.osm --overwrite; } || rm -f enforcement.osm
+           rm -f spain.osm.pbf
+           ARGS="$ARGS --osm-geojsonseq cams.geojsonseq"
++          [ -s enforcement.osm ] && ARGS="$ARGS --osm-enforcement enforcement.osm"
+           python3 -I ../app/scripts/build-cameras.py $ARGS --generated "$(date -u +%Y-%m-%dT%H:%M:%SZ)" -o ../out/speedcams-es.bin --summary ../speedcams-summary.json
+           cat ../speedcams-summary.json
+ 

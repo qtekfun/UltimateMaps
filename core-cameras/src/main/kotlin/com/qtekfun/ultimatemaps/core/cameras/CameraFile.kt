@@ -18,6 +18,9 @@ object CameraFile {
     const val MAGIC = 0x554D4341 // "UMCA"
     const val VERSION = 1
     const val MAX_BYTES = 8 shl 20
+    private const val SENSE_MASK = 0x03
+    private const val SENSE_FLAG_RELATION = 0x80
+    private const val SENSE_FLAG_AXIS_ONLY = 0x40
     private const val MAX_RECORDS = 200_000
     private const val MAX_POINTS = 5_000
 
@@ -51,9 +54,15 @@ object CameraFile {
                 val axis = inp.readShort().toInt()
                 val sense = inp.readUnsignedByte()
                 val road = inp.readUTF()
+                // Bits 0-1 are the sense; 0x80 / 0x40 mark a direction (and axis) derived from an OSM enforcement relation.
+                // An older reader sees a value above 2 and falls back to BOTH, which is what such a camera was before.
+                val hasAxis = axis in 0..359
+                val fromRelation = hasAxis && sense and SENSE_FLAG_RELATION != 0
                 fixed += SpeedCamera(
-                    "f$i", CameraKind.FIXED, p, null, road, speed(ms), axis.takeIf { it in 0..359 },
-                    AxisSense.entries.getOrElse(sense) { AxisSense.BOTH }.takeIf { axis in 0..359 } ?: AxisSense.BOTH, src,
+                    "f$i", CameraKind.FIXED, p, null, road, speed(ms), axis.takeIf { hasAxis },
+                    AxisSense.entries.getOrElse(sense and SENSE_MASK) { AxisSense.BOTH }.takeIf { hasAxis } ?: AxisSense.BOTH, src,
+                    directionFromRelation = fromRelation,
+                    axisFromRelationOnly = fromRelation && sense and SENSE_FLAG_AXIS_ONLY != 0,
                 )
             }
             val sections = ArrayList<SpeedCamera>(ns)

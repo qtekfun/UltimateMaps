@@ -20,6 +20,8 @@ val INCIDENT_REFRESH_CHOICES_MINUTES = listOf(5, 10, 30, 60)
  * - [roadworksEnabled]: also show roadworks (only with [incidentsEnabled]); there can be hundreds.
  * - [cameraAlertMode] / [incidentAlertMode]: how each category is announced (chime, voice or only the visual chip).
  * - [alertsMuted]: the quick mute of the navigation screen; silences both categories without changing their modes.
+ * - [useEnforcementDirection]: experimental, off by default; use the direction of traffic a camera enforces when
+ *   OpenStreetMap says it (an `enforcement` relation). Off: exactly the behaviour without it.
  * - [acknowledged]: the user read and accepted the notice about camera data (required for the two camera switches).
  */
 data class CameraSettings(
@@ -30,6 +32,12 @@ data class CameraSettings(
     val roadworksEnabled: Boolean = false,
     /** Warn about a camera only when the known limit is exceeded (cameras with an unknown limit always warn). */
     val warnOnlyIfSpeeding: Boolean = false,
+    /**
+     * Experimental. A camera whose data carries a direction derived from an OSM enforcement relation alerts only
+     * when travelling that way (no lateral tightening needed). Off by default until it has been seen to work on the
+     * road; with it off the warner behaves exactly as without the relation data.
+     */
+    val useEnforcementDirection: Boolean = false,
     val acknowledged: Boolean = false,
     /** How speed cameras, sections and mobile zones are announced; the chip shows in every mode. A chime by default. */
     val cameraAlertMode: AlertSoundMode = AlertSoundMode.SOUND,

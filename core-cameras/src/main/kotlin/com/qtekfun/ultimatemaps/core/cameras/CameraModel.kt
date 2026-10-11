@@ -6,6 +6,12 @@ import com.qtekfun.ultimatemaps.core.geo.LatLon
 object CameraSources {
     const val DGT = 1
     const val OSM = 2
+
+    /**
+     * Header flag only (never a record's source): the file has at least one camera whose travel direction was
+     * derived from an OpenStreetMap `type=enforcement` relation ([SpeedCamera.directionFromRelation]).
+     */
+    const val ENFORCEMENT_DIRECTION = 4
 }
 
 enum class CameraKind {
@@ -26,6 +32,11 @@ enum class AxisSense { BOTH, ALONG, AGAINST }
  * A fixed camera or an average-speed section. [maxSpeedKmh] is the enforced limit when the source says it (OSM
  * `maxspeed`); the DGT publication has none. [axisDeg] is a rough direction of the road, not a published value of the
  * DGT (see docs/phase2/cameras-data.md); null means unknown and then both directions are treated as affected.
+ *
+ * [directionFromRelation]: [sense] (and, when [axisFromRelationOnly], also [axisDeg]) was derived from an OSM
+ * enforcement relation (`from` -> `to` members), i.e. it says which traffic the camera enforces. The warner uses it
+ * only when the user turned that experimental feature on; otherwise such a camera is treated as `BOTH` with the axis
+ * it had before the relation (none when [axisFromRelationOnly]).
  */
 data class SpeedCamera(
     val id: String,
@@ -37,6 +48,8 @@ data class SpeedCamera(
     val axisDeg: Int?,
     val sense: AxisSense,
     val sources: Int,
+    val directionFromRelation: Boolean = false,
+    val axisFromRelationOnly: Boolean = false,
 )
 
 /**

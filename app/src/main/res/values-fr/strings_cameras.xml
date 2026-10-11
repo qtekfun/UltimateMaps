@@ -16,6 +16,8 @@
     <string name="cam_roadworks_body">Il peut y en avoir des centaines à tout moment.</string>
     <string name="cam_only_speeding_title">Avertir seulement en cas d\'excès de vitesse</string>
     <string name="cam_only_speeding_body">Pour les radars dont la limite est connue, rester silencieux tant que vous êtes en dessous. Les radars dont la limite est inconnue avertissent toujours.</string>
+    <string name="cam_enforcement_dir_title">Utiliser le sens contrôlé d\'après OpenStreetMap (expérimental)</string>
+    <string name="cam_enforcement_dir_body">Quand OpenStreetMap indique quel sens de circulation un radar surveille, avertir seulement dans ce sens. Peu de radars ont cette donnée.</string>
 
     <!-- Settings: legal note and acknowledgement dialog -->
     <string name="cam_legal_note">Les zones de radars mobiles sont les tronçons publiés par la DGT ; l\'emplacement exact d\'un contrôle mobile n\'est jamais affiché. Les alertes sont données à titre informatif et peuvent être erronées ou périmées. Vous êtes responsable de votre conduite.</string>

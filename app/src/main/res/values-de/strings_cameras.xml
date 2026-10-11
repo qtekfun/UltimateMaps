@@ -16,6 +16,8 @@
     <string name="cam_roadworks_body">Es können jederzeit Hunderte sein.</string>
     <string name="cam_only_speeding_title">Nur bei zu hoher Geschwindigkeit warnen</string>
     <string name="cam_only_speeding_body">Bei Kameras mit bekanntem Limit still bleiben, solange du darunter bist. Kameras mit unbekanntem Limit warnen immer.</string>
+    <string name="cam_enforcement_dir_title">Von OpenStreetMap überwachte Fahrtrichtung nutzen (experimentell)</string>
+    <string name="cam_enforcement_dir_body">Wenn OpenStreetMap angibt, welche Fahrtrichtung eine Kamera überwacht, nur für diese Richtung warnen. Nur wenige Kameras haben diese Angabe.</string>
 
     <!-- Settings: legal note and acknowledgement dialog -->
     <string name="cam_legal_note">Zonen mobiler Radarkontrollen sind die von der DGT veröffentlichten Abschnitte; der genaue Ort einer mobilen Kontrolle wird nie angezeigt. Warnungen dienen nur der Information und können falsch oder veraltet sein. Du bist für dein Fahrverhalten verantwortlich.</string>
