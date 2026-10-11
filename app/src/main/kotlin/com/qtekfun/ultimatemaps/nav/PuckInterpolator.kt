@@ -24,7 +24,8 @@ import kotlin.math.sin
  * - The error is corrected gently: the marker may slow down but moves backwards at most [MAX_BACK_MPS] (a stopped car
  *   that was predicted too far ahead slides back instead of jumping), and catches up at most at `3 * speed + 5` m/s.
  *   An error above [SNAP_METERS], a new route revision or a change between the two modes resynchronises at once.
- * - The heading follows the route heading at D (or the fix course) over [HEADING_TAU_MILLIS] by the shortest angle;
+ * - The heading follows the route heading a few metres ahead of D (or the fix course) over [HEADING_TAU_MILLIS] by the
+ *   shortest angle;
  *   below [NavCameraPlanner.STOPPED_MPS] it is kept, as a stopped receiver reports a random course.
  *
  * Not thread-safe: used from the main thread.
@@ -118,7 +119,10 @@ class PuckInterpolator {
             g.pointInto(dAlong, tmp)
             lat = tmp[0]
             lon = tmp[1]
-            targetBearing = g.bearingAt(dAlong).toDouble()
+            // The tangent a few metres ahead, so that the arrow has finished turning when the marker is in the corner
+            // (a 90 degree vertex has no tangent of its own; the smoothing alone would be late by the time it ends).
+            val ahead = (vEff * LOOKAHEAD_SECONDS).coerceIn(LOOKAHEAD_MIN_METERS, LOOKAHEAD_MAX_METERS)
+            targetBearing = g.bearingAt(min(dAlong + ahead, g.totalMeters)).toDouble()
         } else {
             val rad = Math.toRadians(fixBearing)
             val cosLat = max(cos(Math.toRadians(fixLat)), 1e-6)
@@ -137,7 +141,14 @@ class PuckInterpolator {
             }
             targetBearing = fixBearing
         }
-        if (speed >= NavCameraPlanner.STOPPED_MPS) bearing = approachAngle(bearing, targetBearing, dt * 1000.0, HEADING_TAU_MILLIS)
+        if (speed >= NavCameraPlanner.STOPPED_MPS) {
+            // Exponential approach by the shortest angle, but never faster than a fixed turn rate: a corner that is a
+            // single vertex still turns over several frames instead of snapping.
+            val delta = NavCameraPlanner.signedDelta(bearing, targetBearing)
+            val step = delta * (1.0 - exp(-dt * 1000.0 / HEADING_TAU_MILLIS))
+            val cap = MAX_TURN_DEG_PER_SEC * dt
+            bearing = NavCameraPlanner.normalize(bearing + step.coerceIn(-cap, cap))
+        }
     }
 
     /** Forgets everything (navigation ended): the next fix places the marker without any glide. */
@@ -155,7 +166,16 @@ class PuckInterpolator {
         /** How long after a fix the prediction keeps moving: a late fix does not send the marker on. */
         const val EXTRAPOLATE_MAX_MILLIS = 1_500L
 
-        const val HEADING_TAU_MILLIS = 250.0
+        /** Time constant of the arrow's turn; it is the marker that the eye compares with the line, so this is short. */
+        const val HEADING_TAU_MILLIS = 100.0
+
+        /** The arrow looks this far ahead along the route (seconds of travel, between the two limits in metres). */
+        /** The fastest the arrow turns: 90 degrees take an eighth of a second, and a frame at 60 Hz turns at most 12. */
+        const val MAX_TURN_DEG_PER_SEC = 720.0
+
+        const val LOOKAHEAD_SECONDS = 0.15
+        const val LOOKAHEAD_MIN_METERS = 1.5
+        const val LOOKAHEAD_MAX_METERS = 4.0
 
         /** The slowest the marker may slide backwards when it was predicted too far ahead. */
         const val MAX_BACK_MPS = 2.0
