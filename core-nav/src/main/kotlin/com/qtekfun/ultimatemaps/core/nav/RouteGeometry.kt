@@ -20,6 +20,11 @@ class RouteMatch {
     var distance = Double.MAX_VALUE
     /** Bearing of the matched segment, or NaN for a degenerate one. */
     var segmentBearing = Double.NaN
+    /**
+     * Signed side of the matched point relative to the route direction, in metres: positive when the searched point
+     * lies to the RIGHT of the direction of travel, negative to the left, 0 for a degenerate segment.
+     */
+    var rightOffset = 0.0
 }
 
 /**
@@ -122,6 +127,7 @@ class RouteGeometry(points: List<LatLon>) {
                 out.along = cum[s] + t * (cum[s + 1] - cum[s])
                 out.distance = dist
                 out.segmentBearing = sb
+                out.rightOffset = if (len2 < 1e-6) 0.0 else -(segX[s] * ey - segY[s] * ex) / sqrt(len2)
             }
             s++
         }

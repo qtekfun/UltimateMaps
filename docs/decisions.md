@@ -974,3 +974,29 @@ Format: date · decision · reason · discarded alternatives · how to revert it
 - **What it also takes:** the marker's frame step is raised from 250 ms to twice the interval (`NavPoseDriver.maxStepMillis`) so one frame covers the whole gap; with the old limit the arrow trailed the vehicle (a test shows more than 15 m of lag at one frame a second); the wait between low-rate frames is a handler timer instead of a Choreographer callback every display frame; the window's `preferredRefreshRate` follows the rate in use (never below 10).
 - **Cost:** at one redraw a second the arrow and the camera move in steps of about 30 m at motorway speed. Offered at 1 by default because the owner asked for 1 Hz; 2 and 5 are in the settings.
 - **Not verified:** the saving and how it looks; the Pixel measurement plan of the previous entry covers both.
+
+## 2026-10-11 · Speed-camera alerts for the opposite direction of travel (branch `fix/camera-alerts-direction`, no phone)
+- **Report (owner):** radar alerts also fire for cameras that face the other direction (the other carriageway).
+- **Causes found (code and data review, reproduced in tests):** (1) route mode accepted any camera within 35 m of the route, wider than
+  the half-separation of many carriageways, and a camera without a travel sense (every OSM-only camera, every DGT booth not
+  matched to the report: "both" with at most an axis) then passed the direction test as well; (2) free driving had only a 35
+  degree cone, which is 290 m of lateral offset at 500 m, so any camera on the other carriageway or a parallel road counted;
+  (3) the converter overwrote a DGT sense with "both" whenever an OSM node was merged into the booth (up to 608 of 2,608 cameras: those merged, if their OSM node had a direction, on
+  the 2026-10-07 data); (4) the direction was compared with one polyline segment's bearing, noisy at kinks and roundabouts. The
+  sense/axis themselves were not 180 degrees off (both are "increasing kilometre"; checked in `build-cameras.py`).
+- **Decision:** a target with a known direction keeps 35 m lateral and is filtered by sense against the route bearing smoothed over
+  25 m each side; one without a direction counts only within 28 m to the right and 18 m to the left of the driver (plus half
+  the GPS accuracy, at most 8 m). Free driving applies the same lateral test to the line of travel; for unknown-direction
+  targets with no heading-noise allowance. The converter keeps the DGT axis and sense on merge. New `AlertDirectionTest`
+  (same direction, opposite sense, other carriageway at 30 m, crossing road, unknown, both, 0/360 wrap, roundabout, free driving).
+- **Trade-off (policy):** unknown-direction data cannot be separated from the other carriageway by direction, so the offset
+  decides; a real camera whose published position is more than about 18 m left or 28 m right of the route is missed (old
+  limit 35 m), and a camera in a median or on a gantry across both carriageways may be missed or announced late in free
+  driving. Cameras with a known direction were not tightened. The other way (alert for both carriageways) is what the owner
+  reported.
+- **Discarded:** dropping all alerts for unknown-direction cameras (loses real alerts); using GPS heading in route mode (the
+  route bearing is steadier); a left/right rule for known-direction targets (the sense already decides).
+- **Data proposal (not done, needs the owner):** read OSM `relation=enforcement` for the monitored direction; today OSM `direction`
+  is only the camera facing. DGT publishes no direction at all.
+- **Not verified:** nothing on a device; thresholds are design values, not measured against real GPS tracks.
+
