@@ -184,6 +184,15 @@ fun NavigationSection(env: NavigationSettingsEnv) {
         }
     }
     Spacer(Modifier.height(10.dp))
+    Card("nav_cruise_card") {
+        BasicText(stringResource(R.string.nav_cruise_title), style = Mapas.typography.body.copy(color = Mapas.colors.label))
+        BasicText(stringResource(R.string.nav_cruise_body), style = Mapas.typography.callout.copy(color = Mapas.colors.secondaryLabel))
+        NavSettings.CRUISE_FRAME_RATE_CHOICES.forEach { fps ->
+            val label = if (fps == NavSettings.CRUISE_SAME) stringResource(R.string.nav_cruise_same) else stringResource(R.string.nav_frame_rate_option, fps)
+            ChoiceRow(label, s.cruiseFrameRate == fps, radio = true, tag = "nav_cruise_$fps") { env.store.update { it.copy(cruiseFrameRate = fps) } }
+        }
+    }
+    Spacer(Modifier.height(10.dp))
     Card("nav_compass_card") {
         SwitchRow(
             title = stringResource(R.string.nav_compass_title),

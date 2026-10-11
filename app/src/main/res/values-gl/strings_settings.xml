@@ -70,4 +70,7 @@
     <string name="nav_frame_rate_title">Fluidez e batería da navegación</string>
     <string name="nav_frame_rate_body">A frecha e a cámara redebúxanse tantas veces por segundo mentres navegas, e pídeselle á pantalla a mesma frecuencia. Menos gasta menos batería (nótase máis en pantallas que baixan a súa frecuencia); máis é máis fluído. O aforro de batería sempre o limita a 30.</string>
     <string name="nav_frame_rate_option">%1$d por segundo</string>
+    <string name="nav_cruise_title">En estradas longas e rectas</string>
+    <string name="nav_cruise_body">Rápido, nun treito recto e lonxe do seguinte xiro a frecha e a cámara necesitan poucos redebuxados, e a pantalla pode baixar a súa frecuencia. Antes de calquera xiro volve á velocidade completa. 1 por segundo aforra máis; a frecha móvese entón a saltos.</string>
+    <string name="nav_cruise_same">Igual que arriba</string>
 </resources>

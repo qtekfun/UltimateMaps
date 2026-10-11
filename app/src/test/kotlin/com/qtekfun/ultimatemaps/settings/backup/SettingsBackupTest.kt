@@ -39,6 +39,7 @@ fun nonDefaultValue(spec: SettingSpec, consentOn: Boolean): Any = when (spec.typ
         "plan_max_walk_min" -> 0 // no cap (default 15)
         "plan_max_changes" -> 0 // no changes (default: any)
         "frame_rate" -> 30 // default 60
+        "cruise_frame_rate" -> 5 // default 1
         else -> error("no non-default value for ${spec.id}")
     }
     SettingType.STRING -> when (spec.key) {

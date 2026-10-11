@@ -70,4 +70,7 @@
     <string name="nav_frame_rate_title">Fluidità e batteria della navigazione</string>
     <string name="nav_frame_rate_body">La freccia e la fotocamera vengono ridisegnate questo numero di volte al secondo durante la navigazione, e allo schermo si chiede la stessa frequenza. Meno risparmia batteria (si nota di più sugli schermi che abbassano la frequenza); più è più fluido. Il risparmio energetico la limita sempre a 30.</string>
     <string name="nav_frame_rate_option">%1$d al secondo</string>
+    <string name="nav_cruise_title">Sulle strade lunghe e dritte</string>
+    <string name="nav_cruise_body">Veloce, su un tratto dritto e lontano dalla prossima svolta la freccia e la fotocamera hanno bisogno di pochi ridisegni, e lo schermo può abbassare la frequenza. Prima di ogni svolta torna alla velocità piena. 1 al secondo risparmia di più; la freccia si muove allora a scatti.</string>
+    <string name="nav_cruise_same">Come sopra</string>
 </resources>

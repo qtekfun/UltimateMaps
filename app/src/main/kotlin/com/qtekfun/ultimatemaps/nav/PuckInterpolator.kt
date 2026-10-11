@@ -94,9 +94,9 @@ class PuckInterpolator {
     }
 
     /** Moves the displayed pose to time [t]. Cheap: a few multiplications, no allocation. */
-    fun advance(t: Long) {
+    fun advance(t: Long, maxStepMillis: Long = MAX_STEP_MILLIS) {
         if (!hasPose) return
-        val dt = (t - lastT).coerceIn(0L, MAX_STEP_MILLIS).toDouble() / 1000.0
+        val dt = (t - lastT).coerceIn(0L, maxStepMillis).toDouble() / 1000.0
         lastT = max(lastT, t)
         val sinceFix = (t - fixT).coerceIn(0L, EXTRAPOLATE_MAX_MILLIS).toDouble() / 1000.0
         val vEff = if (t - fixT < EXTRAPOLATE_MAX_MILLIS) speed else 0.0
