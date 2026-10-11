@@ -67,4 +67,7 @@
     <string name="nav_engine_system_settings">Abrir as definições de voz do telemóvel</string>
     <string name="nav_compass_title">Bússola do telemóvel para a seta</string>
     <string name="nav_compass_body">Parado ou muito devagar o GPS não dá direção, por isso a seta roda segundo a bússola do telemóvel (para onde aponta: o bordo superior se estiver plano, a parte de trás se estiver vertical num suporte). Desative se a bússola não for fiável no seu carro.</string>
+    <string name="nav_frame_rate_title">Fluidez e bateria da navegação</string>
+    <string name="nav_frame_rate_body">A seta e a câmara são redesenhadas esta quantidade de vezes por segundo durante a navegação, e é pedida ao ecrã a mesma frequência. Menos poupa bateria (nota-se mais em ecrãs que baixam a frequência); mais é mais fluido. A poupança de bateria limita-a sempre a 30.</string>
+    <string name="nav_frame_rate_option">%1$d por segundo</string>
 </resources>

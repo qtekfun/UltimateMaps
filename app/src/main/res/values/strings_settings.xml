@@ -68,4 +68,7 @@
     <string name="nav_engine_system_settings">Open the phone\'s voice settings</string>
     <string name="nav_compass_title">Phone compass for the arrow</string>
     <string name="nav_compass_body">While you are standing or crawling the GPS has no direction, so the arrow turns by the phone\'s compass (the way the phone points: top edge when flat, the back when upright in a mount). Switch it off if the compass is unreliable in your car.</string>
+    <string name="nav_frame_rate_title">Navigation smoothness and battery</string>
+    <string name="nav_frame_rate_body">The arrow and the camera are redrawn this many times a second while navigating, and the display is asked for the same rate. Lower is gentler on the battery (most visible on screens that lower their refresh rate); higher is smoother. Battery saver always limits it to 30.</string>
+    <string name="nav_frame_rate_option">%1$d per second</string>
 </resources>

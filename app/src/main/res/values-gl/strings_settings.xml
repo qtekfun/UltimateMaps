@@ -67,4 +67,7 @@
     <string name="nav_engine_system_settings">Abrir os axustes de voz do móbil</string>
     <string name="nav_compass_title">Brúxula do móbil para a frecha</string>
     <string name="nav_compass_body">Parado ou a paso lento o GPS non dá dirección, así que a frecha xira segundo a brúxula do móbil (cara onde apunta: o bordo superior se está plano, a parte traseira se vai vertical nun soporte). Desactívao se a brúxula non é fiable no teu coche.</string>
+    <string name="nav_frame_rate_title">Fluidez e batería da navegación</string>
+    <string name="nav_frame_rate_body">A frecha e a cámara redebúxanse tantas veces por segundo mentres navegas, e pídeselle á pantalla a mesma frecuencia. Menos gasta menos batería (nótase máis en pantallas que baixan a súa frecuencia); máis é máis fluído. O aforro de batería sempre o limita a 30.</string>
+    <string name="nav_frame_rate_option">%1$d por segundo</string>
 </resources>

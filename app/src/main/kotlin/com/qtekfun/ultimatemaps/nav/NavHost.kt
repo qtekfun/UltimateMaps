@@ -164,7 +164,7 @@ class NavHost(
 
     /** One display frame: the marker and the camera at their interpolated place. Public for the tests. */
     internal fun frame(nowMillis: Long) {
-        pose.frame(nowMillis, if (powerSave()) PowerSavePolicy.SAVER_MIN_INTERVAL_MILLIS else PowerSavePolicy.NORMAL_MIN_INTERVAL_MILLIS)
+        pose.frame(nowMillis, PowerSavePolicy.minIntervalMillis(com.qtekfun.ultimatemaps.voice.VoiceModule.settings(activity).settings.value.frameRate, powerSave()))
     }
 
     /**
@@ -198,7 +198,7 @@ class NavHost(
             }
             // The user took the camera: stop moving it at once, before the flow delivers the new state.
             if (!screen.ui.value.following) pose.release()
-            pose.frame(t, if (saver) PowerSavePolicy.SAVER_MIN_INTERVAL_MILLIS else PowerSavePolicy.NORMAL_MIN_INTERVAL_MILLIS)
+            pose.frame(t, PowerSavePolicy.minIntervalMillis(com.qtekfun.ultimatemaps.voice.VoiceModule.settings(activity).settings.value.frameRate, saver))
             // A clock that did not advance (a test's frozen clock) has nothing more to animate: do not spin.
             val advanced = t != lastFrameAt
             lastFrameAt = t
@@ -221,6 +221,7 @@ class NavHost(
     fun Overlay(dark: Boolean) {
         val ui by screen.ui.collectAsState()
         KeepScreenOn(ui.active && ui.phase != NavPhase.ARRIVED)
+        RefreshRateHint(if (ui.active) com.qtekfun.ultimatemaps.voice.VoiceModule.settings(activity).settings.collectAsState().value.frameRate else null)
         ShowOverLockScreen(ui.active)
         HideStatusBar(ui.active && com.qtekfun.ultimatemaps.voice.VoiceModule.settings(activity).settings.collectAsState().value.hideStatusBar)
         NavScreen(
@@ -250,6 +251,20 @@ class NavHost(
     /** The UI state as Compose state (for the activity to hide the search sheet while navigating). */
     @Composable
     fun uiState(): State<NavUi> = screen.ui.collectAsState()
+}
+
+/**
+ * Asks the display for [fps] while it is non-null (the navigation is on screen), by `preferredRefreshRate` of the window; null
+ * gives the choice back to the system. A hint: on a variable-refresh (LTPO) display a lower rate costs less power, and the system
+ * picks the nearest rate the panel supports.
+ */
+@Composable
+fun RefreshRateHint(fps: Int?) {
+    val window = androidx.activity.compose.LocalActivity.current?.window
+    androidx.compose.runtime.DisposableEffect(window, fps) {
+        window?.let { w -> w.attributes = w.attributes.also { it.preferredRefreshRate = fps?.toFloat() ?: 0f } }
+        onDispose { window?.let { w -> w.attributes = w.attributes.also { it.preferredRefreshRate = 0f } } }
+    }
 }
 
 /**
@@ -346,4 +361,10 @@ object PowerSavePolicy {
     const val SAVER_FPS = 30
     const val SAVER_MIN_INTERVAL_MILLIS = 1_000L / SAVER_FPS - 2
     const val CHECK_MILLIS = 5_000L
+
+    /** Minimum time between pushes for a chosen [fps]; the battery saver never allows more than [SAVER_FPS]. */
+    fun minIntervalMillis(fps: Int, saver: Boolean): Long {
+        val effective = (if (saver) minOf(fps, SAVER_FPS) else fps).coerceIn(10, 120)
+        return 1_000L / effective - 2
+    }
 }

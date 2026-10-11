@@ -67,4 +67,7 @@
     <string name="nav_engine_system_settings">Apri le impostazioni vocali del telefono</string>
     <string name="nav_compass_title">Bussola del telefono per la freccia</string>
     <string name="nav_compass_body">Da fermo o a passo d\'uomo il GPS non dà una direzione, quindi la freccia ruota secondo la bussola del telefono (dove punta: il bordo superiore se è piatto, il retro se è verticale su un supporto). Disattivala se la bussola non è affidabile nella tua auto.</string>
+    <string name="nav_frame_rate_title">Fluidità e batteria della navigazione</string>
+    <string name="nav_frame_rate_body">La freccia e la fotocamera vengono ridisegnate questo numero di volte al secondo durante la navigazione, e allo schermo si chiede la stessa frequenza. Meno risparmia batteria (si nota di più sugli schermi che abbassano la frequenza); più è più fluido. Il risparmio energetico la limita sempre a 30.</string>
+    <string name="nav_frame_rate_option">%1$d al secondo</string>
 </resources>
