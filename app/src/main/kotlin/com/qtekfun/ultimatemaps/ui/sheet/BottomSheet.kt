@@ -251,6 +251,10 @@ fun BottomSheet(
     topInset: Dp = 0.dp,
     expandActionLabel: String = "",
     collapseActionLabel: String = "",
+    /** Share of the container height at MEDIUM; the side panel of the landscape layout rests higher than the portrait sheet. */
+    mediumFraction: Float = Mapas.dimens.sheetMediumFraction,
+    /** False hides the handle (landscape with the keyboard open: its 48 dp are needed by the search field). */
+    showHandle: Boolean = true,
     content: @Composable () -> Unit,
 ) {
     BoxWithConstraints(modifier = modifier) {
@@ -258,7 +262,7 @@ fun BottomSheet(
         val containerPx = with(density) { maxHeight.toPx() }
         val collapsedPx = with(density) { Mapas.dimens.sheetCollapsedHeight.toPx() }
         val fullPx = containerPx - with(density) { topInset.toPx() }
-        val mediumPx = (containerPx * Mapas.dimens.sheetMediumFraction).coerceIn(collapsedPx, fullPx)
+        val mediumPx = (containerPx * mediumFraction).coerceIn(collapsedPx, fullPx)
         val flingPx = with(density) { SheetMath.FLING_DP_PER_S.dp.toPx() }
         val slopPx = LocalViewConfiguration.current.touchSlop
         val target = SheetMath.height(detent, collapsedPx, mediumPx, fullPx)
@@ -338,7 +342,7 @@ fun BottomSheet(
                     stateDescription = detentLabel(detent)
                 },
         ) {
-            Box(
+            if (showHandle) Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(SheetMath.HANDLE_TARGET)

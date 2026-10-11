@@ -30,6 +30,20 @@ object RoutePadding {
         }.roundToInt()
     }
 
+    /**
+     * Landscape: the sheet is a column at the start side [panelWidthPx] wide, so the route is framed in the area to its
+     * right (the bottom is free; the button column keeps its right margin).
+     */
+    fun computeLandscape(panelWidthPx: Int, density: Float, statusBarPx: Int): CameraPadding {
+        val edge = (EDGE_DP * density).roundToInt()
+        return CameraPadding(
+            left = panelWidthPx + edge,
+            top = statusBarPx.coerceAtLeast(0) + (TOP_BAR_DP * density).roundToInt(),
+            right = (RIGHT_COLUMN_DP * density).roundToInt(),
+            bottom = edge,
+        )
+    }
+
     fun compute(detent: SheetDetent, heightPx: Int, density: Float, statusBarPx: Int): CameraPadding {
         val edge = (EDGE_DP * density).roundToInt()
         return CameraPadding(
