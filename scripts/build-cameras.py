@@ -14,6 +14,11 @@ Inputs (all optional, but at least one source is needed; nothing is downloaded b
                           (road, kilometre) -> coordinates to place the rows of the report; no incident is stored.
   --osm-json FILE ...     Overpass JSON (`node["highway"="speed_camera"]`), one or more files (tiles).
   --osm-geojsonseq FILE   `osmium export -f geojsonseq` of `n/highway=speed_camera` (one GeoJSON feature per line).
+  --osm-enforcement FILE ...
+                          OSM relations `type=enforcement` + `enforcement=maxspeed` WITH their members (device node, `from` /
+                          `to` ways or nodes and the nodes of those ways): an OSM XML file (`osmium tags-filter ... r/type=enforcement`
+                          then `osmium cat -f osm`) or an Overpass JSON with `out body; >; out skel qt;`. Optional: it gives,
+                          to the cameras that have such a relation, the direction of traffic they enforce (see below).
 
 Output: `speedcams-es.bin`, a compact big-endian binary (format in docs/phase2/cameras-data.md, read by
 `:core-cameras`), plus an optional JSON summary (`--summary`) with the counts for the release notes.
@@ -24,6 +29,11 @@ What goes in, and what does not:
   * Mobile-radar ZONES, exactly as the DGT publishes them: a road and a kilometre range. They are never turned into
     points. A zone gets a drawable line only when the kilometre points at both ends can be placed from the anchor table
     (see --max-anchor-gap-km); otherwise it stays in the file without geometry (the app shows it only as text).
+  * Enforced direction from OSM relations (optional, experimental): a camera node that is the `device` of a
+    `type=enforcement` relation whose `from` and `to` members give the travel direction gets that direction as `axis` plus
+    `sense`, and the record is flagged (`SENSE_FLAG_RELATION`, bit 0x80 of the sense byte) so the app can tell it from an
+    axis-only or DGT-derived direction and ignore it when the user switches the feature off. A DGT sense that came from
+    the report is never overridden. Cameras without a usable relation are written exactly as before.
   * OSM nodes tagged as mobile/temporary (`camera:mobile`, `camera:type=mobile`, `enforcement=mobile...`,
     `disused:`/`construction:`/`abandoned:` prefixes) are dropped. No crowd-sourced reports, no police controls.
 
@@ -56,6 +66,11 @@ KIND_ZONE = 2
 SENSE_BOTH = 0      # both directions of the axis (or unknown)
 SENSE_ALONG = 1     # only traffic travelling along `axis` (kilometre points increasing)
 SENSE_AGAINST = 2   # only traffic travelling against it
+# Flags in the same byte (the low two bits stay the sense, so an older reader that only knows 0..2 falls back to BOTH
+# with the axis, which is what it did with these cameras before):
+SENSE_FLAG_RELATION = 0x80    # the direction comes from an OSM enforcement relation (from -> to)
+SENSE_FLAG_AXIS_ONLY = 0x40   # the axis itself comes from the relation too (the camera had none): ignore it when the feature is off
+HEADER_FLAG_RELATION = 4      # header "source flags": at least one record carries SENSE_FLAG_RELATION (1 = DGT, 2 = OSM)
 
 EARTH_RADIUS_M = 6371008.8
 
@@ -380,6 +395,256 @@ def load_osm(json_files, geojsonseq_files):
     return nodes, dropped
 
 
+# --------------------------------------------------------------------------------------------- OSM enforcement relations
+
+# Metres walked along a way, away from the junction, to take a bearing that is not decided by one short segment.
+RELATION_WALK_M = 50.0
+RELATION_MIN_WALK_M = 8.0
+RELATION_AGREE_DEG = 30.0
+
+
+def load_enforcement(paths):
+    """Reads OSM XML (`.osm`) or Overpass JSON files. Returns (nodes {id: (lat, lon)}, ways {id: dict(nodes, tags)},
+    relations [dict(id, tags, members [(type, ref, role)])]). Only what the resolution needs is kept."""
+    nodes, ways, rels = {}, {}, []
+    for p in paths:
+        with open(p, "rb") as f:
+            head = f.read(64).lstrip()
+        if head[:1] in (b"{", b"["):
+            with open(p, encoding="utf-8") as f:
+                data = json.load(f)
+            for e in data.get("elements", []):
+                t = e.get("type")
+                if t == "node" and valid_pos(e.get("lat"), e.get("lon")):
+                    nodes[e["id"]] = (e["lat"], e["lon"])
+                elif t == "way":
+                    ways[e["id"]] = dict(nodes=list(e.get("nodes", [])), tags=e.get("tags", {}))
+                elif t == "relation":
+                    rels.append(dict(id=e["id"], tags=e.get("tags", {}),
+                                     members=[(m.get("type"), m.get("ref"), (m.get("role") or "").strip().lower()) for m in e.get("members", [])]))
+            continue
+        cur = None
+        for ev, el in ET.iterparse(p, events=("start", "end")):
+            tag = el.tag
+            if ev == "start":
+                if tag == "way":
+                    cur = ("way", dict(nodes=[], tags={}))
+                elif tag == "relation":
+                    cur = ("relation", dict(id=int(el.get("id", 0)), tags={}, members=[]))
+                continue
+            if tag == "node":
+                lat, lon = to_float(el.get("lat")), to_float(el.get("lon"))
+                if valid_pos(lat, lon):
+                    nodes[int(el.get("id"))] = (lat, lon)
+                el.clear()
+            elif tag == "nd" and cur and cur[0] == "way":
+                cur[1]["nodes"].append(int(el.get("ref")))
+            elif tag == "member" and cur and cur[0] == "relation":
+                cur[1]["members"].append((el.get("type"), int(el.get("ref")), (el.get("role") or "").strip().lower()))
+            elif tag == "tag" and cur:
+                cur[1]["tags"][el.get("k")] = el.get("v")
+            elif tag == "way" and cur and cur[0] == "way":
+                ways[int(el.get("id"))] = cur[1]
+                cur = None
+                el.clear()
+            elif tag == "relation" and cur and cur[0] == "relation":
+                rels.append(cur[1])
+                cur = None
+                el.clear()
+    return nodes, ways, rels
+
+
+def _walk(way_nodes, nodes, start, step, max_m=RELATION_WALK_M):
+    """(point, metres walked) reached walking from index `start` along the way in direction `step` (+1/-1) for up to
+    max_m metres, or None when the way ends (almost) there."""
+    i = start
+    prev = nodes.get(way_nodes[i])
+    walked, last = 0.0, prev
+    while 0 <= i + step < len(way_nodes) and prev is not None:
+        i += step
+        cur = nodes.get(way_nodes[i])
+        if cur is None:
+            break
+        walked += haversine(prev, cur)
+        last, prev = cur, cur
+        if walked >= max_m:
+            break
+    return (last, walked) if last is not None and walked >= RELATION_MIN_WALK_M else None
+
+
+def circular_mean(angles):
+    x = sum(math.cos(math.radians(a)) for a in angles)
+    y = sum(math.sin(math.radians(a)) for a in angles)
+    return (math.degrees(math.atan2(y, x)) + 360.0) % 360.0
+
+
+def angle_diff(a, b):
+    d = abs(a - b) % 360.0
+    return 360.0 - d if d > 180.0 else d
+
+
+def _bearing_way_way(wf, wt, nodes, dev):
+    """Travel bearing from way `wf` into way `wt`, via the node they share (an END of both): (bearing, None) or
+    (None, reason)."""
+    nf, nt = wf["nodes"], wt["nodes"]
+    if len(nf) < 2 or len(nt) < 2:
+        return None, "way_too_short"
+    common = [n for n in set(nf) & set(nt) if n in nodes]
+    if not common:
+        return None, "ways_not_connected"
+    ends = [n for n in common if n in (nf[0], nf[-1]) and n in (nt[0], nt[-1])]
+    if not ends:
+        return None, "ambiguous_junction"
+    j = min(ends, key=lambda n: haversine(nodes[n], dev))
+    a = _walk(nf, nodes, 0 if nf[0] == j else len(nf) - 1, 1 if nf[0] == j else -1)
+    b = _walk(nt, nodes, 0 if nt[0] == j else len(nt) - 1, 1 if nt[0] == j else -1)
+    if a is None or b is None:
+        return None, "way_too_short"
+    return bearing(a[0], b[0]), None
+
+
+def _bearing_same_way(w, nodes, dev):
+    """`from` and `to` are the same way: usable only for a one-way, where the way's own node order is the travel direction."""
+    ow = (w["tags"].get("oneway") or "").lower()
+    if ow not in ("yes", "true", "1", "-1"):
+        return None, "same_way_not_oneway"
+    ids = [n for n in w["nodes"] if n in nodes]
+    if len(ids) < 2:
+        return None, "way_too_short"
+    k = min(range(len(ids)), key=lambda i: haversine(nodes[ids[i]], dev))
+    back = _walk(ids, nodes, k, -1, 25.0)
+    fwd = _walk(ids, nodes, k, 1, 25.0)
+    a = back[0] if back else nodes[ids[k]]
+    b = fwd[0] if fwd else nodes[ids[k]]
+    if haversine(a, b) < RELATION_MIN_WALK_M:
+        return None, "way_too_short"
+    brg = bearing(a, b)
+    return ((brg + 180.0) % 360.0 if ow == "-1" else brg), None
+
+
+def resolve_relation(rel, nodes, ways):
+    """One relation -> dict(devices, bearing) or dict(reason). The bearing is the direction of the traffic that is enforced:
+    from the `from` member towards the `to` member."""
+    m = rel["members"]
+    devices = [r for (t, r, role) in m if role == "device" and t == "node"]
+    froms = [(t, r) for (t, r, role) in m if role == "from"]
+    tos = [(t, r) for (t, r, role) in m if role == "to"]
+    if not devices:
+        return dict(reason="no_device")
+    if not froms or not tos:
+        return dict(reason="missing_role", devices=devices)
+    dev_pos = [nodes[d] for d in devices if d in nodes]
+    if not dev_pos:
+        return dict(reason="missing_member", devices=devices)
+    dev = dev_pos[0]
+    bearings, reasons = [], []
+    for (ft, fr) in froms:
+        for (tt, tr) in tos:
+            if (ft == "way" and fr not in ways) or (tt == "way" and tr not in ways) or \
+               (ft == "node" and fr not in nodes) or (tt == "node" and tr not in nodes) or ft not in ("way", "node") or tt not in ("way", "node"):
+                reasons.append("missing_member")
+                continue
+            if ft == "way" and tt == "way":
+                if fr == tr:
+                    b, why = _bearing_same_way(ways[fr], nodes, dev)
+                else:
+                    b, why = _bearing_way_way(ways[fr], ways[tr], nodes, dev)
+            elif ft == "node" and tt == "node":
+                if haversine(nodes[fr], nodes[tr]) >= RELATION_MIN_WALK_M:
+                    b, why = bearing(nodes[fr], nodes[tr]), None
+                else:
+                    b, why = None, "way_too_short"
+            else:
+                b, why = None, "unsupported_member_types"
+            if b is None:
+                reasons.append(why)
+            else:
+                bearings.append(b)
+    if not bearings:
+        return dict(reason=reasons[0] if reasons else "unresolved", devices=devices)
+    mean = circular_mean(bearings)
+    if any(angle_diff(b, mean) > RELATION_AGREE_DEG for b in bearings):
+        return dict(reason="members_disagree", devices=devices)
+    return dict(devices=devices, bearing=mean)
+
+
+def resolve_enforcement(nodes, ways, rels):
+    """Returns ({device node id: dict(lat, lon, kind 'one'|'both', bearing)}, counts for the summary)."""
+    st = dict(relations=0, maxspeed_relations=0, resolved=0, unresolved={})
+
+    def miss(reason):
+        st["unresolved"][reason] = st["unresolved"].get(reason, 0) + 1
+
+    per_device = {}
+    for r in rels:
+        tags = r["tags"]
+        if tags.get("type") != "enforcement":
+            continue
+        st["relations"] += 1
+        if tags.get("enforcement") != "maxspeed":
+            continue
+        st["maxspeed_relations"] += 1
+        res = resolve_relation(r, nodes, ways)
+        if "bearing" not in res:
+            miss(res["reason"])
+            continue
+        st["resolved"] += 1
+        for d in res["devices"]:
+            if d in nodes:
+                per_device.setdefault(d, []).append(res["bearing"])
+    out = {}
+    for d, bs in per_device.items():
+        lat, lon = nodes[d]
+        first = bs[0]
+        same = [b for b in bs if angle_diff(b, first) <= RELATION_AGREE_DEG]
+        opposite = [b for b in bs if angle_diff(b, (first + 180.0) % 360.0) <= RELATION_AGREE_DEG]
+        if len(same) == len(bs):
+            out[d] = dict(lat=lat, lon=lon, kind="one", bearing=circular_mean(bs))
+        elif len(same) + len(opposite) == len(bs):
+            out[d] = dict(lat=lat, lon=lon, kind="both", bearing=circular_mean(same) % 180.0)
+        else:
+            miss("device_directions_disagree")
+    st["devices_with_direction"] = len(out)
+    return out, st
+
+
+def apply_relation(cam, rel, stats):
+    """Writes the relation direction into camera `cam` (dict with axis, sense, src) and sets cam['rel'] flags."""
+    def bump(k):
+        stats[k] = stats.get(k, 0) + 1
+
+    if cam["src"] & SRC_DGT and cam["sense"] != SENSE_BOTH:
+        # A sense from the DGT report is published data: keep it, only count how often OSM disagrees.
+        travel = cam["axis"] if cam["sense"] == SENSE_ALONG else (cam["axis"] + 180.0) % 360.0
+        if rel["kind"] == "one" and angle_diff(rel["bearing"], travel) > 90.0:
+            bump("relation_disagrees_with_dgt")
+        bump("relation_kept_dgt_sense")
+        return
+    b = rel["bearing"]
+    flags = SENSE_FLAG_RELATION
+    if rel["kind"] == "both":
+        sense = SENSE_BOTH
+        if cam["axis"] is None:
+            cam["axis"] = b % 180.0
+            flags |= SENSE_FLAG_AXIS_ONLY
+        bump("cameras_relation_both")
+    elif cam["axis"] is None:
+        cam["axis"], sense = b, SENSE_ALONG
+        flags |= SENSE_FLAG_AXIS_ONLY
+    else:
+        d = angle_diff(b, cam["axis"])
+        if d <= 45.0:
+            sense = SENSE_ALONG
+        elif d >= 135.0:
+            sense = SENSE_AGAINST
+        else:
+            bump("relation_axis_conflict")
+            return
+    cam["sense"] = sense
+    cam["rel"] = flags
+    bump("cameras_with_relation_direction")
+
+
 # --------------------------------------------------------------------------------------------- Assembly
 
 def build(args):
@@ -427,6 +692,29 @@ def build(args):
         osm_nodes, osm_dropped = load_osm(args.osm_json or [], args.osm_geojsonseq or [])
     stats["osm_fixed_nodes"] = len(osm_nodes)
     stats["osm_dropped_mobile_or_disused"] = osm_dropped
+    # OSM enforcement relations (optional): the direction of traffic a camera enforces, matched to the OSM nodes by id
+    # or, when the export has no ids, by the exact position.
+    relations_by_node, enforcement_stats = {}, {}
+    if getattr(args, "osm_enforcement", None):
+        e_nodes, e_ways, e_rels = load_enforcement(args.osm_enforcement)
+        devices, enforcement_stats = resolve_enforcement(e_nodes, e_ways, e_rels)
+        by_pos = {(int(round(d["lat"] * 1e7)), int(round(d["lon"] * 1e7))): d for d in devices.values()}
+        matched = 0
+        for n in osm_nodes:
+            nid = n["id"]
+            if isinstance(nid, str) and nid.startswith("node/"):
+                nid = nid[5:]
+            try:
+                nid = int(nid)
+            except (TypeError, ValueError):
+                nid = None
+            rel = devices.get(nid) if nid is not None else None
+            rel = rel or by_pos.get((int(round(n["lat"] * 1e7)), int(round(n["lon"] * 1e7))))
+            if rel is not None:
+                relations_by_node[id(n)] = rel
+                matched += 1
+        enforcement_stats["devices_matched_to_camera_nodes"] = matched
+        enforcement_stats["devices_without_camera_node"] = len(devices) - matched
     merged = 0
     dgt_fixed = list(fixed)
     grid = {}
@@ -444,6 +732,7 @@ def build(args):
                     if dist <= args.merge_meters and (near is None or dist < near[0]):
                         near = (dist, i)
         axis = None if d is None else d % 180.0
+        relation = relations_by_node.get(id(n))
         if near:
             c = dgt_fixed[near[1]]
             c["src"] |= SRC_OSM
@@ -454,9 +743,15 @@ def build(args):
             if axis is not None and c["axis"] is None:
                 c["axis"], c["sense"] = axis, SENSE_BOTH
             merged += 1
+            if relation:
+                apply_relation(c, relation, enforcement_stats)
         else:
-            fixed.append(dict(lat=n["lat"], lon=n["lon"], road=n["tags"].get("ref", ""), maxspeed=ms or 0, axis=axis, sense=SENSE_BOTH, src=SRC_OSM))
+            c = dict(lat=n["lat"], lon=n["lon"], road=n["tags"].get("ref", ""), maxspeed=ms or 0, axis=axis, sense=SENSE_BOTH, src=SRC_OSM)
+            fixed.append(c)
+            if relation:
+                apply_relation(c, relation, enforcement_stats)
     stats["merged_dgt_osm"] = merged
+    stats.update({"enforcement_" + k: v for k, v in enforcement_stats.items()})
 
     # Mobile zones: as published (road + kilometre range). Geometry only when both ends can be placed.
     zones = []
@@ -480,6 +775,7 @@ def build(args):
 
     stats["fixed"] = len(fixed)
     stats["fixed_with_axis"] = sum(1 for c in fixed if c["axis"] is not None)
+    stats["fixed_with_relation_direction"] = sum(1 for c in fixed if c.get("rel"))
     stats["fixed_with_maxspeed"] = sum(1 for c in fixed if c["maxspeed"])
     stats["sections"] = len(sects)
     return fixed, sects, zones, stats
@@ -488,8 +784,10 @@ def build(args):
 def write_file(path, generated_epoch, fixed, sects, zones):
     """Layout (big endian). See docs/phase2/cameras-data.md.
 
-    u32 magic, u16 version, i64 generated (epoch seconds), u8 source_flags, u32 n_fixed, u32 n_sections, u32 n_zones,
-    fixed:   i32 lat_e6, i32 lon_e6, u8 src, u8 maxspeed(0=unknown), i16 axis_deg(-1=unknown), u8 sense, utf road
+    u32 magic, u16 version, i64 generated (epoch seconds), u8 source_flags (1 DGT, 2 OSM, 4 a record has a relation-derived direction), u32 n_fixed, u32 n_sections, u32 n_zones,
+    fixed:   i32 lat_e6, i32 lon_e6, u8 src, u8 maxspeed(0=unknown), i16 axis_deg(-1=unknown),
+             u8 sense (bits 0-1: 0 both, 1 along, 2 against; 0x80: direction from an OSM enforcement relation;
+             0x40: the axis too), utf road
     section: i32 lat_e6, i32 lon_e6, i32 lat_e6, i32 lon_e6, u8 src, u8 maxspeed, utf road
     zone:    utf road, utf province, i32 km_from_m, i32 km_to_m, u16 n_points, n x (i32 lat_e6, i32 lon_e6)
     u32 crc32 of everything before it.  `utf` = u16 length + UTF-8 bytes (Java's writeUTF for BMP text).
@@ -498,6 +796,8 @@ def write_file(path, generated_epoch, fixed, sects, zones):
     flags = 0
     for c in fixed:
         flags |= c["src"]
+        if c.get("rel"):
+            flags |= HEADER_FLAG_RELATION
     for s in sects:
         flags |= s["src"]
     if zones:
@@ -513,7 +813,7 @@ def write_file(path, generated_epoch, fixed, sects, zones):
     out.extend(struct.pack(">IHqBIII", MAGIC, VERSION, generated_epoch, flags, len(fixed), len(sects), len(zones)))
     for c in fixed:
         axis = -1 if c["axis"] is None else int(round(c["axis"])) % 360
-        out.extend(struct.pack(">iiBBhB", e6(c["lat"]), e6(c["lon"]), c["src"], c["maxspeed"], axis, c["sense"]))
+        out.extend(struct.pack(">iiBBhB", e6(c["lat"]), e6(c["lon"]), c["src"], c["maxspeed"], axis, c["sense"] | c.get("rel", 0)))
         utf(c["road"])
     for s in sects:
         out.extend(struct.pack(">iiiiBB", e6(s["start"][0]), e6(s["start"][1]), e6(s["end"][0]), e6(s["end"][1]), s["src"], s["maxspeed"]))
@@ -537,6 +837,8 @@ def main(argv=None):
     ap.add_argument("--dgt-anchors", nargs="*")
     ap.add_argument("--osm-json", nargs="*")
     ap.add_argument("--osm-geojsonseq", nargs="*")
+    ap.add_argument("--osm-enforcement", nargs="*",
+                    help="OSM XML or Overpass JSON with type=enforcement relations and their members (optional)")
     ap.add_argument("--generated", help="ISO 8601 UTC time of the build (default: now)")
     ap.add_argument("--merge-meters", type=float, default=100.0)
     ap.add_argument("--max-anchor-gap-km", type=float, default=15.0, help="largest kilometre gap bridged to place a zone end")
