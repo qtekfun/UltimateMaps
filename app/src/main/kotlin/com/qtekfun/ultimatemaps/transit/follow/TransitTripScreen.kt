@@ -5,6 +5,16 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.union
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import com.qtekfun.ultimatemaps.ui.LandscapeLayout
+import com.qtekfun.ultimatemaps.ui.horizontalSafeInsets
+import com.qtekfun.ultimatemaps.ui.startSafeInsets
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -85,10 +95,11 @@ class TransitTripActions(
 @Composable
 fun TransitTripScreen(ui: TransitTripUi, actions: TransitTripActions, dark: Boolean, modifier: Modifier = Modifier) {
     NavigationTheme(dark = dark, glove = ui.glove) {
-        Box(modifier.fillMaxSize().testTag("trip_screen")) {
+        BoxWithConstraints(modifier.fillMaxSize().testTag("trip_screen")) {
             val trip = ui.trip
+            val landscape = LandscapeLayout.isLandscape(maxWidth, maxHeight)
             when {
-                trip != null -> Following(ui, trip, actions)
+                trip != null -> Following(ui, trip, actions, landscape, LandscapeLayout.panelWidth(maxWidth))
                 ui.resumable -> ResumeCard(actions)
             }
         }
@@ -96,11 +107,42 @@ fun TransitTripScreen(ui: TransitTripUi, actions: TransitTripActions, dark: Bool
 }
 
 @Composable
-private fun BoxScope.Following(ui: TransitTripUi, trip: TransitTripState, actions: TransitTripActions) {
+private fun BoxScope.Following(
+    ui: TransitTripUi, trip: TransitTripState, actions: TransitTripActions,
+    landscape: Boolean = false, panelWidth: androidx.compose.ui.unit.Dp = LandscapeLayout.MAX_PANEL_WIDTH,
+) {
     LightStatusBarIcons()
     val s = trip.follow
     // "Hide alerts" lasts for this trip: the state leaves the composition with the trip (and survives a rotation).
     var alertsHidden by rememberSaveable { mutableStateOf(false) }
+    if (landscape) {
+        // Landscape: one column at the start side (banner and strips scroll on top, the stops and Stop at the bottom)
+        // and the two switches at the end side; the map stays visible between them.
+        Column(
+            Modifier
+                .align(Alignment.TopStart)
+                .fillMaxHeight()
+                .windowInsetsPadding(startSafeInsets())
+                .width(panelWidth)
+                .windowInsetsPadding(WindowInsets.navigationBars.only(WindowInsetsSides.Bottom)),
+            verticalArrangement = Arrangement.SpaceBetween,
+        ) {
+            Column(Modifier.weight(1f, fill = false).verticalScroll(rememberScrollState())) {
+                Banner(ui, trip)
+                Strips(trip, actions, alertsHidden) { alertsHidden = true }
+            }
+            BottomPanel(ui, trip, s, actions, stopsMaxHeight = 96.dp)
+        }
+        Column(
+            Modifier
+                .align(Alignment.BottomEnd)
+                .windowInsetsPadding(horizontalSafeInsets().union(WindowInsets.navigationBars.only(WindowInsetsSides.Bottom)))
+                .padding(end = 12.dp, bottom = 12.dp),
+            horizontalAlignment = Alignment.End,
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) { TripSwitches(ui, actions) }
+        return
+    }
     Column(Modifier.align(Alignment.TopCenter).fillMaxWidth()) {
         Banner(ui, trip)
         Strips(trip, actions, alertsHidden) { alertsHidden = true }
@@ -110,23 +152,27 @@ private fun BoxScope.Following(ui: TransitTripUi, trip: TransitTripState, action
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         Row(Modifier.fillMaxWidth().padding(horizontal = 12.dp), horizontalArrangement = Arrangement.End) {
-            Column(horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                TripButton(
-                    stringResource(if (ui.voiceOn) R.string.nav_ui_mute else R.string.nav_ui_unmute), { actions.onVoice(!ui.voiceOn) }, Modifier.testTag("trip_mute"),
-                    container = if (ui.voiceOn) NavTheme.colors.panel else NavTheme.colors.laneRecommended,
-                    content = if (ui.voiceOn) NavTheme.colors.onPanel else NavTheme.colors.onLaneRecommended,
-                    description = stringResource(if (ui.voiceOn) R.string.nav_ui_mute_description else R.string.nav_ui_unmute_description),
-                )
-                TripButton(
-                    stringResource(R.string.nav_ui_glove), { actions.onGlove(!ui.glove) }, Modifier.testTag("trip_glove"),
-                    container = if (ui.glove) NavTheme.colors.laneRecommended else NavTheme.colors.panel,
-                    content = if (ui.glove) NavTheme.colors.onLaneRecommended else NavTheme.colors.onPanel,
-                    description = stringResource(if (ui.glove) R.string.nav_ui_glove_on_description else R.string.nav_ui_glove_off_description),
-                )
-            }
+            Column(horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.spacedBy(8.dp)) { TripSwitches(ui, actions) }
         }
         BottomPanel(ui, trip, s, actions)
     }
+}
+
+/** Mute and glove switches of the trip screen. */
+@Composable
+private fun TripSwitches(ui: TransitTripUi, actions: TransitTripActions) {
+    TripButton(
+        stringResource(if (ui.voiceOn) R.string.nav_ui_mute else R.string.nav_ui_unmute), { actions.onVoice(!ui.voiceOn) }, Modifier.testTag("trip_mute"),
+        container = if (ui.voiceOn) NavTheme.colors.panel else NavTheme.colors.laneRecommended,
+        content = if (ui.voiceOn) NavTheme.colors.onPanel else NavTheme.colors.onLaneRecommended,
+        description = stringResource(if (ui.voiceOn) R.string.nav_ui_mute_description else R.string.nav_ui_unmute_description),
+    )
+    TripButton(
+        stringResource(R.string.nav_ui_glove), { actions.onGlove(!ui.glove) }, Modifier.testTag("trip_glove"),
+        container = if (ui.glove) NavTheme.colors.laneRecommended else NavTheme.colors.panel,
+        content = if (ui.glove) NavTheme.colors.onLaneRecommended else NavTheme.colors.onPanel,
+        description = stringResource(if (ui.glove) R.string.nav_ui_glove_on_description else R.string.nav_ui_glove_off_description),
+    )
 }
 
 // ---------------------------------------------------------------- banner
@@ -308,7 +354,10 @@ private fun Strip(text: String, background: Color, tag: String) {
 // ---------------------------------------------------------------- bottom
 
 @Composable
-private fun BottomPanel(ui: TransitTripUi, trip: TransitTripState, s: FollowState, actions: TransitTripActions) {
+private fun BottomPanel(
+    ui: TransitTripUi, trip: TransitTripState, s: FollowState, actions: TransitTripActions,
+    stopsMaxHeight: androidx.compose.ui.unit.Dp = 168.dp,
+) {
     val c = NavTheme.colors
     val d = NavTheme.dimens
     val zone = ZoneId.of(trip.zoneId)
@@ -320,7 +369,7 @@ private fun BottomPanel(ui: TransitTripUi, trip: TransitTripState, s: FollowStat
             .padding(horizontal = 16.dp, vertical = 12.dp)
             .testTag("trip_bottom"),
     ) {
-        StopList(trip, s, zone)
+        StopList(trip, s, zone, stopsMaxHeight)
         Spacer(Modifier.height(8.dp))
         Row(verticalAlignment = Alignment.CenterVertically) {
             Column(Modifier.weight(1f)) {
@@ -354,7 +403,7 @@ private fun rideToShow(trip: TransitTripState): ItineraryLeg.Ride? {
 }
 
 @Composable
-private fun StopList(trip: TransitTripState, s: FollowState, zone: ZoneId) {
+private fun StopList(trip: TransitTripState, s: FollowState, zone: ZoneId, maxHeight: androidx.compose.ui.unit.Dp = 168.dp) {
     val ride = rideToShow(trip) ?: return
     val c = NavTheme.colors
     val onThisRide = trip.itinerary.legs.getOrNull(s.legIndex) === ride && (s.phase == FollowPhase.ON_BOARD || s.phase == FollowPhase.ALIGHT_NEXT || s.phase == FollowPhase.OFF_PLAN && s.nextStopIndex >= 0)
@@ -365,7 +414,7 @@ private fun StopList(trip: TransitTripState, s: FollowState, zone: ZoneId) {
     val passedWord = stringResource(R.string.trip_stop_passed)
     val nextWord = stringResource(R.string.trip_stop_next)
     LazyColumn(
-        Modifier.fillMaxWidth().heightIn(max = 168.dp).semantics { contentDescription = listDescription }.testTag("trip_stops"),
+        Modifier.fillMaxWidth().heightIn(max = maxHeight).semantics { contentDescription = listDescription }.testTag("trip_stops"),
         state = state,
     ) {
         itemsIndexed(ride.stops) { i, stop ->
@@ -410,7 +459,8 @@ private fun BoxScope.ResumeCard(actions: TransitTripActions) {
     Column(
         Modifier
             .align(Alignment.TopCenter)
-            .windowInsetsPadding(WindowInsets.statusBars)
+            .widthIn(max = 480.dp)
+            .windowInsetsPadding(WindowInsets.statusBars.union(horizontalSafeInsets()))
             .padding(12.dp)
             .clip(RoundedCornerShape(16.dp))
             .background(c.banner)

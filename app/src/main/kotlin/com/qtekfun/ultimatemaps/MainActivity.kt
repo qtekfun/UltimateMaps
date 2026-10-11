@@ -166,9 +166,13 @@ class MainActivity : ComponentActivity() {
                         // Weather warning (AEMET) at the centre of the view: draws nothing unless the feature is on and a warning applies.
                         if (!navUi.active && state.cameraKnown) com.qtekfun.ultimatemaps.weather.WeatherChip(
                             app.weatherAlerts, { com.qtekfun.ultimatemaps.core.geo.LatLon.ofOrNull(state.centerLatitude, state.centerLongitude) },
-                            Modifier.align(Alignment.TopCenter).windowInsetsPadding(WindowInsets.statusBars).padding(top = 52.dp),
+                            Modifier.align(Alignment.TopCenter).windowInsetsPadding(WindowInsets.statusBars)
+                                .padding(start = com.qtekfun.ultimatemaps.ui.LocalSidePanelReserve.current, top = 52.dp),
                         )
-                        if (!navUi.active) CameraAlertBanner(Modifier.align(Alignment.TopCenter).windowInsetsPadding(WindowInsets.statusBars).padding(top = 96.dp))
+                        if (!navUi.active) CameraAlertBanner(
+                            Modifier.align(Alignment.TopCenter).windowInsetsPadding(WindowInsets.statusBars)
+                                .padding(start = com.qtekfun.ultimatemaps.ui.LocalSidePanelReserve.current, top = 96.dp),
+                        )
                     },
                 ) {
                     AndroidView(factory = { engine.view }, modifier = Modifier.fillMaxSize())
