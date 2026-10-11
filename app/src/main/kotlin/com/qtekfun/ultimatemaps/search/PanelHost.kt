@@ -146,7 +146,15 @@ class PanelHost(
             val dm = activity.resources.displayMetrics
             val status = androidx.core.view.ViewCompat.getRootWindowInsets(activity.window.decorView)
                 ?.getInsets(androidx.core.view.WindowInsetsCompat.Type.statusBars())?.top ?: 0
-            engine.frameRoute(points, RoutePadding.compute(detent, dm.heightPixels, dm.density, status))
+            val padding = if (com.qtekfun.ultimatemaps.ui.LandscapeLayout.isLandscapePx(dm.widthPixels, dm.heightPixels)) {
+                // Landscape: the sheet is a side column, not a bottom sheet.
+                RoutePadding.computeLandscape(
+                    com.qtekfun.ultimatemaps.ui.LandscapeLayout.panelWidthPx(dm.widthPixels, dm.density), dm.density, status,
+                )
+            } else {
+                RoutePadding.compute(detent, dm.heightPixels, dm.density, status)
+            }
+            engine.frameRoute(points, padding)
         },
     ).also { framing ->
         engine.addCameraGestureListener { framing.onUserMovedMap() }

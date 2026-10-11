@@ -1,5 +1,8 @@
 package com.qtekfun.ultimatemaps.settings
 
+import androidx.compose.foundation.layout.widthIn
+import com.qtekfun.ultimatemaps.ui.MAX_CONTENT_WIDTH
+import com.qtekfun.ultimatemaps.ui.horizontalSafePadding
 import com.qtekfun.ultimatemaps.fuel.fuelName
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
@@ -112,6 +115,7 @@ fun SettingsScreen(env: SettingsEnv, onBack: () -> Unit, modifier: Modifier = Mo
             .fillMaxSize()
             .background(Mapas.colors.sheet)
             .windowInsetsPadding(WindowInsets.statusBars)
+            .horizontalSafePadding() // landscape: side bars and the camera cutout
             .testTag("settings_screen"),
     ) {
         SettingsTopBar(
@@ -124,16 +128,20 @@ fun SettingsScreen(env: SettingsEnv, onBack: () -> Unit, modifier: Modifier = Mo
                 .verticalScroll(rememberScrollState())
                 .windowInsetsPadding(WindowInsets.navigationBars)
                 .padding(horizontal = Mapas.dimens.screenMargin),
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            // A restore bumps the revision: the screens are rebuilt so they show the restored values.
-            key(env.backup?.state?.revision ?: 0) {
-                if (open == null) {
-                    SettingsHub(categories, query, onQuery = { query = it }, onOpen = { openId = it.id })
-                } else {
-                    key(open.id) { open.content() }
+            // On a wide (landscape) screen the rows stay a readable column, centred, instead of stretching across it.
+            Column(Modifier.widthIn(max = MAX_CONTENT_WIDTH).fillMaxWidth()) {
+                // A restore bumps the revision: the screens are rebuilt so they show the restored values.
+                key(env.backup?.state?.revision ?: 0) {
+                    if (open == null) {
+                        SettingsHub(categories, query, onQuery = { query = it }, onOpen = { openId = it.id })
+                    } else {
+                        key(open.id) { open.content() }
+                    }
                 }
+                Spacer(Modifier.height(32.dp))
             }
-            Spacer(Modifier.height(32.dp))
         }
     }
 }
