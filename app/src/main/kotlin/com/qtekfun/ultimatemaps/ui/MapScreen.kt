@@ -4,6 +4,16 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.union
+import androidx.compose.foundation.layout.width
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -104,26 +114,40 @@ fun MapScreen(
     val collapsedLabel = stringResource(R.string.sheet_state_collapsed)
     val mediumLabel = stringResource(R.string.sheet_state_medium)
     val fullLabel = stringResource(R.string.sheet_state_full)
-    Box(modifier.fillMaxSize().background(Mapas.colors.separator)) {
+    BoxWithConstraints(modifier.fillMaxSize().background(Mapas.colors.separator)) {
         mapContent()
 
-        val topPadding = with(LocalDensity.current) { statusTop.getTop(this).toDp() }
+        // Landscape: the sheet becomes a column at the start side and the map controls sit beside it (see LandscapeLayout).
+        val landscape = LandscapeLayout.isLandscape(maxWidth, maxHeight)
+        val density = LocalDensity.current
+        val rtl = LocalLayoutDirection.current == LayoutDirection.Rtl
+        val startInset: Dp = with(density) {
+            val safe = startSafeInsets()
+            (if (rtl) safe.getRight(this, LayoutDirection.Rtl) else safe.getLeft(this, LayoutDirection.Ltr)).toDp()
+        }
+        val panelWidth = LandscapeLayout.panelWidth(maxWidth)
+        val sheetShown = !navigating || navSheet
+        // What the overlays drawn over the map keep clear of at the start side.
+        val reserve = if (landscape && sheetShown) startInset + panelWidth + LandscapeLayout.GAP else 0.dp
+        val topAndSides = WindowInsets.statusBars.union(horizontalSafeInsets())
+        val topPadding = with(density) { statusTop.getTop(this).toDp() }
+        CompositionLocalProvider(LocalSidePanelReserve provides reserve) {
         // While navigating, the attribution moves into the navigation panel (the banner would cover it here).
         if (!navigating) AttributionLabel(
             text = stringResource(R.string.attribution_osm),
             onClick = { state.aboutVisible = true },
             modifier = Modifier
                 .align(Alignment.TopStart)
-                .windowInsetsPadding(WindowInsets.statusBars)
-                .padding(start = margin, top = 8.dp),
+                .windowInsetsPadding(topAndSides)
+                .padding(start = margin + reserve, top = 8.dp),
         )
         if (!navigating && state.cameraKnown) ScaleBar(
             latitude = state.centerLatitude,
             zoom = state.zoom,
             modifier = Modifier
                 .align(Alignment.TopStart)
-                .windowInsetsPadding(WindowInsets.statusBars)
-                .padding(start = margin, top = 44.dp),
+                .windowInsetsPadding(topAndSides)
+                .padding(start = margin + reserve, top = 44.dp),
         )
         if (!navigating) MapButtons(
             bearingDegrees = state.bearing,
@@ -137,7 +161,7 @@ fun MapScreen(
             onSettings = state.onOpenSettings,
             modifier = Modifier
                 .align(Alignment.TopEnd)
-                .windowInsetsPadding(WindowInsets.statusBars)
+                .windowInsetsPadding(topAndSides)
                 .padding(end = margin, top = 8.dp),
         )
 
@@ -154,12 +178,19 @@ fun MapScreen(
                         SheetDetent.FULL -> fullLabel
                     }
                 },
-                topInset = topPadding + 64.dp,
+                // Portrait: room for the status bar and the map buttons above the full sheet. Landscape: the column
+                // reaches the top (the buttons are beside it, not above it).
+                topInset = if (landscape) topPadding + 8.dp else topPadding + 64.dp,
                 expandActionLabel = stringResource(R.string.sheet_action_expand),
                 collapseActionLabel = stringResource(R.string.sheet_action_collapse),
-                modifier = Modifier.fillMaxSize(),
+                mediumFraction = if (landscape) LANDSCAPE_MEDIUM_FRACTION else Mapas.dimens.sheetMediumFraction,
+                modifier = if (landscape) {
+                    Modifier.align(Alignment.BottomStart).fillMaxHeight().windowInsetsPadding(startSafeInsets()).width(panelWidth)
+                } else {
+                    Modifier.fillMaxSize()
+                },
             ) {
-                SheetContent(state, sheetPanel)
+                SheetContent(state, sheetPanel, landscape)
             }
         }
         if (!navigating) sheet()
@@ -168,16 +199,22 @@ fun MapScreen(
         if (navigating && navSheet) sheet()
 
         if (state.aboutVisible) AboutDialog(onDismiss = { state.aboutVisible = false })
+        }
     }
 }
 
+/** Where the side panel rests at MEDIUM in landscape: most of the height, the map is beside it, not above it. */
+private const val LANDSCAPE_MEDIUM_FRACTION = 0.62f
+
 @Composable
-private fun SheetContent(state: MapScreenState, panel: (@Composable () -> Unit)?) {
+private fun SheetContent(state: MapScreenState, panel: (@Composable () -> Unit)?, landscape: Boolean) {
+    // The side panel only touches the bottom bar: a navigation bar at the side is not next to it.
+    val bars = if (landscape) WindowInsets.navigationBars.only(WindowInsetsSides.Bottom) else WindowInsets.navigationBars
     Column(
         Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
-            .windowInsetsPadding(WindowInsets.navigationBars),
+            .windowInsetsPadding(bars),
     ) {
         if (panel != null) {
             // Search, place card and lists live in their own panel (see the search and places packages).
@@ -250,6 +287,7 @@ private fun AboutDialog(onDismiss: () -> Unit) {
             Modifier
                 .clip(Mapas.shapes.control)
                 .background(Mapas.colors.sheet)
+                .dialogScroll()
                 .padding(20.dp)
                 .testTag("about_dialog"),
         ) {

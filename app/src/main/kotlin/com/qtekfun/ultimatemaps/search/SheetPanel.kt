@@ -152,6 +152,7 @@ fun SheetPanel(
                 onSetWork = quick?.let { q -> { q.setFromCard(SpecialSlot.WORK, card) } },
                 onDial = actions.onDial,
                 onOpenWebsite = actions.onOpenWebsite,
+                modifier = Modifier.weight(1f, fill = false),
             )
         } else {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {

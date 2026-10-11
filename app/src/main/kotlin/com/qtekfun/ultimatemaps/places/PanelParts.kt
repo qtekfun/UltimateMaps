@@ -1,5 +1,7 @@
 package com.qtekfun.ultimatemaps.places
 
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -168,8 +170,10 @@ fun PlaceCard(
     onOpenWebsite: (String) -> Unit = {},
     /** Local time for the "open now" line; injected so tests do not depend on the clock. */
     now: () -> java.time.LocalDateTime = { java.time.LocalDateTime.now() },
+    modifier: Modifier = Modifier,
 ) {
-    Column(Modifier.fillMaxWidth().testTag("place_card")) {
+    // Scrolls: with hours, phone and website the card is taller than a landscape side panel (and than a low sheet).
+    Column(modifier.fillMaxWidth().verticalScroll(rememberScrollState()).testTag("place_card")) {
         Row(verticalAlignment = Alignment.Top) {
             BasicText(
                 info.name,
