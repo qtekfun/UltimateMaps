@@ -1,0 +1,1 @@
+Release candidate: on long straight roads the arrow and the camera are redrawn once a second (configurable) to save battery, and the display is asked for a lower refresh rate. Spain only.

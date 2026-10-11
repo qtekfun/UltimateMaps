@@ -1,0 +1,1 @@
+Versión candidata: en carreteras largas y rectas la flecha y la cámara se redibujan una vez por segundo (configurable) para ahorrar batería, y se pide a la pantalla una frecuencia menor. Solo España.
