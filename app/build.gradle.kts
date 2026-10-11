@@ -67,6 +67,18 @@ android {
         }
     }
 
+    // Measurement build (battery, frame time): release-like (not debuggable, release code paths) but with its own
+    // application id and the standard debug key, so it installs next to a signed release without touching its data.
+    // Not a distribution build: releases are signed with the owner's key only.
+    buildTypes {
+        create("bench") {
+            initWith(getByName("debug"))
+            isDebuggable = false
+            applicationIdSuffix = ".bench"
+            matchingFallbacks += listOf("release", "debug")
+        }
+    }
+
     flavorDimensions += "dist"
     productFlavors {
         create("foss") { dimension = "dist" }
