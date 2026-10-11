@@ -247,6 +247,9 @@ private fun SearchPane(
                     "search_status",
                 )
         }
+        state.numberMissing?.takeIf { state.status == SearchStatus.DONE && state.category == null }?.let {
+            PanelNote(stringResource(R.string.search_number_missing, it), "search_number_missing")
+        }
         LazyColumn(Modifier.fillMaxWidth().testTag("search_results")) {
             if (state.query.isBlank() && state.category == null) whenEmpty()
             items(state.results) { r ->

@@ -33,6 +33,9 @@ class SearchState {
 
     /** The text is a position (coordinates or a Plus Code), answered without the search engine. */
     var coordinateQuery by mutableStateOf(false)
+
+    /** The house number typed that no result has (the map data lacks that address); null otherwise. See `HouseNumberHint`. */
+    var numberMissing by mutableStateOf<String?>(null)
 }
 
 /** Labels of the result row for a typed position ("Coordinates", "Plus Code"); localized by the host. */
@@ -156,6 +159,7 @@ class SearchCoordinator(
             onCategoryResults(emptyList())
         }
         state.query = query
+        state.numberMissing = null
         job?.cancel()
         // A typed position (coordinates, Plus Code) is answered here, offline and at once, without the engine.
         // The map centre only completes a short Plus Code; it is not stored or logged.
@@ -180,6 +184,7 @@ class SearchCoordinator(
             when (val outcome = withContext(io) { mutex.withLock { run(query.trim()) { it.search(query.trim(), point, limit) } } }) {
                 is Outcome.Found -> {
                     state.results = outcome.list
+                    state.numberMissing = com.qtekfun.ultimatemaps.core.search.HouseNumberHint.missingNumber(query, outcome.list)
                     state.status = SearchStatus.DONE
                 }
                 Outcome.NoRegions -> {

@@ -92,4 +92,5 @@
     <string name="regions_notification_waiting">Wird gestartet …</string>
     <string name="regions_notification_queued">%1$d weitere warten</string>
     <string name="regions_pause">Pausieren</string>
+    <string name="search_number_missing">Die Kartendaten enthalten dort keine Hausnummer %1$s, deshalb werden die passenden Straßen angezeigt.</string>
 </resources>

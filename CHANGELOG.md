@@ -4,6 +4,10 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 
 ## [Unreleased]
 
+### Added
+
+- **The search says when a house number is not in the map data.** Searching "calle del pensamiento 2" where the map has the street but no address number 2 now shows a note above the streets ("The map data has no address number 2 there, so the matching streets are shown") instead of only the street. The numbers come from OpenStreetMap; where it has none, none can be found.
+
 ## [0.1.0-rc.22] - 2026-10-10
 
 ### Added

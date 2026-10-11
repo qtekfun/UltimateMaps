@@ -114,6 +114,28 @@ class SheetPanelTest {
     }
 
     @Test
+    fun aTypedHouseNumberTheMapLacksIsSaidAboveTheStreets() {
+        search.state.regionsAvailable = true
+        search.state.query = "calle del pensamiento 2"
+        search.state.results = listOf(SearchResult("Calle del Pensamiento", LatLon(40.328, -3.761), "Leganés", "Residential street"))
+        search.state.numberMissing = "2"
+        search.state.status = SearchStatus.DONE
+        show()
+        rule.onNodeWithTag("search_number_missing").assertIsDisplayed()
+        rule.onNodeWithText("The map data has no address number 2 there, so the matching streets are shown.").assertIsDisplayed()
+        rule.onNodeWithText("Residential street · Leganés").assertIsDisplayed()
+    }
+
+    @Test
+    fun withoutAMissingNumberThereIsNoNote() {
+        search.state.regionsAvailable = true
+        search.state.results = listOf(sol)
+        search.state.status = SearchStatus.DONE
+        show()
+        rule.onNodeWithTag("search_number_missing").assertDoesNotExist()
+    }
+
+    @Test
     fun anEmptyCategoryResultSaysNothingWasFound() {
         search.state.regionsAvailable = true
         search.state.category = PlaceCategory.ATM
