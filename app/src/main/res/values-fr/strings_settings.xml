@@ -70,4 +70,7 @@
     <string name="nav_frame_rate_title">Fluidité et batterie de la navigation</string>
     <string name="nav_frame_rate_body">La flèche et la caméra sont redessinées autant de fois par seconde pendant la navigation, et l\'écran reçoit la même demande de fréquence. Moins ménage la batterie (surtout sur les écrans à fréquence variable) ; plus est plus fluide. Le mode économie d\'énergie la limite toujours à 30.</string>
     <string name="nav_frame_rate_option">%1$d par seconde</string>
+    <string name="nav_cruise_title">Sur les longues routes droites</string>
+    <string name="nav_cruise_body">Rapide, sur un tronçon droit et loin du prochain virage, la flèche et la caméra n\'ont besoin que de peu de redessins et l\'écran peut baisser sa fréquence. Le plein régime revient avant tout virage. 1 par seconde économise le plus ; la flèche avance alors par à-coups.</string>
+    <string name="nav_cruise_same">Comme ci-dessus</string>
 </resources>

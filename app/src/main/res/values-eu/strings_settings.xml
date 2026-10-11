@@ -70,4 +70,7 @@
     <string name="nav_frame_rate_title">Nabigazioaren leuntasuna eta bateria</string>
     <string name="nav_frame_rate_body">Gezia eta kamera segundoko hainbat aldiz marrazten dira nabigatzen ari zarenean, eta pantailari maiztasun bera eskatzen zaio. Gutxiagok bateria gutxiago gastatzen du (pantailak maiztasuna jaisten dutenean nabarmenago); gehiagok leunagoa da. Bateria-aurrezteak beti 30era mugatzen du.</string>
     <string name="nav_frame_rate_option">%1$d segundoko</string>
+    <string name="nav_cruise_title">Errepide luze eta zuzenetan</string>
+    <string name="nav_cruise_body">Azkar, tarte zuzen batean eta hurrengo biraketatik urrun, geziak eta kamerak marrazketa gutxi behar dituzte, eta pantailak bere maiztasuna jaits dezake. Edozein biraketaren aurretik maiztasun osora itzultzen da. Segundoko 1ek gehiago aurrezten du; orduan gezia jauzika mugitzen da.</string>
+    <string name="nav_cruise_same">Goikoaren berdina</string>
 </resources>

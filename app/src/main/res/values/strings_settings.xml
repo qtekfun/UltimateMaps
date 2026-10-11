@@ -71,4 +71,7 @@
     <string name="nav_frame_rate_title">Navigation smoothness and battery</string>
     <string name="nav_frame_rate_body">The arrow and the camera are redrawn this many times a second while navigating, and the display is asked for the same rate. Lower is gentler on the battery (most visible on screens that lower their refresh rate); higher is smoother. Battery saver always limits it to 30.</string>
     <string name="nav_frame_rate_option">%1$d per second</string>
+    <string name="nav_cruise_title">On long straight roads</string>
+    <string name="nav_cruise_body">Fast, on a straight stretch and far from the next turn the arrow and the camera need few redraws, and the screen can lower its refresh rate. Full rate returns before any turn. 1 per second saves the most; the arrow then moves in steps.</string>
+    <string name="nav_cruise_same">Same as above</string>
 </resources>

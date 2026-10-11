@@ -8,6 +8,10 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 
 ### Added
 
+- **Fewer redraws on long straight roads.** While you cruise (faster than 72 km/h, on a straight stretch, with the next maneuver more than 1.5 km away and a real GPS position for the last 10 s) the arrow and the camera are redrawn once a second by default (2, 5 or "same as above" in Settings, Navigation, *On long straight roads*), the display is asked for a lower refresh rate and the wait between redraws is a timer instead of a wake-up every display frame. The full rate is back as soon as a maneuver is within 1.5 km, the road bends, you slow down or the position is estimated, so it is already smooth when you reach a turn or a town. At one redraw a second the arrow moves in steps; that is the price of the saving. Not measured on a phone.
+
+### Added
+
 - **Navigation smoothness and battery.** Settings, Navigation: how many times a second the arrow and the camera are redrawn while navigating (60, 45 or 30; 60 as before), and the display is asked for the same refresh rate while the navigation is on screen, so a screen that can lower its rate (like the LTPO panel of the Pixel 8) can save power. Battery saver still limits it to 30. Nothing was measured on a phone: lower should be gentler on the battery, higher smoother.
 
 ### Added

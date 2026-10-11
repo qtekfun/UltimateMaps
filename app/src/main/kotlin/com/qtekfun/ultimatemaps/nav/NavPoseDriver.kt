@@ -33,6 +33,13 @@ class NavPoseDriver(private val engine: MapEngine) {
      */
     var deviceHeading: () -> Float? = { null }
 
+    /**
+     * The longest time one frame may count for. Normally a stall must not make the maths overshoot (250 ms); at a deliberately low
+     * frame rate the frames are far apart on purpose, so the host raises it to cover the gap (the marker then still reaches its
+     * prediction instead of trailing the vehicle).
+     */
+    var maxStepMillis: Long = PuckInterpolator.MAX_STEP_MILLIS
+
     private var following = false
     private var hasTarget = false
     private var tauMillis = FOLLOW_TAU_MILLIS
@@ -146,9 +153,9 @@ class NavPoseDriver(private val engine: MapEngine) {
     fun frame(nowMillis: Long, minIntervalMillis: Long = 0L): Boolean {
         if (!puck.hasPose) return false
         if (lastPushAt != Long.MIN_VALUE && nowMillis - lastPushAt < minIntervalMillis) return false
-        val dt = if (lastFrameAt == Long.MIN_VALUE) 0.0 else (nowMillis - lastFrameAt).coerceIn(0L, PuckInterpolator.MAX_STEP_MILLIS).toDouble()
+        val dt = if (lastFrameAt == Long.MIN_VALUE) 0.0 else (nowMillis - lastFrameAt).coerceIn(0L, maxStepMillis).toDouble()
         lastFrameAt = nowMillis
-        puck.advance(nowMillis)
+        puck.advance(nowMillis, maxStepMillis)
         if (following && hasTarget) {
             zoom = PuckInterpolator.approach(zoom, tgtZoom, dt, tauMillis)
             tilt = PuckInterpolator.approach(tilt, tgtTilt, dt, tauMillis)

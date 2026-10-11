@@ -48,6 +48,7 @@ class PrefsNavSettingsStore(private val prefs: SharedPreferences) : NavSettingsS
             .putString(KEY_VOICE_ENGINE, next.voiceEngine)
             .putBoolean(KEY_COMPASS_ARROW, next.compassArrow)
             .putInt(KEY_FRAME_RATE, next.frameRate)
+            .putInt(KEY_CRUISE_FRAME_RATE, next.cruiseFrameRate)
             .apply()
         state.value = next
     }
@@ -73,6 +74,7 @@ class PrefsNavSettingsStore(private val prefs: SharedPreferences) : NavSettingsS
             voiceEngine = runCatching { prefs.getString(KEY_VOICE_ENGINE, "") }.getOrNull().orEmpty(),
             compassArrow = bool(KEY_COMPASS_ARROW, d.compassArrow),
             frameRate = runCatching { prefs.getInt(KEY_FRAME_RATE, d.frameRate) }.getOrDefault(d.frameRate),
+            cruiseFrameRate = runCatching { prefs.getInt(KEY_CRUISE_FRAME_RATE, d.cruiseFrameRate) }.getOrDefault(d.cruiseFrameRate),
         ).normalized()
     }
 
@@ -93,6 +95,7 @@ class PrefsNavSettingsStore(private val prefs: SharedPreferences) : NavSettingsS
         const val KEY_VOICE_ENGINE = "voice_engine"
         const val KEY_COMPASS_ARROW = "compass_arrow"
         const val KEY_FRAME_RATE = "frame_rate"
+        const val KEY_CRUISE_FRAME_RATE = "cruise_frame_rate"
         const val KEY_AVOID_MOTORWAYS = "avoid_motorways"
         const val KEY_AVOID_TOLLS = "avoid_tolls"
         const val KEY_AVOID_FERRIES = "avoid_ferries"

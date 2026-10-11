@@ -70,4 +70,7 @@
     <string name="nav_frame_rate_title">Fluïdesa i bateria de la navegació</string>
     <string name="nav_frame_rate_body">La fletxa i la càmera es redibuixen tantes vegades per segon mentre navegues, i es demana a la pantalla la mateixa freqüència. Menys gasta menys bateria (es nota més en pantalles que baixen la seva freqüència); més és més fluid. L\'estalvi de bateria sempre ho limita a 30.</string>
     <string name="nav_frame_rate_option">%1$d per segon</string>
+    <string name="nav_cruise_title">En carreteres llargues i rectes</string>
+    <string name="nav_cruise_body">Ràpid, en un tram recte i lluny del proper gir la fletxa i la càmera necessiten pocs redibuixats, i la pantalla pot baixar la seva freqüència. Abans de qualsevol gir torna a la velocitat completa. 1 per segon estalvia més; la fletxa es mou llavors a salts.</string>
+    <string name="nav_cruise_same">Igual que a dalt</string>
 </resources>

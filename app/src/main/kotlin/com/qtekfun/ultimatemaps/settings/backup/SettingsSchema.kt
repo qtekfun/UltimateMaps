@@ -155,6 +155,7 @@ object SettingsSchema {
         enum(GROUP_NAVIGATION, navPrefs, PrefsNavSettingsStore.KEY_LANGUAGE, nav.voiceLanguage, VoiceLanguagePref.entries.map { it.name }),
         bool(GROUP_NAVIGATION, navPrefs, PrefsNavSettingsStore.KEY_COMPASS_ARROW, nav.compassArrow),
         int(GROUP_NAVIGATION, navPrefs, PrefsNavSettingsStore.KEY_FRAME_RATE, nav.frameRate) { it in NavSettings.FRAME_RATE_CHOICES },
+        int(GROUP_NAVIGATION, navPrefs, PrefsNavSettingsStore.KEY_CRUISE_FRAME_RATE, nav.cruiseFrameRate) { it in NavSettings.CRUISE_FRAME_RATE_CHOICES },
         bool(GROUP_NAVIGATION, navPrefs, PrefsNavSettingsStore.KEY_AVOID_MOTORWAYS, nav.avoidMotorways),
         bool(GROUP_NAVIGATION, navPrefs, PrefsNavSettingsStore.KEY_AVOID_TOLLS, nav.avoidTolls),
         bool(GROUP_NAVIGATION, navPrefs, PrefsNavSettingsStore.KEY_AVOID_FERRIES, nav.avoidFerries),

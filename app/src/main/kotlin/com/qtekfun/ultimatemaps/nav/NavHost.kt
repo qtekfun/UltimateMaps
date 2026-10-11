@@ -9,6 +9,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -45,6 +46,25 @@ class NavHost(
     private val pose = NavPoseDriver(engine)
     private var lastNav: com.qtekfun.ultimatemaps.core.nav.NavState? = null
     private var geometryRevision = -1
+
+    /** Fast, straight and far from a maneuver: the arrow and the camera may be redrawn less often (see [CruiseDetector]). */
+    private val cruise = CruiseDetector()
+    private var routeGeometry: RouteGeometry? = null
+
+    /** The redraws a second now: the chosen rate, or the cruising one while [cruise] says so. Compose state: the display hint follows it. */
+    private var targetFps by androidx.compose.runtime.mutableIntStateOf(com.qtekfun.ultimatemaps.core.voice.NavSettings.DEFAULT_FRAME_RATE)
+
+    private fun navSettings() = com.qtekfun.ultimatemaps.voice.VoiceModule.settings(activity).settings.value
+
+    private fun fpsFor(s: com.qtekfun.ultimatemaps.core.voice.NavSettings): Int =
+        if (cruise.cruising && s.cruiseFrameRate != com.qtekfun.ultimatemaps.core.voice.NavSettings.CRUISE_SAME) minOf(s.frameRate, s.cruiseFrameRate) else s.frameRate
+
+    /** The minimum time between pushes now; also tells the pose how long one frame may count for. */
+    private fun frameIntervalMillis(saver: Boolean): Long {
+        val interval = PowerSavePolicy.minIntervalMillis(fpsFor(navSettings()), saver)
+        pose.maxStepMillis = maxOf(PuckInterpolator.MAX_STEP_MILLIS, 2 * interval)
+        return interval
+    }
     private val frames = FrameLoop()
 
     private var routeRevisionShown = -1
@@ -102,6 +122,8 @@ class NavHost(
                 engine.animateTo(CameraState(view.center, view.zoom), NavCamera.LEAVE_MILLIS)
                 camera.forget()
                 routeRevisionShown = -1
+                cruise.reset()
+                routeGeometry = null
             }
             wasActive = false
             wasFollowing = true
@@ -138,11 +160,13 @@ class NavHost(
         val fresh = nav !== lastNav
         if (fresh) {
             if (nav.routeRevision != geometryRevision || lastNav == null) {
-                pose.setRoute(screen.navigation.route.value?.geometry?.takeIf { it.size >= 2 }?.let(::RouteGeometry))
+                routeGeometry = screen.navigation.route.value?.geometry?.takeIf { it.size >= 2 }?.let(::RouteGeometry)
+                pose.setRoute(routeGeometry)
                 geometryRevision = nav.routeRevision
             }
             pose.onFix(nav, t)
             lastNav = nav
+            updateCruise(nav, t)
         }
         if (ui.following) {
             val modeChanged = wasView3d != null && wasView3d != ui.view3d
@@ -162,9 +186,20 @@ class NavHost(
         wasView3d = ui.view3d
     }
 
+    /** Re-evaluates cruising for a fresh navigation snapshot and tells the display hint the new rate. */
+    private fun updateCruise(nav: com.qtekfun.ultimatemaps.core.nav.NavState, t: Long) {
+        val g = routeGeometry
+        val steady = nav.status == com.qtekfun.ultimatemaps.core.nav.NavStatus.ON_ROUTE && !nav.estimated && !nav.inTunnel
+        cruise.update(
+            t, nav.speedMps, nav.nextManeuver?.distanceMeters,
+            if (g != null) CruiseDetector.headingChange(g, nav.traveledMeters) else Double.MAX_VALUE, steady,
+        )
+        targetFps = fpsFor(navSettings())
+    }
+
     /** One display frame: the marker and the camera at their interpolated place. Public for the tests. */
     internal fun frame(nowMillis: Long) {
-        pose.frame(nowMillis, PowerSavePolicy.minIntervalMillis(com.qtekfun.ultimatemaps.voice.VoiceModule.settings(activity).settings.value.frameRate, powerSave()))
+        pose.frame(nowMillis, frameIntervalMillis(powerSave()))
     }
 
     /**
@@ -177,15 +212,20 @@ class NavHost(
         private var saverCheckedAt = Long.MIN_VALUE
         private var lastFrameAt = Long.MIN_VALUE
 
-        fun start() {
+        private val handler = android.os.Handler(android.os.Looper.getMainLooper())
+        private val post = Runnable { android.view.Choreographer.getInstance().postFrameCallback(this) }
+
+        /** Posts the next frame. After a long [afterMillis] (a low frame rate on purpose) the wait is a timer, not a wake-up every display frame. */
+        fun start(afterMillis: Long = 0L) {
             if (posted || !pose.needsFrames(now())) return
             posted = true
-            android.view.Choreographer.getInstance().postFrameCallback(this)
+            if (afterMillis > 100L) handler.postDelayed(post, afterMillis) else post.run()
         }
 
         fun stop() {
             if (!posted) return
             posted = false
+            handler.removeCallbacks(post)
             android.view.Choreographer.getInstance().removeFrameCallback(this)
         }
 
@@ -198,11 +238,12 @@ class NavHost(
             }
             // The user took the camera: stop moving it at once, before the flow delivers the new state.
             if (!screen.ui.value.following) pose.release()
-            pose.frame(t, PowerSavePolicy.minIntervalMillis(com.qtekfun.ultimatemaps.voice.VoiceModule.settings(activity).settings.value.frameRate, saver))
+            val interval = frameIntervalMillis(saver)
+            pose.frame(t, interval)
             // A clock that did not advance (a test's frozen clock) has nothing more to animate: do not spin.
             val advanced = t != lastFrameAt
             lastFrameAt = t
-            if (advanced && screen.ui.value.active) start()
+            if (advanced && screen.ui.value.active) start(afterMillis = interval - 16L)
         }
     }
 
@@ -221,7 +262,9 @@ class NavHost(
     fun Overlay(dark: Boolean) {
         val ui by screen.ui.collectAsState()
         KeepScreenOn(ui.active && ui.phase != NavPhase.ARRIVED)
-        RefreshRateHint(if (ui.active) com.qtekfun.ultimatemaps.voice.VoiceModule.settings(activity).settings.collectAsState().value.frameRate else null)
+        val settingsRate = com.qtekfun.ultimatemaps.voice.VoiceModule.settings(activity).settings.collectAsState().value.frameRate
+        // The panel is asked for the rate in use (never below 10: the nearest mode it offers is chosen); the settings value is read so a change applies at once.
+        RefreshRateHint(if (ui.active) maxOf(10, minOf(settingsRate, if (targetFps > 0) targetFps else settingsRate)) else null)
         ShowOverLockScreen(ui.active)
         HideStatusBar(ui.active && com.qtekfun.ultimatemaps.voice.VoiceModule.settings(activity).settings.collectAsState().value.hideStatusBar)
         NavScreen(
@@ -364,7 +407,7 @@ object PowerSavePolicy {
 
     /** Minimum time between pushes for a chosen [fps]; the battery saver never allows more than [SAVER_FPS]. */
     fun minIntervalMillis(fps: Int, saver: Boolean): Long {
-        val effective = (if (saver) minOf(fps, SAVER_FPS) else fps).coerceIn(10, 120)
+        val effective = (if (saver) minOf(fps, SAVER_FPS) else fps).coerceIn(1, 120)
         return 1_000L / effective - 2
     }
 }
