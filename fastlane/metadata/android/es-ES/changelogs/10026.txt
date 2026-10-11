@@ -1,0 +1,1 @@
+Versión candidata: la navegación se redibuja a 30 por segundo por defecto para ahorrar batería, y el mapa parado y la brújula gastan menos. Solo España.
