@@ -10,19 +10,20 @@ import com.qtekfun.ultimatemaps.core.geo.LatLon
 import com.qtekfun.ultimatemaps.core.map.BikePin
 import com.qtekfun.ultimatemaps.core.map.GeoBounds
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import org.junit.After
 import org.junit.Test
 import java.util.concurrent.CopyOnWriteArrayList
-import java.util.concurrent.TimeUnit
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 /** The layer's decisions on the JVM: off by default, minimum zoom, thinning, bounded pin count, redraw only on change. */
 class BikeMapLayerTest {
-    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+    // Virtual time: the layer's debounce and its background query run on a test scheduler, so nothing depends on threads or the clock.
+    private val scheduler = kotlinx.coroutines.test.TestCoroutineScheduler()
+    private val dispatcher = kotlinx.coroutines.test.StandardTestDispatcher(scheduler)
+    private val scope = CoroutineScope(SupervisorJob() + dispatcher)
     private val system = BikeSystem("bicing", "Bicing", "Credit CC BY 4.0")
 
     private fun station(id: String, lat: Double, lon: Double, capacity: Int = 20) =
@@ -35,22 +36,19 @@ class BikeMapLayerTest {
     private fun repo(list: List<BikeStation> = three) = BikeShareRepository().also { it.install(BikeShareDataset(1_700_000_000L, listOf(system), list)) }
     private fun on() = InMemoryBikeShareSettingsStore(BikeShareSettings(enabled = true))
     private fun layer(r: BikeShareRepository, s: InMemoryBikeShareSettingsStore) =
-        BikeMapLayer(scope, Dispatchers.IO, r, s.settings, { drawn += it }, 10).also { it.start() }
+        BikeMapLayer(scope, dispatcher, r, s.settings, { drawn += it }, 10).also { it.start() }
 
     private fun await(what: String, cond: () -> Boolean) {
-        val end = System.nanoTime() + TimeUnit.SECONDS.toNanos(5)
-        while (!cond()) {
-            check(System.nanoTime() < end) { "timeout waiting for $what" }
-            Thread.sleep(5)
-        }
+        scheduler.advanceUntilIdle() // runs every pending task and debounce, in order
+        check(cond()) { "condition not reached: $what" }
     }
 
-    private fun settle() = Thread.sleep(150)
+    private fun settle() = scheduler.advanceUntilIdle()
 
     @After fun tearDown() = scope.cancel()
 
     @Test fun offByDefaultItDrawsNothing() {
-        val l = BikeMapLayer(scope, Dispatchers.IO, repo(), InMemoryBikeShareSettingsStore().settings, { drawn += it }, 10).also { it.start() }
+        val l = BikeMapLayer(scope, dispatcher, repo(), InMemoryBikeShareSettingsStore().settings, { drawn += it }, 10).also { it.start() }
         l.onViewport(view, 15.0)
         settle()
         assertTrue(drawn.isEmpty(), "nothing is rendered, not even an empty list")
@@ -58,7 +56,7 @@ class BikeMapLayerTest {
     }
 
     @Test fun theLiveSwitchAloneDrawsNothing() {
-        val l = BikeMapLayer(scope, Dispatchers.IO, repo(), InMemoryBikeShareSettingsStore(BikeShareSettings(liveAvailability = true)).settings, { drawn += it }, 10).also { it.start() }
+        val l = BikeMapLayer(scope, dispatcher, repo(), InMemoryBikeShareSettingsStore(BikeShareSettings(liveAvailability = true)).settings, { drawn += it }, 10).also { it.start() }
         l.onViewport(view, 15.0)
         settle()
         assertTrue(drawn.isEmpty())
