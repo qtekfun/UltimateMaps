@@ -38,4 +38,14 @@ class TransitTripLandscapeTest {
         assertTrue(banner.right <= 380 * 3f + 1f, "the banner is a column of at most 380 dp: $banner")
         assertTrue(bounds(rule, "trip_stop").bottom <= 360 * 3f + 1f)
     }
+
+    private fun offPlan(glove: Boolean) {
+        val off = follow(FollowPhase.OFF_PLAN) { copy(canReplan = true) }
+        rule.setContent { TransitTripScreen(TransitTripUi(TripTestSupport.trip(off), glove = glove), TransitTripActions(), dark = false) }
+        assertDisjointAndInside(rule, listOf("trip_bottom", "trip_mute", "trip_glove", "trip_banner", "trip_replan"))
+    }
+
+    @Test fun `the off-plan state with the re-plan button fits at normal size`() = offPlan(glove = false)
+
+    @Test fun `the off-plan state with the re-plan button fits in glove mode`() = offPlan(glove = true)
 }

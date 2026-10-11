@@ -3,6 +3,12 @@ package com.qtekfun.ultimatemaps.ui
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.isImeVisible
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.WindowInsetsSides
@@ -45,6 +51,7 @@ import com.qtekfun.ultimatemaps.R
 import com.qtekfun.ultimatemaps.core.map.CameraState
 import com.qtekfun.ultimatemaps.ui.sheet.BottomSheet
 import com.qtekfun.ultimatemaps.ui.sheet.SheetDetent
+import com.qtekfun.ultimatemaps.ui.sheet.SheetMath
 import com.qtekfun.ultimatemaps.ui.theme.Mapas
 
 /** Message shown in the sheet after an action that the app cannot (yet) complete. */
@@ -91,6 +98,7 @@ class MapScreenState {
     var onOpenSettings: () -> Unit = {}
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun MapScreen(
     state: MapScreenState,
@@ -165,6 +173,15 @@ fun MapScreen(
                 .padding(end = margin, top = 8.dp),
         )
 
+        // Landscape: the content has the height of the FULL sheet whatever the detent is and scrolls inside the visible
+        // part (MEDIUM, or the keyboard open), so nothing is cut off and the focused field is scrolled into view.
+        val bottomBar = with(density) { WindowInsets.navigationBars.getBottom(this).toDp() }
+        val contentHeight: Dp? = if (landscape) {
+            (maxHeight - topPadding - 8.dp - SheetMath.HANDLE_TARGET - bottomBar).coerceAtLeast(120.dp)
+        } else {
+            null
+        }
+        val imeOpen = WindowInsets.isImeVisible
         val sheet: @Composable () -> Unit = {
             BottomSheet(
                 detent = state.detent,
@@ -184,13 +201,14 @@ fun MapScreen(
                 expandActionLabel = stringResource(R.string.sheet_action_expand),
                 collapseActionLabel = stringResource(R.string.sheet_action_collapse),
                 mediumFraction = if (landscape) LANDSCAPE_MEDIUM_FRACTION else Mapas.dimens.sheetMediumFraction,
+                showHandle = !(landscape && imeOpen),
                 modifier = if (landscape) {
                     Modifier.align(Alignment.BottomStart).fillMaxHeight().windowInsetsPadding(startSafeInsets()).width(panelWidth)
                 } else {
                     Modifier.fillMaxSize()
                 },
             ) {
-                SheetContent(state, sheetPanel, landscape)
+                SheetContent(state, sheetPanel, landscape, contentHeight)
             }
         }
         if (!navigating) sheet()
@@ -207,7 +225,7 @@ fun MapScreen(
 private const val LANDSCAPE_MEDIUM_FRACTION = 0.62f
 
 @Composable
-private fun SheetContent(state: MapScreenState, panel: (@Composable () -> Unit)?, landscape: Boolean) {
+private fun SheetContent(state: MapScreenState, panel: (@Composable () -> Unit)?, landscape: Boolean, contentHeight: Dp?) {
     // The side panel only touches the bottom bar: a navigation bar at the side is not next to it.
     val bars = if (landscape) WindowInsets.navigationBars.only(WindowInsetsSides.Bottom) else WindowInsets.navigationBars
     Column(
@@ -223,7 +241,16 @@ private fun SheetContent(state: MapScreenState, panel: (@Composable () -> Unit)?
                 InfoCard(title, body, "card_notice")
                 Spacer(Modifier.height(8.dp))
             }
-            Box(Modifier.weight(1f).imePadding()) { panel() }
+            Box(Modifier.weight(1f).imePadding()) {
+                if (contentHeight != null) {
+                    // The scrolling parent also answers the text field's "bring into view" when the keyboard covers it.
+                    Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
+                        Box(Modifier.fillMaxWidth().height(contentHeight)) { panel() }
+                    }
+                } else {
+                    panel()
+                }
+            }
             return@Column
         }
         BasicText(

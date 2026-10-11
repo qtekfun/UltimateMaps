@@ -1,7 +1,25 @@
 package com.qtekfun.ultimatemaps.ui
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.ime
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.test.performScrollTo
+import androidx.core.graphics.Insets
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.activity.ComponentActivity
+import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.unit.dp
 import com.qtekfun.ultimatemaps.ui.LandscapeTestSupport.assertDisjointAndInside
@@ -21,7 +39,7 @@ import kotlin.test.assertTrue
 @Config(sdk = [34], qualifiers = "w800dp-h360dp-land-xxhdpi")
 class LandscapeLayoutTest {
     @get:Rule
-    val rule = createComposeRule()
+    val rule = createAndroidComposeRule<ComponentActivity>()
 
     @Test fun `landscape is wider than tall and the panel is a phone-width column`() {
         assertTrue(LandscapeLayout.isLandscape(800.dp, 360.dp))
@@ -68,5 +86,61 @@ class LandscapeLayoutTest {
         rule.waitForIdle()
         val h = bounds(rule, "sheet").height
         assertTrue(h > 150f * 3f && h < 300f * 3f, "medium height $h")
+    }
+
+    /** A stand-in for the search panel: tabs, a field, chips, then a long list (as the real one is laid out). */
+    private val fakePanel: @Composable () -> Unit = {
+        Column(Modifier.fillMaxSize()) {
+            Box(Modifier.fillMaxWidth().height(48.dp).testTag("fake_tabs"))
+            Spacer(Modifier.height(8.dp))
+            Box(Modifier.fillMaxWidth().height(90.dp).testTag("fake_header"))
+            BasicTextField(value = "madrid", onValueChange = {}, modifier = Modifier.fillMaxWidth().height(48.dp).testTag("fake_field"))
+            LazyColumn(Modifier.fillMaxWidth()) {
+                items(20) { Box(Modifier.fillMaxWidth().height(56.dp)) }
+            }
+        }
+    }
+
+    private var imeSeen = 0
+
+    private fun ime(heightDp: Int) {
+        // The listener Compose installs for the window insets is on its own root view, not on the decor view.
+        fun find(v: android.view.View): android.view.View? {
+            if (v.javaClass.name.endsWith("AndroidComposeView")) return v
+            if (v is android.view.ViewGroup) for (i in 0 until v.childCount) find(v.getChildAt(i))?.let { return it }
+            return null
+        }
+        val view = find(rule.activity.window.decorView)!!
+        val insets = WindowInsetsCompat.Builder()
+            .setInsets(WindowInsetsCompat.Type.ime(), Insets.of(0, 0, 0, heightDp * 3))
+            .setVisible(WindowInsetsCompat.Type.ime(), heightDp > 0)
+            .build()
+        rule.runOnUiThread { ViewCompat.dispatchApplyWindowInsets(view, insets) }
+        rule.waitForIdle()
+    }
+
+    @Test fun `with the keyboard open the field stays above it and at MEDIUM nothing is cut off`() {
+        val state = MapScreenState().apply { detent = SheetDetent.FULL }
+        rule.setContent {
+            imeSeen = androidx.compose.foundation.layout.WindowInsets.ime.getBottom(androidx.compose.ui.platform.LocalDensity.current)
+            MapasTheme(darkTheme = false) { MapScreen(state, onLocate = {}, onResetNorth = {}, sheetPanel = fakePanel) {} }
+        }
+        rule.waitForIdle()
+        // MEDIUM: the content is taller than the sheet, so it scrolls instead of being cut off.
+        state.detent = SheetDetent.MEDIUM
+        rule.waitForIdle()
+        rule.onNodeWithTag("fake_field").performScrollTo()
+        rule.waitForIdle()
+        val medium = bounds(rule, "sheet")
+        assertTrue(bounds(rule, "fake_field").bottom <= medium.bottom + 1f, "the field is reachable at MEDIUM")
+        state.detent = SheetDetent.FULL
+        rule.waitForIdle()
+        ime(190)
+        assertTrue(imeSeen > 0, "the simulated keyboard reached the compose window insets: $imeSeen")
+        val keyboardTop = (360 - 190) * 3f
+        rule.onNodeWithTag("fake_field").performScrollTo()
+        rule.waitForIdle()
+        val field = bounds(rule, "fake_field")
+        assertTrue(field.bottom <= keyboardTop + 1f && field.top >= 0f, "field $field must be above the keyboard at $keyboardTop")
     }
 }

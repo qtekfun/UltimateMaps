@@ -253,6 +253,8 @@ fun BottomSheet(
     collapseActionLabel: String = "",
     /** Share of the container height at MEDIUM; the side panel of the landscape layout rests higher than the portrait sheet. */
     mediumFraction: Float = Mapas.dimens.sheetMediumFraction,
+    /** False hides the handle (landscape with the keyboard open: its 48 dp are needed by the search field). */
+    showHandle: Boolean = true,
     content: @Composable () -> Unit,
 ) {
     BoxWithConstraints(modifier = modifier) {
@@ -340,7 +342,7 @@ fun BottomSheet(
                     stateDescription = detentLabel(detent)
                 },
         ) {
-            Box(
+            if (showHandle) Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(SheetMath.HANDLE_TARGET)
