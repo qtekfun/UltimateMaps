@@ -274,10 +274,13 @@ class MapLibreEngine(
         if (map == null) return
         val point = pendingUser
         if (point == null) {
+            idleFilter.reset()
             source.setGeoJson(EMPTY_COLLECTION)
             return
         }
         val now = SystemClock.uptimeMillis()
+        // The idle map: a standing phone's GPS wobbles by a few metres and its compass by a few degrees (see [IdleMarkerFilter]).
+        if (!idleFilter.shouldShow(point, heading ?: 0f, now, navigating = powerSaving)) return
         if (!userGate.ready(now)) {
             // Too soon: the last position still goes out when the gate opens (a standing car must not keep an old place).
             if (!userTrailPosted) {
@@ -292,6 +295,7 @@ class MapLibreEngine(
         )
     }
 
+    private val idleFilter = IdleMarkerFilter()
     private var powerSaving = false
 
     override fun setPowerSaving(enabled: Boolean) {
@@ -1053,6 +1057,7 @@ class MapLibreEngine(
                 "style_load_ms=${SystemClock.elapsedRealtime() - styleT0 - styleBuildMs}",
         )
         applyPowerSaving()
+        idleFilter.reset() // a new source starts empty
         val user = GeoJsonSource(USER_SOURCE).also { userSource = it }
         val pin = GeoJsonSource(PIN_SOURCE).also { pinSource = it }
         addZoneLayer(style, wanted == MapTheme.DARK) // low-emission zones: below everything drawn on top of the map
