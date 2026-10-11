@@ -43,7 +43,7 @@ class NavAlertFeed(
                     val g = geometry
                     if (s != null && g != null && s.status == NavStatus.ON_ROUTE && !s.estimated) {
                         banner?.onRouteProgress(s.traveledMeters)
-                        warner.onRouteFix(g, s.traveledMeters, s.position.lat, s.position.lon, s.speedMps.toFloat(), clock())
+                        warner.onRouteFix(g, s.traveledMeters, s.position.lat, s.position.lon, s.speedMps.toFloat(), clock(), s.offRouteMeters.toFloat())
                     }
                 }
             },
@@ -80,7 +80,7 @@ class FreeDrivingFeed(
             banner?.onFreePosition(fix.point.lat, fix.point.lon)
             warner.onFreeFix(
                 fix.point.lat, fix.point.lon, fix.bearingDegrees, fix.speedMps,
-                if (fix.timeMillis != 0L) fix.timeMillis else clock(),
+                if (fix.timeMillis != 0L) fix.timeMillis else clock(), fix.accuracyMeters,
             )
         }
     }

@@ -38,11 +38,16 @@ Code:
 
 Pure and deterministic: fixes and the time come in as arguments. Two entry points, one set of rules:
 
-- **Route-based** (navigating): fed by the `NavigationController` state. A target counts only when it lies within 35 m of the
-  route and ahead along it; the distance is measured along the route. A camera on a parallel road is ignored.
+- **Route-based** (navigating): fed by the `NavigationController` state. A target counts only when it lies close to the
+  route and ahead along it; the distance is measured along the route. A camera on a parallel road is ignored. "Close" is 35 m
+  for a target with a known direction (axis plus along/against), and 28 m to the right / 18 m to the left of the driver for one
+  without (the other carriageway is 20 to 50 m away, on the left in right-hand traffic), plus half the GPS accuracy (at most
+  8 m). The direction compared is the route's bearing over 25 m each side of the target, not the GPS heading.
 - **Free driving** (no navigation, app on screen, a switch on, location permission granted): fed by a `LocationSource` of its
   own (never the navigation's: a second `start` would replace its listener). A target counts when it is within 35 degrees of the
-  direction of travel (the fix's bearing, or derived from the last 15 m of movement).
+  direction of travel (the fix's bearing, or derived from the last 15 m of movement) and its lateral offset from the line of
+  travel is within the same allowance (known direction: plus 9 % of the distance for heading noise; unknown direction: none,
+  so a true camera is announced a few hundred metres later rather than the other carriageway's one being announced early).
 - Both: a target with a known road axis counts only when the travel direction agrees (both, along, or against the axis, within
   50 degrees; incidents with a named direction within 60 degrees).
 - Look-ahead = 30 s of travel, clamped to 400 to 1000 m. Below 2.5 m/s (9 km/h) nothing is announced.

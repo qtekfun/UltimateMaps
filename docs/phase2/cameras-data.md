@@ -87,7 +87,15 @@ Direction: the DATEX file has none (`tpegDirection` is always `unknown`); the re
 points increasing/decreasing), which the converter joins to the booths it can match and combines with a local road bearing
 computed from neighbouring anchors (the farthest-apart pair within 2 km, at least 100 m apart). That bearing is **derived, not
 published**: it only separates a parallel road from a crossing one. OSM `direction` is used as an axis for both directions
-because the OSM wiki does not say clearly whether it is the camera's view or the monitored traffic (not verified).
+because the OSM wiki says only "the way the speed camera faces" (checked 2026-10-11), not which traffic it enforces (a
+front-facing camera watches traffic travelling against `direction`, a rear-facing one along it). Merging an OSM node into a DGT
+booth keeps the DGT axis and sense (before 2026-10-11 the OSM axis overwrote them with "both").
+
+What is lost: a DGT booth that is not in the report (or not matched within 20 m) has no sense at all, and every OSM-only
+camera has "both" with an axis. Those cannot be told from the camera of the opposite carriageway by direction; the app
+uses their offset from the route instead (see `cameras-implementation.md`). Proposal, not done: OSM `relation=enforcement`
+(`from`, `to`, `device`) carries the monitored direction explicitly; it would need a new extract step in the weekly job and
+sits under the same ODbL attribution as the nodes.
 
 ## 5. Licence and attribution
 

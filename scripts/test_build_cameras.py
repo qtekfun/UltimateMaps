@@ -159,6 +159,7 @@ class ConverterTest(unittest.TestCase):
         merged = [c for c in fixed if c["src"] == bc.SRC_DGT | bc.SRC_OSM]
         self.assertEqual(1, len(merged))
         self.assertEqual(90, merged[0]["maxspeed"])
+        self.assertEqual(bc.SENSE_ALONG, merged[0]["sense"], "the OSM axis must not erase the DGT travel sense")
         osm_only = [c for c in fixed if c["src"] == bc.SRC_OSM]
         self.assertEqual(0, osm_only[0]["maxspeed"], "'50 mph' is not a km/h limit")
 
