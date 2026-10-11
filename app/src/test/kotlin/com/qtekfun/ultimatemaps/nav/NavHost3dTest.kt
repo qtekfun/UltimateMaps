@@ -32,7 +32,7 @@ class NavHost3dTest {
         val moves = mutableListOf<Move>()
         val headings = mutableListOf<Float?>()
         val buildings = mutableListOf<Boolean>()
-        val powerSaving = mutableListOf<Boolean>()
+        val navigating = mutableListOf<Boolean>()
         var user: LatLon? = null
         var clears = 0
         var resets = 0
@@ -45,7 +45,7 @@ class NavHost3dTest {
         override fun showUserLocation(point: LatLon?, accuracyMeters: Float?) { user = point }
         override fun setUserHeading(degrees: Float?) { headings += degrees }
         override fun setBuildings3d(enabled: Boolean) { buildings += enabled }
-        override fun setPowerSaving(enabled: Boolean) { powerSaving += enabled }
+        override fun setNavigating(enabled: Boolean) { navigating += enabled }
         override fun clearRoute() { clears++ }
         override fun resetNorth() { resets++ }
         override fun setCameraGestureListener(listener: (() -> Unit)?) { gesture = listener }
@@ -94,14 +94,14 @@ class NavHost3dTest {
         }
     }
 
-    @Test fun `the map is told to save power once while a navigation is on screen and not any more afterwards`() {
+    @Test fun `the map is told once that a navigation is on screen, and again when it is over`() {
         withHost { host ->
             host.render(ui())
             host.render(ui())
             settle(host)
-            assertEquals(listOf(true), engine.powerSaving)
+            assertEquals(listOf(true), engine.navigating)
             host.render(NavUi())
-            assertEquals(listOf(true, false), engine.powerSaving)
+            assertEquals(listOf(true, false), engine.navigating)
         }
     }
 

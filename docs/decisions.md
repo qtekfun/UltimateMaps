@@ -974,3 +974,23 @@ Format: date · decision · reason · discarded alternatives · how to revert it
 - **What it also takes:** the marker's frame step is raised from 250 ms to twice the interval (`NavPoseDriver.maxStepMillis`) so one frame covers the whole gap; with the old limit the arrow trailed the vehicle (a test shows more than 15 m of lag at one frame a second); the wait between low-rate frames is a handler timer instead of a Choreographer callback every display frame; the window's `preferredRefreshRate` follows the rate in use (never below 10).
 - **Cost:** at one redraw a second the arrow and the camera move in steps of about 30 m at motorway speed. Offered at 1 by default because the owner asked for 1 Hz; 2 and 5 are in the settings.
 - **Not verified:** the saving and how it looks; the Pixel measurement plan of the previous entry covers both.
+
+## 2026-10-11 · Battery: where the power goes, and the idle-map fix (branch `fix/battery-drain`, realme and OPPO measured)
+- **Request (owner):** the app drains a lot of battery; find out why and fix it, with measurements. Details and numbers: `docs/battery.md`.
+- **Finding:** in the owner's own battery statistics the app was the top consumer (127 of 478 mAh in 78 min); the CPU was about one core for
+  the whole time it was on screen, plus the GPS (not avoidable). No wake locks, alarms, services or network are involved. On a phone,
+  simulated navigation costs 0.8 of a core at the default 60 redraws a second, almost all of it the map library's render thread
+  (about 11 ms per frame; labels are the biggest share, then the frame rate and the tilt). The idle map with the position dot shown
+  redrew the whole map ten times a second from GPS and compass noise (5 % of a core).
+- **Decision:** (1) `IdleMarkerFilter`: the idle map hands the marker to the map library only when it moved 3 m or turned 4 degrees
+  (or every 5 s); idle map 5.0 % to 1.4 % of a core. (2) The compass sensor runs only while a navigation or the map's own dot shows it,
+  at 10 Hz; while navigating a reading draws only when the vehicle is nearly standing and through the frame-rate throttle (it bypassed
+  the 60/45/30 and cruise rates before). (3) A `bench` build type (own id, debug key, profileable) for on-device measurements next to
+  the signed app.
+- **Discarded:** capping the marker hand-over at 30 Hz and turning label fades off while navigating (no gain in interleaved A/B runs);
+  hiding single label layers in navigation (0 to 8 points each, not additive: all labels gone is 33 points); hiding the 3D buildings (no change);
+  a lower pixel ratio (no change: the cost is CPU, not fill).
+- **Left for the owner (separate PR `fix/nav-frame-rate-default`):** default navigation frame rate 60 to 30: about a third of the
+  navigation CPU, at the cost of the smoothness asked for in rc.11.
+- **Not verified:** a real drive and the navigation foreground service; the Pixel 8; the `play` flavor; how 30 redraws a second look
+  in a moving car.

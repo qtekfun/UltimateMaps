@@ -261,14 +261,6 @@ class MapLibreEngine(
         style.getLayer(USER_ARROW_LAYER)?.setProperties(visibility(if (arrow) Property.VISIBLE else Property.NONE))
     }
 
-    /** The marker is handed to the map at most this often (about every second display frame at 60 Hz): see [MinIntervalGate]. */
-    private val userGate = MinIntervalGate(USER_PUSH_MIN_MILLIS)
-    private var userTrailPosted = false
-    private val userTrail = Runnable {
-        userTrailPosted = false
-        pushUser()
-    }
-
     private fun pushUser() {
         val source = userSource ?: return
         if (map == null) return
@@ -280,34 +272,19 @@ class MapLibreEngine(
         }
         val now = SystemClock.uptimeMillis()
         // The idle map: a standing phone's GPS wobbles by a few metres and its compass by a few degrees (see [IdleMarkerFilter]).
-        if (!idleFilter.shouldShow(point, heading ?: 0f, now, navigating = powerSaving)) return
-        if (!userGate.ready(now)) {
-            // Too soon: the last position still goes out when the gate opens (a standing car must not keep an old place).
-            if (!userTrailPosted) {
-                userTrailPosted = true
-                main.postDelayed(userTrail, userGate.waitMillis(now))
-            }
-            return
-        }
-        userGate.pass(now)
+        if (!idleFilter.shouldShow(point, heading ?: 0f, now, navigating = navigating)) return
         source.setGeoJson(
             Feature.fromGeometry(Point.fromLngLat(point.lon, point.lat)).apply { addNumberProperty(USER_BEARING, heading ?: 0f) },
         )
     }
 
     private val idleFilter = IdleMarkerFilter()
-    private var powerSaving = false
 
-    override fun setPowerSaving(enabled: Boolean) {
-        powerSaving = enabled
-        applyPowerSaving()
-    }
+    /** A navigation is on screen: every marker change goes to the map (see [IdleMarkerFilter]). */
+    private var navigating = false
 
-    /** Symbols that appear or disappear as the camera moves fade for 300 ms by default; every fading frame is a redraw of all labels. */
-    private fun applyPowerSaving() {
-        val style = map?.style ?: return
-        val t = style.transition
-        style.transition = org.maplibre.android.style.layers.TransitionOptions(t.duration, t.delay, !powerSaving)
+    override fun setNavigating(enabled: Boolean) {
+        navigating = enabled
     }
 
     override fun setBuildings3d(enabled: Boolean) {
@@ -1056,7 +1033,6 @@ class MapLibreEngine(
                 "skipped=${built.skipped} json_kb=${built.json.length / 1024} build_ms=$styleBuildMs " +
                 "style_load_ms=${SystemClock.elapsedRealtime() - styleT0 - styleBuildMs}",
         )
-        applyPowerSaving()
         idleFilter.reset() // a new source starts empty
         val user = GeoJsonSource(USER_SOURCE).also { userSource = it }
         val pin = GeoJsonSource(PIN_SOURCE).also { pinSource = it }
@@ -1179,7 +1155,6 @@ class MapLibreEngine(
     }
 
     private companion object {
-        const val USER_PUSH_MIN_MILLIS = 30L
         const val METRICS_TAG = "UMSTYLE"
         const val USER_SOURCE ="mapas-user-src"
         const val USER_LAYER = "mapas-user"
