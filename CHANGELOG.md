@@ -8,6 +8,16 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 
 - **Enforced direction of speed cameras (experimental, off by default).** Settings, Speed cameras and traffic, has a new switch that uses the direction of traffic a camera enforces when OpenStreetMap says it (an `enforcement` relation), so a camera of the other carriageway does not alert. Off, alerts work exactly as before. The data carries the direction only after the weekly data job adds the extra extract step; nothing was tried on a phone or with a real OpenStreetMap extract yet.
 
+## [0.1.0-rc.26] - 2026-10-11
+
+### Changed
+
+- **Navigation redraws 30 times a second by default** (was 60). The measured cost of navigating was about 0.8 of a CPU core at 60 redraws a second, almost all in the map renderer, and it falls in proportion: 30 costs about a third less. Settings, Navigation lets you go back to 45 or 60; installs that already saved a value keep it. Not judged by eye on a moving car yet.
+
+### Fixed
+
+- **Idle map and compass.** The map screen with the position dot redrew the whole map about 10 times a second from GPS and compass noise; it now hands the marker over only after 3 m or 4 degrees of change, or every 5 s (about 5 % of a core down to about 1.4 %, measured on one phone). The compass sensor is registered only while navigating or while the map shows its own arrow, at 10 Hz, and while navigating it no longer bypasses the redraw rate. Findings and measurements are in `docs/battery.md`.
+
 ## [0.1.0-rc.25] - 2026-10-11
 
 ### Fixed
