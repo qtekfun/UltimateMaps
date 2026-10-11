@@ -1,0 +1,1 @@
+Versión candidata: la búsqueda avisa cuando un número de calle no está en los datos del mapa, y un ajuste de fluidez y batería de la navegación (60, 45 o 30 fotogramas por segundo, con una indicación de frecuencia a la pantalla). Solo España.

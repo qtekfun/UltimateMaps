@@ -1,0 +1,1 @@
+Release candidate: the search says when a house number is not in the map data, and a navigation smoothness and battery setting (60, 45 or 30 frames a second, with a refresh-rate hint to the display). Spain only.
