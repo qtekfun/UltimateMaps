@@ -4,6 +4,8 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 
 ## [Unreleased]
 
+## [0.1.0-rc.23] - 2026-10-11
+
 ### Added
 
 - **Navigation smoothness and battery.** Settings, Navigation: how many times a second the arrow and the camera are redrawn while navigating (60, 45 or 30; 60 as before), and the display is asked for the same refresh rate while the navigation is on screen, so a screen that can lower its rate (like the LTPO panel of the Pixel 8) can save power. Battery saver still limits it to 30. Nothing was measured on a phone: lower should be gentler on the battery, higher smoother.
