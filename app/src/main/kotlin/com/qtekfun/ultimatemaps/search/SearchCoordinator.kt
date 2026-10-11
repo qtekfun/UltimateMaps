@@ -36,6 +36,13 @@ class SearchState {
 
     /** The house number typed that no result has (the map data lacks that address); null otherwise. See `HouseNumberHint`. */
     var numberMissing by mutableStateOf<String?>(null)
+
+    /**
+     * The user asked for this search (search key of the keyboard, or the field's action) instead of the live
+     * as-you-type one. While true and the status is PREPARING or SEARCHING the panel shows progress even if older results
+     * are still listed; it is cleared by the next keystroke and by every outcome.
+     */
+    var submitted by mutableStateOf(false)
 }
 
 /** Labels of the result row for a typed position ("Coordinates", "Plus Code"); localized by the host. */
@@ -112,6 +119,7 @@ class SearchCoordinator(
      */
     fun browseCategory(category: PlaceCategory, categoryName: String) {
         job?.cancel()
+        state.submitted = false
         state.query = ""
         state.category = category
         state.results = emptyList()
@@ -147,6 +155,7 @@ class SearchCoordinator(
     fun clearCategory() {
         if (state.category == null) return
         job?.cancel()
+        state.submitted = false
         state.category = null
         state.results = emptyList()
         state.status = if (state.regionsAvailable == false) SearchStatus.NO_REGIONS else SearchStatus.IDLE
@@ -160,6 +169,7 @@ class SearchCoordinator(
         }
         state.query = query
         state.numberMissing = null
+        state.submitted = false
         job?.cancel()
         // A typed position (coordinates, Plus Code) is answered here, offline and at once, without the engine.
         // The map centre only completes a short Plus Code; it is not stored or logged.
@@ -176,12 +186,35 @@ class SearchCoordinator(
             state.status = if (state.regionsAvailable == false) SearchStatus.NO_REGIONS else SearchStatus.IDLE
             return
         }
+        launchQuery(query, debounceMs)
+    }
+
+    /**
+     * The user pressed the search key (or the field's search button): runs the typed text now, without the debounce,
+     * and shows progress at once. Returns false when there is nothing to run (blank text or a typed position, which is
+     * answered already), so the host can still just dismiss the keyboard. Safe to call repeatedly: it re-runs the query,
+     * which is also how an ERROR is retried.
+     */
+    fun submit(): Boolean {
+        val query = state.query
+        if (state.category != null || query.isBlank() || state.coordinateQuery) return false
+        job?.cancel()
+        state.numberMissing = null
+        state.submitted = true
+        state.status = if (engine == null || dirty) SearchStatus.PREPARING else SearchStatus.SEARCHING
+        launchQuery(query, 0)
+        return true
+    }
+
+    private fun launchQuery(query: String, delayMs: Long) {
         job = scope.launch {
-            delay(debounceMs)
+            if (delayMs > 0) delay(delayMs)
             val point = near()
             val cold = engine == null || dirty
             state.status = if (cold) SearchStatus.PREPARING else SearchStatus.SEARCHING
-            when (val outcome = withContext(io) { mutex.withLock { run(query.trim()) { it.search(query.trim(), point, limit) } } }) {
+            val outcome = withContext(io) { mutex.withLock { run(query.trim()) { it.search(query.trim(), point, limit) } } }
+            state.submitted = false
+            when (outcome) {
                 is Outcome.Found -> {
                     state.results = outcome.list
                     state.numberMissing = com.qtekfun.ultimatemaps.core.search.HouseNumberHint.missingNumber(query, outcome.list)
