@@ -43,6 +43,6 @@ The project is under GPLv3. Every dependency must be compatible and be listed he
 | freetype, harfbuzz, agg, stb_image, libtess2, glfw, imgui, vulkan_wrapper | various | Drape/desktop only | Not compiled |
 | Map data .mwm (OSM + third parties) | ODbL and others (see `data/copyright.html`) | Downloaded at runtime, not packaged | Attribution on the "About" screen (pending) |
 
-Inherited pending items (they do not block the build): `gb-postcode-data` (GPLv2) only affects GB maps that we generate ourselves (not the case); the text of `kdtree++`'s Artistic License 2.0 is not in the submodule and will have to be included in the "About" screen or in a `NOTICE` before F-Droid. See `docs/spike/comaps-code.md` section 5 and `docs/spike/verificaciones.md`.
+Inherited pending items (they do not block the build): `gb-postcode-data` (GPLv2) only affects GB maps that we generate ourselves (not the case); the text of `kdtree++`'s Artistic License 2.0 is not in the submodule and will have to be included in the "About" screen or in a `NOTICE` before F-Droid. See `docs/spike/comaps-code.md` section 5 and `docs/spike/verifications.md`.
 
 No `play-services-*`, Firebase or proprietary SDKs.
