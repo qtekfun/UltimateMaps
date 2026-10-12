@@ -1239,3 +1239,28 @@ Format: date · decision · reason · discarded alternatives · how to revert it
   restore), controller tests (confirmation held and saved; replan aboard without a position), store round trip, screen buttons.
 - **Not verified:** no device and no real ride; the thresholds (120 s, 180 s, 8x) are design choices in `FollowerConfig`.
 
+
+## 2026-10-12 · Transit trip screen: a user gesture takes the camera from the app until "Recenter" (branch `fix/transit-map-keeps-user-camera`, no device)
+- **Context:** the owner, following a Cercanias C5 trip, reported that the moment he zooms the map "everything goes back to the
+  route". The trip screen had no notion of the user touching the map: its itinerary was drawn with the engine's own
+  `fit = true` framing (fixed 300 dp bottom margin, no gesture check, still pending when the style was loading) and the hidden
+  route preview under it kept its own framing active (only a car navigation silenced it).
+- **Decision:** (1) the trip screen's camera is owned by `TripCameraFraming` (pure, `PanelHost.tripFraming`): it frames only on
+  the first display of an itinerary, a re-plan (another itinerary), a new leg (frames that leg), "Recenter", and a layout change
+  (fold, rotation, resize) while the user has not moved the map; (2) any camera gesture (pan, pinch/zoom, rotate; the engine's
+  `REASON_API_GESTURE`) sets `userMoved`, which stops every automatic framing until one of those reasons comes up; fixes, clock
+  ticks and zooms are never a reason; (3) the screen shows the navigation's *Recenter* button (`nav_ui_recenter`) only while
+  `userMoved`; (4) the engine no longer frames a trip by itself (`showTransitItinerary(fit = false)`) and a user gesture cancels
+  any `fit` still pending for a source that is loading (route, transit, category pins); (5) the preview's `RouteFraming` also
+  stays silent while a transit trip is followed (`navigating` includes it).
+- **Discarded:** (1) a time-based pause (re-frame after N seconds): it is the same surprise later and the car navigation uses an
+  explicit button; (2) following the user's position on this screen (a follow camera like the car's): a train ride is long and
+  the whole line is the useful picture, so the camera is only re-framed on events; (3) putting the state in `TransitTripHost`:
+  the camera is a map-side concern and the host has no map.
+- **Same defect elsewhere:** the route preview (`RouteFraming`) and the car navigation already stop on a gesture; the navigation
+  overview frames on an explicit toggle. Category pins and tracks fit on an explicit user action. No other screen shares the
+  trip framing.
+- **Tests:** `TripCameraFramingTest` (recording engine: zoom gesture does not frame; new leg and re-plan do; recenter resumes;
+  layout change before a gesture frames and after one does not), `TransitTripRecenterButtonTest`.
+- **Not verified:** no device. The exact trigger of the reported jump was not reproduced on a phone: no code path in the trip
+  screen re-frames on a zoom by itself, so the fix removes every unguarded framing and puts the rest behind the gesture check.
