@@ -135,6 +135,61 @@ class SheetPanelTest {
         rule.onNodeWithTag("search_number_missing").assertDoesNotExist()
     }
 
+    private fun showWithWebHandoff(opened: MutableList<String>) {
+        val withWeb = PanelActions(
+            onPickResult = { picked += it }, onShowSaved = {}, onRoute = {}, onShare = {},
+            onImport = {}, onExport = {}, onFocusField = {},
+            onSearchOnWeb = { opened += it },
+        )
+        rule.setContent { MapasTheme(darkTheme = false) { SheetPanel(search, places, withWeb) } }
+    }
+
+    @Test
+    fun noResultsOffersTheGoogleMapsWebSearchWhenTheFlavorProvidesIt() {
+        search.state.regionsAvailable = true
+        search.state.query = "zzzz"
+        search.state.results = emptyList()
+        search.state.status = SearchStatus.DONE
+        val opened = mutableListOf<String>()
+        showWithWebHandoff(opened)
+        rule.onNodeWithText("No results").assertIsDisplayed()
+        rule.onNodeWithText("Search on Google Maps (web)").assertIsDisplayed()
+        rule.onNodeWithTag("search_web_google_note").assertIsDisplayed()
+        rule.onNodeWithTag("search_web_google").performClick()
+        assertEquals(listOf("zzzz"), opened)
+    }
+
+    @Test
+    fun theWebSearchRowIsNotThereWithResultsOrWithoutTheHook() {
+        search.state.regionsAvailable = true
+        search.state.query = "sol"
+        search.state.results = listOf(sol)
+        search.state.status = SearchStatus.DONE
+        showWithWebHandoff(mutableListOf())
+        rule.onNodeWithTag("search_web_google").assertDoesNotExist()
+    }
+
+    @Test
+    fun withoutTheHookNoWebRowIsShownEvenWithNoResults() {
+        search.state.regionsAvailable = true
+        search.state.query = "zzzz"
+        search.state.results = emptyList()
+        search.state.status = SearchStatus.DONE
+        show()
+        rule.onNodeWithTag("search_web_google").assertDoesNotExist()
+    }
+
+    @Test
+    fun aMissingHouseNumberAlsoOffersTheWebSearch() {
+        search.state.regionsAvailable = true
+        search.state.query = "calle del pensamiento 2"
+        search.state.results = listOf(SearchResult("Calle del Pensamiento", LatLon(40.328, -3.761), "Leganés", "Residential street"))
+        search.state.numberMissing = "2"
+        search.state.status = SearchStatus.DONE
+        showWithWebHandoff(mutableListOf())
+        rule.onNodeWithTag("search_web_google").assertIsDisplayed()
+    }
+
     @Test
     fun anEmptyCategoryResultSaysNothingWasFound() {
         search.state.regionsAvailable = true
