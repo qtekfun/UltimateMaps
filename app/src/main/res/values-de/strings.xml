@@ -3,6 +3,11 @@
     <string name="network_mode_offline">Offline-Modus: keine Netzwerkverbindungen</string>
     <string name="network_connections_title">Mögliche Verbindungen</string>
     <string name="link_short_needs_resolve">Dieser Kurzlink braucht eine Netzwerkanfrage an Google, um sein Ziel zu finden. Das Auflösen von Kurzlinks ist ausgeschaltet, daher wurde nichts gesendet.</string>
+    <string name="link_short_resolving">Ziel dieses Kurzlinks wird gesucht…</string>
+    <string name="link_short_offline">Der Offline-Modus ist aktiv, daher wurde dieser Kurzlink nicht aufgelöst und nichts gesendet.</string>
+    <string name="link_short_failed">Dieser Kurzlink konnte nicht aufgelöst werden. Öffne ihn im Browser und teile stattdessen den vollständigen Link.</string>
+    <string name="search_web_google">In Google Maps suchen (Web)</string>
+    <string name="search_web_google_note">Öffnet google.com im Browser. Nutze dort Teilen und wähle UltimateMaps, um den Ort hierher zu holen.</string>
     <string name="link_not_recognized">Dieser Link ist kein erkannter Kartenlink.</string>
 
     <string name="about_title">Kartendaten</string>

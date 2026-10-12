@@ -3,6 +3,11 @@
     <string name="network_mode_offline">Modo sen conexión: ningunha conexión de rede</string>
     <string name="network_connections_title">Conexións posibles</string>
     <string name="link_short_needs_resolve">Esta ligazón curta precisa unha solicitude de rede a Google para atopar o destino. A resolución de ligazóns curtas está desactivada, así que non se enviou nada.</string>
+    <string name="link_short_resolving">Buscando o destino desta ligazón curta…</string>
+    <string name="link_short_offline">O modo sen conexión está activado, así que esta ligazón curta non se resolveu e non se enviou nada.</string>
+    <string name="link_short_failed">Non se puido resolver esta ligazón curta. Ábrea nun navegador e comparte a ligazón completa.</string>
+    <string name="search_web_google">Buscar en Google Maps (web)</string>
+    <string name="search_web_google_note">Abre google.com no teu navegador. Alí, usa Compartir e elixe UltimateMaps para traer o lugar aquí.</string>
     <string name="link_not_recognized">Esta ligazón non é unha ligazón de mapa recoñecida.</string>
 
     <string name="about_title">Datos do mapa</string>

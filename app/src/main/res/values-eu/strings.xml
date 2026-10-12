@@ -3,6 +3,11 @@
     <string name="network_mode_offline">Lineaz kanpoko modua: sareko konexiorik ez</string>
     <string name="network_connections_title">Konexio posibleak</string>
     <string name="link_short_needs_resolve">Esteka labur honek Google-ri sare-eskaera bat egin behar dio helmuga aurkitzeko. Esteka laburrak ebaztea desaktibatuta dago, beraz ez da ezer bidali.</string>
+    <string name="link_short_resolving">Esteka labur honen helmuga bilatzen…</string>
+    <string name="link_short_offline">Konexiorik gabeko modua aktibatuta dago, beraz esteka labur hau ez da ebatzi eta ez da ezer bidali.</string>
+    <string name="link_short_failed">Ezin izan da esteka labur hau ebatzi. Ireki arakatzailean eta partekatu esteka osoa.</string>
+    <string name="search_web_google">Bilatu Google Maps-en (weba)</string>
+    <string name="search_web_google_note">google.com irekitzen du arakatzailean. Han, erabili Partekatu eta aukeratu UltimateMaps lekua hona ekartzeko.</string>
     <string name="link_not_recognized">Esteka hau ez da ezagutzen den mapa-esteka bat.</string>
 
     <string name="about_title">Mapa-datuak</string>

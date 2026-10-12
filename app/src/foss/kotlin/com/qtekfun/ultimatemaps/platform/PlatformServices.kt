@@ -10,6 +10,8 @@ import com.qtekfun.ultimatemaps.core.net.NetworkPolicy
 import com.qtekfun.ultimatemaps.core.search.NoOnlineGeocoder
 import com.qtekfun.ultimatemaps.core.search.OnlineGeocoder
 import com.qtekfun.ultimatemaps.core.search.OnlineSearchSettingsStore
+import com.qtekfun.ultimatemaps.link.NoShortLinkResolver
+import com.qtekfun.ultimatemaps.link.ShortLinkResolver
 import com.qtekfun.ultimatemaps.location.AndroidLocationSource
 
 /**
@@ -37,4 +39,8 @@ object PlatformServices {
 
     /** True when Google Play Services is in use right now (never in this flavor). */
     fun googleServicesInUse(context: Context): Boolean = false
+
+    /** Short links are never resolved in this flavor: the app opens no connection to a Google host. */
+    @Suppress("UNUSED_PARAMETER")
+    fun shortLinkResolver(policy: NetworkPolicy): ShortLinkResolver = NoShortLinkResolver
 }

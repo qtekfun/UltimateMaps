@@ -1081,6 +1081,26 @@ Format: date · decision · reason · discarded alternatives · how to revert it
 - **Not verified:** nothing on a device; the converter was not run on a real OSM extract (none on disk, no osmium installed here), so the
   share of Spanish cameras that have a relation is unknown. OSM attribution (ODbL) is already shown; the relation data is OSM data under the same terms.
 
+## 2026-10-12 · Play flavor: web hand-off to Google Maps and share-back; "no Google, no third party" relaxed for `play` only (branch `feat/play-web-handoff`, no phone)
+- **Decision (owner, 2026-10-12):** in the `play` flavor only, when the offline search has nothing (or only streets for a typed house
+  number) a **Search on Google Maps (web)** row opens `https://www.google.com/maps/search/?api=1&query=...` in the browser, and the place
+  comes back through Android's Share (`ACTION_SEND` `text/plain`, now handled in every flavor because it only parses a link or
+  coordinates the user shared) or `ACTION_VIEW` of the map link. In `play`, a shared `maps.app.goo.gl` link is expanded with one request
+  that carries only the short URL, through `NetworkPolicy` (offline mode blocks it). CLAUDE.md's non-negotiables are relaxed for `play`
+  only: "no Google as provider" and "no data to third parties" no longer hold there for these user-triggered flows and for the opt-in
+  online geocoder (separate entry). `foss` is unchanged: no Google host is listed or contacted, short links are not resolved.
+- **Reason:** the offline data cannot know every business or new address, and the owner wants a way out for those cases in the build
+  that already uses Google services. The hand-off needs no API and no Google content enters the app's map.
+- **Discarded:** the Google Places or Geocoding API (their terms, sections 5.3 and 3.3, forbid using that content with a non-Google
+  map; also needs an API key that identifies the app); showing Google results inside the list; opening the link with a plain
+  `ACTION_VIEW` (the manifest claims `google.com/maps`, so Android can offer or pick UltimateMaps itself and loop); a default-off
+  short-link switch (the user's act of sharing the link into the app is the consent, and one request with only the short URL is the
+  least that can work).
+- **Changed on the way:** the two short-link hosts were listed as disabled endpoints in every flavor and never used; they are now
+  listed (enabled) only in `play`.
+- **Not verified:** nothing on a device; the redirect of a real short link and the share sheet of Google Maps were not exercised (fake
+  probe in the tests). Design: `docs/phase2/play-web-handoff.md`.
+
 ## 2026-10-12 · Foldable phones: fold-aware postures on top of the landscape column (branch `feat/foldable-ui`, no foldable, no device)
 - **Task (owner has no foldable):** make the map, search sheet and navigation usable on a Pixel Fold or Galaxy Z Fold in every posture, verified without a device.
 - **Decision:** one pure rule set, `WindowLayout` (`ui/fold/`), from the window size and the fold: `PORTRAIT` (unchanged), `SIDE_COLUMN` (the PR #105 landscape column, now also used by any window of at least 600 dp on both sides, upright or not, with a 360 to 440 dp column), `BOOK` (half-open or separating fold with a vertical crease: the column fills the pane before the crease, at most 480 dp; overlays and buttons in the pane after it) and `TABLETOP` (horizontal crease: map and banner and speed on the top half; sheet or arrival panel and buttons on the bottom half, at most 720 dp wide; the sheet detents all stay in the bottom pane). The fold comes from AndroidX WindowManager (`androidx.window:window` 1.5.0, Apache-2.0, platform window extensions, already on the classpath through AndroidX, no Play Services; `verifyFossHasNoGms` passes) behind `FoldPosture`, read while the activity is started and provided as `LocalFoldFeature`; tests inject fake creases. Route framing and the navigation follow camera use the free part of the map (`CameraPadding` covered by the column or the bottom pane), which also closes the open item of the landscape entry (the camera and the overview framing ignored the column).

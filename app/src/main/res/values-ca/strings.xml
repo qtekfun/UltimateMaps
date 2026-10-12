@@ -3,6 +3,11 @@
     <string name="network_mode_offline">Mode fora de línia: cap connexió de xarxa</string>
     <string name="network_connections_title">Connexions possibles</string>
     <string name="link_short_needs_resolve">Aquest enllaç curt necessita una petició de xarxa a Google per trobar la destinació. La resolució d\'enllaços curts està desactivada, així que no s\'ha enviat res.</string>
+    <string name="link_short_resolving">Cercant la destinació d\'aquest enllaç curt…</string>
+    <string name="link_short_offline">El mode sense connexió està activat, així que aquest enllaç curt no s\'ha resolt i no s\'ha enviat res.</string>
+    <string name="link_short_failed">No s\'ha pogut resoldre aquest enllaç curt. Obre\'l en un navegador i comparteix l\'enllaç complet.</string>
+    <string name="search_web_google">Cerca a Google Maps (web)</string>
+    <string name="search_web_google_note">Obre google.com al navegador. Allà, fes servir Comparteix i tria UltimateMaps per portar el lloc aquí.</string>
     <string name="link_not_recognized">Aquest enllaç no és un enllaç de mapa reconegut.</string>
 
     <string name="about_title">Dades del mapa</string>
