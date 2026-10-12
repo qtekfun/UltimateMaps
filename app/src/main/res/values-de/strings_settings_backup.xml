@@ -41,6 +41,7 @@
     <string name="backup_item_roadworks">Baustellen</string>
     <string name="backup_item_fuel">Tankstellen</string>
     <string name="backup_item_other">Sonstiges</string>
+    <string name="backup_item_system_geocoder">Online-Adresssuche (System-Geocoder)</string>
 
     <string name="backup_group_navigation">Navigation</string>
     <string name="backup_group_navigation_ui">Navigationsbildschirm</string>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Optional online address lookup through the phone's geocoder (play flavor only) -->
+    <string name="system_geocoder_title">Busca de enderezos en liña</string>
+    <string name="system_geocoder_switch_title">Preguntar ao xeocodificador do teléfono se a busca sen conexión non atopa nada</string>
+    <string name="system_geocoder_switch_body">Desactivado por defecto. Se o activas e a busca sen conexión non dá resultado, o texto que escribiches e a zona do mapa (como pista) envíanse ao servizo de xeocodificación do teléfono. Nun teléfono con Google Play Services ese servizo é o de Google, así que Google recíbeos. Non se envía nada mentres estea desactivado nin en modo sen conexión.</string>
+</resources>

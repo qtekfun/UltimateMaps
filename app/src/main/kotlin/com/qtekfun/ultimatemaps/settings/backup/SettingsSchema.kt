@@ -31,6 +31,7 @@ import com.qtekfun.ultimatemaps.recording.PrefsRecordingSettings
 import com.qtekfun.ultimatemaps.regions.RegionsController
 import com.qtekfun.ultimatemaps.search.PrefsHistorySettings
 import com.qtekfun.ultimatemaps.search.PrefsPlaceLanguageStore
+import com.qtekfun.ultimatemaps.search.PrefsSystemGeocoderSettings
 import com.qtekfun.ultimatemaps.settings.PrefsNavSettingsStore
 import com.qtekfun.ultimatemaps.core.transit.TransitMode
 import com.qtekfun.ultimatemaps.transit.follow.PrefsTransitTripSettings
@@ -107,6 +108,7 @@ object SettingsSchema {
     const val GROUP_RECORDING = "recording"
     const val GROUP_REGIONS = "regions"
     const val GROUP_PLACE_LANGUAGE = "place_language"
+    const val GROUP_SYSTEM_GEOCODER = "system_geocoder"
 
     private fun bool(group: String, prefs: String, key: String, default: Boolean, policy: RestorePolicy = RestorePolicy.DIRECT) =
         SettingSpec(group, prefs, key, SettingType.BOOLEAN, default, policy)
@@ -244,6 +246,11 @@ object SettingsSchema {
             GROUP_PLACE_LANGUAGE, PrefsPlaceLanguageStore.PREFS, PrefsPlaceLanguageStore.KEY_PREFERENCE, PlaceLanguagePref.AUTO,
             PlaceLanguagePref.entries.map { it.name },
         ),
+
+        // Optional online address lookup through the phone's geocoder (the `play` flavor only shows the switch; off by
+        // default). Turning it on lets the system geocoder service (Google's on a phone with Play Services) receive the
+        // text of searches the offline search could not answer, so it needs consent on a new phone.
+        bool(GROUP_SYSTEM_GEOCODER, PrefsSystemGeocoderSettings.PREFS, PrefsSystemGeocoderSettings.KEY_ENABLED, false, RestorePolicy.NEEDS_CONSENT),
 
         // Track recording switch (not the tracks).
         bool(GROUP_RECORDING, PrefsRecordingSettings.PREFS, PrefsRecordingSettings.KEY_ENABLED, false),

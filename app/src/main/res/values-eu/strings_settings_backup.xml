@@ -41,6 +41,7 @@
     <string name="backup_item_roadworks">Obrak</string>
     <string name="backup_item_fuel">Gasolindegiak</string>
     <string name="backup_item_other">Beste batzuk</string>
+    <string name="backup_item_system_geocoder">Lineako helbide-bilaketa (sistemaren geokodetzailea)</string>
 
     <string name="backup_group_navigation">Nabigazioa</string>
     <string name="backup_group_navigation_ui">Nabigazio-pantaila</string>

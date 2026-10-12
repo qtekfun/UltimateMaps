@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Optional online address lookup through the phone's geocoder (play flavor only) -->
+    <string name="system_geocoder_title">Recherche d\'adresses en ligne</string>
+    <string name="system_geocoder_switch_title">Interroger le géocodeur du téléphone si la recherche hors ligne ne trouve rien</string>
+    <string name="system_geocoder_switch_body">Désactivé par défaut. Si activé et que la recherche hors ligne ne donne rien, le texte saisi et la zone de la carte (comme indice) sont envoyés au service de géocodage du téléphone. Sur un téléphone avec Google Play Services, ce service est celui de Google, qui les reçoit donc. Rien n\'est envoyé tant que c\'est désactivé ni en mode hors ligne.</string>
+</resources>

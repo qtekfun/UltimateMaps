@@ -41,6 +41,7 @@
     <string name="backup_item_roadworks">Obras</string>
     <string name="backup_item_fuel">Postos de combustível</string>
     <string name="backup_item_other">Outros</string>
+    <string name="backup_item_system_geocoder">Pesquisa de moradas online (geocodificador do sistema)</string>
 
     <string name="backup_group_navigation">Navegação</string>
     <string name="backup_group_navigation_ui">Ecrã de navegação</string>

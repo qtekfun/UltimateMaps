@@ -33,6 +33,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import com.qtekfun.ultimatemaps.R
+import com.qtekfun.ultimatemaps.platform.PlatformServices
 import com.qtekfun.ultimatemaps.core.voice.VoiceLanguagePref
 import com.qtekfun.ultimatemaps.ui.theme.Mapas
 import java.util.Locale
@@ -277,6 +278,8 @@ private fun CategoryRow(row: HubRow, onClick: () -> Unit) {
 @Composable
 internal fun DataSettingsContent(env: SettingsEnv) {
     env.history?.let { HistorySection(it) }
+    // The play flavor's optional online address lookup switch; renders nothing in the foss flavor.
+    PlatformServices.SystemGeocoderSettingsSection()
     env.recording?.let { RecordingSection(it) }
     env.backup?.let { BackupSection(it) }
 }

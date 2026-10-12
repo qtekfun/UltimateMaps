@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Optional online address lookup through the phone's geocoder (play flavor only) -->
+    <string name="system_geocoder_title">Lineako helbide-bilaketa</string>
+    <string name="system_geocoder_switch_title">Galdetu telefonoaren geokodetzaileari lineaz kanpoko bilaketak ezer aurkitzen ez badu</string>
+    <string name="system_geocoder_switch_body">Lehenespenez desaktibatuta. Aktibatuta badago eta lineaz kanpoko bilaketak emaitzarik ez badu, idatzitako testua eta maparen eremua (pista gisa) telefonoaren geokodetze-zerbitzura bidaltzen dira. Google Play Services duen telefono batean zerbitzu hori Googlerena da, beraz Googlek jasotzen ditu. Ez da ezer bidaltzen desaktibatuta dagoen bitartean edo lineaz kanpoko moduan.</string>
+</resources>
