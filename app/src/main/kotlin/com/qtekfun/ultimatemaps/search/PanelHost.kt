@@ -8,6 +8,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.lifecycle.lifecycleScope
 import com.qtekfun.ultimatemaps.MapasApp
+import com.qtekfun.ultimatemaps.platform.PlatformServices
 import com.qtekfun.ultimatemaps.R
 import com.qtekfun.ultimatemaps.recording.RecordingPanel
 import com.qtekfun.ultimatemaps.core.fuel.FuelRepository
@@ -513,6 +514,16 @@ class PanelHost(
 
     private fun openWebsite(uri: String) = openExternal(Intent(Intent.ACTION_VIEW, Uri.parse(uri)), R.string.place_no_browser)
 
+    /** `play` only: opens Google Maps' web search for [query] in the browser; the place comes back through Share. */
+    private fun searchOnWeb(query: String) {
+        val url = WebHandoff.searchUrl(query) ?: return
+        try {
+            activity.startActivity(WebHandoff.browserIntent(url))
+        } catch (_: android.content.ActivityNotFoundException) {
+            openExternal(WebHandoff.chooserIntent(url, android.content.ComponentName(activity, activity.javaClass)), R.string.place_no_browser)
+        }
+    }
+
     private fun openExternal(intent: Intent, missing: Int) {
         try {
             activity.startActivity(intent)
@@ -536,6 +547,7 @@ class PanelHost(
             onCategoryOpened = { screen.detent = SheetDetent.MEDIUM },
             onDial = ::dial,
             onOpenWebsite = ::openWebsite,
+            onSearchOnWeb = if (PlatformServices.GOOGLE_SERVICES_FLAVOR) ::searchOnWeb else null,
         )
         val fuel = remember {
             FuelCardHost(
