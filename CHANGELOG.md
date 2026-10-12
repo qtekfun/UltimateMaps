@@ -4,6 +4,8 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 
 ## [Unreleased]
 
+## [0.1.0-rc.27] - 2026-10-12
+
 ### Fixed
 
 - **Train, metro and tram lines follow the rails on the map.** Public transport routes were drawn as straight lines between stops, cutting across buildings and parks; they now follow the track using the line geometry the operators publish (Cercanias, Metro de Madrid and Metro Ligero). It reaches the phone with the next rebuilt transit data release; until then, and for buses, the straight line stays. Not seen on a phone.
