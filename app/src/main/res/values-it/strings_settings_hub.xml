@@ -62,5 +62,8 @@
     <string name="about_diag_empty">Ancora nulla annotato.</string>
     <string name="about_diag_copy">Copia</string>
     <string name="about_diag_clear">Cancella note</string>
+    <string name="about_diag_clear_title">Cancellare le note di diagnostica?</string>
+    <string name="about_diag_clear_body">Le note salvate su questo telefono sugli errori verranno eliminate. L\'operazione non si può annullare. Copiale prima se vuoi conservarle per una segnalazione di errore.</string>
+    <string name="about_diag_clear_cancel">Annulla</string>
     <string name="hub_about_source">Codice sorgente: github.com/qtekfun/UltimateMaps</string>
 </resources>

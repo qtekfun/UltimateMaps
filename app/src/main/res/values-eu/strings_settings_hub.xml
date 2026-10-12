@@ -61,5 +61,8 @@
     <string name="about_diag_empty">Oraindik ez da ezer apuntatu.</string>
     <string name="about_diag_copy">Kopiatu</string>
     <string name="about_diag_clear">Garbitu oharrak</string>
+    <string name="about_diag_clear_title">Diagnostiko-oharrak garbitu?</string>
+    <string name="about_diag_clear_body">Telefono honetan akatsei buruz gordetako oharrak ezabatuko dira. Ezin da desegin. Kopiatu lehenago, akats-txosten batean erabili nahi badituzu.</string>
+    <string name="about_diag_clear_cancel">Utzi</string>
     <string name="hub_about_source">Iturburu-kodea: github.com/qtekfun/UltimateMaps</string>
 </resources>

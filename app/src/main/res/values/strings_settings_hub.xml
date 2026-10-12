@@ -61,5 +61,8 @@
     <string name="about_diag_empty">Nothing noted yet.</string>
     <string name="about_diag_copy">Copy</string>
     <string name="about_diag_clear">Clear notes</string>
+    <string name="about_diag_clear_title">Clear the diagnostic notes?</string>
+    <string name="about_diag_clear_body">The notes saved on this phone about failures will be deleted. This cannot be undone. Copy them first if you want to keep them for a bug report.</string>
+    <string name="about_diag_clear_cancel">Cancel</string>
     <string name="hub_about_source">Source code: github.com/qtekfun/UltimateMaps</string>
 </resources>

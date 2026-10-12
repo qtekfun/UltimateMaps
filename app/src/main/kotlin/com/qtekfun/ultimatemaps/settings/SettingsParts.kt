@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.CircleShape
@@ -38,6 +40,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import com.qtekfun.ultimatemaps.R
 import com.qtekfun.ultimatemaps.ui.theme.Mapas
 
@@ -125,6 +128,32 @@ internal fun DestructiveButton(label: String, tag: String, onClick: () -> Unit) 
     Spacer(Modifier.height(8.dp))
     Box(Modifier.fillMaxWidth().height(1.dp).background(Mapas.colors.separator))
     TextButton(label, tag, color = Mapas.colors.warning, onClick = onClick)
+}
+
+/**
+ * The confirmation that stands in front of a destructive action that cannot be undone (the same look as the other
+ * confirm dialogs of the settings). The body scrolls, so the buttons stay reachable in landscape and on a half-open
+ * fold. Cancel is the dismiss action (Back or a tap outside also cancel). Tags: `<tag>_dialog`, `<tag>_no`, `<tag>_yes`.
+ */
+@Composable
+internal fun ConfirmDestructiveDialog(
+    title: String, body: String, confirm: String, cancel: String, tag: String,
+    onConfirm: () -> Unit, onDismiss: () -> Unit,
+) {
+    Dialog(onDismissRequest = onDismiss) {
+        Column(Modifier.clip(Mapas.shapes.control).background(Mapas.colors.sheet).padding(20.dp).testTag("${tag}_dialog")) {
+            BasicText(title, style = Mapas.typography.title.copy(color = Mapas.colors.label))
+            Spacer(Modifier.height(8.dp))
+            Column(Modifier.weight(1f, fill = false).verticalScroll(rememberScrollState())) {
+                BasicText(body, style = Mapas.typography.body.copy(color = Mapas.colors.label))
+            }
+            Spacer(Modifier.height(16.dp))
+            Row(Modifier.align(Alignment.End)) {
+                TextButton(cancel, "${tag}_no", onClick = onDismiss)
+                TextButton(confirm, "${tag}_yes", color = Mapas.colors.warning, onClick = onConfirm)
+            }
+        }
+    }
 }
 
 @Composable

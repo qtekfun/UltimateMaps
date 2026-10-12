@@ -61,5 +61,8 @@
     <string name="about_diag_empty">Noch nichts notiert.</string>
     <string name="about_diag_copy">Kopieren</string>
     <string name="about_diag_clear">Notizen löschen</string>
+    <string name="about_diag_clear_title">Diagnosenotizen löschen?</string>
+    <string name="about_diag_clear_body">Die auf diesem Telefon gespeicherten Notizen zu Fehlern werden gelöscht. Das kann nicht rückgängig gemacht werden. Kopiere sie vorher, wenn du sie für einen Fehlerbericht behalten möchtest.</string>
+    <string name="about_diag_clear_cancel">Abbrechen</string>
     <string name="hub_about_source">Quellcode: github.com/qtekfun/UltimateMaps</string>
 </resources>
