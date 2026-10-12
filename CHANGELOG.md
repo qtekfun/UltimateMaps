@@ -6,6 +6,7 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 
 ### Added
 
+- **Share a place into UltimateMaps; Google Maps web search (play build only).** Share > UltimateMaps now works from any app: the text is searched for a map link or coordinates and the place opens on the map with its card. In the `play` build, when the offline search finds nothing there is a *Search on Google Maps (web)* button that opens your browser; share the place back to bring it here, and a shared `maps.app.goo.gl` link is expanded with one request that carries only that link (offline mode blocks it). No Google API is used and the `foss` build does neither. Nothing was tried on a phone; the real redirect of a short link and Google's share sheet were not exercised.
 - **Enforced direction of speed cameras (experimental, off by default).** Settings, Speed cameras and traffic, has a new switch that uses the direction of traffic a camera enforces when OpenStreetMap says it (an `enforcement` relation), so a camera of the other carriageway does not alert. Off, alerts work exactly as before. The data carries the direction only after the weekly data job adds the extra extract step; nothing was tried on a phone or with a real OpenStreetMap extract yet.
 
 ## [0.1.0-rc.26] - 2026-10-11

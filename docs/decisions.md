@@ -1080,3 +1080,23 @@ Format: date · decision · reason · discarded alternatives · how to revert it
   `docs/phase2/cameras-data.md` section 6). No new network access in the app: same file, same download.
 - **Not verified:** nothing on a device; the converter was not run on a real OSM extract (none on disk, no osmium installed here), so the
   share of Spanish cameras that have a relation is unknown. OSM attribution (ODbL) is already shown; the relation data is OSM data under the same terms.
+
+## 2026-10-12 · Play flavor: web hand-off to Google Maps and share-back; "no Google, no third party" relaxed for `play` only (branch `feat/play-web-handoff`, no phone)
+- **Decision (owner, 2026-10-12):** in the `play` flavor only, when the offline search has nothing (or only streets for a typed house
+  number) a **Search on Google Maps (web)** row opens `https://www.google.com/maps/search/?api=1&query=...` in the browser, and the place
+  comes back through Android's Share (`ACTION_SEND` `text/plain`, now handled in every flavor because it only parses a link or
+  coordinates the user shared) or `ACTION_VIEW` of the map link. In `play`, a shared `maps.app.goo.gl` link is expanded with one request
+  that carries only the short URL, through `NetworkPolicy` (offline mode blocks it). CLAUDE.md's non-negotiables are relaxed for `play`
+  only: "no Google as provider" and "no data to third parties" no longer hold there for these user-triggered flows and for the opt-in
+  online geocoder (separate entry). `foss` is unchanged: no Google host is listed or contacted, short links are not resolved.
+- **Reason:** the offline data cannot know every business or new address, and the owner wants a way out for those cases in the build
+  that already uses Google services. The hand-off needs no API and no Google content enters the app's map.
+- **Discarded:** the Google Places or Geocoding API (their terms, sections 5.3 and 3.3, forbid using that content with a non-Google
+  map; also needs an API key that identifies the app); showing Google results inside the list; opening the link with a plain
+  `ACTION_VIEW` (the manifest claims `google.com/maps`, so Android can offer or pick UltimateMaps itself and loop); a default-off
+  short-link switch (the user's act of sharing the link into the app is the consent, and one request with only the short URL is the
+  least that can work).
+- **Changed on the way:** the two short-link hosts were listed as disabled endpoints in every flavor and never used; they are now
+  listed (enabled) only in `play`.
+- **Not verified:** nothing on a device; the redirect of a real short link and the share sheet of Google Maps were not exercised (fake
+  probe in the tests). Design: `docs/phase2/play-web-handoff.md`.
