@@ -76,11 +76,15 @@ import kotlinx.coroutines.SupervisorJob
 
 class MapasApp : Application() {
     private val policy = DefaultNetworkPolicy(
-        endpoints = listOf(
-            AllowedEndpoint("tile.openstreetmap.org", ConnectionPurpose.ONLINE_TILES),
-            AllowedEndpoint("maps.app.goo.gl", ConnectionPurpose.SHORT_LINK_RESOLVE),
-            AllowedEndpoint("goo.gl", ConnectionPurpose.SHORT_LINK_RESOLVE),
-        ),
+        endpoints = buildList {
+            add(AllowedEndpoint("tile.openstreetmap.org", ConnectionPurpose.ONLINE_TILES))
+            // Only the `play` flavor ever resolves a short link a user shares into the app (one request, the short URL only;
+            // offline mode blocks it). The `foss` flavor lists and allows nothing for Google hosts.
+            if (com.qtekfun.ultimatemaps.platform.PlatformServices.GOOGLE_SERVICES_FLAVOR) {
+                add(AllowedEndpoint("maps.app.goo.gl", ConnectionPurpose.SHORT_LINK_RESOLVE, enabled = true))
+                add(AllowedEndpoint("goo.gl", ConnectionPurpose.SHORT_LINK_RESOLVE, enabled = true))
+            }
+        },
     )
 
     /**

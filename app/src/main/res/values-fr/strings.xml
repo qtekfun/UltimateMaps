@@ -3,6 +3,11 @@
     <string name="network_mode_offline">Mode hors ligne : aucune connexion réseau</string>
     <string name="network_connections_title">Connexions possibles</string>
     <string name="link_short_needs_resolve">Ce lien court nécessite une requête réseau vers Google pour trouver sa destination. La résolution des liens courts est désactivée, rien n\'a donc été envoyé.</string>
+    <string name="link_short_resolving">Recherche de la destination de ce lien court…</string>
+    <string name="link_short_offline">Le mode hors ligne est activé : ce lien court n\'a pas été résolu et rien n\'a été envoyé.</string>
+    <string name="link_short_failed">Impossible de résoudre ce lien court. Ouvrez-le dans un navigateur et partagez le lien complet.</string>
+    <string name="search_web_google">Rechercher sur Google Maps (web)</string>
+    <string name="search_web_google_note">Ouvre google.com dans votre navigateur. Là, utilisez Partager et choisissez UltimateMaps pour rapporter le lieu ici.</string>
     <string name="link_not_recognized">Ce lien n\'est pas un lien de carte reconnu.</string>
 
     <string name="about_title">Données cartographiques</string>

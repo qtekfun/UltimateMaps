@@ -61,6 +61,9 @@ import com.qtekfun.ultimatemaps.ui.theme.Mapas
 /** Message shown in the sheet after an action that the app cannot (yet) complete. */
 sealed interface Notice {
     data object ShortLink : Notice
+    data object ShortLinkResolving : Notice
+    data object ShortLinkOffline : Notice
+    data object ShortLinkFailed : Notice
     data object Unrecognized : Notice
     data class Search(val query: String) : Notice
     data object LocationDenied : Notice
@@ -305,6 +308,9 @@ private fun SheetContent(state: MapScreenState, panel: (@Composable () -> Unit)?
 @Composable
 private fun noticeText(n: Notice): Pair<String, String> = when (n) {
     Notice.ShortLink -> stringResource(R.string.notice_link_title) to stringResource(R.string.link_short_needs_resolve)
+    Notice.ShortLinkResolving -> stringResource(R.string.notice_link_title) to stringResource(R.string.link_short_resolving)
+    Notice.ShortLinkOffline -> stringResource(R.string.notice_link_title) to stringResource(R.string.link_short_offline)
+    Notice.ShortLinkFailed -> stringResource(R.string.notice_link_title) to stringResource(R.string.link_short_failed)
     Notice.Unrecognized -> stringResource(R.string.notice_link_title) to stringResource(R.string.link_not_recognized)
     is Notice.Search -> stringResource(R.string.notice_search_title, n.query) to stringResource(R.string.notice_search_body)
     Notice.LocationDenied -> stringResource(R.string.notice_location_title) to stringResource(R.string.location_permission_denied)

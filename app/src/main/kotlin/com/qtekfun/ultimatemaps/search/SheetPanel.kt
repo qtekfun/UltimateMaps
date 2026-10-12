@@ -81,6 +81,11 @@ class PanelActions(
     /** Opens the dialer with a `tel:` URI / the browser with an `https:` link from the place card. */
     val onDial: (String) -> Unit = {},
     val onOpenWebsite: (String) -> Unit = {},
+    /**
+     * The `play` flavor's hand-off of the typed text to Google Maps in the browser (null elsewhere, which hides the row).
+     * Offered only when the offline search has nothing to show.
+     */
+    val onSearchOnWeb: ((String) -> Unit)? = null,
 )
 
 /**
@@ -255,6 +260,16 @@ private fun SearchPane(
         }
         state.numberMissing?.takeIf { state.status == SearchStatus.DONE && state.category == null }?.let {
             PanelNote(stringResource(R.string.search_number_missing, it), "search_number_missing")
+        }
+        actions.onSearchOnWeb?.takeIf {
+            categories && state.status == SearchStatus.DONE && state.category == null && state.query.isNotBlank() &&
+                !state.coordinateQuery && (state.results.isEmpty() || state.numberMissing != null)
+        }?.let { open ->
+            PanelButton(
+                stringResource(R.string.search_web_google), { open(state.query) },
+                Modifier.fillMaxWidth(), singleLine = true, tag = "search_web_google",
+            )
+            PanelNote(stringResource(R.string.search_web_google_note), "search_web_google_note")
         }
         LazyColumn(Modifier.fillMaxWidth().testTag("search_results")) {
             if (state.query.isBlank() && state.category == null) whenEmpty()
