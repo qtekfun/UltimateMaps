@@ -1,0 +1,1 @@
+Release candidate: the search sheet no longer cuts off its tabs on the unfolded Pixel Fold, and Settings show the categories beside the open one on wide screens. Spain only.
