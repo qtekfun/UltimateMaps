@@ -35,6 +35,8 @@ data class TransitTripUi(
     val voiceOn: Boolean = true,
     /** A saved trip from before the process died could be resumed. */
     val resumable: Boolean = false,
+    /** The user moved the map by hand: the screen offers "recenter" (the app stopped framing the trip). */
+    val mapMoved: Boolean = false,
 ) {
     val active: Boolean get() = trip != null
 }

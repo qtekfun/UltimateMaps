@@ -85,6 +85,8 @@ class TransitTripActions(
     val onVoice: (Boolean) -> Unit = {},
     val onResume: () -> Unit = {},
     val onDiscard: () -> Unit = {},
+    /** Frames the trip on the map again after the user moved it. */
+    val onRecenter: () -> Unit = {},
 )
 
 /**
@@ -196,6 +198,12 @@ private fun BoxScope.Following(
 /** Mute and glove switches of the trip screen. */
 @Composable
 private fun TripSwitches(ui: TransitTripUi, actions: TransitTripActions) {
+    if (ui.mapMoved) {
+        TripButton(
+            stringResource(R.string.nav_ui_recenter), actions.onRecenter, Modifier.testTag("trip_recenter"),
+            container = NavTheme.colors.statusInfo, content = NavTheme.colors.onStatus,
+        )
+    }
     TripButton(
         stringResource(if (ui.voiceOn) R.string.nav_ui_mute else R.string.nav_ui_unmute), { actions.onVoice(!ui.voiceOn) }, Modifier.testTag("trip_mute"),
         container = if (ui.voiceOn) NavTheme.colors.panel else NavTheme.colors.laneRecommended,
@@ -554,19 +562,34 @@ private fun TripButton(
  * shows over the lock screen, and the itinerary is drawn on the map ([showItinerary]) when it starts or is re-planned.
  */
 @Composable
-fun TransitTripOverlay(host: TransitTripHost, dark: Boolean, showItinerary: (List<com.qtekfun.ultimatemaps.core.map.TransitMapLeg>) -> Unit) {
+fun TransitTripOverlay(
+    host: TransitTripHost,
+    dark: Boolean,
+    framing: TripCameraFraming,
+    showItinerary: (List<com.qtekfun.ultimatemaps.core.map.TransitMapLeg>) -> Unit,
+) {
     val ui by host.ui.collectAsState()
     val trip = ui.trip
     com.qtekfun.ultimatemaps.nav.KeepScreenOn(trip != null && trip.follow.phase != FollowPhase.ARRIVED)
     com.qtekfun.ultimatemaps.nav.ShowOverLockScreen(trip != null)
-    LaunchedEffect(trip?.itinerary) {
-        trip?.itinerary?.let { showItinerary(com.qtekfun.ultimatemaps.transit.TransitController.mapLegs(it)) }
+    // Draws the itinerary (the engine never frames it by itself) and tells the framing what is on screen. Keyed on the
+    // itinerary and the leg only: a fix, a clock tick or a zoom never runs it again.
+    val itinerary = trip?.itinerary
+    val legIndex = trip?.follow?.legIndex ?: -1
+    LaunchedEffect(itinerary, legIndex) {
+        if (itinerary == null) {
+            framing.end()
+        } else {
+            val legs = com.qtekfun.ultimatemaps.transit.TransitController.mapLegs(itinerary)
+            showItinerary(legs)
+            framing.onTrip(itinerary, legIndex, legs.flatMap { it.points }, legs.getOrNull(legIndex)?.points.orEmpty())
+        }
     }
     TransitTripScreen(
-        ui = ui,
+        ui = ui.copy(mapMoved = framing.userMoved),
         actions = TransitTripActions(
             onStop = host::stop, onReplan = { host.replan() }, onBoard = host::setOnBoard, onGlove = host::setGlove, onVoice = host::setVoice,
-            onResume = host::resume, onDiscard = host::discard,
+            onResume = host::resume, onDiscard = host::discard, onRecenter = framing::recenter,
         ),
         dark = dark,
     )

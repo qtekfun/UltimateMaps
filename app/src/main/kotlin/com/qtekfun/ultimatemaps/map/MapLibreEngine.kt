@@ -191,6 +191,10 @@ class MapLibreEngine(
         core.onCreate(null)
         core.onCameraIdle { map?.let { handleIdle(it) } }
         core.onCameraGesture {
+            // A framing still waiting for its source (style loading) must not take the camera from the user later.
+            routeFit = false
+            transitFit = false
+            categoryFit = false
             gestureListener?.invoke()
             extraGestureListeners.forEach { it() }
         }

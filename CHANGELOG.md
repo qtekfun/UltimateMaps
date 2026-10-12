@@ -6,6 +6,8 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 
 ### Fixed
 
+- **Zooming or moving the map on the public transport trip screen no longer snaps the view back to the route.** The trip screen framed the itinerary on its own and had no idea whether you had touched the map, so the view could be pulled back while you looked around or zoomed in to see where you are on the line. Now the app frames the trip only when it starts, after a re-plan, when a new leg begins, on a fold or rotation, and when you tap the new *Recenter* button; once you pinch, drag or rotate the map it stays where you put it and *Recenter* appears (same button as in car navigation). The hidden route preview under the trip no longer re-frames either, and a framing still waiting for the map to load is cancelled by your first gesture. Covered by tests with a fake map; not seen on a phone.
+
 - **Clearing the diagnostic notes now asks first.** Settings, About, Diagnostics: *Clear notes* used to delete the notes at once, so a stray tap lost them for good. It now shows a confirmation (Cancel keeps them) and the button sits below the notes, away from *Copy*. Covered by tests; not seen on a phone.
 
 ## [0.1.0-rc.27] - 2026-10-12
