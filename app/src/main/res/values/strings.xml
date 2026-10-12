@@ -4,6 +4,11 @@
     <string name="network_mode_offline">Offline mode: no network connections</string>
     <string name="network_connections_title">Possible connections</string>
     <string name="link_short_needs_resolve">This short link needs a network request to Google to find its destination. Resolving short links is turned off, so nothing was sent.</string>
+    <string name="link_short_resolving">Looking up this short link…</string>
+    <string name="link_short_offline">Offline mode is on, so this short link was not resolved and nothing was sent.</string>
+    <string name="link_short_failed">This short link could not be resolved. Open it in a browser and share the full link instead.</string>
+    <string name="search_web_google">Search on Google Maps (web)</string>
+    <string name="search_web_google_note">Opens google.com in your browser. There, use Share and pick UltimateMaps to bring the place back here.</string>
     <string name="link_not_recognized">This link is not a recognized map link.</string>
 
     <string name="attribution_osm" translatable="false">© OpenStreetMap</string>

@@ -3,6 +3,11 @@
     <string name="network_mode_offline">Modalità offline: nessuna connessione di rete</string>
     <string name="network_connections_title">Connessioni possibili</string>
     <string name="link_short_needs_resolve">Questo link breve richiede una richiesta di rete a Google per trovare la destinazione. La risoluzione dei link brevi è disattivata, quindi non è stato inviato nulla.</string>
+    <string name="link_short_resolving">Ricerca della destinazione di questo link breve…</string>
+    <string name="link_short_offline">La modalità offline è attiva, quindi questo link breve non è stato risolto e non è stato inviato nulla.</string>
+    <string name="link_short_failed">Impossibile risolvere questo link breve. Aprilo in un browser e condividi il link completo.</string>
+    <string name="search_web_google">Cerca su Google Maps (web)</string>
+    <string name="search_web_google_note">Apre google.com nel browser. Lì, usa Condividi e scegli UltimateMaps per riportare qui il luogo.</string>
     <string name="link_not_recognized">Questo link non è un link di mappa riconosciuto.</string>
 
     <string name="about_title">Dati della mappa</string>

@@ -6,6 +6,7 @@ import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.os.Bundle
 import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -32,6 +33,7 @@ import com.qtekfun.ultimatemaps.core.map.CameraState
 import com.qtekfun.ultimatemaps.core.map.MapTheme
 import com.qtekfun.ultimatemaps.link.LinkHandler
 import com.qtekfun.ultimatemaps.link.LinkOutcome
+import com.qtekfun.ultimatemaps.link.ShortLinkResult
 import com.qtekfun.ultimatemaps.link.pinPoint
 import com.qtekfun.ultimatemaps.core.map.AvailableLocationSource
 import com.qtekfun.ultimatemaps.platform.PlatformServices
@@ -238,9 +240,28 @@ class MainActivity : ComponentActivity() {
 
     // --- Links (RF-11) ---
 
+    /** The expansion of a shortened link that is in flight; a newer link replaces it. */
+    private var shortLinkJob: kotlinx.coroutines.Job? = null
+
+    private val shortLinkResolver by lazy { PlatformServices.shortLinkResolver((application as MapasApp).networkPolicy) }
+
+    /**
+     * An incoming link: `ACTION_VIEW` of a map URL or `geo:`, or `ACTION_SEND` of text that contains one (Google Maps, a browser
+     * or any app's "Share" > UltimateMaps). Both end in the same place card as a search result.
+     */
     private fun handleLink(intent: Intent?) {
-        if (intent?.action != Intent.ACTION_VIEW) return
-        val result = LinkHandler.handle(intent.dataString)
+        val outcome = when (intent?.action) {
+            Intent.ACTION_VIEW -> LinkHandler.classify(intent.dataString, null)
+            Intent.ACTION_SEND ->
+                if (intent.type?.startsWith("text/") == true) LinkHandler.handleShared(intent.getCharSequenceExtra(Intent.EXTRA_TEXT)?.toString())
+                else return
+            else -> return
+        }
+        shortLinkJob?.cancel()
+        apply(outcome)
+    }
+
+    private fun apply(result: LinkOutcome) {
         engine.showPin(result.pinPoint()) // always replaces (or clears) the pin of the previous link
         when (val outcome = result) {
             is LinkOutcome.ShowPlace -> {
@@ -254,8 +275,26 @@ class MainActivity : ComponentActivity() {
                 state.notice = if (panel.search.state.regionsAvailable == false) Notice.Search(outcome.query) else null
                 panel.runLinkSearch(outcome.query)
             }
+            is LinkOutcome.ShortLink -> resolveShortLink(outcome)
             LinkOutcome.ShortLinkNotResolved -> state.notice = Notice.ShortLink
             LinkOutcome.Unrecognized -> state.notice = Notice.Unrecognized
+        }
+    }
+
+    /** Expands a short link (play flavor, through NetworkPolicy), then handles the long link like any other. */
+    private fun resolveShortLink(link: LinkOutcome.ShortLink) {
+        state.notice = Notice.ShortLinkResolving
+        shortLinkJob = lifecycleScope.launch {
+            when (val r = shortLinkResolver.expand(link.url)) {
+                is ShortLinkResult.Expanded -> {
+                    val next = LinkHandler.classify(r.url, link.name)
+                    // A resolved link that is still short, or not a place, is not worth another round trip.
+                    apply(if (next is LinkOutcome.ShortLink) LinkOutcome.Unrecognized else next)
+                }
+                ShortLinkResult.Unavailable -> state.notice = Notice.ShortLink
+                ShortLinkResult.Offline -> state.notice = Notice.ShortLinkOffline
+                ShortLinkResult.Failed -> state.notice = Notice.ShortLinkFailed
+            }
         }
     }
 

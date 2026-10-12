@@ -10,6 +10,8 @@ import com.qtekfun.ultimatemaps.gms.GmsAvailability
 import com.qtekfun.ultimatemaps.gms.GmsGeofencer
 import com.qtekfun.ultimatemaps.gms.GmsLocationSource
 import com.qtekfun.ultimatemaps.gms.GmsMovementHint
+import com.qtekfun.ultimatemaps.core.net.NetworkPolicy
+import com.qtekfun.ultimatemaps.link.ShortLinkResolver
 import com.qtekfun.ultimatemaps.location.AndroidLocationSource
 
 /**
@@ -30,4 +32,10 @@ object PlatformServices {
         if (GmsAvailability.isAvailable(context)) GmsGeofencer(context) else NoGeofencer
 
     fun googleServicesInUse(context: Context): Boolean = GmsAvailability.isAvailable(context)
+
+    /**
+     * Expands `maps.app.goo.gl` links that the user shares into the app, through [policy] (offline mode applies). Only the
+     * short URL is sent. The `foss` flavor never does this.
+     */
+    fun shortLinkResolver(policy: NetworkPolicy): ShortLinkResolver = HttpShortLinkResolver(policy)
 }
