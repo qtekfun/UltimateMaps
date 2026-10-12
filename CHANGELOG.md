@@ -4,6 +4,10 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 
 ## [Unreleased]
 
+### Fixed
+
+- **Clearing the diagnostic notes now asks first.** Settings, About, Diagnostics: *Clear notes* used to delete the notes at once, so a stray tap lost them for good. It now shows a confirmation (Cancel keeps them) and the button sits below the notes, away from *Copy*. Covered by tests; not seen on a phone.
+
 ## [0.1.0-rc.27] - 2026-10-12
 
 ### Fixed

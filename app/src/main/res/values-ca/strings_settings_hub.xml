@@ -62,5 +62,8 @@
     <string name="about_diag_empty">Encara no hi ha res anotat.</string>
     <string name="about_diag_copy">Copia</string>
     <string name="about_diag_clear">Esborra les notes</string>
+    <string name="about_diag_clear_title">Vols esborrar les notes de diagnòstic?</string>
+    <string name="about_diag_clear_body">S\'esborraran les notes guardades en aquest telèfon sobre errors. No es pot desfer. Copia-les abans si vols conservar-les per a un informe d\'error.</string>
+    <string name="about_diag_clear_cancel">Cancel·la</string>
     <string name="hub_about_source">Codi font: github.com/qtekfun/UltimateMaps</string>
 </resources>

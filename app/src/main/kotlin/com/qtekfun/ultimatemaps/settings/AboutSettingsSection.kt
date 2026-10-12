@@ -88,7 +88,7 @@ fun AboutSettingsSection(env: AboutSettingsEnv) {
 
 /**
  * "Diagnostics": what the app noted locally about failures (never a position, a name or an exception message), collapsed by
- * default, with Copy for a bug report and Clear. Nothing is sent anywhere.
+ * default, with Copy for a bug report and Clear (behind a confirmation, away from Copy). Nothing is sent anywhere.
  */
 @Composable
 private fun DiagnosticsBlock(diagnostics: () -> String, clear: () -> Unit) {
@@ -96,6 +96,7 @@ private fun DiagnosticsBlock(diagnostics: () -> String, clear: () -> Unit) {
     Card("about_diag_card") {
         var shown by remember { mutableStateOf(false) }
         var text by remember { mutableStateOf("") }
+        var confirmClear by remember { mutableStateOf(false) }
         val clipboard = androidx.compose.ui.platform.LocalClipboardManager.current
         BasicText(
             stringResource(R.string.about_diag_body),
@@ -109,20 +110,36 @@ private fun DiagnosticsBlock(diagnostics: () -> String, clear: () -> Unit) {
             if (shown) text = diagnostics()
         }
         if (shown) {
+            // Copy sits above the notes and Clear below them, so a stray tap on Copy cannot reach Clear.
+            if (text.isNotBlank()) {
+                TextButton(stringResource(R.string.about_diag_copy), "about_diag_copy") {
+                    clipboard.setText(androidx.compose.ui.text.AnnotatedString(text))
+                }
+            }
             BasicText(
                 text.ifBlank { stringResource(R.string.about_diag_empty) },
                 style = Mapas.typography.callout.copy(color = Mapas.colors.label),
                 modifier = Modifier.testTag("about_diag_text"),
             )
             if (text.isNotBlank()) {
-                TextButton(stringResource(R.string.about_diag_copy), "about_diag_copy") {
-                    clipboard.setText(androidx.compose.ui.text.AnnotatedString(text))
-                }
-                DestructiveButton(stringResource(R.string.about_diag_clear), "about_diag_clear") {
+                Spacer(Modifier.height(16.dp))
+                DestructiveButton(stringResource(R.string.about_diag_clear), "about_diag_clear") { confirmClear = true }
+            }
+        }
+        if (confirmClear) {
+            ConfirmDestructiveDialog(
+                title = stringResource(R.string.about_diag_clear_title),
+                body = stringResource(R.string.about_diag_clear_body),
+                confirm = stringResource(R.string.about_diag_clear),
+                cancel = stringResource(R.string.about_diag_clear_cancel),
+                tag = "about_diag_clear_confirm",
+                onConfirm = {
+                    confirmClear = false
                     clear()
                     text = ""
-                }
-            }
+                },
+                onDismiss = { confirmClear = false },
+            )
         }
     }
 }
