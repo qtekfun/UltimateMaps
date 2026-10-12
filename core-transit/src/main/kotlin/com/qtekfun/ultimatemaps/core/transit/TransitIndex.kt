@@ -90,6 +90,18 @@ class TransitIndex(
     val stopExtId: Array<String>? = null,
     /** Feed trip id of each trip (absolute trip number), or "". Same rules as [stopExtId]. */
     val tripExtId: Array<String>? = null,
+    /**
+     * Line geometry (null in indexes built before shapes were carried, or without any): the polyline of pattern `p` is the
+     * vertices [patternShapeOffset]`[p]` until `[p + 1]` of [shapeLat]/[shapeLon] (micro-degrees); stop `i` of the pattern is at
+     * vertex [patternStopVertex]`[patternStopOffset[p] + i]` (relative to the pattern's first vertex); [patternHopOnShape] says
+     * whether the hop from that stop to the next follows the feed's shape (else it is the chord). A pattern with no polyline
+     * has an empty vertex range.
+     */
+    val shapeLat: IntArray? = null,
+    val shapeLon: IntArray? = null,
+    val patternShapeOffset: IntArray? = null,
+    val patternStopVertex: IntArray? = null,
+    val patternHopOnShape: BooleanArray? = null,
 ) {
     val stopCount: Int get() = stopLat.size
     val patternCount: Int get() = patternLine.size
@@ -101,6 +113,15 @@ class TransitIndex(
     val availableModes: Set<TransitMode> by lazy {
         patternLine.map { TransitMode.ofRouteType(lineType[it]) }.toSet()
     }
+
+    /** True when pattern [p] has a polyline. */
+    fun hasShape(p: Int): Boolean {
+        val off = patternShapeOffset ?: return false
+        return off[p + 1] - off[p] >= 2
+    }
+
+    /** How many patterns carry a polyline. */
+    val shapedPatternCount: Int by lazy { (0 until patternCount).count { hasShape(it) } }
 
     fun patternStopCount(p: Int): Int = patternStopOffset[p + 1] - patternStopOffset[p]
     fun patternTrips(p: Int): Int = patternTripOffset[p + 1] - patternTripOffset[p]

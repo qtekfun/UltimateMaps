@@ -1148,3 +1148,34 @@ Format: date · decision · reason · discarded alternatives · how to revert it
   (it is Binder IPC, not an app connection; left to the lead together with the Photon fallback, the prototype takes an `allowed` gate).
 - **Not verified:** latency, quotas and result quality on real phones (no device used); behaviour on Huawei and microG ROMs.
 - **Owner outcome (2026-10-12):** dropped. The prototype code was not merged; only the findings document was kept.
+
+## 2026-10-12 · Transit lines follow the rails: the index carries the feed's line geometry (branch `fix/transit-rail-shapes`, no device)
+- **Bug (owner, Cercanias C5 screenshots):** the route drawn on the map was a straight diagonal between stations, away from the tracks.
+  **Root cause:** the index never carried shapes; a ride's path was the stop list joined by chords. The feeds do carry them: Renfe
+  `shapes.txt` (144 shapes, one per line and direction), CRTM Metro (30) and Metro Ligero (8) with `shape_id` on every trip. The Renfe
+  `trips.txt` header is padded (`shape_id` plus spaces); the CSV reader already trims it. Evidence on the Madrid C5 pattern: the hop
+  Puente Alcocer to Villaverde Alto is 1160 m as a chord and 1870 m along the track, up to 665 m from the chord; Aluche to Laguna
+  reaches 675 m; Zarzaquemada to Leganes 317 m. The follower's corridor around the chord is 150 m plus accuracy (see the follow entry).
+- **Decision:** `ShapeMatcher` (core-transit, builder side) places the ordered stops of a pattern on the trip's GTFS shape: candidates
+  are the local minima of the distance (at most 6 per stop, none farther than 200 m), chosen by dynamic programming so the offsets
+  never decrease along the shape (a loop or a station visited twice gets each visit on its own pass), tried in both directions of the
+  shape; a stop that no candidate explains stays off the shape and its two hops keep the chord. The cut pieces are simplified at 3 m and
+  stored as one polyline per pattern in an optional trailing section of the `.umti` (flag 4 after the id strings, dedupe of identical
+  polylines, stop vertex deltas with a "hop follows the shape" bit). Older apps stop reading after the sections they know, so no
+  version bump and no catalog change; the app falls back to the chord for any pattern without a polyline. Only rail-bound route types
+  get geometry (`isRailLike`: tram, metro, rail, cable car, funicular, monorail and the extended ranges); the CLI flag `--no-shapes`
+  (gradle `-PtransitNoShapes`) builds without. `Itinerary.Ride` gets `geometry: RideShape` (points, vertex of each stop, hop flags) with
+  `slice` and `then` for re-plans aboard; the saved trip file is now format 3 and still reads format 2.
+- **Madrid result (feeds on disk, build date 2026-10-12):** 124 of the 124 rail patterns have a polyline (metro 30/30, tram 8/8,
+  Cercanias 86/86); 1500 of 1523 rail hops follow the shape (metro 520/524, tram 100/100, Cercanias 880/899). The uncovered hops are
+  shapes that stop short of a station (C1 to the airport, parts of C7 and C10: stops 2 to 23 km from the published shape). Index size
+  4,122,950 -> 4,203,742 bytes (+80 kB, +2 %).
+- **Discarded:** (1) map-matching the stops on an OpenStreetMap railway graph: the published shapes are the operators' own geometry,
+  need no extra data and are already in the zips the weekly job downloads; the only OSM data on disk is in CoMaps `.mwm` and PMTiles
+  (no reader without a native or vector-tile decoder), so it was not tried. It remains the way to cover a city whose feed has no
+  shapes. (2) Shapes for bus lines: the interurban `shapes.txt` is 190 MB (the reader holds it boxed); buses curve less relative to a
+  150 m corridor and the follower keeps the chord for them. Not measured. (3) A version bump of the `.umti`: unnecessary, the section
+  is skippable.
+- **Not verified:** nothing on a device. The weekly data job needs no change (same zips, same script); the first rebuilt data release
+  after this lands carries the geometry.
+

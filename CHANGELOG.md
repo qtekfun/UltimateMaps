@@ -4,6 +4,10 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 
 ## [Unreleased]
 
+### Fixed
+
+- **Train, metro and tram lines follow the rails on the map.** Public transport routes were drawn as straight lines between stops, cutting across buildings and parks; they now follow the track using the line geometry the operators publish (Cercanias, Metro de Madrid and Metro Ligero). It reaches the phone with the next rebuilt transit data release; until then, and for buses, the straight line stays. Not seen on a phone.
+
 ### Added
 
 - **Optional online search (play build only, off by default).** Settings, Maps and network has a new switch, *Search online when the map has no result (Photon, OpenStreetMap data)*, and the server address (the public Photon server by default; you can enter your own). When the downloaded maps find nothing, or only streets for a house number, the typed text and the map centre rounded to about 1 km are sent to the server and the places that come back are listed marked *Online*, pinned, and routable. Never your exact position; at most one request a second; blocked by offline mode; the `foss` build has none of it. Not tried against the real server or on a phone.

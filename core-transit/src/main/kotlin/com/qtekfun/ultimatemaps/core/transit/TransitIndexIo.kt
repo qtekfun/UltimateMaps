@@ -19,9 +19,14 @@ import java.io.OutputStream
  *                     profiles: per profile 2*nStops varints (run time from previous departure, dwell),
  *                     per trip: service, headsign, profile, firstArrival, headway, runs; frequency trips last, see nSched]
  * transfers: n, then [from, to, type, min+1]
- * optional (a file may end after the transfers): flags (1 = stop ids, 2 = trip ids), then one UTF string per stop,
- *           then one per trip in index order (the feed's own ids, "" when not kept; see FeedOptions.keepIds)
+ * optional (a file may end after the transfers): flags (1 = stop ids, 2 = trip ids, 4 = line geometry), then one UTF
+ *           string per stop, then one per trip in index order (the feed's own ids, "" when not kept; see FeedOptions.keepIds),
+ *           then, with flag 4: nShapes, then per distinct polyline [nPoints, lat(zz delta), lon(zz delta) per point,
+ *           micro-degrees], then per pattern [shape+1 (0: none), and when set, per stop (vertexDelta << 1 | hopOnShape)]
  * ```
+ *
+ * A reader that does not know a flag stops after the sections it knows, so geometry is invisible to older apps (they keep
+ * drawing the stop-to-stop line) and no version bump is needed.
  *
  * Trips of one pattern are mostly the same shape shifted in time (and exactly so for frequency-expanded trips), so
  * the file stores each distinct *time profile* once and then one `(service, headsign, profile, departure)` tuple per
@@ -112,10 +117,17 @@ object TransitIndexIo {
         // Optional trailing section (older files simply end after the transfers): feed ids for real-time matching.
         val stopIds = index.stopExtId
         val tripIds = index.tripExtId
-        if (stopIds != null || tripIds != null) {
-            w.varint((if (stopIds != null) 1 else 0) or (if (tripIds != null) 2 else 0))
+        val geoLat = index.shapeLat
+        val geoLon = index.shapeLon
+        val geoOff = index.patternShapeOffset
+        val geoStop = index.patternStopVertex
+        val geoHop = index.patternHopOnShape
+        val hasGeo = geoLat != null && geoLon != null && geoOff != null && geoStop != null && geoHop != null
+        if (stopIds != null || tripIds != null || hasGeo) {
+            w.varint((if (stopIds != null) 1 else 0) or (if (tripIds != null) 2 else 0) or (if (hasGeo) 4 else 0))
             stopIds?.forEach { w.utf(it) }
             tripIds?.forEach { w.utf(it) }
+            if (hasGeo) writeGeometry(w, index, geoLat!!, geoLon!!, geoOff!!, geoStop!!, geoHop!!)
         }
         w.out.flush()
     }
@@ -241,6 +253,57 @@ object TransitIndexIo {
         val flags = r.varintOrEnd()
         val stopExt = if (flags != null && flags and 1 != 0) Array(nStops) { r.utf() } else null
         val tripExt = if (flags != null && flags and 2 != 0) Array(tSvc.size) { r.utf() } else null
+        var geoLat: IntArray? = null
+        var geoLon: IntArray? = null
+        var geoOff: IntArray? = null
+        var geoStop: IntArray? = null
+        var geoHop: BooleanArray? = null
+        if (flags != null && flags and 4 != 0) {
+            val nShapes = r.varint()
+            val sLat = arrayOfNulls<IntArray>(nShapes)
+            val sLon = arrayOfNulls<IntArray>(nShapes)
+            for (k in 0 until nShapes) {
+                val np = r.varint()
+                val la = IntArray(np)
+                val lo = IntArray(np)
+                var pa = 0
+                var po = 0
+                for (j in 0 until np) {
+                    pa += r.zigzag()
+                    po += r.zigzag()
+                    la[j] = pa
+                    lo[j] = po
+                }
+                sLat[k] = la
+                sLon[k] = lo
+            }
+            val latList = IntList(1 shl 12)
+            val lonList = IntList(1 shl 12)
+            geoOff = IntArray(nP + 1)
+            geoStop = IntArray(stopsList.size)
+            geoHop = BooleanArray(stopsList.size)
+            for (p in 0 until nP) {
+                geoOff[p] = latList.size
+                val ref = r.varint() - 1
+                if (ref < 0) continue
+                val la = sLat[ref]!!
+                val lo = sLon[ref]!!
+                for (j in la.indices) {
+                    latList.add(la[j])
+                    lonList.add(lo[j])
+                }
+                var v = 0
+                for (i in pStopOff[p] until pStopOff[p + 1]) {
+                    val packed = r.varint()
+                    v += packed ushr 1
+                    geoStop[i] = v
+                    geoHop[i] = packed and 1 != 0
+                }
+            }
+            geoOff[nP] = latList.size
+            geoLat = latList.toArray()
+            geoLon = lonList.toArray()
+        }
         return TransitIndex(
             sources = sources,
             stopLat = lat,
@@ -276,7 +339,50 @@ object TransitIndexIo {
             transferMinSec = tm,
             stopExtId = stopExt,
             tripExtId = tripExt,
+            shapeLat = geoLat,
+            shapeLon = geoLon,
+            patternShapeOffset = geoOff,
+            patternStopVertex = geoStop,
+            patternHopOnShape = geoHop,
         )
+    }
+
+    private class PolylineKey(val lat: IntArray, val lon: IntArray) {
+        private val hash = 31 * lat.contentHashCode() + lon.contentHashCode()
+        override fun hashCode() = hash
+        override fun equals(other: Any?) = other is PolylineKey && other.lat.contentEquals(lat) && other.lon.contentEquals(lon)
+    }
+
+    private fun writeGeometry(w: Writer, index: TransitIndex, lat: IntArray, lon: IntArray, off: IntArray, stopVertex: IntArray, hop: BooleanArray) {
+        val shapes = LinkedHashMap<PolylineKey, Int>()
+        val ref = IntArray(index.patternCount) { -1 }
+        for (p in 0 until index.patternCount) {
+            if (off[p + 1] - off[p] < 2) continue
+            val key = PolylineKey(lat.copyOfRange(off[p], off[p + 1]), lon.copyOfRange(off[p], off[p + 1]))
+            ref[p] = shapes.getOrPut(key) { shapes.size }
+        }
+        w.varint(shapes.size)
+        for (k in shapes.keys) {
+            w.varint(k.lat.size)
+            var pa = 0
+            var po = 0
+            for (j in k.lat.indices) {
+                w.zigzag(k.lat[j] - pa)
+                w.zigzag(k.lon[j] - po)
+                pa = k.lat[j]
+                po = k.lon[j]
+            }
+        }
+        for (p in 0 until index.patternCount) {
+            w.varint(ref[p] + 1)
+            if (ref[p] < 0) continue
+            var prev = 0
+            for (i in index.patternStopOffset[p] until index.patternStopOffset[p + 1]) {
+                val v = stopVertex[i]
+                w.varint(((v - prev) shl 1) or (if (hop[i]) 1 else 0))
+                prev = v
+            }
+        }
     }
 
     // Int.MIN_VALUE / Int.MAX_VALUE mean "unbounded"; map them to small sentinels so varints stay short.
