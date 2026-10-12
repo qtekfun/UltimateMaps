@@ -8,7 +8,6 @@ import com.qtekfun.ultimatemaps.core.transit.ItineraryLeg
 import com.qtekfun.ultimatemaps.core.transit.rt.LegRealTime
 import com.qtekfun.ultimatemaps.core.transit.rt.RideRealTime
 import kotlin.math.abs
-import kotlin.math.cos
 import kotlin.math.floor
 import kotlin.math.max
 import kotlin.math.min
@@ -27,8 +26,13 @@ data class FollowerSnapshot(val legIndex: Int, val boarded: Boolean, val progres
  * or stores positions beyond the last fix in memory.
  *
  * How it matches (all thresholds are design choices in [FollowerConfig], untested on real rides):
- * - A ride is the stop sequence joined by straight lines (the index has no shapes). A fix is matched to the nearest of those
- *   segments inside a corridor that grows with the fix accuracy, giving progress `p = stopIndex + fraction`.
+ * - A ride is its line geometry when the index has it (rail patterns of feeds that publish shapes), else the stop sequence
+ *   joined by straight lines. A fix is matched to the nearest piece of that track inside a corridor that grows with the fix
+ *   accuracy (narrow on real geometry, wide on chords, which cut across curves), giving progress `p = stopIndex + fraction`
+ *   computed from the distance along the track.
+ * - Direction is decided on that distance: a fix behind the best progress is only evidence of the wrong way when several
+ *   consecutive fixes, at least [FollowerConfig.reverseMinMeters] back, say so while moving. One noisy fix, a stop at a
+ *   station or an estimated position never does. Low-accuracy and standing fixes never start an off-plan state either.
  * - Progress only moves forward while fixes keep arriving; a jump over two or more stops needs [FollowerConfig.confirmFixes]
  *   agreeing fixes, unless the signal was lost (then any matching fix resynchronises, even backwards from an estimate).
  * - Walking is told from riding by speed (the fix's, else derived from two fixes).
@@ -54,7 +58,12 @@ class ItineraryFollower(
     private val legs = itinerary.legs
 
     private class Fix(val point: LatLon, val accuracy: Float, val atMs: Long)
-    private class Match(val p: Double, val distance: Double)
+    private val tracks = arrayOfNulls<RideTrack>(legs.size)
+
+    // result of the last successful [bestSegment] call (kept in fields so matching allocates nothing)
+    private var matchP = 0.0
+    private var matchAlong = 0.0
+    private var matchDist = 0.0
 
     private var legIdx = 0
     private var boarded = false
@@ -65,6 +74,11 @@ class ItineraryFollower(
 
     private var minWalkDistance = Double.MAX_VALUE
     private var offCount = 0
+    private var offSinceMs = 0L
+    private var offCorridor = false
+    private var reversed = false
+    private var backCount = 0
+    private var backStartAlong = 0.0
     private var offPlan = false
     private var offEpisode = 0
     private var ridingCount = 0
@@ -119,8 +133,8 @@ class ItineraryFollower(
             resetLeg()
             boarded = true
             val nowMs = clockMillis()
-            val match = lastFix?.let { bestSegment(ride, it, 0, ride.stops.size - 2, config.wideCorridorFactor * 2) }
-            progress = match?.p ?: min(scheduleProgress(ride, nowMs / 1000), ride.stops.size - 1 - 1e-3)
+            val matched = lastFix?.let { bestSegment(ride, it, 0, ride.stops.size - 2, config.wideCorridorFactor * 2, 0.0) } == true
+            progress = if (matched) matchP else min(scheduleProgress(ride, nowMs / 1000), ride.stops.size - 1 - 1e-3)
             forceRecover = true
             updateDelay(ride, nowMs)
         }
@@ -161,7 +175,7 @@ class ItineraryFollower(
         var guard = legs.size * 2 + 2
         while (legIdx < legs.size && guard-- > 0) {
             val finished = when (val leg = legs[legIdx]) {
-                is ItineraryLeg.Walk -> stepWalk(leg, usable)
+                is ItineraryLeg.Walk -> stepWalk(leg, usable, speed)
                 is ItineraryLeg.Ride -> stepRide(leg, usable, speed, gapBefore, nowMs)
             }
             if (!finished) break
@@ -189,6 +203,9 @@ class ItineraryFollower(
         progressEstimated = false
         minWalkDistance = Double.MAX_VALUE
         offCount = 0
+        offCorridor = false
+        reversed = false
+        backCount = 0
         offPlan = false
         ridingCount = 0
         fastCount = 0
@@ -209,22 +226,46 @@ class ItineraryFollower(
         (config.minStopRadiusM + accuracy).coerceAtMost(config.maxStopRadiusM)
 
     /** True when the walk is complete. */
-    private fun stepWalk(leg: ItineraryLeg.Walk, fix: Fix?): Boolean {
+    private fun stepWalk(leg: ItineraryLeg.Walk, fix: Fix?, speed: Float?): Boolean {
         if (fix == null) return false
         val d = fix.point.distanceTo(leg.to)
         if (d <= radius(fix.accuracy)) return true
-        trackDistance(d, fix.accuracy)
+        trackDistance(d, fix, speed)
         return false
     }
 
-    /** Off plan when the distance to a walking target grows well beyond the smallest seen. */
-    private fun trackDistance(d: Double, accuracy: Float) {
+    /**
+     * Off plan when the distance to a walking target grows well beyond the smallest seen, for several fixes over several
+     * seconds. Standing near the stop (a large station, a platform away from the stop's point) is never off plan.
+     */
+    private fun trackDistance(d: Double, fix: Fix, speed: Float?) {
         if (d < minWalkDistance) minWalkDistance = d
-        if (d > minWalkDistance + config.walkOffPlanMeters + accuracy) offCount++ else offCount = 0
-        setOffPlan(offCount >= config.offPlanFixes)
+        val away = d > minWalkDistance + config.walkOffPlanMeters + fix.accuracy && d > config.stationProximityM
+        offEvidence(away, fix, speed)
     }
 
-    private fun setOffPlan(value: Boolean) {
+    /**
+     * One fix's worth of evidence that the traveller left the plan ([away]) or is back on it. It only becomes the off-plan
+     * state after [FollowerConfig.offPlanFixes] fixes spread over [FollowerConfig.offPlanSec]; a fix too vague to tell
+     * ([FollowerConfig.offPlanMaxAccuracyM]) or one with the traveller standing still counts as neither.
+     */
+    private fun offEvidence(away: Boolean, fix: Fix, speed: Float?) {
+        if (!away) {
+            offCount = 0
+            offCorridor = false
+            refreshOffPlan()
+            return
+        }
+        if (fix.accuracy > config.offPlanMaxAccuracyM) return
+        if (speed != null && speed < config.stationarySpeedMps && !offCorridor) return
+        if (offCount == 0) offSinceMs = fix.atMs
+        offCount++
+        if (offCount >= config.offPlanFixes && fix.atMs - offSinceMs >= config.offPlanSec * 1000L) offCorridor = true
+        refreshOffPlan()
+    }
+
+    private fun refreshOffPlan() {
+        val value = offCorridor || reversed
         if (value && !offPlan) offEpisode++
         offPlan = value
     }
@@ -242,11 +283,11 @@ class ItineraryFollower(
             lastAtBoardingStop = atStop
             if (atStop) arrivedAtBoarding = true
             val moving = (speed ?: 0f) >= config.ridingSpeedMps
-            val m = if (moving && !atStop) bestSegment(ride, fix, 0, min(config.lookaheadSegments, n - 2)) else null
-            if (m != null) {
+            val m = moving && !atStop && bestSegment(ride, fix, 0, min(config.lookaheadSegments, n - 2), 1.0, 0.0)
+            if (m) {
                 if (++ridingCount >= config.confirmFixes) {
                     boarded = true
-                    progress = m.p
+                    progress = matchP
                     updateDelay(ride, nowMs)
                 }
             } else {
@@ -257,10 +298,10 @@ class ItineraryFollower(
             if (!boarded && !atStop && ride.line.routeType in config.estimateRouteTypes &&
                 ((speed ?: 0f) >= config.trainSpeedMps || (inVehicle() == true && (speed ?: 0f) >= config.ridingSpeedMps))
             ) {
-                val wide = bestSegment(ride, fix, 0, min(config.lookaheadSegments, n - 2), config.wideCorridorFactor)
-                if (wide != null && ++fastCount >= config.trainConfirmFixes) {
+                val wide = bestSegment(ride, fix, 0, min(config.lookaheadSegments, n - 2), config.wideCorridorFactor, 0.0)
+                if (wide && ++fastCount >= config.trainConfirmFixes) {
                     boarded = true
-                    progress = wide.p
+                    progress = matchP
                     updateDelay(ride, nowMs)
                 }
             } else if (!boarded) {
@@ -268,10 +309,12 @@ class ItineraryFollower(
             }
             if (!boarded) {
                 if (atStop) {
-                    offCount = 0
-                    setOffPlan(false)
+                    offEvidence(false, fix, speed)
+                } else if (m || fastCount > 0) {
+                    // moving along the line towards the next stop: the vehicle is leaving, not a walker straying
+                    offEvidence(false, fix, speed)
                 } else {
-                    trackDistance(d, fix.accuracy)
+                    trackDistance(d, fix, speed)
                 }
             }
             return false
@@ -282,17 +325,40 @@ class ItineraryFollower(
             return false
         }
         val recovering = forceRecover || progressEstimated || (gapBefore != null && gapBefore > config.signalGapSec * 1000L)
-        val lo = if (progressEstimated) 0 else min(floor(progress).toInt(), n - 2)
+        // One hop of look-behind: a fix a little behind the best progress is how the wrong way shows up.
+        val lo = if (progressEstimated) 0 else (min(floor(progress).toInt(), n - 2) - 1).coerceAtLeast(0)
         val hi = if (recovering) n - 2 else min(n - 2, floor(progress).toInt() + config.lookaheadSegments)
-        val m = bestSegment(ride, fix, lo, hi)
-        if (m == null) {
-            offCount++
-            setOffPlan(offCount >= config.offPlanFixes)
+        val track = trackOf(ride)
+        val matched = bestSegment(ride, fix, lo, hi, 1.0, progress)
+        if (!matched) {
+            // Not on the line. A station area (platform away from the line), a vague fix or a standing traveller is no proof.
+            val nearStop = nearAnyStop(ride, fix, lo, hi + 1)
+            backCount = 0
+            offEvidence(!nearStop, fix, speed)
             return false
         }
+        var newP = matchP
+        val newAlong = matchAlong
+        // Direction: only a sustained, consistent move backwards along the line says the wrong way.
+        if (!recovering) {
+            val back = track.alongOf(progress) - newAlong
+            val tolerance = max(config.reverseToleranceM, 2.0 * fix.accuracy)
+            val movingEnough = speed == null || speed >= config.stationarySpeedMps
+            if (back > tolerance && movingEnough && fix.accuracy <= config.offPlanMaxAccuracyM) {
+                if (backCount == 0) backStartAlong = track.alongOf(progress)
+                backCount++
+                if (backCount >= config.reverseFixes && backStartAlong - newAlong >= config.reverseMinMeters) reversed = true
+            } else if (back <= tolerance) {
+                backCount = 0
+                reversed = false
+            }
+        } else {
+            backCount = 0
+            reversed = false
+        }
         offCount = 0
-        setOffPlan(false)
-        var newP = m.p
+        offCorridor = false
+        refreshOffPlan()
         if (!progressEstimated && newP < progress) newP = progress
         if (!recovering && floor(newP) - floor(progress) >= 2) {
             pendingCount = if (pendingCount > 0 && abs(newP - pendingP) < 1.0) pendingCount + 1 else 1
@@ -348,31 +414,77 @@ class ItineraryFollower(
 
     // ------------------------------------------------------------------------------------------------ geometry
 
-    /** Best stop-to-stop segment in [lo]..[hi] within the corridor of [fix], or null. Ties go to the earlier segment. */
-    private fun bestSegment(ride: ItineraryLeg.Ride, fix: Fix, lo: Int, hi: Int, corridorFactor: Double = 1.0): Match? {
-        var best: Match? = null
-        val limit = config.corridorM * corridorFactor + fix.accuracy
-        for (i in lo..hi) {
-            if (i < 0 || i + 1 >= ride.stops.size) continue
-            val (t, d) = project(fix.point, ride.stops[i].point, ride.stops[i + 1].point)
-            if (d <= limit && (best == null || d < best.distance - 1e-6)) best = Match(i + t, d)
-        }
-        return best
+    private fun trackOf(ride: ItineraryLeg.Ride): RideTrack {
+        val i = legs.indexOf(ride)
+        val cached = if (i >= 0) tracks[i] else null
+        if (cached != null) return cached
+        return RideTrack(ride).also { if (i >= 0) tracks[i] = it }
     }
 
-    /** Fraction along a->b (0..1) of the point nearest to [p], and the distance to it in metres (local flat approximation). */
-    private fun project(p: LatLon, a: LatLon, b: LatLon): Pair<Double, Double> {
-        val ky = METERS_PER_DEGREE
-        val kx = METERS_PER_DEGREE * cos(Math.toRadians(a.lat))
-        val bx = (b.lon - a.lon) * kx
-        val by = (b.lat - a.lat) * ky
-        val px = (p.lon - a.lon) * kx
-        val py = (p.lat - a.lat) * ky
-        val len2 = bx * bx + by * by
-        val t = if (len2 < 1e-6) 0.0 else ((px * bx + py * by) / len2).coerceIn(0.0, 1.0)
-        val dx = px - t * bx
-        val dy = py - t * by
-        return t to sqrt(dx * dx + dy * dy)
+    /**
+     * Finds the piece of the ride's track nearest to [fix] among hops [lo]..[hi] within the corridor (narrow on real geometry,
+     * wide on chords, times [corridorFactor], plus the fix accuracy). On success the progress, the metres along the track and
+     * the distance are left in [matchP], [matchAlong], [matchDist]. A piece clearly nearer wins; between nearly equal ones
+     * (the line passing the same place twice, parallel tracks) the one closest to [refProgress] wins, then the earlier one.
+     */
+    private fun bestSegment(ride: ItineraryLeg.Ride, fix: Fix, lo: Int, hi: Int, corridorFactor: Double, refProgress: Double): Boolean {
+        val t = trackOf(ride)
+        if (t.stopCount < 2 || t.edgeCount == 0) return false
+        val h0 = lo.coerceAtLeast(0)
+        val h1 = hi.coerceAtMost(t.stopCount - 2)
+        if (h0 > h1) return false
+        val px = t.xOf(fix.point.lon)
+        val py = t.yOf(fix.point.lat)
+        val refAlong = t.alongOf(refProgress)
+        var found = false
+        var bestD = 0.0
+        var bestAlong = 0.0
+        var bestHop = 0
+        val vFrom = t.stopVertex[h0]
+        val vTo = min(t.stopVertex[h1 + 1], t.edgeCount) // edges vFrom until vTo
+        for (e in vFrom until vTo) {
+            val hop = t.edgeHopOf(e)
+            if (hop < h0 || hop > h1) continue
+            val ax = t.vx[e]
+            val ay = t.vy[e]
+            val bx = t.vx[e + 1] - ax
+            val by = t.vy[e + 1] - ay
+            val qx = px - ax
+            val qy = py - ay
+            val len2 = bx * bx + by * by
+            val u = if (len2 < 1e-6) 0.0 else ((qx * bx + qy * by) / len2).coerceIn(0.0, 1.0)
+            val dx = qx - u * bx
+            val dy = qy - u * by
+            val d = sqrt(dx * dx + dy * dy)
+            val base = if (t.hopOnShape[hop]) config.railCorridorM else config.corridorM
+            if (d > base * corridorFactor + fix.accuracy) continue
+            val along = t.cum[e] + u * sqrt(len2)
+            val better = !found || d < bestD - NEAR_TIE_M ||
+                (d <= bestD + NEAR_TIE_M && abs(along - refAlong) < abs(bestAlong - refAlong) - 1e-6)
+            if (better) {
+                found = true
+                bestD = d
+                bestAlong = along
+                bestHop = hop
+            }
+        }
+        if (!found) return false
+        matchDist = bestD
+        matchAlong = bestAlong
+        // progress from the metres along the track, inside the hop that owns the edge
+        val hopLen = t.stopAlong[bestHop + 1] - t.stopAlong[bestHop]
+        val frac = if (hopLen < 1e-6) 0.0 else ((bestAlong - t.stopAlong[bestHop]) / hopLen).coerceIn(0.0, 1.0)
+        matchP = bestHop + frac
+        return true
+    }
+
+    /** True when [fix] is within a stop's arrival radius for any stop of hops [lo]..[hi] (station areas are not off the line). */
+    private fun nearAnyStop(ride: ItineraryLeg.Ride, fix: Fix, lo: Int, hi: Int): Boolean {
+        val r = radius(fix.accuracy)
+        for (i in lo.coerceAtLeast(0)..hi.coerceAtMost(ride.stops.size - 1)) {
+            if (fix.point.distanceTo(ride.stops[i].point) <= r) return true
+        }
+        return false
     }
 
     /** Scheduled epoch second at progress [p] (stop index plus fraction of the way to the next stop). */
@@ -596,7 +708,7 @@ class ItineraryFollower(
     }
 
     private companion object {
-        /** Metres per degree of latitude on the mean-radius sphere used by the rest of the code (6,371,008.8 m). */
-        const val METERS_PER_DEGREE = 6_371_008.8 * Math.PI / 180.0
+        /** Two matches this close in distance (metres) are the same quality; the one nearer the current progress wins. */
+        const val NEAR_TIE_M = 15.0
     }
 }

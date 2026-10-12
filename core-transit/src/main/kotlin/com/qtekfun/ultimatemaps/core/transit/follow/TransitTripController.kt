@@ -247,9 +247,37 @@ class TransitTripController(
         }
     }
 
-    /** The point [GEOFENCE_APPROACH_M] before the alighting stop on the way from the previous stop (halfway on a shorter hop). */
+    /**
+     * The point [GEOFENCE_APPROACH_M] before the alighting stop along the line (halfway on a shorter last hop). With line
+     * geometry it is a point of the track, so the follower sees a fix on the line; without it, on the chord from the
+     * previous stop.
+     */
     private fun before(ride: ItineraryLeg.Ride): LatLon {
         val end = ride.alighting.point
+        val g = ride.geometry
+        if (g != null && g.stopVertex.size == ride.stops.size) {
+            val from = g.stopVertex[g.stopVertex.size - 2]
+            val to = g.stopVertex.last()
+            var hopLen = 0.0
+            for (v in from until to) hopLen += g.points[v].distanceTo(g.points[v + 1])
+            if (hopLen > 1.0) {
+                val want = if (hopLen > 2 * GEOFENCE_APPROACH_M) GEOFENCE_APPROACH_M else hopLen / 2
+                var left = want
+                var v = to
+                while (v > from) {
+                    val a = g.points[v]
+                    val b = g.points[v - 1]
+                    val d = a.distanceTo(b)
+                    if (d >= left && d > 0.0) {
+                        val f = left / d
+                        return LatLon(a.lat + f * (b.lat - a.lat), a.lon + f * (b.lon - a.lon))
+                    }
+                    left -= d
+                    v--
+                }
+                return g.points[from]
+            }
+        }
         val prev = ride.stops.getOrNull(ride.stops.size - 2)?.point ?: return end
         val d = prev.distanceTo(end)
         if (d <= 1.0) return end
