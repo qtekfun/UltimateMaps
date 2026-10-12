@@ -1112,3 +1112,19 @@ Format: date · decision · reason · discarded alternatives · how to revert it
 - **Not verified:** nothing on a device and no request to the real server was made (tests use a fake HTTP layer and a loopback server);
   the exact fields of live answers beyond the documented GeoJSON and how the extra delay feels while typing. Design:
   `docs/phase2/online-geocoder.md`.
+
+## 2026-10-12 · System geocoder (`android.location.Geocoder`) as an optional online fallback: explored, not recommended (PR #114, closed without merging; branch `feat/system-geocoder-spike`, no phone)
+
+- **Decision:** a prototype exists in the `play` flavor behind a settings switch that is **OFF by default** (`system_geocoder/enabled`,
+  in the settings backup with consent policy), but it is **not wired into the search path** and the recommendation is to **drop it as a
+  user-facing feature**; Photon is the better optional fallback. Full findings, privacy and the owner's test plan:
+  `docs/phase2/system-geocoder.md`.
+- **Reason:** the Google Maps Platform Service Specific Terms (last modified 2026-06-10) section 3.2 for the "Android Geocoder SDK
+  (Restricted GA)" says "Customer must not use Google Maps Content from the Android Geocoder SDK in conjunction with a non-Google
+  map", and this app is a non-Google map. It could NOT be established whether the framework class is that product, nor whether an app
+  calling it without a Maps Platform account is bound; no clause clearing it was found. The query text goes to Google on a Play Services
+  phone. The result is an address only (no category, no place id), which is weakest exactly for POI and chain queries.
+- **Discarded:** adopting it as the primary fallback (terms risk, privacy, weak POI answers); adding a `ConnectionPurpose` value for it
+  (it is Binder IPC, not an app connection; left to the lead together with the Photon fallback, the prototype takes an `allowed` gate).
+- **Not verified:** latency, quotas and result quality on real phones (no device used); behaviour on Huawei and microG ROMs.
+- **Owner outcome (2026-10-12):** dropped. The prototype code was not merged; only the findings document was kept.
