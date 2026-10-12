@@ -1109,6 +1109,30 @@ Format: date · decision · reason · discarded alternatives · how to revert it
 - **Discarded:** (1) only window width / `WindowSizeClass` without fold awareness: puts the controls and the sheet over the crease in book and tabletop and cannot say "bottom half". (2) A true two-pane results list plus place details side by side: needs two 360 dp columns, leaving about 120 dp of map on an 841 dp window and none in a book pane; the map is the product, so the list and the card share the one column as on a phone. (3) Draggable sheet across the crease in tabletop: a sheet over the crease is exactly what the posture avoids. (4) Moving the column to the side with more room: keeps the thumb side and the map buttons on the end side; start side is the rule everywhere.
 - **Verified:** JVM Compose tests at Pixel Fold inner 841 x 701, Z Fold inner 829 x 690, cover 411 x 797 and 344 x 882, a 600 x 960 window and 300 dp wide windows with fake creases (zero width, and a 34 dp hinge that hides display) assert that no key node crosses the crease, nodes stay inside the window and disjoint, and the landscape and portrait tests pass. **Not verified:** nothing was seen on a screen, an emulator or a foldable; real crease bounds and `isSeparating` per device, the transition animation while folding, dialogs (separate windows centred on the whole window, they can sit over a crease) and the camera refresh time after a fold (next navigation fix) are by code reading only. Manual checklist: `docs/ui-foldables.md`.
 
+## 2026-10-12 · Play flavor: optional online geocoder fallback over Photon, off by default (branch `feat/play-online-geocoder`, no phone)
+- **Decision (owner, 2026-10-12):** in the `play` flavor only, a Settings switch (*Search online when the map has no result (Photon,
+  OpenStreetMap data)*, **default OFF**, in the settings backup with consent on restore) lets the search ask a Photon server after the
+  offline search settled with nothing, or with only streets for a typed house number. The server address is configurable (default
+  `https://photon.komoot.io`, https only) so the owner can point to their own. Only the typed text and the map centre rounded to 0.01 degree
+  are sent (never the live position), with a `User-Agent` naming the app and version, at most one request a second, through
+  `NetworkPolicy` (offline mode blocks it; the host is listed only while the switch is on). Results are listed after the offline ones
+  (before them for a missing house number), marked *Online*, pinned and routable, with the ODbL credit in the list, Settings, About,
+  `NOTICE`, `PRIVACY.md` and `LICENSES.md`. Interface `OnlineGeocoder` in `:core-search`; `PhotonGeocoder` in `app/src/play`; `foss`
+  gets `NoOnlineGeocoder`. The answer is read with the platform's `org.json` (no new dependency).
+- **Reason:** the offline data lacks new addresses and some places; Photon serves OpenStreetMap data (the same ODbL data family as the
+  maps), so no Google content is mixed into this map and the owner can self-host it.
+- **Discarded:** the Google Places or Geocoding API (their terms, sections 5.3 and 3.3, forbid using that content with a non-Google
+  map); a default-on switch (it sends typed text to a third party, so it needs the owner's explicit act; this follows the other
+  third-party switches); Nominatim as a second backend (not trivial: a different shape and a stricter usage policy; Photon's `lang`
+  and bias already cover the need); a bias at full precision or the live GPS position (the map centre rounded is enough to rank
+  nearby places and leaks far less); persistent caching of results (nothing beyond what the history stores); firing on every
+  keystroke (an extra 900 ms wait after the offline answer and a 1 s minimum interval keep within the public server's fair use).
+- **Notes:** `lang` is sent only for `en`, `de`, `fr`, `it` because the public instance rejects other languages (Spanish is left out,
+  which gives local names). In `foss` the backup keeps no "on" value of the switch since nothing there could accept it.
+- **Not verified:** nothing on a device and no request to the real server was made (tests use a fake HTTP layer and a loopback server);
+  the exact fields of live answers beyond the documented GeoJSON and how the extra delay feels while typing. Design:
+  `docs/phase2/online-geocoder.md`.
+
 ## 2026-10-12 · System geocoder (`android.location.Geocoder`) as an optional online fallback: explored, not recommended (PR #114, closed without merging; branch `feat/system-geocoder-spike`, no phone)
 
 - **Decision:** a prototype exists in the `play` flavor behind a settings switch that is **OFF by default** (`system_geocoder/enabled`,

@@ -9,6 +9,10 @@ versions and their compatibility with the GPL is in LICENSES.md. This file is sh
 Map data is (c) OpenStreetMap contributors, available under the Open Database Licence (ODbL 1.0); it is not part of the
 APK, it is downloaded when the user asks for it.
 
+The optional online search of the `play` build (off by default) shows results of a Photon geocoder server
+(https://photon.komoot.io by default, Photon is Apache License 2.0). Those results are OpenStreetMap data, (c) OpenStreetMap
+contributors, ODbL 1.0, and are marked as online in the result list. The app contains no Photon code.
+
 ================================================================================
 1. CoMaps core (native library: search, routing, storage)
 ================================================================================

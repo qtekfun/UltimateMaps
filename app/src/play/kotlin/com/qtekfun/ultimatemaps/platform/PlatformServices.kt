@@ -6,11 +6,13 @@ import com.qtekfun.ultimatemaps.core.map.Geofencer
 import com.qtekfun.ultimatemaps.core.map.MovementHint
 import com.qtekfun.ultimatemaps.core.map.NoGeofencer
 import com.qtekfun.ultimatemaps.core.map.NoMovementHint
+import com.qtekfun.ultimatemaps.core.net.NetworkPolicy
+import com.qtekfun.ultimatemaps.core.search.OnlineGeocoder
+import com.qtekfun.ultimatemaps.core.search.OnlineSearchSettingsStore
 import com.qtekfun.ultimatemaps.gms.GmsAvailability
 import com.qtekfun.ultimatemaps.gms.GmsGeofencer
 import com.qtekfun.ultimatemaps.gms.GmsLocationSource
 import com.qtekfun.ultimatemaps.gms.GmsMovementHint
-import com.qtekfun.ultimatemaps.core.net.NetworkPolicy
 import com.qtekfun.ultimatemaps.link.ShortLinkResolver
 import com.qtekfun.ultimatemaps.location.AndroidLocationSource
 
@@ -21,6 +23,19 @@ import com.qtekfun.ultimatemaps.location.AndroidLocationSource
  */
 object PlatformServices {
     const val GOOGLE_SERVICES_FLAVOR = true
+
+    /**
+     * The optional online fallback of the offline search (Photon, OpenStreetMap data). Off until the owner turns the switch
+     * on in Settings; every request goes through [policy], so offline mode blocks it.
+     */
+    fun onlineGeocoder(
+        policy: NetworkPolicy,
+        settings: OnlineSearchSettingsStore,
+        versionName: String?,
+        language: () -> String?,
+    ): OnlineGeocoder = PhotonGeocoder(
+        settings, policy, PhotonGeocoder.fetchOver(policy, PhotonGeocoder.userAgent(versionName)), language,
+    )
 
     fun locationSource(context: Context): AvailableLocationSource =
         if (GmsAvailability.isAvailable(context)) GmsLocationSource(context) else AndroidLocationSource(context)

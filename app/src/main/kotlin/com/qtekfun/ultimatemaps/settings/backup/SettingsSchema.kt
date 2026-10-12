@@ -30,6 +30,7 @@ import com.qtekfun.ultimatemaps.nav.SharedNavUiPrefs
 import com.qtekfun.ultimatemaps.recording.PrefsRecordingSettings
 import com.qtekfun.ultimatemaps.regions.RegionsController
 import com.qtekfun.ultimatemaps.search.PrefsHistorySettings
+import com.qtekfun.ultimatemaps.search.PrefsOnlineSearchSettingsStore
 import com.qtekfun.ultimatemaps.search.PrefsPlaceLanguageStore
 import com.qtekfun.ultimatemaps.settings.PrefsNavSettingsStore
 import com.qtekfun.ultimatemaps.core.transit.TransitMode
@@ -107,6 +108,7 @@ object SettingsSchema {
     const val GROUP_RECORDING = "recording"
     const val GROUP_REGIONS = "regions"
     const val GROUP_PLACE_LANGUAGE = "place_language"
+    const val GROUP_ONLINE_SEARCH = "online_search"
 
     private fun bool(group: String, prefs: String, key: String, default: Boolean, policy: RestorePolicy = RestorePolicy.DIRECT) =
         SettingSpec(group, prefs, key, SettingType.BOOLEAN, default, policy)
@@ -244,6 +246,15 @@ object SettingsSchema {
             GROUP_PLACE_LANGUAGE, PrefsPlaceLanguageStore.PREFS, PrefsPlaceLanguageStore.KEY_PREFERENCE, PlaceLanguagePref.AUTO,
             PlaceLanguagePref.entries.map { it.name },
         ),
+
+        // Online search (play flavor): the switch sends typed text to a third-party server, so it needs consent. In the foss flavor
+        // there is no such feature: a switch that is "on" in a file from a play phone is never kept (nothing could accept it there).
+        SettingSpec(
+            GROUP_ONLINE_SEARCH, PrefsOnlineSearchSettingsStore.PREFS, PrefsOnlineSearchSettingsStore.KEY_ENABLED, SettingType.BOOLEAN, false,
+            RestorePolicy.NEEDS_CONSENT,
+            sanitize = { v -> if (com.qtekfun.ultimatemaps.platform.PlatformServices.GOOGLE_SERVICES_FLAVOR) v else false },
+        ),
+        url(GROUP_ONLINE_SEARCH, PrefsOnlineSearchSettingsStore.PREFS, PrefsOnlineSearchSettingsStore.KEY_SERVER_URL, "", allowEmpty = true),
 
         // Track recording switch (not the tracks).
         bool(GROUP_RECORDING, PrefsRecordingSettings.PREFS, PrefsRecordingSettings.KEY_ENABLED, false),

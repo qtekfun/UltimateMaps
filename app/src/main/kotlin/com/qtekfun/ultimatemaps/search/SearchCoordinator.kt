@@ -5,6 +5,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.qtekfun.ultimatemaps.core.geo.CoordinateQuery
 import com.qtekfun.ultimatemaps.core.geo.LatLon
+import com.qtekfun.ultimatemaps.core.search.NoOnlineGeocoder
+import com.qtekfun.ultimatemaps.core.search.OnlineGeocoder
+import com.qtekfun.ultimatemaps.core.search.OnlineOutcome
+import com.qtekfun.ultimatemaps.core.search.OnlineSearch
 import com.qtekfun.ultimatemaps.core.search.SearchEngine
 import com.qtekfun.ultimatemaps.core.search.SearchResult
 import kotlinx.coroutines.CancellationException
@@ -43,6 +47,12 @@ class SearchState {
      * are still listed; it is cleared by the next keystroke and by every outcome.
      */
     var submitted by mutableStateOf(false)
+
+    /** The optional online fallback is looking the text up (play flavor, switch on); the panel says so instead of "No results". */
+    var onlineSearching by mutableStateOf(false)
+
+    /** The online fallback was tried and failed (network, server or offline mode changed); the offline answer stands. */
+    var onlineFailed by mutableStateOf(false)
 }
 
 /** Labels of the result row for a typed position ("Coordinates", "Plus Code"); localized by the host. */
@@ -89,6 +99,16 @@ class SearchCoordinator(
     /** Receives the positions of the category results (empty when they are cleared) to draw them on the map. */
     private val onCategoryResults: (List<LatLon>) -> Unit = {},
     private val coordinateLabels: CoordinateLabels = CoordinateLabels { "" },
+    /**
+     * The optional online fallback (play flavor, off by default). Asked only after the offline search found nothing, or only
+     * streets for a typed house number; never while a category is browsed and never for a typed position.
+     */
+    private val online: OnlineGeocoder = NoOnlineGeocoder,
+    /** Extra wait before an as-you-type search goes online (a submitted one goes at once), so a text is not sent half typed. */
+    private val onlineDebounceMs: Long = ONLINE_DEBOUNCE_MS,
+    private val onlineLimit: Int = ONLINE_LIMIT,
+    /** Receives the positions of the online results (empty when they are cleared) to pin them on the map. */
+    private val onOnlineResults: (List<LatLon>) -> Unit = {},
 ) {
     val state = SearchState()
 
@@ -119,6 +139,7 @@ class SearchCoordinator(
      */
     fun browseCategory(category: PlaceCategory, categoryName: String) {
         job?.cancel()
+        clearOnline()
         state.submitted = false
         state.query = ""
         state.category = category
@@ -163,6 +184,7 @@ class SearchCoordinator(
     }
 
     fun onQueryChange(query: String) {
+        clearOnline()
         if (state.category != null) {
             state.category = null
             onCategoryResults(emptyList())
@@ -199,6 +221,7 @@ class SearchCoordinator(
         val query = state.query
         if (state.category != null || query.isBlank() || state.coordinateQuery) return false
         job?.cancel()
+        clearOnline()
         state.numberMissing = null
         state.submitted = true
         state.status = if (engine == null || dirty) SearchStatus.PREPARING else SearchStatus.SEARCHING
@@ -211,6 +234,7 @@ class SearchCoordinator(
             if (delayMs > 0) delay(delayMs)
             val point = near()
             val cold = engine == null || dirty
+            val asked = state.submitted
             state.status = if (cold) SearchStatus.PREPARING else SearchStatus.SEARCHING
             val outcome = withContext(io) { mutex.withLock { run(query.trim()) { it.search(query.trim(), point, limit) } } }
             state.submitted = false
@@ -219,6 +243,7 @@ class SearchCoordinator(
                     state.results = outcome.list
                     state.numberMissing = com.qtekfun.ultimatemaps.core.search.HouseNumberHint.missingNumber(query, outcome.list)
                     state.status = SearchStatus.DONE
+                    if (outcome.list.isEmpty() || state.numberMissing != null) fallBackOnline(query.trim(), point, outcome.list, asked)
                 }
                 Outcome.NoRegions -> {
                     state.regionsAvailable = false
@@ -232,6 +257,49 @@ class SearchCoordinator(
             }
         }
     }
+
+    /**
+     * The offline search is settled with nothing (or only streets for a typed number): ask the optional online geocoder and
+     * list its results after the offline ones (before them when the offline ones are only streets of a missing number, since
+     * the online answer may carry the number). Runs inside the query's job, so a keystroke cancels it. A submitted search goes
+     * at once; an as-you-type one waits [onlineDebounceMs] more and needs [OnlineSearch.MIN_QUERY_CHARS] characters.
+     */
+    private suspend fun fallBackOnline(text: String, near: LatLon?, offline: List<SearchResult>, submitted: Boolean) {
+        if (state.category != null || !online.enabled || text.length < OnlineSearch.MIN_QUERY_CHARS) return
+        state.onlineSearching = true
+        try {
+            if (!submitted && onlineDebounceMs > 0) delay(onlineDebounceMs)
+            when (val r = online.search(text, near, onlineLimit)) {
+                is OnlineOutcome.Found -> {
+                    val extra = r.results.filter { o -> offline.none { it.name.equals(o.name, ignoreCase = true) && closeTo(it.point, o.point) } }
+                    if (extra.isNotEmpty()) {
+                        state.results = if (offline.isNotEmpty() && state.numberMissing != null) extra + offline else offline + extra
+                        onOnlineResults(extra.map { it.point })
+                        onlinePinsShown = true
+                    }
+                }
+                OnlineOutcome.Failed -> state.onlineFailed = true
+                OnlineOutcome.Offline, OnlineOutcome.Disabled -> Unit
+            }
+        } finally {
+            state.onlineSearching = false
+        }
+    }
+
+    private var onlinePinsShown = false
+
+    /** Drops the online pins and notes of the previous text. */
+    private fun clearOnline() {
+        state.onlineSearching = false
+        state.onlineFailed = false
+        if (onlinePinsShown) {
+            onlinePinsShown = false
+            onOnlineResults(emptyList())
+        }
+    }
+
+    private fun closeTo(a: LatLon, b: LatLon): Boolean =
+        kotlin.math.abs(a.lat - b.lat) < 0.001 && kotlin.math.abs(a.lon - b.lon) < 0.001
 
     private sealed interface Outcome {
         data class Found(val list: List<SearchResult>) : Outcome
@@ -270,5 +338,7 @@ class SearchCoordinator(
 
     companion object {
         const val DEBOUNCE_MS = 250L
+        const val ONLINE_DEBOUNCE_MS = 900L
+        const val ONLINE_LIMIT = 8
     }
 }

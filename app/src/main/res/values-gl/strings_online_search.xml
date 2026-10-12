@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Optional online search (play flavor): settings section, result marks and the connection purpose. -->
+    <string name="online_search_title">Busca en liña</string>
+    <string name="online_search_switch">Buscar en liña cando o mapa non atope nada (Photon, datos de OpenStreetMap)</string>
+    <string name="online_search_body">Desactivado por defecto. Cando os mapas descargados non atopan nada do que escribes, ese texto e o centro do mapa, arredondado a uns 1 km (nunca a túa posición exacta), envíanse a un servidor Photon. Non se envía nada máis, non se garda nada e o modo sen conexión bloquéao. Os resultados móstranse marcados como en liña.</string>
+    <string name="online_search_url_title">Enderezo do servidor</string>
+    <string name="online_search_url_save">Gardar</string>
+    <string name="online_search_url_reset">Usar o predeterminado</string>
+    <string name="online_search_url_invalid">O enderezo debe comezar por https://</string>
+    <string name="online_search_credit">Os resultados en liña son datos de OpenStreetMap (© colaboradores de OpenStreetMap, ODbL) servidos por Photon. O servidor público, photon.komoot.io, pide un uso razoable: a app envía como máximo unha petición por segundo e identifícase no User-Agent. Se buscas moito, apunta isto ao teu propio servidor Photon.</string>
+    <string name="search_online_label">En liña</string>
+    <string name="search_online_searching">Buscando en liña…</string>
+    <string name="search_online_failed">A busca en liña fallou. Só se mostran resultados dos mapas descargados.</string>
+    <string name="search_online_attribution">Resultados en liña: © colaboradores de OpenStreetMap, vía Photon</string>
+    <string name="conn_purpose_online_search">Busca de lugares en liña (Photon)</string>
+    <string name="backup_item_online_search">Busca en liña</string>
+    <string name="backup_group_online_search">Busca en liña</string>
+    <string name="about_online_search">Os resultados da busca en liña (só se a activas, na versión Play) veñen dun servidor Photon, photon.komoot.io por defecto, e son datos de OpenStreetMap: © colaboradores de OpenStreetMap (ODbL).</string>
+</resources>
