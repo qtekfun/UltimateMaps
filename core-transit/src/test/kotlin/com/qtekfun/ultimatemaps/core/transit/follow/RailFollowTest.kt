@@ -290,6 +290,129 @@ class RailFollowTest {
         assertTrue(assertNotNull(f.boardedRide()).progress >= 2.0)
     }
 
+    // ---------------------------------------------------------------------------------------------- "I am on board"
+
+    private val notes = ArrayList<String>()
+
+    private fun chordFollower(snapshot: FollowerSnapshot? = null) =
+        ItineraryFollower(itinerary(false), FollowerConfig(), { (t0 + clock.sec) * 1000 }, snapshot, notes = { notes.add(it) })
+
+    /** Plays the chord-drawn ride until the follower is off plan; returns the second it happened. */
+    private fun playUntilOffPlan(f: ItineraryFollower, from: Int = 381, to: Int = 1500): Int {
+        clock.sec = 380
+        f.onFix(LocationFix(stops[0].point, accuracyMeters = 10f))
+        for (t in from..to) {
+            clock.sec = t.toLong()
+            val fix = LocationFix(onRail(trainAlong(t.toDouble())), accuracyMeters = 20f, speedMps = speedAt(t.toDouble()))
+            if (f.onFix(fix).state.phase == FollowPhase.OFF_PLAN) return t
+        }
+        error("never off plan")
+    }
+
+    @Test
+    fun `off plan aboard a train drawn as chords, I am on board makes it boarded and it stays boarded to the end`() {
+        val f = chordFollower()
+        val offAt = playUntilOffPlan(f)
+        assertTrue(f.state.aboard, "the follower thinks it is aboard (that is why the button used to do nothing)")
+        assertTrue(f.state.canReplan)
+        // the owner taps "I am on board"
+        assertTrue(f.assumeBoarded())
+        assertEquals(FollowPhase.ON_BOARD, f.state.phase, "no stale off-plan state")
+        assertTrue(f.state.nextStopName != null && f.state.nextStopIndex >= 1, "the header shows the next stop")
+        assertTrue(!f.state.canReplan)
+        assertTrue(f.snapshot().confirmed)
+        val phases = ArrayList<FollowPhase>()
+        var worstProgressError = 0.0
+        for (t in (offAt + 1)..(arrive[hops] + 60).toInt()) {
+            clock.sec = t.toLong()
+            val fix = LocationFix(onRail(trainAlong(t.toDouble()), 20.0), accuracyMeters = 20f, speedMps = speedAt(t.toDouble()))
+            val u = f.onFix(fix)
+            phases.add(u.state.phase)
+            f.boardedRide()?.let { r ->
+                // the timetable is exact in this simulation: progress follows the clock along the planned stops
+                val sched = ((t - depart[0]).toDouble() / (depart[1] - depart[0])).coerceAtLeast(0.0)
+                if (t < depart[2] - 100 && sched <= 2.0 && sched >= 1.0) worstProgressError = maxOf(worstProgressError, abs(r.progress - sched))
+            }
+        }
+        assertTrue(FollowPhase.OFF_PLAN !in phases, "never flips back to off plan: ${phases.distinct()}")
+        assertTrue(FollowPhase.ALIGHT_NEXT in phases)
+        assertEquals(FollowPhase.FINAL_WALK, f.state.phase)
+        assertTrue(worstProgressError < 0.35, "progress follows the plan by the clock: $worstProgressError")
+        assertTrue(notes.any { it.contains("reason=user-confirmed-aboard") && it.contains("was off plan") }, notes.toString())
+        assertTrue(notes.any { it.contains("reason=outside-corridor") })
+    }
+
+    @Test
+    fun `without a usable line at all the progress is dead-reckoned from the plan and a wild burst of fixes does not undo the confirmation`() {
+        val f = chordFollower()
+        val offAt = playUntilOffPlan(f)
+        f.assumeBoarded()
+        val rnd = Random(9)
+        val phases = ArrayList<FollowPhase>()
+        // 90 s of fixes 2.5 km off the rails and the chord (outside even the wide corridor), at train speed, in the direction of the line
+        for (k in 1..90) {
+            clock.sec = (offAt + k).toLong()
+            val p = onRail(trainAlong((offAt + k).toDouble()), 2500.0 + rnd.nextDouble() * 50)
+            phases.add(f.onFix(LocationFix(p, accuracyMeters = 25f, speedMps = 10f)).state.phase)
+        }
+        assertTrue(phases.all { it != FollowPhase.OFF_PLAN }, "inside the grace nothing makes it off plan: ${phases.distinct()}")
+        val sched = (clock.sec - depart[0]).toDouble() / (depart[1] - depart[0])
+        assertTrue(abs(assertNotNull(f.boardedRide()).progress - sched.coerceIn(0.0, 3.0)) < 0.5)
+        assertTrue(f.state.estimated, "honestly marked as estimated")
+    }
+
+    @Test
+    fun `the confirmation can still be contradicted, but only after the grace and a long stretch outside`() {
+        val f = chordFollower()
+        val offAt = playUntilOffPlan(f)
+        f.assumeBoarded()
+        val confirmedAt = clock.sec
+        var offAfter = -1L
+        // the traveller got off and walks away 1.5 km from the line at 1.4 m/s
+        for (k in 1..600) {
+            clock.sec = confirmedAt + k
+            val p = onRail(trainAlong(offAt.toDouble()), 1500.0 + k * 1.4)
+            val u = f.onFix(LocationFix(p, accuracyMeters = 15f, speedMps = 1.4f))
+            if (u.state.phase == FollowPhase.OFF_PLAN && offAfter < 0) offAfter = k.toLong()
+        }
+        assertTrue(offAfter > 0, "a clear contradiction is flagged")
+        assertTrue(offAfter >= FollowerConfig().confirmedGraceSec, "not within the grace: $offAfter s")
+        assertTrue(offAfter >= FollowerConfig().confirmedGraceSec + FollowerConfig().confirmedOffSec - 5, "needs a long stretch: $offAfter s")
+        assertTrue(f.state.aboard && f.state.phase == FollowPhase.OFF_PLAN)
+        // and the answer can be given again: it clears it and the grace starts over
+        assertTrue(f.assumeBoarded())
+        assertEquals(FollowPhase.ON_BOARD, f.state.phase)
+    }
+
+    @Test
+    fun `no, I am not on board goes back to waiting or walking and clears the confirmation`() {
+        val f = chordFollower()
+        playUntilOffPlan(f)
+        f.assumeBoarded()
+        assertTrue(f.snapshot().confirmed)
+        f.assumeNotBoarded()
+        assertNull(f.boardedRide())
+        assertTrue(!f.snapshot().confirmed)
+        assertTrue(!f.state.aboard)
+    }
+
+    @Test
+    fun `the confirmation survives a process restart through the snapshot`() {
+        val f = chordFollower()
+        val offAt = playUntilOffPlan(f)
+        f.assumeBoarded()
+        val snap = f.snapshot()
+        assertTrue(snap.boarded && snap.confirmed)
+        val again = chordFollower(snap)
+        val phases = ArrayList<FollowPhase>()
+        for (k in 1..60) {
+            clock.sec = (offAt + k).toLong()
+            val p = onRail(trainAlong((offAt + k).toDouble()), 20.0)
+            phases.add(again.onFix(LocationFix(p, accuracyMeters = 20f, speedMps = speedAt((offAt + k).toDouble()))).state.phase)
+        }
+        assertTrue(FollowPhase.OFF_PLAN !in phases, "${phases.distinct()}")
+    }
+
     // ---------------------------------------------------------------------------------------------- tracks
 
     @Test

@@ -170,6 +170,68 @@ class TransitTripControllerTest {
     }
 
     @Test
+    fun `off plan aboard, I am on board is held by the controller and saved with the trip`() = runTest(UnconfinedTestDispatcher()) {
+        val rig = Rig(this, file)
+        rig.controller.start(FollowFixtures.itinerary(), "UTC")
+        at(400)
+        rig.location.emit(fix(metroStops[0].point))
+        at(600)
+        rig.location.emit(fix(LatLon(FollowFixtures.stopLat[0] + 0.0012, -3.0), speed = 8f))
+        at(605)
+        rig.location.emit(fix(LatLon(FollowFixtures.stopLat[0] + 0.0020, -3.0), speed = 8f))
+        at(660)
+        assertEquals(FollowPhase.ON_BOARD, rig.controller.state.value!!.follow.phase)
+        // the fixes stop fitting the line (a receiver that drifts 1.7 km sideways while moving)
+        for (k in 0 until 40) {
+            at(661L + k)
+            rig.location.emit(fix(LatLon(FollowFixtures.stopLat[0] + 0.004 + k * 0.0001, -3.02), speed = 10f))
+        }
+        val off = rig.controller.state.value!!.follow
+        assertEquals(FollowPhase.OFF_PLAN, off.phase)
+        assertTrue(off.aboard)
+        assertTrue(rig.controller.setOnBoard(true))
+        val after = rig.controller.state.value!!.follow
+        assertEquals(FollowPhase.ON_BOARD, after.phase)
+        assertNotNull(after.nextStopName)
+        // a second later the same drifting fixes do not make it off plan again
+        at(702)
+        rig.location.emit(fix(LatLon(FollowFixtures.stopLat[0] + 0.0045, -3.02), speed = 10f))
+        assertEquals(FollowPhase.ON_BOARD, rig.controller.state.value!!.follow.phase)
+        // the confirmation is part of what is saved, so a restart keeps it
+        val second = Rig(this, file)
+        assertTrue(second.controller.resume())
+        assertEquals(true, second.store.load()?.snapshot?.confirmed)
+        rig.controller.stop()
+        second.controller.stop()
+    }
+
+    @Test
+    fun `a replan aboard does not need a position`() = runTest(UnconfinedTestDispatcher()) {
+        val first = Rig(this, file)
+        first.controller.start(FollowFixtures.itinerary(), "UTC")
+        at(400)
+        first.location.emit(fix(metroStops[0].point))
+        at(600)
+        first.location.emit(fix(LatLon(FollowFixtures.stopLat[0] + 0.0012, -3.0), speed = 8f))
+        at(605)
+        first.location.emit(fix(LatLon(FollowFixtures.stopLat[0] + 0.0020, -3.0), speed = 8f))
+        at(720)
+        first.location.emit(fix(FollowFixtures.onMetro(1), speed = 10f))
+        val requests = mutableListOf<LatLon>()
+        val second = Rig(this, file) { from, _, _ ->
+            requests.add(from)
+            null
+        }
+        assertTrue(second.controller.resume())
+        assertNull(second.location.lastKnown(), "a restarted process has no fix yet")
+        assertTrue(second.controller.replan(), "aboard the new trip starts from the stops of the vehicle")
+        runCurrent()
+        assertTrue(requests.isNotEmpty())
+        first.controller.stop()
+        second.controller.stop()
+    }
+
+    @Test
     fun `a failed replan keeps the trip and says so`() = runTest(UnconfinedTestDispatcher()) {
         val rig = Rig(this, file) { _, _, _ -> null }
         rig.controller.start(FollowFixtures.itinerary(), "UTC")

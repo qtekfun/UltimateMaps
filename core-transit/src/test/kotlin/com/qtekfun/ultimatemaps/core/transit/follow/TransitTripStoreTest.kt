@@ -33,6 +33,13 @@ class TransitTripStoreTest {
     }
 
     @Test
+    fun `the traveller's confirmation of being on board survives a round trip`() {
+        val confirmed = FollowerSnapshot(1, true, 2.5, 60, confirmed = true)
+        store().save(FollowFixtures.itinerary(), confirmed, "UTC")
+        assertEquals(confirmed, store().load()!!.snapshot)
+    }
+
+    @Test
     fun `a missing delay is kept missing`() {
         store().save(FollowFixtures.itinerary(), FollowerSnapshot(0, false, 0.0, null), "UTC")
         assertNull(store().load()!!.snapshot.delaySec)
