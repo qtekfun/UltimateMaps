@@ -4,6 +4,17 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 
 ## [Unreleased]
 
+## [0.1.0-rc.29] - 2026-10-12
+
+### Fixed
+
+- **The collapsed search sheet no longer cuts off the Search and Lists tabs on large screens.** On the unfolded Pixel Fold the taskbar is taller than the gesture bar the sheet was sized for, so the tabs were clipped at the bottom. The collapsed sheet now grows by the difference.
+- **Settings use two panes on wide windows.** From 720 dp wide (an unfolded foldable, a tablet) the categories sit on the left and the open category beside them, instead of one column glued to the left with half the screen empty.
+
+### Data
+
+- **Public transport timetables are available again.** The weekly data release stopped including them because its build could not configure the app project; it now publishes the Madrid, Barcelona, Bilbao, Sevilla and Valencia indexes.
+
 ## [0.1.0-rc.28] - 2026-10-12
 
 ### Fixed

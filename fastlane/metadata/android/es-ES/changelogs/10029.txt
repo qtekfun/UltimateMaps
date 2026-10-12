@@ -1,0 +1,1 @@
+Versión candidata: la hoja de búsqueda ya no corta sus pestañas en el Pixel Fold abierto, y Ajustes muestra las categorías junto a la abierta en pantallas anchas. Solo España.
