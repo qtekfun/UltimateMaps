@@ -12,7 +12,9 @@ import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.union
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import com.qtekfun.ultimatemaps.ui.LandscapeLayout
+import com.qtekfun.ultimatemaps.ui.fold.Posture
+import com.qtekfun.ultimatemaps.ui.fold.WindowLayout
+import com.qtekfun.ultimatemaps.ui.fold.rememberWindowLayout
 import com.qtekfun.ultimatemaps.ui.horizontalSafeInsets
 import com.qtekfun.ultimatemaps.ui.startSafeInsets
 import androidx.compose.foundation.layout.Column
@@ -97,10 +99,10 @@ fun TransitTripScreen(ui: TransitTripUi, actions: TransitTripActions, dark: Bool
     NavigationTheme(dark = dark, glove = ui.glove) {
         BoxWithConstraints(modifier.fillMaxSize().testTag("trip_screen")) {
             val trip = ui.trip
-            val landscape = LandscapeLayout.isLandscape(maxWidth, maxHeight)
+            val layout = rememberWindowLayout(maxWidth, maxHeight)
             when {
-                trip != null -> Following(ui, trip, actions, landscape, LandscapeLayout.panelWidth(maxWidth))
-                ui.resumable -> ResumeCard(actions)
+                trip != null -> Following(ui, trip, actions, layout)
+                ui.resumable -> ResumeCard(actions, layout)
             }
         }
     }
@@ -109,8 +111,10 @@ fun TransitTripScreen(ui: TransitTripUi, actions: TransitTripActions, dark: Bool
 @Composable
 private fun BoxScope.Following(
     ui: TransitTripUi, trip: TransitTripState, actions: TransitTripActions,
-    landscape: Boolean = false, panelWidth: androidx.compose.ui.unit.Dp = LandscapeLayout.MAX_PANEL_WIDTH,
+    layout: WindowLayout,
 ) {
+    val landscape = layout.sideColumn
+    val panelWidth = layout.panelWidth
     LightStatusBarIcons()
     val s = trip.follow
     // "Hide alerts" lasts for this trip: the state leaves the composition with the trip (and survives a rotation).
@@ -141,6 +145,37 @@ private fun BoxScope.Following(
             horizontalAlignment = Alignment.End,
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) { TripSwitches(ui, actions) }
+        return
+    }
+    if (layout.tabletop) {
+        // Tabletop: the banner and strips on the top half (scrolling), the stops, Stop and the switches on the bottom half.
+        Column(
+            Modifier
+                .align(Alignment.TopCenter)
+                .height(layout.topPaneHeight)
+                .widthIn(max = layout.panelWidth)
+                .fillMaxWidth()
+                .windowInsetsPadding(horizontalSafeInsets())
+                .verticalScroll(rememberScrollState()),
+        ) {
+            Banner(ui, trip)
+            Strips(trip, actions, alertsHidden) { alertsHidden = true }
+        }
+        Column(
+            Modifier
+                .align(Alignment.BottomCenter)
+                .heightIn(max = layout.bottomPaneHeight)
+                .widthIn(max = layout.panelWidth)
+                .fillMaxWidth()
+                .windowInsetsPadding(WindowInsets.navigationBars.union(horizontalSafeInsets()))
+                .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            Row(Modifier.fillMaxWidth().padding(horizontal = 12.dp), horizontalArrangement = Arrangement.End) {
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) { TripSwitches(ui, actions) }
+            }
+            BottomPanel(ui, trip, s, actions, stopsMaxHeight = 96.dp)
+        }
         return
     }
     Column(Modifier.align(Alignment.TopCenter).fillMaxWidth()) {
@@ -454,12 +489,12 @@ private fun StopList(trip: TransitTripState, s: FollowState, zone: ZoneId, maxHe
 // ---------------------------------------------------------------- resume
 
 @Composable
-private fun BoxScope.ResumeCard(actions: TransitTripActions) {
+private fun BoxScope.ResumeCard(actions: TransitTripActions, layout: WindowLayout) {
     val c = NavTheme.colors
     Column(
         Modifier
-            .align(Alignment.TopCenter)
-            .widthIn(max = 480.dp)
+            .align(if (layout.posture == Posture.BOOK) Alignment.TopStart else Alignment.TopCenter)
+            .widthIn(max = layout.cardMaxWidth(480.dp))
             .windowInsetsPadding(WindowInsets.statusBars.union(horizontalSafeInsets()))
             .padding(12.dp)
             .clip(RoundedCornerShape(16.dp))
