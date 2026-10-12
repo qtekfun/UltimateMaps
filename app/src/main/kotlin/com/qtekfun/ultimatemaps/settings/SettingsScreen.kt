@@ -10,6 +10,9 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -111,42 +114,84 @@ fun SettingsScreen(env: SettingsEnv, onBack: () -> Unit, modifier: Modifier = Mo
     var openId by rememberSaveable { mutableStateOf(initialCategory) }
     var query by rememberSaveable { mutableStateOf("") }
     val open = categories.firstOrNull { it.id == openId }
-    BackHandler(enabled = open != null) { openId = null }
-    Column(
-        modifier
-            .fillMaxSize()
-            .background(Mapas.colors.sheet)
-            .windowInsetsPadding(WindowInsets.statusBars)
-            .horizontalSafePadding() // landscape: side bars and the camera cutout
-            .testTag("settings_screen"),
-    ) {
-        SettingsTopBar(
-            title = stringResource(open?.title ?: R.string.settings_title),
-            onBack = { if (open != null) openId = null else onBack() },
-        )
+    BoxWithConstraints(modifier.fillMaxSize()) {
+        // Wide windows (unfolded foldable, tablet): categories on the left, the open category beside them.
+        val twoPane = maxWidth >= SETTINGS_TWO_PANE_MIN_WIDTH
+        BackHandler(enabled = open != null && !twoPane) { openId = null }
         Column(
             Modifier
-                .weight(1f)
-                .verticalScroll(rememberScrollState())
-                .windowInsetsPadding(WindowInsets.navigationBars)
-                .padding(horizontal = Mapas.dimens.screenMargin),
-            horizontalAlignment = Alignment.CenterHorizontally,
+                .fillMaxSize()
+                .background(Mapas.colors.sheet)
+                .windowInsetsPadding(WindowInsets.statusBars)
+                .horizontalSafePadding() // landscape: side bars and the camera cutout
+                .testTag("settings_screen"),
         ) {
-            // On a wide (landscape) screen the rows stay a readable column, centred, instead of stretching across it.
-            Column(Modifier.widthIn(max = MAX_CONTENT_WIDTH).fillMaxWidth()) {
-                // A restore bumps the revision: the screens are rebuilt so they show the restored values.
-                key(env.backup?.state?.revision ?: 0) {
-                    if (open == null) {
-                        SettingsHub(categories, query, onQuery = { query = it }, onOpen = { openId = it.id })
-                    } else {
-                        key(open.id) { open.content() }
+            SettingsTopBar(
+                title = stringResource(if (twoPane) R.string.settings_title else open?.title ?: R.string.settings_title),
+                onBack = { if (open != null && !twoPane) openId = null else onBack() },
+            )
+            if (twoPane) {
+                val shown = open ?: categories.first()
+                Row(Modifier.weight(1f).fillMaxWidth()) {
+                    Column(
+                        Modifier
+                            .width(SETTINGS_LIST_PANE_WIDTH)
+                            .fillMaxHeight()
+                            .verticalScroll(rememberScrollState())
+                            .windowInsetsPadding(WindowInsets.navigationBars)
+                            .padding(horizontal = Mapas.dimens.screenMargin),
+                    ) {
+                        SettingsHub(
+                            categories, query, onQuery = { query = it }, onOpen = { openId = it.id },
+                            selectedId = shown.id,
+                        )
+                    }
+                    Box(Modifier.fillMaxHeight().width(1.dp).background(Mapas.colors.separator))
+                    Column(
+                        Modifier
+                            .weight(1f)
+                            .fillMaxHeight()
+                            .verticalScroll(rememberScrollState())
+                            .windowInsetsPadding(WindowInsets.navigationBars)
+                            .padding(horizontal = Mapas.dimens.screenMargin),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
+                        Column(Modifier.widthIn(max = MAX_CONTENT_WIDTH).fillMaxWidth()) {
+                            key(env.backup?.state?.revision ?: 0) { key(shown.id) { shown.content() } }
+                            Spacer(Modifier.height(32.dp))
+                        }
                     }
                 }
-                Spacer(Modifier.height(32.dp))
+            } else {
+                Column(
+                    Modifier
+                        .weight(1f)
+                        .verticalScroll(rememberScrollState())
+                        .windowInsetsPadding(WindowInsets.navigationBars)
+                        .padding(horizontal = Mapas.dimens.screenMargin),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    // On a wide (landscape) screen the rows stay a readable column, centred, instead of stretching across it.
+                    Column(Modifier.widthIn(max = MAX_CONTENT_WIDTH).fillMaxWidth()) {
+                        // A restore bumps the revision: the screens are rebuilt so they show the restored values.
+                        key(env.backup?.state?.revision ?: 0) {
+                            if (open == null) {
+                                SettingsHub(categories, query, onQuery = { query = it }, onOpen = { openId = it.id })
+                            } else {
+                                key(open.id) { open.content() }
+                            }
+                        }
+                        Spacer(Modifier.height(32.dp))
+                    }
+                }
             }
         }
     }
 }
+
+/** Window width from which Settings shows the category list and the open category side by side. */
+private val SETTINGS_TWO_PANE_MIN_WIDTH = 720.dp
+private val SETTINGS_LIST_PANE_WIDTH = 360.dp
 
 // ---------------------------------------------------------------- Maps and network
 
