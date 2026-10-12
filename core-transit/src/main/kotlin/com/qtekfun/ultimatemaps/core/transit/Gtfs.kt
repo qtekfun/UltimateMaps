@@ -61,7 +61,17 @@ class GtfsReadOptions(
      * Spike shortcut for feeds whose published validity has already expired.
      */
     val ignoreCalendarRange: Boolean = false,
+    /**
+     * Reads `shapes.txt` for the trips of routes whose GTFS route type is in this set (null: shapes are not read, which keeps
+     * a bus feed's 190 MB of shapes out of memory). See [isRailLike].
+     */
+    val shapeRouteTypes: ((Int) -> Boolean)? = null,
 )
+
+/** Rail-bound GTFS route types (basic and extended): tram, metro, rail, cable car, funicular, monorail and their 100/400/900 ranges. */
+fun isRailLike(routeType: Int): Boolean =
+    routeType in 0..2 || routeType == 5 || routeType == 7 || routeType == 12 ||
+        routeType in 100..199 || routeType in 300..399 || routeType in 400..499 || routeType in 900..999
 
 /** Compact in-memory GTFS feed (only the fields a planner needs). */
 class GtfsFeed(
@@ -102,6 +112,13 @@ class GtfsFeed(
     val feedVersion: String,
     val feedStartDay: Int,
     var feedEndDay: Int,
+    /** Index into [shapeIds] of each trip's shape, or -1 (no shape, or shapes were not read). */
+    val tripShape: IntArray = IntArray(0),
+    val shapeIds: Array<String> = emptyArray(),
+    /** Shape k owns points [shapeStart[k], shapeStart[k+1]) of [shapeLat]/[shapeLon], in sequence order. */
+    val shapeStart: IntArray = IntArray(1),
+    val shapeLat: DoubleArray = DoubleArray(0),
+    val shapeLon: DoubleArray = DoubleArray(0),
 )
 
 object GtfsReader {
@@ -232,12 +249,15 @@ object GtfsReader {
         val tripRoute = IntList()
         val tripService = IntList()
         val tripHead = ArrayList<String>()
+        val tripShapeId = ArrayList<String>()
+        val wantShape = options.shapeRouteTypes
         source.open("trips.txt")!!.use { ins ->
             CsvTable(ins).use { t ->
                 val cR = t.col("route_id")
                 val cS = t.col("service_id")
                 val cT = t.col("trip_id")
                 val cH = t.col("trip_headsign")
+                val cShape = t.col("shape_id")
                 while (t.next()) {
                     val r = routeIndex[t.str(cR)] ?: continue
                     val s = serviceIndex[t.str(cS)] ?: continue
@@ -246,6 +266,7 @@ object GtfsReader {
                     tripRoute.add(r)
                     tripService.add(s)
                     tripHead.add(t.str(cH))
+                    tripShapeId.add(if (wantShape != null && wantShape(routeType[r])) t.str(cShape) else "")
                 }
             }
         }
@@ -366,6 +387,73 @@ object GtfsReader {
             }
         }
 
+        // ---- shapes (only those of the trips that asked for one)
+        val shapeIndex = HashMap<String, Int>()
+        val shapeIdList = ArrayList<String>()
+        val tripShape = IntArray(tripIds.size) { -1 }
+        for (i in tripShape.indices) {
+            val id = tripShapeId[i]
+            if (id.isEmpty()) continue
+            tripShape[i] = shapeIndex.getOrPut(id) { shapeIdList.add(id); shapeIdList.size - 1 }
+        }
+        var shapeStart = IntArray(shapeIdList.size + 1)
+        var shapeLatArr = DoubleArray(0)
+        var shapeLonArr = DoubleArray(0)
+        if (shapeIdList.isNotEmpty()) {
+            val src = source.open("shapes.txt")
+            if (src != null) {
+                val rowShape = IntList(1 shl 14)
+                val rowSeq = IntList(1 shl 14)
+                val rowLat = ArrayList<Double>()
+                val rowLon = ArrayList<Double>()
+                src.use { ins ->
+                    CsvTable(ins).use { t ->
+                        val cId = t.col("shape_id")
+                        val cLa = t.col("shape_pt_lat")
+                        val cLo = t.col("shape_pt_lon")
+                        val cQ = t.col("shape_pt_sequence")
+                        var lastKey = ""
+                        var lastIdx = -1
+                        while (t.next()) {
+                            val key = t.str(cId)
+                            val idx = if (key == lastKey) lastIdx else (shapeIndex[key] ?: -1).also {
+                                lastKey = key
+                                lastIdx = it
+                            }
+                            if (idx < 0) continue
+                            val la = t.double(cLa)
+                            val lo = t.double(cLo)
+                            if (la.isNaN() || lo.isNaN()) continue
+                            rowShape.add(idx)
+                            rowSeq.add(t.int(cQ))
+                            rowLat.add(la)
+                            rowLon.add(lo)
+                        }
+                    }
+                }
+                val rows = rowShape.size
+                val counts = IntArray(shapeIdList.size + 1)
+                for (r in 0 until rows) counts[rowShape[r] + 1]++
+                for (k in shapeIdList.indices) counts[k + 1] += counts[k]
+                shapeStart = counts
+                val fillAt = counts.copyOf(shapeIdList.size)
+                val byShape = IntArray(rows)
+                for (r in 0 until rows) byShape[fillAt[rowShape[r]]++] = r
+                shapeLatArr = DoubleArray(rows)
+                shapeLonArr = DoubleArray(rows)
+                for (k in shapeIdList.indices) {
+                    val a = shapeStart[k]
+                    val b = shapeStart[k + 1]
+                    val seg = byShape.copyOfRange(a, b).toTypedArray()
+                    seg.sortBy { rowSeq[it] }
+                    for (j in seg.indices) {
+                        shapeLatArr[a + j] = rowLat[seg[j]]
+                        shapeLonArr[a + j] = rowLon[seg[j]]
+                    }
+                }
+            }
+        }
+
         // ---- feed info
         var version = ""
         var fs = Int.MIN_VALUE
@@ -417,6 +505,11 @@ object GtfsReader {
             feedVersion = version,
             feedStartDay = fs,
             feedEndDay = fe,
+            tripShape = tripShape,
+            shapeIds = shapeIdList.toTypedArray(),
+            shapeStart = shapeStart,
+            shapeLat = shapeLatArr,
+            shapeLon = shapeLonArr,
         )
     }
 

@@ -75,14 +75,14 @@ sealed interface ItineraryLeg {
     }
 
     /**
-     * A ride. [stops] holds every stop from boarding to alighting, both included. [shape] is the line geometry when the
-     * data has it (the index does not carry shapes yet: always null), in which case [path] is the stop-to-stop line.
+     * A ride. [stops] holds every stop from boarding to alighting, both included. [geometry] is the line geometry when the
+     * index carries it (rail patterns of feeds that publish shapes); without it [path] is the stop-to-stop line.
      */
     data class Ride(
         val line: LineInfo,
         val headsign: String,
         val stops: List<ItineraryStop>,
-        val shape: List<LatLon>? = null,
+        val geometry: RideShape? = null,
         /** The feed's own trip id when the index kept it (real-time matching); null otherwise. */
         val tripId: String? = null,
     ) : ItineraryLeg {
@@ -93,8 +93,53 @@ sealed interface ItineraryLeg {
         val stopCount: Int get() = stops.size - 1
         override val departAt: Long get() = boarding.departAt
         override val arriveAt: Long get() = alighting.arriveAt
-        override val path: List<LatLon> get() = shape ?: stops.map { it.point }
+
+        /** The line geometry from boarding to alighting, or null when only the stop-to-stop line is known. */
+        val shape: List<LatLon>? get() = geometry?.points
+        override val path: List<LatLon> get() = geometry?.points ?: stops.map { it.point }
+
+        /** The ride restricted to stops [from]..[to] (indices into [stops], both included), with its geometry cut to match. */
+        fun slice(from: Int, to: Int): Ride =
+            copy(stops = stops.subList(from, to + 1), geometry = geometry?.takeIf { it.stopVertex.size == stops.size }?.slice(from, to))
     }
+}
+
+/**
+ * The polyline of a ride, from the boarding stop to the alighting one. Stop `i` of the ride is at vertex [stopVertex]`[i]` of
+ * [points]; [onShape]`[i]` says whether the hop from stop `i` to stop `i + 1` follows the line's real geometry (true) or is
+ * the straight chord because the data did not cover it. [stopVertex] is non-decreasing and has one entry per stop.
+ */
+class RideShape(val points: List<LatLon>, val stopVertex: IntArray, val onShape: BooleanArray) {
+    init {
+        require(points.size >= 2) { "a shape needs two points" }
+        require(stopVertex.size >= 2 && onShape.size == stopVertex.size - 1) { "one entry per stop and per hop" }
+    }
+
+    /** The shape of stops [from]..[to] only. */
+    fun slice(from: Int, to: Int): RideShape {
+        val v0 = stopVertex[from]
+        val v1 = stopVertex[to]
+        return RideShape(
+            points.subList(v0, v1 + 1),
+            IntArray(to - from + 1) { stopVertex[from + it] - v0 },
+            onShape.copyOfRange(from, to),
+        )
+    }
+
+    /** This shape followed by [next], which must start at the stop where this one ends (that stop is not repeated). */
+    fun then(next: RideShape): RideShape {
+        val shift = points.size - 1
+        return RideShape(
+            points + next.points.drop(1),
+            stopVertex + IntArray(next.stopVertex.size - 1) { next.stopVertex[it + 1] + shift },
+            onShape + next.onShape,
+        )
+    }
+
+    override fun equals(other: Any?): Boolean =
+        other is RideShape && points == other.points && stopVertex.contentEquals(other.stopVertex) && onShape.contentEquals(other.onShape)
+
+    override fun hashCode(): Int = 31 * (31 * points.hashCode() + stopVertex.contentHashCode()) + onShape.contentHashCode()
 }
 
 /** A complete theoretical (schedule-based) trip. */

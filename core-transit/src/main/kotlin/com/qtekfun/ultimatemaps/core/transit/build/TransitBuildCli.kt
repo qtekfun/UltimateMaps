@@ -9,6 +9,8 @@ import com.qtekfun.ultimatemaps.core.transit.TransitIndexBuilder
 import com.qtekfun.ultimatemaps.core.transit.TransitIndexIo
 import com.qtekfun.ultimatemaps.core.transit.ZipGtfsSource
 import com.qtekfun.ultimatemaps.core.transit.calendarWindow
+import com.qtekfun.ultimatemaps.core.transit.geometryCoverage
+import com.qtekfun.ultimatemaps.core.transit.isRailLike
 import com.qtekfun.ultimatemaps.core.transit.projectCalendar
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
@@ -94,7 +96,10 @@ const val REALTIME_NAMESPACE = "renfe"
 const val PROJECTION_DAYS = 60
 
 object TransitBuild {
-    fun build(manifest: CityManifest, input: File, today: LocalDate, allowExpired: Boolean, generated: String, log: (String) -> Unit = {}): BuildResult {
+    fun build(
+        manifest: CityManifest, input: File, today: LocalDate, allowExpired: Boolean, generated: String,
+        log: (String) -> Unit = {}, useShapes: Boolean = true,
+    ): BuildResult {
         val builder = TransitIndexBuilder()
         val reports = ArrayList<FeedReport>()
         for (spec in manifest.feeds) {
@@ -106,7 +111,7 @@ object TransitBuild {
             }
             val bbox = spec.bbox
             val filter: ((Double, Double) -> Boolean)? = bbox?.let { b -> { lat, lon -> lat in b[0]..b[2] && lon in b[1]..b[3] } }
-            val feed = GtfsReader.read(ZipGtfsSource(zip), GtfsReadOptions(stopFilter = filter))
+            val feed = GtfsReader.read(ZipGtfsSource(zip), GtfsReadOptions(stopFilter = filter, shapeRouteTypes = if (useShapes) ::isRailLike else null))
             val window = calendarWindow(feed)
             val from = window?.first?.takeIf { it != Int.MIN_VALUE }?.let { LocalDate.ofEpochDay(it.toLong()) }
             val to = window?.last?.takeIf { it != Int.MAX_VALUE }?.let { LocalDate.ofEpochDay(it.toLong()) }
@@ -124,7 +129,7 @@ object TransitBuild {
                 reports += FeedReport(spec.label, from, to, false, "expired")
                 continue
             }
-            builder.addFeed(feed, FeedOptions(spec.label, spec.namespace, spec.attribution, dropNonPositiveDuration = true, keepIds = spec.namespace == REALTIME_NAMESPACE, calendarProjected = projection != null), ignoredCalendarRange = false)
+            builder.addFeed(feed, FeedOptions(spec.label, spec.namespace, spec.attribution, dropNonPositiveDuration = true, keepIds = spec.namespace == REALTIME_NAMESPACE, calendarProjected = projection != null, useShapes = useShapes), ignoredCalendarRange = false)
             if (projection != null) {
                 val newTo = LocalDate.ofEpochDay(projection.newLastDay.toLong())
                 reports += FeedReport(spec.label, from, newTo, true, "projected", projectedFrom = to)
@@ -151,6 +156,18 @@ object TransitBuild {
             put("attribution", buildJsonArray { attribution.forEach { add(JsonPrimitive(it)) } })
             put("generated", generated)
             put("droppedTrips", builder.droppedTrips)
+            // Line geometry coverage of the rail-bound patterns (informational; the app reads the geometry from the .umti).
+            put("geometry", buildJsonObject {
+                index.geometryCoverage().forEach { (mode, c) ->
+                    put(mode.name.lowercase(), buildJsonObject {
+                        put("patterns", c.patterns)
+                        put("withGeometry", c.withGeometry)
+                        put("fullyOnShape", c.fullyOnShape)
+                        put("hops", c.hops)
+                        put("hopsOnShape", c.hopsOnShape)
+                    })
+                }
+            })
             // Feeds whose calendar was projected forward from an expired one: the app shows a notice for them.
             put("projected", reports.any { it.projectedFrom != null })
             put("projectedFeeds", buildJsonArray { reports.filter { it.projectedFrom != null }.forEach { add(JsonPrimitive(it.label)) } })
@@ -189,15 +206,18 @@ fun main(args: Array<String>) {
     val input = arg("--input-dir").orEmpty()
     val output = arg("--output-dir").orEmpty()
     if (manifestPath.isEmpty() || input.isEmpty() || output.isEmpty()) {
-        System.err.println("usage: --manifest FILE --input-dir DIR --output-dir DIR [--today YYYY-MM-DD] [--allow-expired]")
+        System.err.println("usage: --manifest FILE --input-dir DIR --output-dir DIR [--today YYYY-MM-DD] [--allow-expired] [--no-shapes]")
         kotlin.system.exitProcess(2)
     }
     val today = arg("--today")?.let(LocalDate::parse) ?: LocalDate.now()
     val manifest = CityManifest.parse(File(manifestPath).readText())
     val t0 = System.nanoTime()
-    val result = TransitBuild.build(manifest, File(input), today, args.contains("--allow-expired"), java.time.Instant.now().toString()) { println(it) }
+    val result = TransitBuild.build(manifest, File(input), today, args.contains("--allow-expired"), java.time.Instant.now().toString(), { println(it) }, useShapes = !args.contains("--no-shapes"))
     val (umti, meta) = TransitBuild.write(result, manifest.id, File(output))
     println("wrote ${umti.path} (${umti.length()} bytes) and ${meta.path} in ${(System.nanoTime() - t0) / 1_000_000} ms")
     println(result.index.describe())
+    result.index.geometryCoverage().forEach { (mode, c) ->
+        println("geometry ${mode.name.lowercase()}: ${c.withGeometry}/${c.patterns} patterns with a polyline, ${c.fullyOnShape} fully on the shape, ${c.hopsOnShape}/${c.hops} hops on the shape")
+    }
     println("valid ${result.meta["validFrom"]?.jsonPrimitive?.content} .. ${result.meta["validTo"]?.jsonPrimitive?.content}; dropped trips ${result.meta["droppedTrips"]}")
 }

@@ -35,7 +35,7 @@ tasks.register<JavaExec>("transitBench") {
 // Builds one city's index from GTFS zips that are already on disk (nothing is downloaded). See docs/phase2/transit.md
 // and scripts/build-transit.sh. Usage:
 //   ./gradlew :core-transit:buildTransit -Pmanifest=scripts/transit/madrid.json -PtransitInput=DIR -PtransitOut=DIR
-//   [-PtransitToday=2026-10-07] [-PtransitAllowExpired]
+//   [-PtransitToday=2026-10-07] [-PtransitAllowExpired] [-PtransitNoShapes]
 tasks.register<JavaExec>("buildTransit") {
     group = "build"
     description = "Turns GTFS zips into the binary transit index and its metadata sidecar."
@@ -46,6 +46,7 @@ tasks.register<JavaExec>("buildTransit") {
     val extra = buildList {
         prop("transitToday")?.let { add("--today"); add(it) }
         if (prop("transitAllowExpired") != null) add("--allow-expired")
+        if (prop("transitNoShapes") != null) add("--no-shapes")
     }
     args(listOf("--manifest", prop("manifest") ?: "", "--input-dir", prop("transitInput") ?: "", "--output-dir", prop("transitOut") ?: "") + extra)
 }

@@ -124,11 +124,34 @@ class TransitService(val index: TransitIndex, val zone: ZoneId, config: PlannerC
                     stops = leg.stops.map {
                         ItineraryStop(index.stopName[it.stop], point(it.stop), at(it.arriveSec), at(it.departSec), index.stopExtId?.get(it.stop)?.ifEmpty { null })
                     },
+                    geometry = rideShape(leg),
                     tripId = leg.trip.takeIf { it >= 0 }?.let { index.tripExtId?.get(it) }?.ifEmpty { null },
                 )
             }
         }
         return Itinerary(legs, j.note)
+    }
+
+    /** The line geometry of a ride from the index, or null when its pattern has none (the stop-to-stop line is used). */
+    private fun rideShape(leg: Leg.Ride): RideShape? {
+        val p = leg.pattern
+        if (p < 0 || leg.boardPos < 0 || !index.hasShape(p) || leg.stops.size < 2) return null
+        val vertexOf = index.patternStopVertex ?: return null
+        val hopOn = index.patternHopOnShape ?: return null
+        val latArr = index.shapeLat ?: return null
+        val lonArr = index.shapeLon ?: return null
+        val base = index.patternShapeOffset!![p]
+        val stopOff = index.patternStopOffset[p]
+        val b = leg.boardPos
+        val a = b + leg.stops.size - 1
+        val v0 = vertexOf[stopOff + b]
+        val v1 = vertexOf[stopOff + a]
+        if (v1 <= v0 || base + v1 >= index.patternShapeOffset!![p + 1]) return null
+        return RideShape(
+            List(v1 - v0 + 1) { LatLon((latArr[base + v0 + it]) / 1e6, (lonArr[base + v0 + it]) / 1e6) },
+            IntArray(leg.stops.size) { vertexOf[stopOff + b + it] - v0 },
+            BooleanArray(leg.stops.size - 1) { hopOn[stopOff + b + it] },
+        )
     }
 
     companion object {

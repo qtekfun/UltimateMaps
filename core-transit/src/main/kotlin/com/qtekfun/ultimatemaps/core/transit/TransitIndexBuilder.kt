@@ -19,6 +19,11 @@ class FeedOptions(
     val keepIds: Boolean = false,
     /** The caller projected this feed's expired calendar forward ([projectCalendar]); recorded in the index. */
     val calendarProjected: Boolean = false,
+    /**
+     * Carry the line geometry of the trips whose feed gave them a shape (the feed must have been read with
+     * [GtfsReadOptions.shapeRouteTypes]). Off by default: the geometry costs file size and only matters for rail.
+     */
+    val useShapes: Boolean = false,
 )
 
 /**
@@ -91,6 +96,10 @@ class TransitIndexBuilder {
         val fArr = IntList()
         val fDep = IntList()
         val freqCount get() = fSvc.size
+
+        /** The line geometry, from the first trip of the pattern that has a shape that places at least two stops. */
+        var geometry: PatternGeometry? = null
+        var geometryTried = false
     }
 
     private fun headsign(s: String): Int = headsignIdx.getOrPut(s) {
@@ -158,6 +167,16 @@ class TransitIndexBuilder {
             val line = lineOf(feed.tripRoute[trip])
             val key = PatternKey(line, stops)
             val acc = patterns.getOrPut(key) { PatternAcc(line, stops) }
+            val shape = if (options.useShapes && feed.tripShape.isNotEmpty()) feed.tripShape[trip] else -1
+            if (shape >= 0 && acc.geometry == null) {
+                val sA = feed.shapeStart[shape]
+                val sB = feed.shapeStart[shape + 1]
+                if (sB - sA >= 2) {
+                    val la = DoubleArray(n) { feed.stopLat[feed.stTimeStop[a + it]] }
+                    val lo = DoubleArray(n) { feed.stopLon[feed.stTimeStop[a + it]] }
+                    acc.geometry = ShapeMatcher.match(feed.shapeLat, feed.shapeLon, sA, sB, la, lo)
+                }
+            }
             val svc = svcBase + feed.tripService[trip]
             val head = headsign(feed.tripHeadsign[trip])
             val windows = freqByTrip[trip]
@@ -266,6 +285,34 @@ class TransitIndexBuilder {
                 System.arraycopy(acc.fDep.data, oldT * n, departures, dst, n)
             }
         }
+        var shapeLat: IntArray? = null
+        var shapeLon: IntArray? = null
+        var shapeOff: IntArray? = null
+        var stopVertex: IntArray? = null
+        var hopOn: BooleanArray? = null
+        if (pats.any { it.geometry != null }) {
+            val la = IntList(1 shl 12)
+            val lo = IntList(1 shl 12)
+            val off = IntArray(nP + 1)
+            val sv = IntArray(totalStops)
+            val on = BooleanArray(totalStops)
+            for ((p, acc) in pats.withIndex()) {
+                off[p] = la.size
+                val g = acc.geometry ?: continue
+                for (i in 0 until g.vertexCount) {
+                    la.add(g.lat[i])
+                    lo.add(g.lon[i])
+                }
+                System.arraycopy(g.stopVertex, 0, sv, patStopOff[p], acc.stops.size)
+                System.arraycopy(g.onShape, 0, on, patStopOff[p], acc.stops.size)
+            }
+            off[nP] = la.size
+            shapeLat = la.toArray()
+            shapeLon = lo.toArray()
+            shapeOff = off
+            stopVertex = sv
+            hopOn = on
+        }
         val groupIds = HashMap<String, Int>()
         val group = IntArray(stopName.size) { i ->
             val k = stopGroupKey[i]
@@ -306,6 +353,11 @@ class TransitIndexBuilder {
             transferMinSec = trMin.toArray(),
             stopExtId = if (anyKeepIds) stopExt.toTypedArray() else null,
             tripExtId = tExt,
+            shapeLat = shapeLat,
+            shapeLon = shapeLon,
+            patternShapeOffset = shapeOff,
+            patternStopVertex = stopVertex,
+            patternHopOnShape = hopOn,
         )
     }
 }

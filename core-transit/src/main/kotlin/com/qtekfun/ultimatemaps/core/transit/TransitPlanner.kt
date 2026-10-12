@@ -90,6 +90,9 @@ sealed interface Leg {
         val stops: List<RideStop> = emptyList(),
         /** Absolute trip number in the index (for its feed id), or -1. */
         val trip: Int = -1,
+        /** Pattern the ride runs on and the position of the boarding stop inside it (for the line geometry), or -1. */
+        val pattern: Int = -1,
+        val boardPos: Int = -1,
     ) : Leg
 }
 
@@ -721,6 +724,8 @@ class TransitPlanner(val index: TransitIndex, val config: PlannerConfig = Planne
                     arriveSec = index.arrivals[tBase + alightPos] + shift,
                     stopCount = alightPos - boardPos,
                     trip = index.patternTripOffset[p] + tl,
+                    pattern = p,
+                    boardPos = boardPos,
                     stops = (boardPos..alightPos).map { i ->
                         RideStop(index.patternStops[off + i], index.arrivals[tBase + i] + shift, index.departures[tBase + i] + shift)
                     },

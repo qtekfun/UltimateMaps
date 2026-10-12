@@ -105,7 +105,7 @@ scheduled trips are binary-searched; frequency trips are scanned per boarding (a
 - Fallback "next departures": `planNextDepartures(count)` restarts the search one minute after the previous itinerary's first
   boarding; returns the best itinerary for each of the next N distinct departures.
 - Not modelled: real time, pickup/drop-off restrictions, route-specific transfers, fares, accessibility, arrive-by queries,
-  bikes, trip shapes.
+  bikes. Trip shapes are carried for rail patterns only (`ShapeMatcher`, `TransitIndexIo` flag 4).
 
 ## 3. Measurements on the real Madrid feeds
 
@@ -181,8 +181,9 @@ Mismatches and data problems found:
   alighting stop and time, number of stops); a "next departures" list from `planNextDepartures`.
 - Line colours: the index already carries `route_color` / `route_text_color` per line (Metro, Metro Ligero, EMT, interurban
   and Renfe all provide them) and the GTFS `route_type` for an icon; fall back to a default colour per type.
-- Map: highlight the selected itinerary. The index has no shapes (the feeds do: `shapes.txt` is large) so a first version
-  draws straight stop-to-stop segments; size of simplified shapes in the index: *not measured*.
+- Map: highlight the selected itinerary. Rail-bound patterns (metro, tram, rail) carry the feed's line geometry (since
+  2026-10-12, see `docs/decisions.md`): +80 kB on the Madrid index (4.12 MB to 4.20 MB). Other patterns (buses) and hops the
+  feed's shape does not cover are drawn as straight stop-to-stop segments.
 - Static lines layer (M6): the same index can feed it (patterns give stop sequences per line); not built.
 - Attribution and honesty: "Scheduled times, no real time" label; "Powered by CRTM" / Renfe attribution in About and in the
   itinerary footer; the feed validity date; refuse to route past the index's last valid day.
