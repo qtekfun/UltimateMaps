@@ -2,6 +2,8 @@ package com.qtekfun.ultimatemaps.route
 
 import com.qtekfun.ultimatemaps.core.geo.LatLon
 import com.qtekfun.ultimatemaps.core.map.CameraPadding
+import com.qtekfun.ultimatemaps.ui.fold.Posture
+import com.qtekfun.ultimatemaps.ui.fold.WindowLayout
 import com.qtekfun.ultimatemaps.ui.sheet.SheetDetent
 import kotlin.math.roundToInt
 
@@ -42,6 +44,27 @@ object RoutePadding {
             right = (RIGHT_COLUMN_DP * density).roundToInt(),
             bottom = edge,
         )
+    }
+
+    /**
+     * The padding for the arrangement [layout] of the window: the side column (landscape, large window, book) covers the
+     * start side, tabletop covers the bottom half whatever the detent is (the sheet never leaves its pane), portrait the
+     * bottom sheet at [detent].
+     */
+    fun computeFor(layout: WindowLayout, detent: SheetDetent, heightPx: Int, density: Float, statusBarPx: Int): CameraPadding {
+        val edge = (EDGE_DP * density).roundToInt()
+        val top = statusBarPx.coerceAtLeast(0) + (TOP_BAR_DP * density).roundToInt()
+        val right = (RIGHT_COLUMN_DP * density).roundToInt()
+        return when (layout.posture) {
+            Posture.PORTRAIT -> compute(detent, heightPx, density, statusBarPx)
+            Posture.SIDE_COLUMN, Posture.BOOK -> {
+                val covered = layout.coveredPadding(density)
+                // The map buttons are at the end side: their column stays free there; the start side is the panel.
+                if (layout.rtl) CameraPadding(left = right, top = top, right = covered.right + edge, bottom = edge)
+                else CameraPadding(left = covered.left + edge, top = top, right = right, bottom = edge)
+            }
+            Posture.TABLETOP -> CameraPadding(left = edge, top = top, right = right, bottom = layout.coveredPadding(density).bottom + edge)
+        }
     }
 
     fun compute(detent: SheetDetent, heightPx: Int, density: Float, statusBarPx: Int): CameraPadding {
@@ -91,6 +114,12 @@ class RouteFraming(
         if (points.isEmpty() || userMoved) return
         val d = detent()
         if (d == SheetDetent.FULL || d == lastFramedDetent) return // the sheet covers the map: nothing to look at
+        doFrame()
+    }
+
+    /** The window was rearranged (fold, rotation, resize): the free part of the map changed, so frame again unless the user took the map. */
+    fun onLayoutChanged() {
+        if (points.isEmpty() || userMoved) return
         doFrame()
     }
 

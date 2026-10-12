@@ -168,6 +168,7 @@ dependencies {
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.foundation)
     implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.window) // fold posture (hinge, half-open): Apache-2.0, platform extensions, no Play Services
 
     testImplementation(libs.junit4)
     testImplementation(libs.robolectric)

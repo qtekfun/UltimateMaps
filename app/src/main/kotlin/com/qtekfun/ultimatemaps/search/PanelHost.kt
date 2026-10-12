@@ -146,20 +146,19 @@ class PanelHost(
             val dm = activity.resources.displayMetrics
             val status = androidx.core.view.ViewCompat.getRootWindowInsets(activity.window.decorView)
                 ?.getInsets(androidx.core.view.WindowInsetsCompat.Type.statusBars())?.top ?: 0
-            val padding = if (com.qtekfun.ultimatemaps.ui.LandscapeLayout.isLandscapePx(dm.widthPixels, dm.heightPixels)) {
-                // Landscape: the sheet is a side column, not a bottom sheet.
-                RoutePadding.computeLandscape(
-                    com.qtekfun.ultimatemaps.ui.LandscapeLayout.panelWidthPx(dm.widthPixels, dm.density), dm.density, status,
-                )
-            } else {
-                RoutePadding.compute(detent, dm.heightPixels, dm.density, status)
-            }
+            // The window arrangement the map screen last drew: a side column (landscape, large, book) or the bottom half (tabletop).
+            val layout = screen.windowLayout
+            val padding = RoutePadding.computeFor(layout, detent, dm.heightPixels, dm.density, status)
             engine.frameRoute(points, padding)
         },
     ).also { framing ->
         engine.addCameraGestureListener { framing.onUserMovedMap() }
         activity.lifecycleScope.launch {
             snapshotFlow { screen.detent }.drop(1).collect { framing.onDetentChanged() }
+        }
+        activity.lifecycleScope.launch {
+            // A fold, a rotation or a resize changes the free part of the map: the route is framed in it again.
+            snapshotFlow { screen.windowLayout }.drop(1).collect { framing.onLayoutChanged() }
         }
     }
 

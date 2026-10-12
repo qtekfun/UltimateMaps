@@ -46,6 +46,9 @@ import com.qtekfun.ultimatemaps.ui.MapScreenState
 import com.qtekfun.ultimatemaps.ui.Notice
 import com.qtekfun.ultimatemaps.link.toPlaceInfo
 import com.qtekfun.ultimatemaps.search.PanelHost
+import com.qtekfun.ultimatemaps.ui.fold.FoldPosture
+import com.qtekfun.ultimatemaps.ui.fold.LocalFoldFeature
+import com.qtekfun.ultimatemaps.ui.fold.WindowManagerFoldPosture
 import com.qtekfun.ultimatemaps.ui.theme.MapasTheme
 import com.qtekfun.ultimatemaps.cameras.HazardDescriber
 import com.qtekfun.ultimatemaps.cameras.HazardsEnv
@@ -155,7 +158,10 @@ class MainActivity : ComponentActivity() {
             bikeShare = com.qtekfun.ultimatemaps.bikeshare.BikeShareEnv(app.bikeShareSettings.settings, app.bikeShareData.repository, live = app.bikeAvailability::availability),
             navScreen = app.navScreen,
         )
-        navHost = NavHost(this, engine, app.navScreen)
+        navHost = NavHost(
+            this, engine, app.navScreen,
+            coveredPx = { state.windowLayout.coveredPadding(resources.displayMetrics.density) },
+        )
         // Low-emission zones: drawn under the route line while the switch and the map toggle are on.
         com.qtekfun.ultimatemaps.zbe.ZbeMapLayer(lifecycleScope, app.zbeData.repository, app.zbeSettings.settings, engine::showLowEmissionZones).start()
         panel.onRequestLocation = ::onLocate
@@ -163,8 +169,11 @@ class MainActivity : ComponentActivity() {
         state.onOpenSettings = { startActivity(Intent(this, SettingsActivity::class.java)) }
         state.onCamera(engine.cameraState())
 
+        // The fold (hinge position, half-open): read while the activity is started; the layout follows it without recreating anything.
+        val posture: FoldPosture = WindowManagerFoldPosture(this, this)
         setContent {
             val dark = isSystemInDarkTheme()
+            val fold by posture.feature.collectAsState()
             LaunchedEffect(dark) { engine.setTheme(if (dark) MapTheme.DARK else MapTheme.LIGHT) }
             val navUi by navHost.uiState()
             val tripUi by app.transitTrip.ui.collectAsState()
@@ -172,6 +181,7 @@ class MainActivity : ComponentActivity() {
             LaunchedEffect(navUi.active) { updateCompass() } // the sensor is only registered while a navigation or the map's dot shows it
             CompositionLocalProvider(
                 LocalAlertBanner provides app.alertBanner.state, LocalIncidentBanner provides app.incidentBanner,
+                LocalFoldFeature provides fold,
                 com.qtekfun.ultimatemaps.zbe.LocalZbeBanner provides app.zbeBanner,
             ) {
             MapasTheme(darkTheme = dark) {
