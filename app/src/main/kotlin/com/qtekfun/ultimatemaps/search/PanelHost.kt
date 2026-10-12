@@ -64,6 +64,7 @@ import com.qtekfun.ultimatemaps.nav.RouteRunner
 import com.qtekfun.ultimatemaps.route.CoMapsRouteBackend
 import com.qtekfun.ultimatemaps.route.LogcatRouteLog
 import com.qtekfun.ultimatemaps.route.RouteFraming
+import com.qtekfun.ultimatemaps.transit.follow.TripCameraFraming
 import com.qtekfun.ultimatemaps.route.RoutePadding
 import com.qtekfun.ultimatemaps.route.RoutePreviewController
 import com.qtekfun.ultimatemaps.ui.MapScreenState
@@ -156,7 +157,8 @@ class PanelHost(
      * and again when the sheet changes height unless the user moved the map. Silent during a navigation.
      */
     private val routeFraming = RouteFraming(
-        navigating = { navScreen?.ui?.value?.active == true },
+        // The hidden preview also keeps quiet while a transit trip is followed: its screen owns the camera then.
+        navigating = { navScreen?.ui?.value?.active == true || (activity.application as? MapasApp)?.transitTrip?.active == true },
         detent = { screen.detent },
         frame = { points, detent ->
             val dm = activity.resources.displayMetrics
@@ -174,6 +176,29 @@ class PanelHost(
         }
         activity.lifecycleScope.launch {
             // A fold, a rotation or a resize changes the free part of the map: the route is framed in it again.
+            snapshotFlow { screen.windowLayout }.drop(1).collect { framing.onLayoutChanged() }
+        }
+    }
+
+    /**
+     * The camera of the transit trip screen: framed on the first display, a re-plan and a new leg, after "recenter" and on a
+     * layout change, and never again once the user moved the map (a zoom is a gesture like any other).
+     */
+    val tripFraming: TripCameraFraming = TripCameraFraming { points ->
+        val dm = activity.resources.displayMetrics
+        val status = androidx.core.view.ViewCompat.getRootWindowInsets(activity.window.decorView)
+            ?.getInsets(androidx.core.view.WindowInsetsCompat.Type.statusBars())?.top ?: 0
+        val layout = screen.windowLayout
+        val padding = if (layout.posture == com.qtekfun.ultimatemaps.ui.fold.Posture.PORTRAIT) {
+            // The banner on top and the stops with the Stop button at the bottom.
+            CameraPadding((40 * dm.density).toInt(), (80 * dm.density).toInt(), (40 * dm.density).toInt(), (300 * dm.density).toInt())
+        } else {
+            RoutePadding.computeFor(layout, SheetDetent.MEDIUM, dm.heightPixels, dm.density, status)
+        }
+        engine.frameRoute(points, padding)
+    }.also { framing ->
+        engine.addCameraGestureListener { framing.onUserMovedMap() }
+        activity.lifecycleScope.launch {
             snapshotFlow { screen.windowLayout }.drop(1).collect { framing.onLayoutChanged() }
         }
     }
