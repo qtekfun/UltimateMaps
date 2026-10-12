@@ -41,6 +41,7 @@
     <string name="backup_item_roadworks">Lavori stradali</string>
     <string name="backup_item_fuel">Distributori di carburante</string>
     <string name="backup_item_other">Altro</string>
+    <string name="backup_item_system_geocoder">Ricerca indirizzi online (geocodificatore di sistema)</string>
 
     <string name="backup_group_navigation">Navigazione</string>
     <string name="backup_group_navigation_ui">Schermata di navigazione</string>

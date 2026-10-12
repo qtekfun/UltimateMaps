@@ -1088,3 +1088,18 @@ Format: date · decision · reason · discarded alternatives · how to revert it
 - **Reason:** the fold decides what is visible and usable, not only the width: a 841 dp wide window half-open has two 420 dp panes with a crease between them, and a column or a bottom sheet across it is unreadable. Reusing the column keeps one layout vocabulary (portrait, column, pane) and the existing landscape tests.
 - **Discarded:** (1) only window width / `WindowSizeClass` without fold awareness: puts the controls and the sheet over the crease in book and tabletop and cannot say "bottom half". (2) A true two-pane results list plus place details side by side: needs two 360 dp columns, leaving about 120 dp of map on an 841 dp window and none in a book pane; the map is the product, so the list and the card share the one column as on a phone. (3) Draggable sheet across the crease in tabletop: a sheet over the crease is exactly what the posture avoids. (4) Moving the column to the side with more room: keeps the thumb side and the map buttons on the end side; start side is the rule everywhere.
 - **Verified:** JVM Compose tests at Pixel Fold inner 841 x 701, Z Fold inner 829 x 690, cover 411 x 797 and 344 x 882, a 600 x 960 window and 300 dp wide windows with fake creases (zero width, and a 34 dp hinge that hides display) assert that no key node crosses the crease, nodes stay inside the window and disjoint, and the landscape and portrait tests pass. **Not verified:** nothing was seen on a screen, an emulator or a foldable; real crease bounds and `isSeparating` per device, the transition animation while folding, dialogs (separate windows centred on the whole window, they can sit over a crease) and the camera refresh time after a fold (next navigation fix) are by code reading only. Manual checklist: `docs/ui-foldables.md`.
+
+## 2026-10-12 · System geocoder (`android.location.Geocoder`) as an optional online fallback: explored, not recommended (branch `feat/system-geocoder-spike`, no phone)
+
+- **Decision:** a prototype exists in the `play` flavor behind a settings switch that is **OFF by default** (`system_geocoder/enabled`,
+  in the settings backup with consent policy), but it is **not wired into the search path** and the recommendation is to **drop it as a
+  user-facing feature**; Photon is the better optional fallback. Full findings, privacy and the owner's test plan:
+  `docs/phase2/system-geocoder.md`.
+- **Reason:** the Google Maps Platform Service Specific Terms (last modified 2026-06-10) section 3.2 for the "Android Geocoder SDK
+  (Restricted GA)" says "Customer must not use Google Maps Content from the Android Geocoder SDK in conjunction with a non-Google
+  map", and this app is a non-Google map. It could NOT be established whether the framework class is that product, nor whether an app
+  calling it without a Maps Platform account is bound; no clause clearing it was found. The query text goes to Google on a Play Services
+  phone. The result is an address only (no category, no place id), which is weakest exactly for POI and chain queries.
+- **Discarded:** adopting it as the primary fallback (terms risk, privacy, weak POI answers); adding a `ConnectionPurpose` value for it
+  (it is Binder IPC, not an app connection; left to the lead together with the Photon fallback, the prototype takes an `allowed` gate).
+- **Not verified:** latency, quotas and result quality on real phones (no device used); behaviour on Huawei and microG ROMs.

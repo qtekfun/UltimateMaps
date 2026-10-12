@@ -1,6 +1,8 @@
 package com.qtekfun.ultimatemaps.platform
 
 import android.content.Context
+import androidx.compose.runtime.Composable
+import com.qtekfun.ultimatemaps.core.search.OnlineGeocoder
 import com.qtekfun.ultimatemaps.core.map.AvailableLocationSource
 import com.qtekfun.ultimatemaps.core.map.Geofencer
 import com.qtekfun.ultimatemaps.core.map.MovementHint
@@ -24,4 +26,12 @@ object PlatformServices {
 
     /** True when Google Play Services is in use right now (never in this flavor). */
     fun googleServicesInUse(context: Context): Boolean = false
+
+    /** The optional online geocoder fallback: none in this flavor (nothing is ever sent to a system geocoder). */
+    @Suppress("UNUSED_PARAMETER")
+    fun onlineGeocoder(context: Context, allowed: () -> Boolean = { true }): OnlineGeocoder? = null
+
+    /** The settings switch of the online geocoder fallback: none in this flavor. */
+    @Composable
+    fun SystemGeocoderSettingsSection() {}
 }

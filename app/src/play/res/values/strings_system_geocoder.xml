@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Optional online address lookup through the phone's geocoder (play flavor only) -->
+    <string name="system_geocoder_title">Online address lookup</string>
+    <string name="system_geocoder_switch_title">Ask the phone\'s geocoder when offline search finds nothing</string>
+    <string name="system_geocoder_switch_body">Off by default. When on and the offline search has no result, the text you typed and the area of the map (as a hint) are sent to your phone\'s geocoder service. On a phone with Google Play Services that service is Google\'s, so Google receives them. Nothing is sent while this is off or in offline mode.</string>
+</resources>

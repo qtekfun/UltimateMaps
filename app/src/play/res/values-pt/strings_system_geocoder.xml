@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Optional online address lookup through the phone's geocoder (play flavor only) -->
+    <string name="system_geocoder_title">Pesquisa de moradas online</string>
+    <string name="system_geocoder_switch_title">Perguntar ao geocodificador do telefone se a pesquisa offline não encontrar nada</string>
+    <string name="system_geocoder_switch_body">Desativado por predefinição. Se ativo e a pesquisa offline não der resultado, o texto escrito e a zona do mapa (como pista) são enviados ao serviço de geocodificação do telefone. Num telefone com Google Play Services esse serviço é o da Google, que os recebe. Não é enviado nada enquanto estiver desativado nem no modo offline.</string>
+</resources>

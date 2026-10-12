@@ -42,6 +42,7 @@
     <string name="backup_item_roadworks">Roadworks</string>
     <string name="backup_item_fuel">Petrol stations</string>
     <string name="backup_item_other">Other</string>
+    <string name="backup_item_system_geocoder">Online address lookup (system geocoder)</string>
 
     <string name="backup_group_navigation">Navigation</string>
     <string name="backup_group_navigation_ui">Navigation screen</string>

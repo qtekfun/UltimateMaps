@@ -41,6 +41,7 @@
     <string name="backup_item_roadworks">Obras</string>
     <string name="backup_item_fuel">Gasolineras</string>
     <string name="backup_item_other">Otros</string>
+    <string name="backup_item_system_geocoder">Búsqueda de direcciones en línea (geocodificador del sistema)</string>
 
     <string name="backup_group_navigation">Navegación</string>
     <string name="backup_group_navigation_ui">Pantalla de navegación</string>
