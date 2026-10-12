@@ -13,7 +13,6 @@ import com.qtekfun.ultimatemaps.gms.GmsAvailability
 import com.qtekfun.ultimatemaps.gms.GmsGeofencer
 import com.qtekfun.ultimatemaps.gms.GmsLocationSource
 import com.qtekfun.ultimatemaps.gms.GmsMovementHint
-import com.qtekfun.ultimatemaps.core.net.NetworkPolicy
 import com.qtekfun.ultimatemaps.link.ShortLinkResolver
 import com.qtekfun.ultimatemaps.location.AndroidLocationSource
 
