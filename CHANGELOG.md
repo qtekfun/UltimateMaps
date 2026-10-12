@@ -4,7 +4,11 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 
 ## [Unreleased]
 
+## [0.1.0-rc.28] - 2026-10-12
+
 ### Fixed
+
+- **"I'm on board" now sticks on a trip that says you are off the plan.** Aboard a train, with the app saying *You are off the plan* and showing *I'm on board* and *Re-plan*, tapping *I'm on board* did nothing: the app already thought you were on the train, so the answer was ignored and the same screen stayed. Now the answer clears the warning, the header goes back to the next stop and the position follows the timetable with the clock while the GPS does not fit the drawn line. For two minutes nothing can make the ride off plan again; afterwards only a clear contradiction does (the wrong way over a stretch, or about three minutes well away from the line while moving). Re-planning while aboard no longer needs a position fix, and the choice survives a restart of the app. Settings, About, Diagnostics now lists the follower's state changes (state, reason, distance to the track, accuracy, speed, progress; no positions), kept on the phone only. Not tried on a phone or a real ride.
 
 - **Zooming or moving the map on the public transport trip screen no longer snaps the view back to the route.** The trip screen framed the itinerary on its own and had no idea whether you had touched the map, so the view could be pulled back while you looked around or zoomed in to see where you are on the line. Now the app frames the trip only when it starts, after a re-plan, when a new leg begins, on a fold or rotation, and when you tap the new *Recenter* button; once you pinch, drag or rotate the map it stays where you put it and *Recenter* appears (same button as in car navigation). The hidden route preview under the trip no longer re-frames either, and a framing still waiting for the map to load is cancelled by your first gesture. Covered by tests with a fake map; not seen on a phone.
 
@@ -17,8 +21,6 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 - **Train, metro and tram lines follow the rails on the map.** Public transport routes were drawn as straight lines between stops, cutting across buildings and parks; they now follow the track using the line geometry the operators publish (Cercanias, Metro de Madrid and Metro Ligero). It reaches the phone with the next rebuilt transit data release; until then, and for buses, the straight line stays. Not seen on a phone.
 
 - **Following a train no longer says you are off the plan or going the wrong way while it moves along the line.** The trip screen matched your position to a straight line between stops, which on curving rail lines (Cercanias C5 in Madrid) is hundreds of metres from the tracks, so a moving train was reported "off plan" and the "ahead of plan" time was wrong. It now follows the track itself, decides the direction only after a sustained move backwards, and a vague fix or standing in a station never starts an off-plan warning. Needs the rebuilt transit data (lines without track data behave as before). Not tried on a real ride.
-
-- **"I'm on board" now sticks on a trip that says you are off the plan.** Aboard a train, with the app saying *You are off the plan* and showing *I'm on board* and *Re-plan*, tapping *I'm on board* did nothing: the app already thought you were on the train, so the answer was ignored and the same screen stayed. Now the answer clears the warning, the header goes back to the next stop and the position follows the timetable with the clock while the GPS does not fit the drawn line. For two minutes nothing can make the ride off plan again; afterwards only a clear contradiction does (the wrong way over a stretch, or about three minutes well away from the line while moving). Re-planning while aboard no longer needs a position fix, and the choice survives a restart of the app. Settings, About, Diagnostics now lists the follower's state changes (state, reason, distance to the track, accuracy, speed, progress; no positions), kept on the phone only. Not tried on a phone or a real ride.
 
 ### Added
 
