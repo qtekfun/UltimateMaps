@@ -177,7 +177,7 @@ private fun aboutSummary(about: AboutSettingsEnv): String =
  * icon, title, one-line summary and a chevron.
  */
 @Composable
-internal fun SettingsHub(categories: List<SettingsCategory>, query: String, onQuery: (String) -> Unit, onOpen: (SettingsCategory) -> Unit) {
+internal fun SettingsHub(categories: List<SettingsCategory>, query: String, onQuery: (String) -> Unit, onOpen: (SettingsCategory) -> Unit, selectedId: String? = null) {
     SearchField(query, onQuery)
     Spacer(Modifier.height(12.dp))
     val rows = categories.map { c ->
@@ -198,7 +198,7 @@ internal fun SettingsHub(categories: List<SettingsCategory>, query: String, onQu
         ) {
             rows.forEachIndexed { i, r ->
                 if (i > 0) Box(Modifier.padding(start = 64.dp).fillMaxWidth().height(1.dp).background(Mapas.colors.separator))
-                CategoryRow(r, onClick = { onOpen(r.category) })
+                CategoryRow(r, selected = r.category.id == selectedId, onClick = { onOpen(r.category) })
             }
         }
     }
@@ -241,12 +241,13 @@ private fun SearchField(query: String, onQuery: (String) -> Unit) {
 }
 
 @Composable
-private fun CategoryRow(row: HubRow, onClick: () -> Unit) {
+private fun CategoryRow(row: HubRow, selected: Boolean, onClick: () -> Unit) {
     val accent = Mapas.colors.accent
     val chevron = Mapas.colors.secondaryLabel
     Row(
         Modifier
             .fillMaxWidth()
+            .background(if (selected) accent.copy(alpha = 0.14f) else Color.Transparent)
             .heightIn(min = maxOf(64.dp, minTarget))
             .clickable(role = Role.Button, onClick = onClick)
             .padding(horizontal = 12.dp, vertical = 8.dp)
