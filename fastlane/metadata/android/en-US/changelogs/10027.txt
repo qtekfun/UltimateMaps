@@ -1,0 +1,1 @@
+Release candidate: transit lines follow the rails and the trip follower no longer says you are off the plan, foldable phone layouts, optional online search and Google Maps web hand-off (play), optional enforced direction for speed cameras. Spain only.
