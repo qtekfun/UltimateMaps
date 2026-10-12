@@ -12,6 +12,8 @@ data class SearchResult(
     val distanceMeters: Double? = null,
     /** Phone, website, wheelchair and opening hours from the OSM tags; null while the engine does not provide them. */
     val extras: PlaceExtras? = null,
+    /** True for a result of the optional online geocoder (play flavor); the list marks it and credits OpenStreetMap. */
+    val online: Boolean = false,
 )
 
 /** On-device search/geocoding contract. */
