@@ -1,5 +1,6 @@
 package com.qtekfun.ultimatemaps.settings.backup
 
+import com.qtekfun.ultimatemaps.platform.PlatformServices
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -55,6 +56,7 @@ fun nonDefaultValue(spec: SettingSpec, consentOn: Boolean): Any = when (spec.typ
         "prompt_mode" -> "VOICE" // low-emission-zone prompt (default SOUND)
         "source_url" -> "https://fuel.example.org/api/"
         "catalog_url" -> "https://maps.example.org/catalog.json"
+        "server_url" -> "https://photon.example.org" // online search geocoder (play flavor)
         else -> error("no non-default value for ${spec.id}")
     }
     SettingType.STRING_SET -> when (spec.key) {
@@ -101,16 +103,40 @@ class SettingsBackupTest {
         val result = SettingsBackup.apply(file, b, pending)
 
         val consentIds = SettingsSchema.specs.filter { it.policy == RestorePolicy.NEEDS_CONSENT }.map { it.id }.toSet()
-        assertEquals(setOf("cameras/fixed", "cameras/mobile_zones", "cameras/incidents", "cameras/v16", "cameras/roadworks", "fuel/enabled", "chargers/enabled", "trails/enabled", "zbe/enabled", "bikeshare/enabled", "bikeshare/live_availability", "weather/enabled", "navigation/cercanias_real_time"), consentIds)
+        assertEquals(setOf("cameras/fixed", "cameras/mobile_zones", "cameras/incidents", "cameras/v16", "cameras/roadworks", "fuel/enabled", "chargers/enabled", "trails/enabled", "zbe/enabled", "bikeshare/enabled", "bikeshare/live_availability", "weather/enabled", "navigation/cercanias_real_time", "online_search/enabled"), consentIds)
         consentIds.forEach { assertEquals(false, b.read(SettingsSchema.byId(it)!!), "$it must stay off") }
-        assertEquals(consentIds, pending.consent)
-        assertEquals(consentIds.size, result.needConsent)
+        // The online search switch exists only in the play flavor: a foss phone has nothing that could accept it, so it is not kept.
+        val expectedPending = if (PlatformServices.GOOGLE_SERVICES_FLAVOR) consentIds else consentIds - "online_search/enabled"
+        assertEquals(expectedPending, pending.consent)
+        assertEquals(expectedPending.size, result.needConsent)
         // Everything else is restored exactly.
         val rest = SettingsSchema.specs.filter { it.id !in consentIds }
         rest.forEach { assertEquals(a.read(it), b.read(it), it.id) }
         // The acknowledgement is not a key of the schema at all, so it can never be restored.
         assertEquals(null, SettingsSchema.find("cameras", "acknowledged"))
         assertEquals(false, SettingsSchema.find("cameras", "enforcement_direction")?.default, "exported, and off by default")
+    }
+
+    @Test fun theOnlineSearchSwitchIsOffByDefaultAndTheAddressIsKept() {
+        val spec = SettingsSchema.byId("online_search/enabled")!!
+        assertEquals(false, spec.default)
+        assertEquals(RestorePolicy.NEEDS_CONSENT, spec.policy)
+        assertEquals("", SettingsSchema.byId("online_search/server_url")!!.default, "blank means the public default server")
+        val file = SettingsBackup.parse(text(MemoryStorage(mapOf("online_search/enabled" to true, "online_search/server_url" to "https://photon.example.org"))))
+        val b = MemoryStorage()
+        val pending = InMemoryPendingRestore()
+        SettingsBackup.apply(file, b, pending)
+        assertEquals(false, b.read(spec), "a restore never turns a third-party connection on")
+        assertEquals("https://photon.example.org", b.read(SettingsSchema.byId("online_search/server_url")!!))
+        assertEquals(PlatformServices.GOOGLE_SERVICES_FLAVOR, "online_search/enabled" in pending.consent)
+    }
+
+    @Test fun anInsecureOnlineSearchAddressIsSkipped() {
+        val file = SettingsBackup.parse(text(MemoryStorage(mapOf("online_search/server_url" to "http://photon.example.org"))))
+        assertEquals(1, file.skipped)
+        val b = MemoryStorage()
+        SettingsBackup.apply(file, b, InMemoryPendingRestore())
+        assertEquals("", b.read(SettingsSchema.byId("online_search/server_url")!!))
     }
 
     @Test fun anOffSwitchInTheFileTurnsAnEnabledOneOff() {

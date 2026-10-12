@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Optional online search (play flavor): settings section, result marks and the connection purpose. -->
+    <string name="online_search_title">Pesquisa online</string>
+    <string name="online_search_switch">Pesquisar online quando o mapa não encontra nada (Photon, dados do OpenStreetMap)</string>
+    <string name="online_search_body">Desativada por predefinição. Quando os mapas descarregados não encontram nada do que escreve, esse texto e o centro do mapa, arredondado a cerca de 1 km (nunca a sua posição exata), são enviados para um servidor Photon. Não é enviado mais nada, nada é guardado e o modo offline bloqueia-a. Os resultados são listados marcados como online.</string>
+    <string name="online_search_url_title">Endereço do servidor</string>
+    <string name="online_search_url_save">Guardar</string>
+    <string name="online_search_url_reset">Usar o predefinido</string>
+    <string name="online_search_url_invalid">O endereço tem de começar por https://</string>
+    <string name="online_search_credit">Os resultados online são dados do OpenStreetMap (© colaboradores do OpenStreetMap, ODbL) servidos pelo Photon. O servidor público, photon.komoot.io, pede uma utilização razoável: a app envia no máximo um pedido por segundo e identifica-se no User-Agent. Se pesquisa muito, aponte isto para o seu próprio servidor Photon.</string>
+    <string name="search_online_label">Online</string>
+    <string name="search_online_searching">A pesquisar online…</string>
+    <string name="search_online_failed">A pesquisa online falhou. Só são mostrados resultados dos mapas descarregados.</string>
+    <string name="search_online_attribution">Resultados online: © colaboradores do OpenStreetMap, através do Photon</string>
+    <string name="conn_purpose_online_search">Pesquisa de locais online (Photon)</string>
+    <string name="backup_item_online_search">Pesquisa online</string>
+    <string name="backup_group_online_search">Pesquisa online</string>
+    <string name="about_online_search">Os resultados da pesquisa online (só se a ativar, na versão Play) vêm de um servidor Photon, photon.komoot.io por predefinição, e são dados do OpenStreetMap: © colaboradores do OpenStreetMap (ODbL).</string>
+</resources>
