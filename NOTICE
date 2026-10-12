@@ -381,7 +381,7 @@ SPDX-License-Identifier: Unicode-3.0
 
   Kotlin standard library, kotlinx.coroutines, kotlinx.serialization    Apache-2.0 (JetBrains s.r.o. and contributors)
   AndroidX (Compose UI and Foundation, Activity, Lifecycle, Collection,
-  Annotation, SQLite, Graphics Path)                                    Apache-2.0 (The Android Open Source Project)
+  Annotation, SQLite, Graphics Path, WindowManager)                                    Apache-2.0 (The Android Open Source Project)
   MapLibre Native for Android (org.maplibre.gl:android-sdk)             BSD-2-Clause (MapLibre contributors)
   OkHttp and Okio (used by MapLibre Native)                             Apache-2.0 (Square, Inc.)
 

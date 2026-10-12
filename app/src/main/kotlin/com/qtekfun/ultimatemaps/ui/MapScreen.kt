@@ -49,6 +49,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.qtekfun.ultimatemaps.R
 import com.qtekfun.ultimatemaps.core.map.CameraState
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.runtime.SideEffect
+import com.qtekfun.ultimatemaps.ui.fold.WindowLayout
+import com.qtekfun.ultimatemaps.ui.fold.rememberWindowLayout
 import com.qtekfun.ultimatemaps.ui.sheet.BottomSheet
 import com.qtekfun.ultimatemaps.ui.sheet.SheetDetent
 import com.qtekfun.ultimatemaps.ui.sheet.SheetMath
@@ -94,6 +98,12 @@ class MapScreenState {
         cameraKnown = true
     }
 
+    /**
+     * How the window is arranged now (posture, side column, hinge panes). Written by [MapScreen] when it changes (a fold, a
+     * rotation, a split-screen resize); read at event time (route framing, navigation camera) and observed by the route framing.
+     */
+    var windowLayout by mutableStateOf(WindowLayout.compute(360.dp, 800.dp, 0.dp, null, 1f, false))
+
     /** Opens the "Maps" screen (regions); set by the activity. */
     var onOpenMaps: () -> Unit = {}
 
@@ -128,18 +138,17 @@ fun MapScreen(
     BoxWithConstraints(modifier.fillMaxSize().background(Mapas.colors.separator)) {
         mapContent()
 
-        // Landscape: the sheet becomes a column at the start side and the map controls sit beside it (see LandscapeLayout).
-        val landscape = LandscapeLayout.isLandscape(maxWidth, maxHeight)
+        // Wide or large window, or a book posture: the sheet becomes a column at the start side and the map controls sit
+        // beside it. Tabletop: the sheet lives in the bottom pane. See WindowLayout and docs/ui-foldables.md.
+        val layout = rememberWindowLayout(maxWidth, maxHeight)
+        SideEffect { if (state.windowLayout !== layout) state.windowLayout = layout }
+        val landscape = layout.sideColumn
+        val tabletop = layout.tabletop
         val density = LocalDensity.current
-        val rtl = LocalLayoutDirection.current == LayoutDirection.Rtl
-        val startInset: Dp = with(density) {
-            val safe = startSafeInsets()
-            (if (rtl) safe.getRight(this, LayoutDirection.Rtl) else safe.getLeft(this, LayoutDirection.Ltr)).toDp()
-        }
-        val panelWidth = LandscapeLayout.panelWidth(maxWidth)
+        val panelWidth = layout.panelWidth
         val sheetShown = !navigating || navSheet
         // What the overlays drawn over the map keep clear of at the start side.
-        val reserve = if (landscape && sheetShown) startInset + panelWidth + LandscapeLayout.GAP else 0.dp
+        val reserve = if (landscape && sheetShown) layout.reserve else 0.dp
         val topAndSides = WindowInsets.statusBars.union(horizontalSafeInsets())
         val topPadding = with(density) { statusTop.getTop(this).toDp() }
         CompositionLocalProvider(LocalSidePanelReserve provides reserve) {
@@ -200,13 +209,25 @@ fun MapScreen(
                 },
                 // Portrait: room for the status bar and the map buttons above the full sheet. Landscape: the column
                 // reaches the top (the buttons are beside it, not above it).
-                topInset = if (landscape) topPadding + 8.dp else topPadding + 64.dp,
+                topInset = when {
+                    landscape -> topPadding + 8.dp
+                    tabletop -> layout.bottomPaneTop // the full sheet is the bottom pane: nothing crosses the crease
+                    else -> topPadding + 64.dp
+                },
                 expandActionLabel = stringResource(R.string.sheet_action_expand),
                 collapseActionLabel = stringResource(R.string.sheet_action_collapse),
-                mediumFraction = if (landscape) LANDSCAPE_MEDIUM_FRACTION else Mapas.dimens.sheetMediumFraction,
+                mediumFraction = when {
+                    landscape -> LANDSCAPE_MEDIUM_FRACTION
+                    // Same share of the pane as the side column has of its height.
+                    tabletop -> LANDSCAPE_MEDIUM_FRACTION * (layout.height - layout.bottomPaneTop).value / layout.height.value
+                    else -> Mapas.dimens.sheetMediumFraction
+                },
                 showHandle = !(landscape && imeOpen),
                 modifier = if (landscape) {
                     Modifier.align(Alignment.BottomStart).fillMaxHeight().windowInsetsPadding(startSafeInsets()).width(panelWidth)
+                } else if (tabletop) {
+                    // Readable width, centred in the bottom half.
+                    Modifier.align(Alignment.BottomCenter).fillMaxHeight().widthIn(max = panelWidth).fillMaxWidth()
                 } else {
                     Modifier.fillMaxSize()
                 },

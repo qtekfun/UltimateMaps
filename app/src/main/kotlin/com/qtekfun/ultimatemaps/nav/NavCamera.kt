@@ -1,6 +1,7 @@
 package com.qtekfun.ultimatemaps.nav
 
 import com.qtekfun.ultimatemaps.core.geo.distanceTo
+import com.qtekfun.ultimatemaps.core.map.CameraPadding
 import com.qtekfun.ultimatemaps.core.map.CameraState
 import com.qtekfun.ultimatemaps.core.nav.NavState
 import kotlin.math.abs
@@ -28,7 +29,11 @@ class NavCamera(
     val heading: Double? get() = planner.heading
 
     /** Where the camera should be for [state] (no throttling). Feeds the bearing smoothing: call it once per snapshot. */
-    fun target(state: NavState, mode3d: Boolean = true, screenHeightPx: Int = 0): CameraState {
+    fun target(
+        state: NavState, mode3d: Boolean = true, screenHeightPx: Int = 0,
+        /** Parts of the map a panel covers (a side column, the bottom half in tabletop): the camera centres in what is left. */
+        covered: CameraPadding = CameraPadding.NONE,
+    ): CameraState {
         val next = state.nextManeuver
         val plan = planner.plan(
             CameraPlanInput(
@@ -36,19 +41,30 @@ class NavCamera(
                 distanceToManeuverMeters = next?.distanceMeters,
                 maneuver = next?.maneuver?.type,
                 mode3d = mode3d,
-                screenHeightPx = screenHeightPx,
+                screenHeightPx = (screenHeightPx - covered.top - covered.bottom).coerceAtLeast(if (screenHeightPx > 0) 1 else 0),
                 bearingDegrees = state.bearingDegrees.toDouble(),
             ),
         )
-        return CameraState(state.position, plan.zoom, plan.bearing, plan.tilt, plan.padding)
+        val padding = if (covered == CameraPadding.NONE) {
+            plan.padding
+        } else {
+            CameraPadding(
+                covered.left + plan.padding.left, covered.top + plan.padding.top,
+                covered.right + plan.padding.right, covered.bottom + plan.padding.bottom,
+            )
+        }
+        return CameraState(state.position, plan.zoom, plan.bearing, plan.tilt, padding)
     }
 
     /**
      * The camera to animate to now, or null when the last one sent is still good enough (or too recent).
      * [force] skips the throttle (the user pressed "recenter").
      */
-    fun next(state: NavState, nowMillis: Long, force: Boolean = false, mode3d: Boolean = true, screenHeightPx: Int = 0): CameraState? {
-        val t = target(state, mode3d, screenHeightPx)
+    fun next(
+        state: NavState, nowMillis: Long, force: Boolean = false, mode3d: Boolean = true, screenHeightPx: Int = 0,
+        covered: CameraPadding = CameraPadding.NONE,
+    ): CameraState? {
+        val t = target(state, mode3d, screenHeightPx, covered)
         val prev = last
         if (!force && prev != null) {
             val modeChanged = (prev.tilt == 0.0) != (t.tilt == 0.0) || prev.padding != t.padding
