@@ -3,6 +3,11 @@
     <string name="network_mode_offline">Modo offline: sem ligações de rede</string>
     <string name="network_connections_title">Ligações possíveis</string>
     <string name="link_short_needs_resolve">Esta ligação curta precisa de um pedido de rede à Google para encontrar o destino. A resolução de ligações curtas está desativada, por isso nada foi enviado.</string>
+    <string name="link_short_resolving">A procurar o destino desta ligação curta…</string>
+    <string name="link_short_offline">O modo offline está ativo, por isso esta ligação curta não foi resolvida e nada foi enviado.</string>
+    <string name="link_short_failed">Não foi possível resolver esta ligação curta. Abra-a num navegador e partilhe a ligação completa.</string>
+    <string name="search_web_google">Pesquisar no Google Maps (web)</string>
+    <string name="search_web_google_note">Abre google.com no navegador. Aí, use Partilhar e escolha UltimateMaps para trazer o local para aqui.</string>
     <string name="link_not_recognized">Esta ligação não é uma ligação de mapa reconhecida.</string>
 
     <string name="about_title">Dados do mapa</string>

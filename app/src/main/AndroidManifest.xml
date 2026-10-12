@@ -62,6 +62,14 @@
                 <data android:scheme="geo" />
             </intent-filter>
 
+            <!-- "Share" > UltimateMaps from Google Maps, a browser or any app: the text is searched for a map link
+                 or coordinates (see SharedTextParser). Nothing is read from other types. -->
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+
             <!-- RF-11: Google Maps (long and short), Apple Maps and Waze. Not verified (we do not own the domains):
                  on Android 12+ the user must enable them in "Open by default > Add links". -->
             <intent-filter>

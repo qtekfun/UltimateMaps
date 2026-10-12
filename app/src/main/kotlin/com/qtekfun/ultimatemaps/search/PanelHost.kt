@@ -8,6 +8,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.lifecycle.lifecycleScope
 import com.qtekfun.ultimatemaps.MapasApp
+import com.qtekfun.ultimatemaps.platform.PlatformServices
 import com.qtekfun.ultimatemaps.R
 import com.qtekfun.ultimatemaps.recording.RecordingPanel
 import com.qtekfun.ultimatemaps.core.fuel.FuelRepository
@@ -127,6 +128,8 @@ class PanelHost(
         mutex = coreLock,
         categoryOrigin = { userLocation ?: engine.cameraState().center },
         onCategoryResults = { engine.showCategoryPins(it, fit = it.size >= 2) },
+        online = onlineGeocoder(),
+        onOnlineResults = { engine.showCategoryPins(it, fit = it.size >= 2) },
         coordinateLabels = CoordinateLabels { kind ->
             activity.getString(
                 if (kind == CoordinateQuery.Kind.DECIMAL || kind == CoordinateQuery.Kind.DMS) R.string.search_result_coordinates
@@ -134,6 +137,19 @@ class PanelHost(
             )
         },
     )
+
+    /**
+     * The optional online fallback: the Photon geocoder in the `play` flavor (off until the owner turns it on in Settings),
+     * a no-op elsewhere or when the application object is not the real one (tests).
+     */
+    private fun onlineGeocoder(): com.qtekfun.ultimatemaps.core.search.OnlineGeocoder {
+        val app = activity.application as? MapasApp ?: return com.qtekfun.ultimatemaps.core.search.NoOnlineGeocoder
+        val language = PrefsPlaceLanguageStore(activity)
+        val version = runCatching { activity.packageManager.getPackageInfo(activity.packageName, 0).versionName }.getOrNull()
+        return PlatformServices.onlineGeocoder(app.networkPolicy, app.onlineSearchSettings, version) {
+            com.qtekfun.ultimatemaps.core.search.OnlineSearch.photonLanguage(language.preference, java.util.Locale.getDefault())
+        }
+    }
 
     /**
      * Frames the whole route (origin and destination included) above the sheet whenever a route or itinerary is drawn,
@@ -513,6 +529,16 @@ class PanelHost(
 
     private fun openWebsite(uri: String) = openExternal(Intent(Intent.ACTION_VIEW, Uri.parse(uri)), R.string.place_no_browser)
 
+    /** `play` only: opens Google Maps' web search for [query] in the browser; the place comes back through Share. */
+    private fun searchOnWeb(query: String) {
+        val url = WebHandoff.searchUrl(query) ?: return
+        try {
+            activity.startActivity(WebHandoff.browserIntent(url))
+        } catch (_: android.content.ActivityNotFoundException) {
+            openExternal(WebHandoff.chooserIntent(url, android.content.ComponentName(activity, activity.javaClass)), R.string.place_no_browser)
+        }
+    }
+
     private fun openExternal(intent: Intent, missing: Int) {
         try {
             activity.startActivity(intent)
@@ -536,6 +562,7 @@ class PanelHost(
             onCategoryOpened = { screen.detent = SheetDetent.MEDIUM },
             onDial = ::dial,
             onOpenWebsite = ::openWebsite,
+            onSearchOnWeb = if (PlatformServices.GOOGLE_SERVICES_FLAVOR) ::searchOnWeb else null,
         )
         val fuel = remember {
             FuelCardHost(

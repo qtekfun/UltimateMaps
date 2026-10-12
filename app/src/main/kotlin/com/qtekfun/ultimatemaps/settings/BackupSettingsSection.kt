@@ -149,6 +149,7 @@ private fun pendingLabel(spec: SettingSpec): Int = when (spec.id) {
     "weather/show_yellow" -> R.string.backup_item_weather_yellow
     "trails/enabled" -> R.string.backup_item_trails
     "navigation/cercanias_real_time" -> R.string.backup_item_cercanias_rt
+    "online_search/enabled" -> R.string.backup_item_online_search
     else -> R.string.backup_item_other
 }
 
@@ -165,6 +166,7 @@ private fun groupLabel(group: String): Int = when (group) {
     SettingsSchema.GROUP_HISTORY -> R.string.backup_group_history
     SettingsSchema.GROUP_RECORDING -> R.string.backup_group_recording
     SettingsSchema.GROUP_REGIONS -> R.string.backup_group_regions
+    SettingsSchema.GROUP_ONLINE_SEARCH -> R.string.backup_group_online_search
     else -> R.string.backup_item_other
 }
 

@@ -81,6 +81,11 @@ class PanelActions(
     /** Opens the dialer with a `tel:` URI / the browser with an `https:` link from the place card. */
     val onDial: (String) -> Unit = {},
     val onOpenWebsite: (String) -> Unit = {},
+    /**
+     * The `play` flavor's hand-off of the typed text to Google Maps in the browser (null elsewhere, which hides the row).
+     * Offered only when the offline search has nothing to show.
+     */
+    val onSearchOnWeb: ((String) -> Unit)? = null,
 )
 
 /**
@@ -247,19 +252,44 @@ private fun SearchPane(
             state.status == SearchStatus.SEARCHING && (state.results.isEmpty() || state.submitted) ->
                 PanelNote(stringResource(R.string.search_searching), "search_status")
             state.status == SearchStatus.ERROR -> PanelNote(stringResource(R.string.search_error), "search_status")
+            // The optional online fallback (play flavor) is looking the text up after the offline search found nothing.
+            state.status == SearchStatus.DONE && state.results.isEmpty() && state.onlineSearching ->
+                PanelNote(stringResource(R.string.search_online_searching), "search_online_status")
             state.status == SearchStatus.DONE && state.results.isEmpty() ->
                 PanelNote(
                     stringResource(if (state.category != null) R.string.category_none else R.string.search_no_results),
                     "search_status",
                 )
         }
+        if (state.status == SearchStatus.DONE && state.results.isNotEmpty() && state.onlineSearching) {
+            PanelNote(stringResource(R.string.search_online_searching), "search_online_status")
+        }
+        if (state.status == SearchStatus.DONE && state.onlineFailed && !state.onlineSearching) {
+            PanelNote(stringResource(R.string.search_online_failed), "search_online_failed")
+        }
         state.numberMissing?.takeIf { state.status == SearchStatus.DONE && state.category == null }?.let {
             PanelNote(stringResource(R.string.search_number_missing, it), "search_number_missing")
+        }
+        actions.onSearchOnWeb?.takeIf {
+            categories && state.status == SearchStatus.DONE && state.category == null && state.query.isNotBlank() &&
+                !state.coordinateQuery && (state.results.isEmpty() || state.numberMissing != null)
+        }?.let { open ->
+            PanelButton(
+                stringResource(R.string.search_web_google), { open(state.query) },
+                Modifier.fillMaxWidth(), singleLine = true, tag = "search_web_google",
+            )
+            PanelNote(stringResource(R.string.search_web_google_note), "search_web_google_note")
         }
         LazyColumn(Modifier.fillMaxWidth().testTag("search_results")) {
             if (state.query.isBlank() && state.category == null) whenEmpty()
             items(state.results) { r ->
-                PanelRow(r.name, subtitleOf(r.category, r.address), distanceText(r), { actions.onPickResult(r) }, tag = "search_result")
+                val subtitle = subtitleOf(r.category, r.address)
+                // A result of the online geocoder is marked, so it is never taken for a place of the downloaded map.
+                val shown = if (r.online) listOfNotNull(stringResource(R.string.search_online_label), subtitle).joinToString(" · ") else subtitle
+                PanelRow(r.name, shown, distanceText(r), { actions.onPickResult(r) }, tag = if (r.online) "search_result_online" else "search_result")
+            }
+            if (state.results.any { it.online }) {
+                item(key = "online_attribution") { PanelNote(stringResource(R.string.search_online_attribution), "search_online_attribution") }
             }
             if (state.category != null && state.results.isNotEmpty()) {
                 item(key = "category_note") { PanelNote(stringResource(R.string.category_distance_note), "category_note") }

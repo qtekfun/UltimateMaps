@@ -76,11 +76,15 @@ import kotlinx.coroutines.SupervisorJob
 
 class MapasApp : Application() {
     private val policy = DefaultNetworkPolicy(
-        endpoints = listOf(
-            AllowedEndpoint("tile.openstreetmap.org", ConnectionPurpose.ONLINE_TILES),
-            AllowedEndpoint("maps.app.goo.gl", ConnectionPurpose.SHORT_LINK_RESOLVE),
-            AllowedEndpoint("goo.gl", ConnectionPurpose.SHORT_LINK_RESOLVE),
-        ),
+        endpoints = buildList {
+            add(AllowedEndpoint("tile.openstreetmap.org", ConnectionPurpose.ONLINE_TILES))
+            // Only the `play` flavor ever resolves a short link a user shares into the app (one request, the short URL only;
+            // offline mode blocks it). The `foss` flavor lists and allows nothing for Google hosts.
+            if (com.qtekfun.ultimatemaps.platform.PlatformServices.GOOGLE_SERVICES_FLAVOR) {
+                add(AllowedEndpoint("maps.app.goo.gl", ConnectionPurpose.SHORT_LINK_RESOLVE, enabled = true))
+                add(AllowedEndpoint("goo.gl", ConnectionPurpose.SHORT_LINK_RESOLVE, enabled = true))
+            }
+        },
     )
 
     /**
@@ -115,6 +119,26 @@ class MapasApp : Application() {
      */
     val cameraData: CameraDataManager by lazy {
         CameraDataManager(cameraSettings, policy, ::cameraAsset, File(filesDir, "cameras"), syncCatalog = { force -> regions.syncCatalog(force) })
+    }
+
+    /** The optional online search switch and server address (`play` flavor only; off by default). Settings and the search read these. */
+    val onlineSearchSettings: com.qtekfun.ultimatemaps.core.search.OnlineSearchSettingsStore by lazy {
+        com.qtekfun.ultimatemaps.search.PrefsOnlineSearchSettingsStore(this)
+    }
+
+    /**
+     * Lists the online-search server in the connection list (RF-12) only while the switch is on, and removes the previous one
+     * when the address changed. Nothing connects here; the request itself is authorised again by the policy.
+     */
+    fun syncOnlineSearchEndpoint() {
+        if (!com.qtekfun.ultimatemaps.platform.PlatformServices.GOOGLE_SERVICES_FLAVOR) return
+        policy.possibleConnections().filter { it.purpose == ConnectionPurpose.ONLINE_SEARCH }.forEach { policy.removeEndpoint(it.host) }
+        val s = onlineSearchSettings
+        if (s.enabled) {
+            com.qtekfun.ultimatemaps.core.search.OnlineSearch.host(s.serverUrl)?.let {
+                policy.addEndpoint(AllowedEndpoint(it, ConnectionPurpose.ONLINE_SEARCH, enabled = true))
+            }
+        }
     }
 
     /** EV-charger switch and filters (off by default). The map layer, the card and Settings read these. */
@@ -472,6 +496,8 @@ class MapasApp : Application() {
         policy.offlineMode = getSharedPreferences(RegionsController.PREFS, MODE_PRIVATE).getBoolean(RegionsController.KEY_OFFLINE, false)
         // Rebuild maps-core/<version>/ (links to the installed .mwm) for the search core; files only, off the main thread.
         Thread({ runCatching { CoreLinks.sync(this) } }, "mapas-core-links").start()
+        // Online search (play flavor): only lists the geocoder host while its switch is on; no connection here.
+        syncOnlineSearchEndpoint()
         // Petrol stations: only registers the host (when enabled) and reads the local cache; no connection here.
         fuel.start()
         // Cercanias real time: only follows its switch (and lists the Renfe host while it is on); no connection here.
