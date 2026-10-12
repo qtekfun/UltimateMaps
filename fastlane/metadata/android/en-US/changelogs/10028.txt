@@ -1,0 +1,1 @@
+Release candidate: "I am on board" now sticks and the trip log can be copied from Diagnostics, zooming the trip map no longer snaps back to the route, and clearing the diagnostic notes asks first. Spain only.
