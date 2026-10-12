@@ -5,6 +5,7 @@ import com.qtekfun.ultimatemaps.core.transit.Itinerary
 import com.qtekfun.ultimatemaps.core.transit.ItineraryLeg
 import com.qtekfun.ultimatemaps.core.transit.ItineraryStop
 import com.qtekfun.ultimatemaps.core.transit.LineInfo
+import com.qtekfun.ultimatemaps.core.transit.RideShape
 import java.io.BufferedInputStream
 import java.io.BufferedOutputStream
 import java.io.DataInputStream
@@ -61,7 +62,9 @@ class TransitTripStore(
         if (!file.isFile) return null
         val loaded = try {
             DataInputStream(BufferedInputStream(FileInputStream(file), 1 shl 14)).use { input ->
-                if (input.readInt() != MAGIC || input.readUnsignedByte() != FORMAT) throw IOException("not a transit trip file")
+                if (input.readInt() != MAGIC) throw IOException("not a transit trip file")
+                val format = input.readUnsignedByte()
+                if (format != FORMAT && format != FORMAT_WITHOUT_GEOMETRY) throw IOException("not a transit trip file")
                 val savedAt = input.readLong()
                 val zone = input.readUTF()
                 val leg = input.readInt()
@@ -69,7 +72,7 @@ class TransitTripStore(
                 val progress = input.readDouble()
                 val hasDelay = input.readBoolean()
                 val delay = input.readInt()
-                val itinerary = readItinerary(input)
+                val itinerary = readItinerary(input, format >= FORMAT)
                 PersistedTransitTrip(itinerary, FollowerSnapshot(leg, boarded, progress, delay.takeIf { hasDelay }), zone, savedAt)
             }
         } catch (_: IOException) {
@@ -123,12 +126,23 @@ class TransitTripStore(
                         writeNullable(out, s.feedId)
                     }
                     writeNullable(out, leg.tripId)
+                    val g = leg.geometry
+                    out.writeBoolean(g != null)
+                    if (g != null) {
+                        out.writeInt(g.points.size)
+                        for (p in g.points) {
+                            out.writeInt(Math.round(p.lat * 1e6).toInt())
+                            out.writeInt(Math.round(p.lon * 1e6).toInt())
+                        }
+                        for (v in g.stopVertex) out.writeInt(v)
+                        for (b in g.onShape) out.writeBoolean(b)
+                    }
                 }
             }
         }
     }
 
-    private fun readItinerary(input: DataInputStream): Itinerary {
+    private fun readItinerary(input: DataInputStream, withGeometry: Boolean): Itinerary {
         val n = input.readInt()
         if (n !in 1..MAX_LEGS) throw IOException("bad leg count")
         val legs = ArrayList<ItineraryLeg>(n)
@@ -146,7 +160,24 @@ class TransitTripStore(
                     val count = input.readInt()
                     if (count !in 2..MAX_STOPS) throw IOException("bad stop count")
                     val stops = List(count) { ItineraryStop(input.readUTF(), readPoint(input), input.readLong(), input.readLong(), readNullable(input)) }
-                    legs.add(ItineraryLeg.Ride(line, headsign, stops, tripId = readNullable(input)))
+                    val tripId = readNullable(input)
+                    var geometry: RideShape? = null
+                    if (withGeometry && input.readBoolean()) {
+                        val np = input.readInt()
+                        if (np !in 2..MAX_POINTS) throw IOException("bad shape size")
+                        val pts = List(np) {
+                            LatLon.ofOrNull(input.readInt() / 1e6, input.readInt() / 1e6) ?: throw IOException("bad coordinate")
+                        }
+                        val vertex = IntArray(count) { input.readInt() }
+                        var prev = 0
+                        for (v in vertex) {
+                            if (v < prev || v >= np) throw IOException("bad stop vertex")
+                            prev = v
+                        }
+                        val on = BooleanArray(count - 1) { input.readBoolean() }
+                        geometry = RideShape(pts, vertex, on)
+                    }
+                    legs.add(ItineraryLeg.Ride(line, headsign, stops, geometry, tripId))
                 }
                 else -> throw IOException("bad leg type")
             }
@@ -171,7 +202,9 @@ class TransitTripStore(
 
     companion object {
         private const val MAGIC = 0x554D5452 // "UMTR"
-        private const val FORMAT = 2
+        private const val FORMAT = 3
+        private const val FORMAT_WITHOUT_GEOMETRY = 2
+        private const val MAX_POINTS = 200_000
         private const val WALK = 0
         private const val RIDE = 1
         private const val MAX_LEGS = 64

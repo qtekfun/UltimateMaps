@@ -345,7 +345,7 @@ class TransitTripController(
             val stop = ride.stops[k]
             val reach = max(stop.arriveAt + max(on.delaySec, 0), nowSec)
             val rest = planner.replan(stop.point, destination, Instant.ofEpochSecond(reach)) ?: continue
-            val head = ride.copy(stops = ride.stops.subList(start, k + 1))
+            val head = ride.slice(start, k)
             val combined = join(head, rest, ride)
             if (best == null || combined.arriveAt < best.arriveAt) best = combined
         }
@@ -359,7 +359,8 @@ class TransitTripController(
         val sameVehicle = next != null && ((original.tripId != null && next.tripId == original.tripId) ||
             (next.line == original.line && next.headsign == original.headsign && next.boarding.departAt == head.alighting.departAt))
         val legs = if (sameVehicle && next != null) {
-            listOf<ItineraryLeg>(head.copy(stops = head.stops + next.stops.drop(1), shape = null)) + rest.legs.drop(1)
+            val shape = if (head.geometry != null && next.geometry != null) head.geometry.then(next.geometry) else null
+            listOf<ItineraryLeg>(head.copy(stops = head.stops + next.stops.drop(1), geometry = shape)) + rest.legs.drop(1)
         } else {
             listOf<ItineraryLeg>(head) + rest.legs
         }
