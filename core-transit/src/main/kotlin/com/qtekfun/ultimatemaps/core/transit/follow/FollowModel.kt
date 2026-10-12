@@ -123,8 +123,10 @@ data class FollowerConfig(
     val unusableAccuracyM: Float = 200f,
     /** Accuracy assumed when the fix has none. */
     val defaultAccuracyM: Float = 30f,
-    /** A fix belongs to a stop-to-stop segment within `corridorM + accuracy` of it (lines curve; there are no shapes yet). */
+    /** A fix belongs to a hop drawn as a straight chord (no line geometry) within `corridorM + accuracy` of it: lines curve. */
     val corridorM: Double = 150.0,
+    /** The same for a hop that follows the line's real geometry: tracks are narrow, a parallel street is not the track. */
+    val railCorridorM: Double = 70.0,
     /** While tracking, only this many segments ahead of the current one are considered (loop lines, parallel lines). */
     val lookaheadSegments: Int = 3,
     /**
@@ -141,6 +143,19 @@ data class FollowerConfig(
     /** Consecutive agreeing fixes needed to board, to skip several stops at once or to leave the plan. */
     val confirmFixes: Int = 2,
     val offPlanFixes: Int = 4,
+    /** The off-plan fixes must also span this long (seconds): a burst of noisy fixes in one second proves nothing. */
+    val offPlanSec: Int = 15,
+    /** A fix less accurate than this (metres) counts neither for nor against being off plan. */
+    val offPlanMaxAccuracyM: Float = 100f,
+    /** Below this speed the traveller is standing (a station, a signal): no off-plan evidence, no direction evidence. */
+    val stationarySpeedMps: Float = 0.7f,
+    /** Within this distance of the target stop a walker is at the station, not off plan, however the fixes wander. */
+    val stationProximityM: Double = 300.0,
+    /** A fix this far (metres, or twice its accuracy) behind the best progress counts as a step backwards. */
+    val reverseToleranceM: Double = 80.0,
+    /** Steps backwards in a row, over at least [reverseMinMeters] behind where they started, mean the wrong way. */
+    val reverseFixes: Int = 4,
+    val reverseMinMeters: Double = 250.0,
     /** A walk is off plan when the distance to its target grows by this much over the smallest seen (street layout allows some). */
     val walkOffPlanMeters: Double = 250.0,
     /** No usable fix for this long counts as lost signal (tunnels and stations: GNSS usually comes back within seconds). */
