@@ -18,6 +18,9 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.ui.platform.LocalDensity
 import com.qtekfun.ultimatemaps.ui.LandscapeLayout
+import com.qtekfun.ultimatemaps.ui.fold.Posture
+import com.qtekfun.ultimatemaps.ui.fold.WindowLayout
+import com.qtekfun.ultimatemaps.ui.fold.rememberWindowLayout
 import com.qtekfun.ultimatemaps.ui.horizontalSafeInsets
 import com.qtekfun.ultimatemaps.ui.startSafeInsets
 import androidx.compose.foundation.layout.Column
@@ -136,14 +139,18 @@ fun NavScreen(ui: NavUi, actions: NavActions, dark: Boolean, modifier: Modifier 
     NavigationTheme(dark = dark, glove = ui.glove) {
         BoxWithConstraints(modifier.fillMaxSize().testTag("nav_screen")) {
             val nav = ui.nav
-            // Landscape: the banner and the panel become one column at the start side; the map stays visible beside it.
-            val landscape = LandscapeLayout.isLandscape(maxWidth, maxHeight)
-            val panelWidth = LandscapeLayout.panelWidth(maxWidth)
+            // Wide, large or book: the banner and the panel become one column at the start side and the map stays visible
+            // beside it. Tabletop: banner and speed on the top half, panel and buttons on the bottom half.
+            val layout = rememberWindowLayout(maxWidth, maxHeight)
             when {
-                ui.phase == NavPhase.ARRIVED && ui.summary != null -> ArrivalSummary(ui, actions)
-                ui.phase != null && nav != null -> if (landscape) DrivingLandscape(ui, nav, actions, panelWidth) else Driving(ui, nav, actions)
-                ui.phase != null -> StartingBanner()
-                ui.resumable -> ResumeCard(actions)
+                ui.phase == NavPhase.ARRIVED && ui.summary != null -> ArrivalSummary(ui, actions, layout)
+                ui.phase != null && nav != null -> when {
+                    layout.sideColumn -> DrivingLandscape(ui, nav, actions, layout)
+                    layout.tabletop -> DrivingTabletop(ui, nav, actions, layout)
+                    else -> Driving(ui, nav, actions)
+                }
+                ui.phase != null -> StartingBanner(layout)
+                ui.resumable -> ResumeCard(actions, layout)
             }
         }
     }
@@ -201,17 +208,12 @@ private fun BoxScope.Driving(ui: NavUi, nav: NavState, actions: NavActions) {
  * and the buttons in two short columns at the end side. Nothing is full width, so nothing piles up on a 360 dp screen.
  */
 @Composable
-private fun BoxScope.DrivingLandscape(ui: NavUi, nav: NavState, actions: NavActions, panelWidth: androidx.compose.ui.unit.Dp) {
+private fun BoxScope.DrivingLandscape(ui: NavUi, nav: NavState, actions: NavActions, layout: WindowLayout) {
+    val panelWidth = layout.panelWidth
     val c = NavTheme.colors
     LightStatusBarIcons()
     val context = LocalContext.current
     val voiceStatus by VoiceModule.guide(context).status.collectAsState()
-    val density = LocalDensity.current
-    val rtl = androidx.compose.ui.platform.LocalLayoutDirection.current == androidx.compose.ui.unit.LayoutDirection.Rtl
-    val startInset = with(density) {
-        val safe = startSafeInsets()
-        (if (rtl) safe.getRight(this, androidx.compose.ui.unit.LayoutDirection.Rtl) else safe.getLeft(this, androidx.compose.ui.unit.LayoutDirection.Ltr)).toDp()
-    }
     Column(
         Modifier
             .align(Alignment.TopStart)
@@ -239,7 +241,7 @@ private fun BoxScope.DrivingLandscape(ui: NavUi, nav: NavState, actions: NavActi
         Modifier
             .align(Alignment.BottomStart)
             .windowInsetsPadding(WindowInsets.navigationBars.only(WindowInsetsSides.Bottom))
-            .padding(start = startInset + panelWidth + LandscapeLayout.GAP, bottom = 12.dp),
+            .padding(start = layout.reserve, bottom = 12.dp),
     ) { SpeedCluster(nav) }
     // The buttons in two short columns at the end side (up to six of them do not fit in one column at 360 dp).
     Row(
@@ -273,11 +275,80 @@ private fun BoxScope.DrivingLandscape(ui: NavUi, nav: NavState, actions: NavActi
     }
 }
 
+/**
+ * Tabletop (half-open, horizontal crease): the top half is the map with the banner, the strips and the speed; the bottom half
+ * holds the ETA panel and the buttons. Nothing crosses the crease: each half is sized from the pane it lives in and scrolls
+ * when its content does not fit.
+ */
 @Composable
-private fun StartingBanner() {
+private fun BoxScope.DrivingTabletop(ui: NavUi, nav: NavState, actions: NavActions, layout: WindowLayout) {
+    val c = NavTheme.colors
+    LightStatusBarIcons()
+    val context = LocalContext.current
+    val voiceStatus by VoiceModule.guide(context).status.collectAsState()
+    Column(
+        Modifier
+            .align(Alignment.TopCenter)
+            .height(layout.topPaneHeight)
+            .widthIn(max = layout.panelWidth)
+            .fillMaxWidth()
+            .windowInsetsPadding(horizontalSafeInsets()),
+    ) {
+        Column(Modifier.weight(1f, fill = false).verticalScroll(rememberScrollState())) {
+            Banner(ui, nav)
+            StatusStrip(ui)
+            com.qtekfun.ultimatemaps.cameras.CameraAlertBanner(Modifier.padding(horizontal = 12.dp, vertical = 6.dp).align(Alignment.CenterHorizontally), glove = ui.glove)
+            com.qtekfun.ultimatemaps.cameras.IncidentBanner(Modifier.padding(horizontal = 12.dp, vertical = 6.dp).align(Alignment.CenterHorizontally), glove = ui.glove)
+            com.qtekfun.ultimatemaps.zbe.ZbeAheadBanner(Modifier.padding(horizontal = 12.dp, vertical = 6.dp).align(Alignment.CenterHorizontally), glove = ui.glove)
+            VoiceProblemBanner(voiceStatus, onClick = { context.startActivity(Intent(context, SettingsActivity::class.java)) })
+        }
+        Box(Modifier.padding(horizontal = 12.dp, vertical = 8.dp)) { SpeedCluster(nav) }
+    }
+    Column(
+        Modifier
+            .align(Alignment.BottomCenter)
+            .heightIn(max = layout.bottomPaneHeight)
+            .widthIn(max = layout.panelWidth)
+            .fillMaxWidth()
+            .windowInsetsPadding(WindowInsets.navigationBars.union(horizontalSafeInsets()))
+            .verticalScroll(rememberScrollState()),
+    ) {
+        Row(Modifier.fillMaxWidth().padding(bottom = 12.dp), verticalAlignment = Alignment.Bottom) {
+            Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                if (ui.simulated) SimulationBar(ui, actions)
+                BottomPanel(ui, nav, actions)
+            }
+            Row(Modifier.padding(end = 12.dp, start = 8.dp), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.Bottom) {
+                Column(horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    if (!ui.following) {
+                        NavButton(
+                            stringResource(R.string.nav_ui_recenter), actions.onRecenter, Modifier.testTag("nav_recenter"),
+                            container = c.statusInfo, content = c.onStatus,
+                        )
+                    }
+                    ViewToggle(ui, actions)
+                    if (!ui.overview) {
+                        NavButton(
+                            stringResource(R.string.nav_ui_overview), actions.onOverview, Modifier.testTag("nav_overview"),
+                            description = stringResource(R.string.nav_ui_overview_description),
+                        )
+                    }
+                }
+                Column(horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    MuteToggle(ui, actions)
+                    if (ui.cameraAlertsOn) CameraMuteToggle(ui, actions)
+                    GloveToggle(ui, actions, Modifier)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun StartingBanner(layout: WindowLayout) {
     val c = NavTheme.colors
     Box(
-        Modifier.widthIn(max = LandscapeLayout.MAX_PANEL_WIDTH).fillMaxWidth().windowInsetsPadding(WindowInsets.statusBarsIgnoringVisibility.union(horizontalSafeInsets())).padding(12.dp).clip(RoundedCornerShape(16.dp)).background(c.banner).padding(16.dp).testTag("nav_starting"),
+        Modifier.widthIn(max = if (layout.sideColumn) layout.panelWidth else LandscapeLayout.MAX_PANEL_WIDTH).fillMaxWidth().windowInsetsPadding(WindowInsets.statusBarsIgnoringVisibility.union(horizontalSafeInsets())).padding(12.dp).clip(RoundedCornerShape(16.dp)).background(c.banner).padding(16.dp).testTag("nav_starting"),
     ) {
         BasicText(stringResource(R.string.nav_ui_follow_route), style = Mapas.typography.title.copy(color = c.onBanner))
     }
@@ -595,14 +666,15 @@ private fun GloveToggle(ui: NavUi, actions: NavActions, modifier: Modifier) {
 private val ARRIVAL_MAX_WIDTH = 480.dp
 
 @Composable
-private fun BoxScope.ArrivalSummary(ui: NavUi, actions: NavActions) {
+private fun BoxScope.ArrivalSummary(ui: NavUi, actions: NavActions, layout: WindowLayout) {
     val c = NavTheme.colors
     val summary = ui.summary ?: return
     val locale = LocalConfiguration.current.locales[0]
     Column(
         Modifier
-            .align(Alignment.BottomCenter)
-            .widthIn(max = ARRIVAL_MAX_WIDTH)
+            .align(if (layout.posture == Posture.BOOK) Alignment.BottomStart else Alignment.BottomCenter)
+            .widthIn(max = layout.cardMaxWidth(ARRIVAL_MAX_WIDTH))
+            .heightIn(max = layout.bottomPaneHeight)
             .fillMaxWidth()
             .clip(RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp))
             .background(c.panel)
@@ -628,12 +700,12 @@ private fun BoxScope.ArrivalSummary(ui: NavUi, actions: NavActions) {
 }
 
 @Composable
-private fun BoxScope.ResumeCard(actions: NavActions) {
+private fun BoxScope.ResumeCard(actions: NavActions, layout: WindowLayout) {
     val c = NavTheme.colors
     Column(
         Modifier
-            .align(Alignment.TopCenter)
-            .widthIn(max = ARRIVAL_MAX_WIDTH)
+            .align(if (layout.posture == Posture.BOOK) Alignment.TopStart else Alignment.TopCenter)
+            .widthIn(max = layout.cardMaxWidth(ARRIVAL_MAX_WIDTH))
             .windowInsetsPadding(WindowInsets.statusBarsIgnoringVisibility.union(horizontalSafeInsets()))
             .padding(12.dp)
             .clip(RoundedCornerShape(16.dp))

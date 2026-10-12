@@ -37,6 +37,11 @@ class NavHost(
     private val now: () -> Long = android.os.SystemClock::elapsedRealtime,
     /** Height of the map view in pixels (for the camera padding). */
     private val screenHeightPx: () -> Int = { activity.resources.displayMetrics.heightPixels },
+    /**
+     * Parts of the map covered by panels now (a side column at the start, the bottom half in tabletop; none in portrait):
+     * the follow camera and the overview framing use the free part of the map, not the whole window.
+     */
+    private val coveredPx: () -> CameraPadding = { CameraPadding.NONE },
     /** Battery saver on: the marker and the camera are pushed at most at [PowerSavePolicy.SAVER_FPS]. */
     private val powerSave: () -> Boolean = {
         (activity.getSystemService(Context.POWER_SERVICE) as? android.os.PowerManager)?.isPowerSaveMode == true
@@ -177,7 +182,7 @@ class NavHost(
             val modeChanged = wasView3d != null && wasView3d != ui.view3d
             if (modeChanged || !wasFollowing) easePending = true
             if (fresh || modeChanged || !wasFollowing) {
-                val target = camera.target(nav, mode3d = ui.view3d, screenHeightPx = screenHeightPx())
+                val target = camera.target(nav, mode3d = ui.view3d, screenHeightPx = screenHeightPx(), covered = coveredPx())
                 pose.retarget(target, transition = easePending, current = engine.cameraState())
                 easePending = false
             }
@@ -258,9 +263,16 @@ class NavHost(
         val geometry = screen.navigation.route.value?.geometry ?: return
         val remaining = remainingRoute(geometry, position)
         if (remaining.size < 2) return
-        val h = screenHeightPx()
+        val cover = coveredPx()
+        val h = (screenHeightPx() - cover.top - cover.bottom).coerceAtLeast(1)
         val side = (h * 0.04).toInt()
-        engine.frameRoute(remaining, CameraPadding(left = side, top = (h * 0.28).toInt(), right = side, bottom = (h * 0.24).toInt()))
+        engine.frameRoute(
+            remaining,
+            CameraPadding(
+                left = cover.left + side, top = cover.top + (h * 0.28).toInt(),
+                right = cover.right + side, bottom = cover.bottom + (h * 0.24).toInt(),
+            ),
+        )
     }
 
     /** The navigation screen; compose it over the map (it draws nothing when there is no navigation to show). */
