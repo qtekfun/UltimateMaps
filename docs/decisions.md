@@ -1179,3 +1179,32 @@ Format: date · decision · reason · discarded alternatives · how to revert it
 - **Not verified:** nothing on a device. The weekly data job needs no change (same zips, same script); the first rebuilt data release
   after this lands carries the geometry.
 
+## 2026-10-12 · Transit follower: progress and direction along the rails, no off-plan from standing or vague fixes (branch `fix/transit-follow-rails`, stacked on `fix/transit-rail-shapes`, no device)
+- **Bug (owner, C5 screenshots):** "you are off the plan, plan a new trip from where you are" with "I'm on board / not on board" while the
+  train moved towards the next stop; at another moment "About 9 min ahead of plan". **Root causes found in `ItineraryFollower`:**
+  (1) a fix was matched to the chord between stops within 150 m plus accuracy and the track is up to 665 m from the chord on the C5
+  (see the geometry entry), so four consecutive fixes outside it flagged `OFF_PLAN`; before boarding, the same train leaving the
+  stop made the distance to the stop grow and flagged it too; (2) progress was the fraction of a chord, so the offset to the schedule
+  was a function of the bend, and nearest-chord selection among 3 look-ahead hops at the corners could pick the next hop; since progress
+  never goes back, one such pick stayed as "ahead of plan"; (3) there was no direction rule: "wrong way" in the report is the same
+  off-plan state; (4) any four vague or standing fixes outside the corridor counted, however inaccurate (a station platform away from
+  the stop point, a receiver wandering at 150 m accuracy).
+- **Decision:** the follower tracks the ride on its polyline (`RideTrack`: vertices in a local plane, metres along the track, vertex per
+  stop, shape flag per hop); corridor 70 m on real geometry, 150 m on chords (so a pattern without geometry behaves as before);
+  progress is `hop + metres along the hop / hop length`; ties between near-equal matches go to the one nearest the current progress.
+  Off plan needs 4 fixes spread over 15 s, ignores fixes worse than 100 m, standing fixes (under 0.7 m/s) and fixes inside a stop's
+  radius; a walk is never off plan within 300 m of its target; a vehicle moving along the line is never "straying" while boarding.
+  Direction is a separate rule: 4 consecutive fixes more than 80 m (or twice the accuracy) behind the best progress and at least
+  250 m behind where the streak started, while moving, is `OFF_PLAN` (wrong way); anything else resets it. Thresholds are design
+  choices in `FollowerConfig`. The geofence "get off soon" fix is now a point of the polyline. Matching allocates nothing per fix.
+- **Discarded:** (1) a direction from bearing against the track: GNSS bearing is useless at 0 to 3 m/s and in cuttings, distance along
+  the track over a window is robust. (2) Letting progress go backwards on any fix to correct a bad forward pick: noise would then move
+  the "stops left" and the plan chip every second; the forward clamp stays and the hysteresis does the correcting. (3) Removing the
+  "I'm on board" buttons: they are the manual override and stay.
+- **Tests:** `RailFollowTest` on a synthetic S-shaped line (hops bend 1 rad, chord up to 370 m from the track), one fix a second with
+  30 m cross-track noise and a 40 s stop at each station: no off-plan, plan offset within 90 s, the same trip as chords is lost (the
+  owner's symptom), one 200 m outlier, 60 s in a station with 120 m accuracy wandering 130 m, waiting with a bad receiver, a train really
+  going back (flagged between 250 and 600 m, not before), a tunnel estimate, track maths. All earlier follower tests pass unchanged.
+- **Not verified:** nothing on a device or on a real ride; thresholds were not tuned on recorded GNSS. The real index was rebuilt with
+  geometry (`RealMadridRailGeometryTest`) but a real trip was not replayed. The weekly data job needs no change.
+
