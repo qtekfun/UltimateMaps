@@ -1,0 +1,1 @@
+Versión candidata: "Voy a bordo" se mantiene y el registro del viaje se copia desde Diagnóstico, hacer zoom en el mapa del viaje ya no vuelve a la ruta, y borrar las notas de diagnóstico pide confirmación. Solo España.
