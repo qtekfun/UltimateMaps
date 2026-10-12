@@ -183,7 +183,7 @@ class TransitTripController(
             geofenceKey = ""
         } else {
             val snap = f.snapshot()
-            saveLocked(force = false, key = "${snap.legIndex}|${snap.boarded}|${snap.progress.toInt()}")
+            saveLocked(force = false, key = "${snap.legIndex}|${snap.boarded}|${snap.confirmed}|${snap.progress.toInt()}")
             updateGeofences(f)
             updatePace(update.state)
         }
@@ -321,21 +321,23 @@ class TransitTripController(
      */
     fun replan(): Boolean {
         val planner = replanner ?: return false
-        val from: LatLon
+        val from: LatLon?
         val destination: LatLon
         val onboard: BoardedRide?
         synchronized(lock) {
             val f = follower ?: return false
             if (replanJob?.isActive == true) return false
-            from = location.lastKnown()?.point ?: return false
+            from = location.lastKnown()?.point
             destination = destinationOf(f.itinerary)
             onboard = f.boardedRide()
+            // Aboard, the new trip starts from the stops of the vehicle: no position is needed (a vehicle in a tunnel, an off-line track).
+            if (onboard == null && from == null) return false
             _state.value = _state.value?.copy(replanning = true, replanFailed = false)
             val atMillis = clock()
             replanJob = scope.launch {
                 val found = try {
                     if (onboard != null) replanAboard(planner, onboard, destination, atMillis) else
-                        planner.replan(from, destination, Instant.ofEpochMilli(atMillis))?.let { Replanned(it, null) }
+                        from?.let { planner.replan(it, destination, Instant.ofEpochMilli(atMillis)) }?.let { Replanned(it, null) }
                 } catch (e: CancellationException) {
                     throw e
                 } catch (_: Exception) {
@@ -378,7 +380,7 @@ class TransitTripController(
             if (best == null || combined.arriveAt < best.arriveAt) best = combined
         }
         val itinerary = best ?: return null
-        return Replanned(itinerary, FollowerSnapshot(0, true, on.progress - start, on.delaySec))
+        return Replanned(itinerary, FollowerSnapshot(0, true, on.progress - start, on.delaySec, confirmed = true))
     }
 
     /** [head] (the vehicle up to a stop) followed by [rest]; when [rest] starts on the same vehicle the two rides are one. */

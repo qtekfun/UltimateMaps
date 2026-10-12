@@ -284,13 +284,25 @@ private fun Strips(trip: TransitTripState, actions: TransitTripActions, alertsHi
         if (trip.replanning) Strip(stringResource(R.string.trip_replanning), c.statusInfo, "trip_replanning")
         if (trip.replanFailed) Strip(stringResource(R.string.trip_replan_failed), c.statusDanger, "trip_replan_failed")
         val aboard = s.phase == FollowPhase.ON_BOARD || s.phase == FollowPhase.ALIGHT_NEXT
+        // Off plan while the follower believes the traveller is on the vehicle: the answer must still be possible both ways
+        // ("I am on board" confirms it and clears the off-plan state; "I am not on board" goes back to walking).
+        val offPlanAboard = s.phase == FollowPhase.OFF_PLAN && s.aboard
         if (aboard || s.phase == FollowPhase.WAITING || s.phase == FollowPhase.BEFORE_START || s.phase == FollowPhase.TRANSFER || s.phase == FollowPhase.OFF_PLAN) {
+            val saysNotOnBoard = aboard
             TripButton(
-                stringResource(if (aboard) R.string.trip_not_on_board else R.string.trip_on_board), { actions.onBoard(!aboard) },
+                stringResource(if (saysNotOnBoard) R.string.trip_not_on_board else R.string.trip_on_board), { actions.onBoard(!saysNotOnBoard) },
                 Modifier.testTag("trip_on_board"),
                 container = c.statusInfo, content = c.onStatus,
-                description = stringResource(if (aboard) R.string.trip_not_on_board_description else R.string.trip_on_board_description),
+                description = stringResource(if (saysNotOnBoard) R.string.trip_not_on_board_description else R.string.trip_on_board_description),
             )
+            if (offPlanAboard) {
+                TripButton(
+                    stringResource(R.string.trip_not_on_board), { actions.onBoard(false) },
+                    Modifier.testTag("trip_not_on_board"),
+                    container = c.statusInfo, content = c.onStatus,
+                    description = stringResource(R.string.trip_not_on_board_description),
+                )
+            }
         }
         if (s.canReplan && !trip.replanning) {
             TripButton(

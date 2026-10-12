@@ -89,6 +89,8 @@ data class FollowState(
     val etaAt: Long = 0L,
     /** Real time (Renfe, opt-in) for the ride this state is about: delay, cancellation, alerts. Null when none. */
     val realTime: LegRealTime? = null,
+    /** The follower believes the traveller is on the vehicle of this leg, whatever the phase (also while [FollowPhase.OFF_PLAN]). */
+    val aboard: Boolean = false,
 ) {
     val estimated: Boolean get() = basis == FollowBasis.ESTIMATED
 }
@@ -178,4 +180,12 @@ data class FollowerConfig(
     val getOffNowEstimatedSec: Int = 20,
     /** After an estimated boarding, a fix at the boarding stop with the vehicle not moving takes the traveller back to waiting. */
     val undoEstimatedBoarding: Boolean = true,
+    /** After the traveller says "I am on board", no corridor or direction evidence can make the ride off plan for this long. */
+    val confirmedGraceSec: Int = 120,
+    /** While the boarding is confirmed the corridor is this many times wider (a chord can be 600 m from the rails). */
+    val confirmedCorridorFactor: Double = 8.0,
+    /** After the grace, fixes outside even that corridor must last this long (seconds) to make a confirmed ride off plan. */
+    val confirmedOffSec: Int = 180,
+    /** At most one line of the follower's local diagnostics log per this many seconds while nothing changes. */
+    val diagnosticsHeartbeatSec: Int = 30,
 )

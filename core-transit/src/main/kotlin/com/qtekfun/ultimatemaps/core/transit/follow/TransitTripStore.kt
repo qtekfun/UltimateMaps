@@ -46,6 +46,7 @@ class TransitTripStore(
             out.writeDouble(snapshot.progress)
             out.writeBoolean(snapshot.delaySec != null)
             out.writeInt(snapshot.delaySec ?: 0)
+            out.writeBoolean(snapshot.confirmed)
             writeItinerary(out, itinerary)
             out.flush()
             fos.fd.sync()
@@ -64,7 +65,7 @@ class TransitTripStore(
             DataInputStream(BufferedInputStream(FileInputStream(file), 1 shl 14)).use { input ->
                 if (input.readInt() != MAGIC) throw IOException("not a transit trip file")
                 val format = input.readUnsignedByte()
-                if (format != FORMAT && format != FORMAT_WITHOUT_GEOMETRY) throw IOException("not a transit trip file")
+                if (format != FORMAT && format != FORMAT_BEFORE_CONFIRMATION && format != FORMAT_WITHOUT_GEOMETRY) throw IOException("not a transit trip file")
                 val savedAt = input.readLong()
                 val zone = input.readUTF()
                 val leg = input.readInt()
@@ -72,8 +73,9 @@ class TransitTripStore(
                 val progress = input.readDouble()
                 val hasDelay = input.readBoolean()
                 val delay = input.readInt()
-                val itinerary = readItinerary(input, format >= FORMAT)
-                PersistedTransitTrip(itinerary, FollowerSnapshot(leg, boarded, progress, delay.takeIf { hasDelay }), zone, savedAt)
+                val confirmed = if (format >= FORMAT) input.readBoolean() else false
+                val itinerary = readItinerary(input, format >= FORMAT_BEFORE_CONFIRMATION)
+                PersistedTransitTrip(itinerary, FollowerSnapshot(leg, boarded, progress, delay.takeIf { hasDelay }, confirmed), zone, savedAt)
             }
         } catch (_: IOException) {
             null
@@ -202,7 +204,8 @@ class TransitTripStore(
 
     companion object {
         private const val MAGIC = 0x554D5452 // "UMTR"
-        private const val FORMAT = 3
+        private const val FORMAT = 4
+        private const val FORMAT_BEFORE_CONFIRMATION = 3
         private const val FORMAT_WITHOUT_GEOMETRY = 2
         private const val MAX_POINTS = 200_000
         private const val WALK = 0

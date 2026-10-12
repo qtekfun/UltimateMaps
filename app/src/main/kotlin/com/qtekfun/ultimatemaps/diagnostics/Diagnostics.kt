@@ -34,6 +34,12 @@ object Diagnostics {
         append("Reroutes\n")
         reroutes.forEach { append("  ").append(it).append('\n') }
         append('\n')
+        val follow = com.qtekfun.ultimatemaps.core.transit.follow.TransitFollowDiagnostics.describe()
+        if (follow.isNotEmpty()) {
+            append("Transit trip follower (newest first; no positions)\n")
+            follow.forEach { append("  ").append(it).append('\n') }
+            append('\n')
+        }
         val exits = ExitReasons.lines(context)
         if (exits.isNotEmpty()) {
             append("Recent process exits (newest first)\n")
@@ -47,6 +53,7 @@ object Diagnostics {
     }.trimEnd()
 
     fun clear(context: Context) {
+        com.qtekfun.ultimatemaps.core.transit.follow.TransitFollowDiagnostics.clear()
         notes(context).clear()
         coreNotes(context).clear()
     }

@@ -18,7 +18,14 @@ import kotlin.math.sqrt
 data class BoardedRide(val legIndex: Int, val ride: ItineraryLeg.Ride, val progress: Double, val delaySec: Int)
 
 /** What survives the death of the process: enough to continue a trip without starting from the first leg. */
-data class FollowerSnapshot(val legIndex: Int, val boarded: Boolean, val progress: Double, val delaySec: Int?)
+data class FollowerSnapshot(
+    val legIndex: Int,
+    val boarded: Boolean,
+    val progress: Double,
+    val delaySec: Int?,
+    /** The traveller said "I am on board" for this ride and nothing has contradicted it since. */
+    val confirmed: Boolean = false,
+)
 
 /**
  * Follows a theoretical [Itinerary] with position fixes and the clock, and says where the traveller is relative to it. Pure
@@ -54,6 +61,8 @@ class ItineraryFollower(
     private val realTime: RideRealTime = RideRealTime.NONE,
     /** The system's guess whether the device is in a vehicle (true), on foot or still (false), or unknown (null); weak evidence only. */
     private val inVehicle: () -> Boolean? = { null },
+    /** Where the local diagnostics lines go (see [TransitFollowDiagnostics]); tests pass their own. */
+    private val notes: (String) -> Unit = TransitFollowDiagnostics::note,
 ) {
     private val legs = itinerary.legs
 
@@ -87,6 +96,17 @@ class ItineraryFollower(
     private var pendingCount = 0
     private var forceRecover = false
 
+    /** Clock time of the traveller's "I am on board" for the ride in progress, or -1. Sticky: see [assumeBoarded]. */
+    private var confirmedAtMs = -1L
+
+    // local diagnostics: what was last logged, and the evidence behind the next line
+    private var loggedKey = ""
+    private var loggedAtMs = 0L
+    private var event = ""
+    private var nearestM = -1.0
+    private var lastAccuracy = -1f
+    private var lastSpeed = -1f
+
     private var lastFix: Fix? = null
     private var lastAtBoardingStop = false
     private var arrivedAtBoarding = false
@@ -106,6 +126,7 @@ class ItineraryFollower(
                 progress = snapshot.progress.coerceIn(0.0, ride.stops.size - 1.0)
                 delaySec = snapshot.delaySec
                 forceRecover = true
+                if (snapshot.confirmed) confirmedAtMs = clockMillis()
             }
         }
         skipEmptyWalks()
@@ -122,23 +143,46 @@ class ItineraryFollower(
     /**
      * The traveller says "I am on the train": the next (or current) ride counts as boarded, at the place of the last fix on
      * its stops (a wide corridor) or, with no usable fix, where the timetable says it is. The next fixes resynchronise it.
-     * False when no ride is left. Wins over what the fixes said.
+     * False when no ride is left. Wins over what the fixes said, and the answer is sticky: it also clears an off-plan state
+     * of a ride that was already boarded, and for [FollowerConfig.confirmedGraceSec] no fix can make the ride off plan again;
+     * afterwards only a clear contradiction does (the wrong way over a stretch, or [FollowerConfig.confirmedOffSec] outside even
+     * the wide corridor). While fixes do not fit the line the progress follows the timetable with the clock.
      */
     fun assumeBoarded(): Boolean {
         val idx = if (legs.getOrNull(legIdx) is ItineraryLeg.Ride) legIdx else nextRideIndex(legIdx)
         if (idx < 0) return false
         val ride = legs[idx] as ItineraryLeg.Ride
-        if (!(idx == legIdx && boarded)) {
+        val nowMs = clockMillis()
+        val wasBoarded = idx == legIdx && boarded
+        val wasOffPlan = offPlan
+        if (!wasBoarded) {
             legIdx = idx
             resetLeg()
             boarded = true
-            val nowMs = clockMillis()
-            val matched = lastFix?.let { bestSegment(ride, it, 0, ride.stops.size - 2, config.wideCorridorFactor * 2, 0.0) } == true
-            progress = if (matched) matchP else min(scheduleProgress(ride, nowMs / 1000), ride.stops.size - 1 - 1e-3)
-            forceRecover = true
-            updateDelay(ride, nowMs)
+        } else {
+            boardedByEstimate = false
+            offCount = 0
+            offCorridor = false
+            reversed = false
+            backCount = 0
+            pendingCount = 0
+            offPlan = false
         }
+        val matched = lastFix?.let { bestSegment(ride, it, 0, ride.stops.size - 2, config.wideCorridorFactor * 2, 0.0) } == true
+        val byClock = min(scheduleProgress(ride, nowMs / 1000 - (delaySec ?: 0)), ride.stops.size - 1 - 1e-3)
+        progress = when {
+            matched -> matchP
+            wasBoarded -> max(progress, byClock)
+            else -> byClock
+        }
+        progressEstimated = false
+        forceRecover = true
+        confirmedAtMs = nowMs
+        // A boarding the traveller states has no better delay than "now against the timetable"; keep a known one while aboard.
+        if (!wasBoarded || delaySec == null) updateDelay(ride, nowMs)
+        event = "user-confirmed-aboard" + if (wasOffPlan) " (was off plan)" else ""
         state = buildState(clockMillis())
+        logLine(nowMs, force = true)
         return true
     }
 
@@ -146,11 +190,13 @@ class ItineraryFollower(
     fun assumeNotBoarded() {
         if (legs.getOrNull(legIdx) is ItineraryLeg.Ride && boarded) {
             resetLeg()
+            event = "user-not-aboard"
             state = buildState(clockMillis())
+            logLine(clockMillis(), force = true)
         }
     }
 
-    fun snapshot(): FollowerSnapshot = FollowerSnapshot(legIdx, boarded, progress, delaySec)
+    fun snapshot(): FollowerSnapshot = FollowerSnapshot(legIdx, boarded, progress, delaySec, confirmedAtMs >= 0)
 
     fun onFix(fix: LocationFix): FollowUpdate = step(fix)
 
@@ -167,10 +213,13 @@ class ItineraryFollower(
         var speed: Float? = null
         var gapBefore: Long? = null
         if (usable != null) {
+            nearestM = -1.0
             val prev = lastFix
             gapBefore = prev?.let { nowMs - it.atMs }
             speed = raw?.speedMps ?: prev?.let { derivedSpeed(it, usable) }
             lastFix = usable
+            lastAccuracy = usable.accuracy
+            lastSpeed = speed ?: -1f
         }
         var guard = legs.size * 2 + 2
         while (legIdx < legs.size && guard-- > 0) {
@@ -184,7 +233,33 @@ class ItineraryFollower(
             skipEmptyWalks()
         }
         state = buildState(nowMs)
+        logLine(nowMs, force = false)
         return FollowUpdate(state, prompts(state, nowMs))
+    }
+
+    /**
+     * One line of the local diagnostics when what the follower believes changed (or a heartbeat while aboard or off plan). No
+     * coordinate and no name: state, reason, distance to the track, accuracy, speed, progress, delay.
+     */
+    private fun logLine(nowMs: Long, force: Boolean) {
+        val s = state
+        val key = "${s.phase}|${s.legIndex}|$boarded|$progressEstimated|${confirmedAtMs >= 0}|${s.basis}"
+        val beat = (boarded || offPlan) && nowMs - loggedAtMs >= config.diagnosticsHeartbeatSec * 1000L
+        if (!force && key == loggedKey && !beat) return
+        val changed = key != loggedKey
+        loggedKey = key
+        loggedAtMs = nowMs
+        val why = event.ifEmpty { if (changed) "state-change" else "heartbeat" }
+        event = ""
+        val dist = if (nearestM < 0) "-" else "${nearestM.roundToInt()}m"
+        val clock = java.time.LocalTime.ofInstant(java.time.Instant.ofEpochMilli(nowMs), java.time.ZoneId.systemDefault()).withNano(0)
+        val prog = "%.2f".format(java.util.Locale.ROOT, progress)
+        val speedText = if (lastSpeed < 0) "-" else "%.1f".format(java.util.Locale.ROOT, lastSpeed)
+        val accText = if (lastAccuracy < 0) "-" else "${lastAccuracy.roundToInt()}m"
+        notes(
+            "$clock ${s.phase} leg=${s.legIndex} boarded=$boarded confirmed=${confirmedAtMs >= 0} estimated=$progressEstimated " +
+                "progress=$prog delay=${delaySec ?: "-"}s basis=${s.basis} toTrack=$dist acc=$accText speed=$speedText reason=$why",
+        )
     }
 
     private fun skipEmptyWalks() {
@@ -214,6 +289,7 @@ class ItineraryFollower(
         lastAtBoardingStop = false
         arrivedAtBoarding = false
         forceRecover = false
+        confirmedAtMs = -1L
     }
 
     private fun derivedSpeed(prev: Fix, now: Fix): Float? {
@@ -266,7 +342,12 @@ class ItineraryFollower(
 
     private fun refreshOffPlan() {
         val value = offCorridor || reversed
-        if (value && !offPlan) offEpisode++
+        if (value && !offPlan) {
+            offEpisode++
+            event = if (reversed) "wrong-way" else "outside-corridor"
+        } else if (!value && offPlan) {
+            event = "back-on-track"
+        }
         offPlan = value
     }
 
@@ -324,23 +405,31 @@ class ItineraryFollower(
             estimateProgress(ride, nowMs)
             return false
         }
+        val confirmed = confirmedAtMs >= 0
+        val inGrace = confirmed && nowMs - confirmedAtMs < config.confirmedGraceSec * 1000L
         val recovering = forceRecover || progressEstimated || (gapBefore != null && gapBefore > config.signalGapSec * 1000L)
         // One hop of look-behind: a fix a little behind the best progress is how the wrong way shows up.
         val lo = if (progressEstimated) 0 else (min(floor(progress).toInt(), n - 2) - 1).coerceAtLeast(0)
         val hi = if (recovering) n - 2 else min(n - 2, floor(progress).toInt() + config.lookaheadSegments)
         val track = trackOf(ride)
-        val matched = bestSegment(ride, fix, lo, hi, 1.0, progress)
+        // The traveller said so: a chord can be 600 m from the rails, so the corridor is wide.
+        val matched = bestSegment(ride, fix, lo, hi, if (confirmed) config.confirmedCorridorFactor else 1.0, progress)
         if (!matched) {
             // Not on the line. A station area (platform away from the line), a vague fix or a standing traveller is no proof.
             val nearStop = nearAnyStop(ride, fix, lo, hi + 1)
             backCount = 0
+            if (confirmed) {
+                confirmedUnmatched(ride, fix, speed, nowMs, nearStop, inGrace)
+                // The ride ends at the alighting stop even when the line was never matched on the way.
+                return progress >= n - 2 && fix.point.distanceTo(ride.alighting.point) <= radius(fix.accuracy)
+            }
             offEvidence(!nearStop, fix, speed)
             return false
         }
         var newP = matchP
         val newAlong = matchAlong
         // Direction: only a sustained, consistent move backwards along the line says the wrong way.
-        if (!recovering) {
+        if (!recovering && !inGrace) {
             val back = track.alongOf(progress) - newAlong
             val tolerance = max(config.reverseToleranceM, 2.0 * fix.accuracy)
             val movingEnough = speed == null || speed >= config.stationarySpeedMps
@@ -403,9 +492,29 @@ class ItineraryFollower(
         progress = min(scheduleProgress(ride, nowMs / 1000 - (rt?.delaySec ?: 0)), ride.stops.size - 1 - 1e-3)
     }
 
+    /**
+     * A fix of a ride the traveller confirmed, outside even the wide corridor: it is not evidence by itself. The progress goes
+     * on with the timetable (dead reckoning, marked estimated). It only makes the ride off plan after the grace, when fixes
+     * (accurate, not standing) have stayed outside for [FollowerConfig.confirmedOffSec]; a stop area or a matching fix resets it.
+     */
+    private fun confirmedUnmatched(ride: ItineraryLeg.Ride, fix: Fix, speed: Float?, nowMs: Long, nearStop: Boolean, inGrace: Boolean) {
+        val est = scheduleProgress(ride, nowMs / 1000 - (rtOf(ride)?.delaySec ?: delaySec ?: 0))
+        progress = max(progress, min(est, ride.stops.size - 1 - 1e-3))
+        progressEstimated = true
+        if (inGrace || nearStop) {
+            offCount = 0
+            offCorridor = false
+        } else if (fix.accuracy <= config.offPlanMaxAccuracyM && (speed == null || speed >= config.stationarySpeedMps)) {
+            if (offCount == 0) offSinceMs = fix.atMs
+            offCount++
+            if (offCount >= config.offPlanFixes && fix.atMs - offSinceMs >= config.confirmedOffSec * 1000L) offCorridor = true
+        }
+        refreshOffPlan()
+    }
+
     private fun estimateProgress(ride: ItineraryLeg.Ride, nowMs: Long) {
         val last = lastFix ?: return
-        if (ride.line.routeType !in config.estimateRouteTypes) return
+        if (ride.line.routeType !in config.estimateRouteTypes && confirmedAtMs < 0) return
         if (nowMs - last.atMs < config.signalGapSec * 1000L) return
         val est = scheduleProgress(ride, nowMs / 1000 - (rtOf(ride)?.delaySec ?: delaySec ?: 0))
         progress = max(progress, min(est, ride.stops.size - 1 - 1e-3))
@@ -456,6 +565,7 @@ class ItineraryFollower(
             val dx = qx - u * bx
             val dy = qy - u * by
             val d = sqrt(dx * dx + dy * dy)
+            if (nearestM < 0 || d < nearestM) nearestM = d
             val base = if (t.hopOnShape[hop]) config.railCorridorM else config.corridorM
             if (d > base * corridorFactor + fix.accuracy) continue
             val along = t.cum[e] + u * sqrt(len2)
@@ -654,6 +764,7 @@ class ItineraryFollower(
             planOffsetSec = plan.offset, plan = plan.status, planMinutes = plan.minutes, realTime = rt,
             connection = conn, connectionMarginSec = margin?.toInt(), connectionLine = nextRide?.line?.shortName,
             canReplan = offPlan || conn == ConnectionStatus.MISSED, etaAt = itinerary.arriveAt + (plan.offset ?: 0),
+            aboard = true,
         )
     }
 

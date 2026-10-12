@@ -1208,3 +1208,34 @@ Format: date · decision · reason · discarded alternatives · how to revert it
 - **Not verified:** nothing on a device or on a real ride; thresholds were not tuned on recorded GNSS. The real index was rebuilt with
   geometry (`RealMadridRailGeometryTest`) but a real trip was not replayed. The weekly data job needs no change.
 
+## 2026-10-12 · Transit follower: "I'm on board" is sticky, off plan aboard recovers from the timetable (branch `fix/transit-boarding-confirmation`, no device)
+
+- **Context:** the owner, aboard a Cercanias C7 train, saw *You are off the plan* with *I'm on board* and *Re-plan* ("Voy a bordo
+  pero sigue diciendo, voy a bordo"): tapping it changed nothing. Cause, in `ItineraryFollower.assumeBoarded()`: when the ride was
+  already `boarded` (the usual case: boarded by fixes, then four fixes outside the 150 m chord corridor made it `OFF_PLAN`) the call
+  only rebuilt the state, and the off-plan flag, which is separate from `boarded`, stayed; the screen also decided the button from
+  the phase, so `OFF_PLAN` always offered "I'm on board" and never the other answer. Even when the answer did reset the leg (not yet
+  boarded) the next four off-corridor fixes flagged it again within 15 s.
+- **Decision:** (1) the confirmation is a state of the follower (`confirmedAtMs`, in the snapshot and in the saved trip file, format
+  4; the controller and service hold it, not Compose): it clears off-plan evidence, picks the progress from the last fix on the
+  stops (wide corridor) or the timetable (never going back), and (2) for `confirmedGraceSec` (120 s) no fix makes the ride off plan
+  and direction evidence is not counted; (3) while confirmed the corridor is 8 times wider (1200 m on chords) and a fix outside even
+  that does not count as evidence: progress is dead-reckoned from the timetable with the last delay, marked estimated (basis
+  `ESTIMATED`), and the next matching fix resynchronises; (4) after the grace only a clear contradiction flags it again: wrong way
+  (the existing 4 fixes / 250 m rule) or `confirmedOffSec` (180 s) of accurate, moving fixes outside the wide corridor. A stop area
+  or a matching fix resets it; (5) `FollowState.aboard` says the follower believes the traveller is on the vehicle in any phase;
+  while `OFF_PLAN` and aboard the screen offers both "I'm on board" (re-confirm, new grace) and "I'm not on board"; (6) re-plan
+  aboard no longer needs a position (it starts from the stops of the vehicle); (7) `TransitFollowDiagnostics` keeps the last 300
+  state-change lines in memory (state, reason, distance to the track, accuracy, speed, progress, delay; heartbeat every 30 s while
+  aboard or off plan) and the About diagnostics report lists them; nothing is sent anywhere.
+- **Notification and voice:** both derive from the same controller state and prompts, so they follow the screen: the off-plan prompt
+  is once per episode and no prompt is issued when the answer clears it; the chip and notification text are the on-board ones.
+- **Discarded:** (1) a boolean "confirmed forever": a traveller who got off must still be told (the contradiction rules stay);
+  (2) writing the log to a file: a trip's positions-free lines in memory are enough for the owner to copy after the trip, and a
+  persisted log would be one more thing to clear; if the process dies the lines are lost (accepted); (3) a new off-plan detail string
+  for aboard (eight locales to translate): the existing text is kept, the screen already says the stops.
+- **Tests:** `RailFollowTest` (chord-drawn C5-like ride: off plan, confirm, boarded to the end with progress within 0.35 hop of the
+  plan and no off plan; fixes 2.5 km away inside the grace; contradiction only after grace plus 180 s; "not aboard"; snapshot
+  restore), controller tests (confirmation held and saved; replan aboard without a position), store round trip, screen buttons.
+- **Not verified:** no device and no real ride; the thresholds (120 s, 180 s, 8x) are design choices in `FollowerConfig`.
+
