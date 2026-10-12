@@ -92,6 +92,8 @@ class SettingsEnv(
     val recording: RecordingSettingsEnv? = null,
     /** Language of place information section (search results and place card); null hides it. */
     val placeLanguage: PlaceLanguageSettingsEnv? = null,
+    /** "Online search" section of the Network category (`play` flavor only: switch and server address); null hides it. */
+    val onlineSearch: OnlineSearchSettingsEnv? = null,
     /** Backup and restore part of the Data category (export, import, export everything); null hides it. */
     val backup: BackupSettingsEnv? = null,
     /** About category: the version name and the attribution lines of the installed public-transport data. */
@@ -213,6 +215,7 @@ private fun purposeLabel(p: ConnectionPurpose) = stringResource(
         ConnectionPurpose.TRANSIT_REALTIME -> R.string.conn_purpose_transit_rt
         ConnectionPurpose.BIKE_AVAILABILITY -> R.string.conn_purpose_bike
         ConnectionPurpose.WEATHER_ALERTS -> R.string.conn_purpose_weather
+        ConnectionPurpose.ONLINE_SEARCH -> R.string.conn_purpose_online_search
         ConnectionPurpose.OTHER -> R.string.conn_purpose_other
     },
 )

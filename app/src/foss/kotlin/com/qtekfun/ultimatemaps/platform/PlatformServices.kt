@@ -7,6 +7,9 @@ import com.qtekfun.ultimatemaps.core.map.MovementHint
 import com.qtekfun.ultimatemaps.core.map.NoGeofencer
 import com.qtekfun.ultimatemaps.core.map.NoMovementHint
 import com.qtekfun.ultimatemaps.core.net.NetworkPolicy
+import com.qtekfun.ultimatemaps.core.search.NoOnlineGeocoder
+import com.qtekfun.ultimatemaps.core.search.OnlineGeocoder
+import com.qtekfun.ultimatemaps.core.search.OnlineSearchSettingsStore
 import com.qtekfun.ultimatemaps.link.NoShortLinkResolver
 import com.qtekfun.ultimatemaps.link.ShortLinkResolver
 import com.qtekfun.ultimatemaps.location.AndroidLocationSource
@@ -18,6 +21,15 @@ import com.qtekfun.ultimatemaps.location.AndroidLocationSource
 object PlatformServices {
     /** True only in the `play` flavor. */
     const val GOOGLE_SERVICES_FLAVOR = false
+
+    /** There is no online search in this flavor: the offline search is the only search and nothing is ever sent. */
+    @Suppress("UNUSED_PARAMETER")
+    fun onlineGeocoder(
+        policy: NetworkPolicy,
+        settings: OnlineSearchSettingsStore,
+        versionName: String?,
+        language: () -> String?,
+    ): OnlineGeocoder = NoOnlineGeocoder
 
     fun locationSource(context: Context): AvailableLocationSource = AndroidLocationSource(context)
 

@@ -94,6 +94,10 @@ class SettingsActivity : ComponentActivity() {
             weather = WeatherSettingsEnv(app.weatherAlerts, openUrl = ::openInBrowser),
             recording = RecordingSettingsEnv(app.recording),
             placeLanguage = PlaceLanguageSettingsEnv(PrefsPlaceLanguageStore(this)),
+            // Only the play flavor has an online geocoder; foss shows no section and never connects.
+            onlineSearch = if (com.qtekfun.ultimatemaps.platform.PlatformServices.GOOGLE_SERVICES_FLAVOR) {
+                OnlineSearchSettingsEnv(app.onlineSearchSettings, onChanged = app::syncOnlineSearchEndpoint)
+            } else null,
             backup = backupEnv(app),
             about = AboutSettingsEnv(
                 version = runCatching { packageManager.getPackageInfo(packageName, 0).versionName }.getOrNull().orEmpty(),
@@ -103,6 +107,7 @@ class SettingsActivity : ComponentActivity() {
                     com.qtekfun.ultimatemaps.diagnostics.Diagnostics.report(this, (application as MapasApp).alertStats.describe(System.currentTimeMillis()))
                 },
                 clearDiagnostics = { com.qtekfun.ultimatemaps.diagnostics.Diagnostics.clear(this) },
+                onlineSearchCredit = com.qtekfun.ultimatemaps.platform.PlatformServices.GOOGLE_SERVICES_FLAVOR,
             ),
         )
         setContent {
@@ -128,6 +133,7 @@ class SettingsActivity : ComponentActivity() {
                 listOf(app.fuelSettings, app.cameraSettings, app.chargerSettings, app.zbeSettings, app.bikeShareSettings, app.weatherSettings, app.routeSettings, VoiceModule.settings(this), app.transitTripSettings).forEach { (it as? SettingsReloadable)?.reload() }
                 app.ensureCameraAlerts()
                 app.ensureZbePrompter()
+                app.syncOnlineSearchEndpoint() // a restored switch or address changes the connection list
             },
         )
         val version = runCatching { packageManager.getPackageInfo(packageName, 0).versionName }.getOrNull().orEmpty()

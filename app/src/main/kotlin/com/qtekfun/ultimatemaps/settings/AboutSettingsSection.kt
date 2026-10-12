@@ -28,6 +28,8 @@ class AboutSettingsEnv(
     /** The local diagnostic notes (how the processes ended, caught failures; no positions or names); read only when the user opens them. */
     val diagnostics: () -> String = { "" },
     val clearDiagnostics: () -> Unit = {},
+    /** True in the `play` flavor, which has the optional online search: its OpenStreetMap credit is then listed. */
+    val onlineSearchCredit: Boolean = false,
 )
 
 /** Category "About": version, licence, source code and every attribution the app owes (map data, petrol prices, transit data). */
@@ -70,6 +72,14 @@ fun AboutSettingsSection(env: AboutSettingsEnv) {
             style = Mapas.typography.callout.copy(color = Mapas.colors.secondaryLabel),
             modifier = Modifier.testTag("about_ev"),
         )
+        if (env.onlineSearchCredit) {
+            Spacer(Modifier.height(6.dp))
+            BasicText(
+                stringResource(R.string.about_online_search),
+                style = Mapas.typography.callout.copy(color = Mapas.colors.secondaryLabel),
+                modifier = Modifier.testTag("about_online_search"),
+            )
+        }
         TransitAboutBlock(env.transitAttributions())
     }
     DiagnosticsBlock(env.diagnostics, env.clearDiagnostics)
