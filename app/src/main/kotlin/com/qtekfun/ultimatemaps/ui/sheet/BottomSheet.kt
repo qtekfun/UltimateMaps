@@ -10,6 +10,8 @@ import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
@@ -51,6 +53,9 @@ import kotlin.math.abs
 import kotlin.math.sign
 
 /** The three resting positions of the sheet (Apple Maps style). */
+/** Bottom bar the collapsed height of the sheet was designed with (a gesture-navigation bar). */
+private val COLLAPSED_REFERENCE_BAR = 24.dp
+
 enum class SheetDetent {
     COLLAPSED, MEDIUM, FULL;
 
@@ -260,7 +265,15 @@ fun BottomSheet(
     BoxWithConstraints(modifier = modifier) {
         val density = LocalDensity.current
         val containerPx = with(density) { maxHeight.toPx() }
-        val collapsedPx = with(density) { Mapas.dimens.sheetCollapsedHeight.toPx() }
+        // The collapsed height was tuned for a 24 dp gesture bar; a taller bottom bar (taskbar on large screens, three
+        // buttons) must grow the sheet by the difference or the tabs are cut off.
+        val bottomBarPx = WindowInsets.navigationBars.getBottom(density).toFloat()
+        val collapsedPx = with(density) {
+            maxOf(
+                Mapas.dimens.sheetCollapsedHeight.toPx(),
+                (Mapas.dimens.sheetCollapsedHeight - COLLAPSED_REFERENCE_BAR).toPx() + bottomBarPx,
+            )
+        }
         val fullPx = containerPx - with(density) { topInset.toPx() }
         val mediumPx = (containerPx * mediumFraction).coerceIn(collapsedPx, fullPx)
         val flingPx = with(density) { SheetMath.FLING_DP_PER_S.dp.toPx() }
