@@ -35,7 +35,7 @@ Format: date · decision · reason · discarded alternatives · how to revert it
 
 ## 2026-10-06 · CoMaps inherited licenses that block linking it as is in a GPLv3 app
 - **Decision:** before reusing CoMaps code (options A/C), `3party/bsdiff-courgette/bsdiff` (BSD Protection License, GPL-incompatible), the font `data/fonts/06_code2000.ttf` (shareware) and the Entypo icons (CC BY-SA 3.0) must be excluded or replaced. "GPLv3 or later" is pinned, never GPLv2-only.
-- **Reason:** see `docs/spike/verificaciones.md` §1.2. Apache-2.0 is indeed compatible with GPLv3.
+- **Reason:** see `docs/spike/verifications.md` §1.2. Apache-2.0 is indeed compatible with GPLv3.
 - **Discarded:** assuming that all of `3party/` is permissive.
 - **Revert:** if the author of bsdiff or a legal advisor confirms compatibility, remove the exclusion.
 
@@ -220,7 +220,7 @@ Format: date · decision · reason · discarded alternatives · how to revert it
 - **Revert:** remove the F7 row and RF-15 to RF-17; there is no code.
 
 ## 2026-10-07 · F7 verification study: what changes in the roadmap
-- **Result (agent D, `docs/phase7/verificacion-fuentes.md`; fuel re-verified by me with a real download):**
+- **Result (agent D, `docs/phase7/source-verification.md`; fuel re-verified by me with a real download):**
   - **Fuel:** open service without a key; 12.2 MB nationwide, 999 stations with LPG (377 KB with `FiltroProducto/17`); updated **every 30 min** (the roadmap said "daily": corrected). Filtering by province or municipality reveals the user's area → discarded; whole-file or per-product download is used.
   - **Cercanías:** public GTFS-RT without a key, CC BY 4.0, 20 s; the real-time feed only carries the next stop, so the full departure board requires the static GTFS (14 MB).
   - **Metro:** only **Bilbao** has open real time without a key. **Metro de Madrid does not** (static only, "Powered by CRTM"); TMB, Valencia, Seville and EMT require a key → only with the user's own key.
