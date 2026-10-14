@@ -47,7 +47,7 @@ Rough total up to F5: 6-12 months. Each phase ends with a usable version.
 
 Decided by the user on 2026-10-07: they enter the roadmap and are **configurable in Settings**. Design detail in `mapas-03-arquitectura.md` ("Optional data sources and settings") and requirements RF-15 to RF-17.
 
-Verified on 2026-10-07 by the study `docs/phase7/verificacion-fuentes.md` (agent D); the fuel part also by me with a real download (999 stations with LPG, 377,379 bytes).
+Verified on 2026-10-07 by the study `docs/phase7/source-verification.md` (agent D); the fuel part also by me with a real download (999 stations with LPG, 377,379 bytes).
 
 | Source | Verified state | Approach | Still unverified |
 | --- | --- | --- | --- |

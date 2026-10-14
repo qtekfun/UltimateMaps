@@ -1,6 +1,6 @@
 # Spike report (phase 0)
 
-Date: 2026-10-06. Author: Claude Code (autonomous technical lead). Detailed sources: `docs/spike/comaps-build.md`, `comaps-code.md`, `comaps-style.md`, `maplibre.md`, `verificaciones.md`. Code and traces in `spike/`.
+Date: 2026-10-06. Author: Claude Code (autonomous technical lead). Detailed sources: `docs/spike/comaps-build.md`, `comaps-code.md`, `comaps-style.md`, `maplibre.md`, `verifications.md`. Code and traces in `spike/`.
 
 ## Summary
 
@@ -28,7 +28,7 @@ Everything measured on the Pixel 8 at 120 Hz, with command and trace (see the pe
 | Lanes and speed limit | — | Only confirmed in code; simulated navigation failed (it used the real location) | — | **Not measured** |
 | Memory / APK | — | PSS 503 MB; arm64 APK 46.3 MB | PMTiles mainland Spain + Balearics 3.4 GB (vs 1.9 GB of .mwm) | Informative |
 
-## Licenses (from `verificaciones.md`)
+## Licenses (from `verifications.md`)
 
 - The CoMaps code is Apache-2.0, compatible with GPLv3 (we must pin "GPLv3 or later", never GPLv2-only).
 - Three items **block publishing as is**: `3party/bsdiff-courgette/bsdiff` (BSD Protection License, GPL-incompatible), the font `06_code2000.ttf` (shareware, not free, NonFreeAssets) and the Entypo icons (CC BY-SA 3.0). They can be excluded or replaced without touching the routing/search engine, but they cost work. `gb-postcode-data` (GPLv2) only matters if we generate GB maps; `kdtree++` (Artistic) has no license file. Submodule licenses were taken from `copyright.html`, not read in each submodule.
