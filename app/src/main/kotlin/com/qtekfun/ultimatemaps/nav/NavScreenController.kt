@@ -12,7 +12,16 @@ import com.qtekfun.ultimatemaps.core.nav.withStops
 import com.qtekfun.ultimatemaps.core.routing.RoutePlan
 import com.qtekfun.ultimatemaps.core.voice.InMemoryNavSettingsStore
 import com.qtekfun.ultimatemaps.core.voice.NavSettingsStore
+import com.qtekfun.ultimatemaps.core.routing.RoutingProfile
+import com.qtekfun.ultimatemaps.core.traffic.NoTrafficProvider
+import com.qtekfun.ultimatemaps.core.traffic.RouteTraffic
+import com.qtekfun.ultimatemaps.core.traffic.TrafficOutcome
+import com.qtekfun.ultimatemaps.core.traffic.TrafficProvider
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -60,6 +69,10 @@ data class NavUi(
     val cameraVoiceOn: Boolean = true,
     /** The whole remaining route is framed for a moment ([NavScreenController.showOverview]); the camera does not follow meanwhile. */
     val overview: Boolean = false,
+    /** What live traffic does to the time still to drive (>= 1; 1 = nothing known). Applied to [etaMillis]. */
+    val trafficFactor: Double = 1.0,
+    /** The delay live traffic adds to the rest of the route, seconds; 0 when unknown or none. */
+    val trafficDelaySeconds: Double = 0.0,
 ) {
     val active: Boolean get() = phase != null
 }
@@ -105,6 +118,11 @@ class NavScreenController(
     private val overviewMillis: Long = OVERVIEW_MILLIS,
     /** The camera/incident alert settings, for the alerts' own mute button; null: no alerts in this build or test. */
     private val cameraSettings: com.qtekfun.ultimatemaps.core.cameras.CameraSettingsStore? = null,
+    /** Live traffic (optional, `play`): re-estimates the time still to drive every [trafficEveryMillis] on a real car trip. */
+    private val traffic: TrafficProvider = NoTrafficProvider,
+    private val trafficEveryMillis: Long = TRAFFIC_EVERY_MILLIS,
+    private val trafficFirstMillis: Long = TRAFFIC_FIRST_MILLIS,
+    private val io: CoroutineDispatcher = Dispatchers.IO,
 ) {
     private fun cameraUi(ui: NavUi): NavUi {
         val cs = cameraSettings?.settings?.value ?: return ui
@@ -122,6 +140,8 @@ class NavScreenController(
     private var flashJob: Job? = null
     private var flashUntil = 0L
     private var overviewJob: Job? = null
+    private var trafficJob: Job? = null
+    private var trafficRevision = 0
 
     /** The native follower itself (for the service and the camera); the screen goes through [ui]. */
     val navigation: NavigationController get() = controller
@@ -170,6 +190,7 @@ class NavScreenController(
             }
             if (simulate) simulation.start(withStops, 0.0, speedKmh) else service.start()
         }
+        startTraffic(trip.profile == RoutingProfile.CAR && !simulate)
         sinks.forEach { runCatching { it.onNavigationStarted(simulate) } }
         return true
     }
@@ -202,6 +223,7 @@ class NavScreenController(
             overviewJob?.cancel()
             _ui.update { idleUi() }
         }
+        trafficJob?.cancel()
         service.stop()
         if (wasActive) sinks.forEach { runCatching { it.onNavigationEnded(wasArrived) } }
     }
@@ -283,6 +305,7 @@ class NavScreenController(
         }
         _ui.update { it.copy(resumable = false) }
         if (ok) {
+            startTraffic(controller.route.value != null && !_ui.value.simulated)
             service.resume()
             sinks.forEach { runCatching { it.onNavigationStarted(false) } }
         }
@@ -293,6 +316,39 @@ class NavScreenController(
     fun discardResumable() {
         controller.stop()
         _ui.update { it.copy(resumable = false) }
+    }
+
+    // --- Live traffic ---
+
+    /** Starts the periodic estimate of the time still to drive; nothing when the feed is off or the trip is not a real car trip. */
+    private fun startTraffic(wanted: Boolean) {
+        trafficJob?.cancel()
+        if (!wanted || !traffic.enabled) return
+        trafficJob = scope.launch {
+            delay(trafficFirstMillis)
+            while (true) {
+                refreshTraffic()
+                delay(trafficEveryMillis)
+            }
+        }
+    }
+
+    private suspend fun refreshTraffic() {
+        val st = _ui.value.nav ?: return
+        val plan = controller.route.value ?: return
+        if (st.remainingSeconds <= 0.0) return
+        val rest = RouteTraffic.remaining(plan.geometry, st.traveledMeters)
+        if (rest.size < 2) return
+        val outcome = try {
+            withContext(io) { traffic.estimate(rest, st.remainingSeconds) }
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Throwable) {
+            return
+        }
+        val estimate = (outcome as? TrafficOutcome.Ready)?.estimate
+        val factor = estimate?.let { (it.adjustedSeconds / st.remainingSeconds).coerceIn(1.0, MAX_TRAFFIC_FACTOR) } ?: 1.0
+        _ui.update { cur -> cur.nav?.let { n -> cur.copy(trafficFactor = factor, trafficDelaySeconds = estimate?.delaySeconds ?: 0.0, etaMillis = clock() + (n.remainingSeconds * factor * 1000).toLong()) } ?: cur }
     }
 
     // --- From the follower ---
@@ -310,6 +366,7 @@ class NavScreenController(
             } else {
                 // Stopped from the notification (or the process restarted without a trip): close the screen.
                 simulation.stop()
+                trafficJob?.cancel()
                 location.endSimulation()
                 sinks.forEach { runCatching { it.onNavigationEnded(false) } }
                 overviewJob?.cancel()
@@ -322,11 +379,17 @@ class NavScreenController(
             finishArrival(st)
             return
         }
+        // A new route (a reroute, an added stop) makes the last traffic estimate stale until the next one.
+        val newRoute = st.routeRevision != trafficRevision
+        trafficRevision = st.routeRevision
         _ui.update {
+            val factor = if (newRoute) 1.0 else it.trafficFactor
             it.copy(
                 phase = phaseOf(st, flashActive()),
                 nav = st,
-                etaMillis = clock() + (st.remainingSeconds * 1000).toLong(),
+                etaMillis = clock() + (st.remainingSeconds * factor * 1000).toLong(),
+                trafficFactor = factor,
+                trafficDelaySeconds = if (newRoute) 0.0 else it.trafficDelaySeconds,
                 simulated = if (it.phase == null) location.isSimulated else it.simulated,
                 resumable = false,
             )
@@ -334,6 +397,7 @@ class NavScreenController(
     }
 
     private fun finishArrival(st: NavState) {
+        trafficJob?.cancel()
         simulation.stop()
         val now = clock()
         sinks.forEach { runCatching { it.onNavigationEnded(true) } }
@@ -370,6 +434,10 @@ class NavScreenController(
     }
 
     companion object {
+        /** Live traffic is re-read this often while driving (the feed itself updates about every minute). */
+        const val TRAFFIC_EVERY_MILLIS = 5 * 60_000L
+        const val TRAFFIC_FIRST_MILLIS = 5_000L
+        const val MAX_TRAFFIC_FACTOR = 5.0
         const val STOP_FLASH_MILLIS = 6_000L
 
         /** How long the route overview stays before the camera goes back to following. */

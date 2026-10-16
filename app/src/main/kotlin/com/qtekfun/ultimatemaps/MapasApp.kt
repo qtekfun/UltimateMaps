@@ -430,6 +430,7 @@ class MapasApp : Application() {
             prefs = SharedNavUiPrefs(this),
             settings = com.qtekfun.ultimatemaps.voice.VoiceModule.settings(this), // the 2D/3D choice lives with the navigation settings
             cameraSettings = cameraSettings,
+            traffic = trafficProvider,
         ).also {
             it.addSink(VoiceNavSink(this))
             it.addSink(AlertNavSink { if (alertsStarted) cameraAlerts else null })

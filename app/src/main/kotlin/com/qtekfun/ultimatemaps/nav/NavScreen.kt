@@ -564,6 +564,13 @@ private fun BottomPanel(ui: NavUi, nav: NavState, actions: NavActions) {
                 style = Mapas.typography.body.copy(color = c.onPanelSecondary),
                 modifier = Modifier.testTag("nav_remaining"),
             )
+            if (ui.trafficDelaySeconds >= 60.0) {
+                BasicText(
+                    stringResource(R.string.route_traffic_delay, RouteFormat.duration(ui.trafficDelaySeconds)),
+                    style = Mapas.typography.caption.copy(color = c.onPanelSecondary),
+                    modifier = Modifier.testTag("nav_traffic"),
+                )
+            }
             // ODbL: the attribution stays visible while navigating.
             Row(verticalAlignment = Alignment.CenterVertically) {
                 BasicText(
