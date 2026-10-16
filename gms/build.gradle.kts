@@ -24,5 +24,5 @@ dependencies {
     implementation(project(":core-geo"))
     implementation(project(":core-map"))
     // Proprietary (Android SDK licence), not part of the GPL source: only the `play` flavor is built with it.
-    implementation("com.google.android.gms:play-services-location:21.3.0")
+    implementation("com.google.android.gms:play-services-location:21.4.0")
 }
