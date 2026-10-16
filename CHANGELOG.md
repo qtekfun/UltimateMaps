@@ -6,6 +6,8 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 
 ### Added
 
+- **The arrival time follows live traffic while you drive (`play` build, live traffic on, car trips).** Five seconds after the trip starts and then every 5 minutes the app re-estimates the time still to drive with the TomTom flow of the part of the route ahead; the *Arrive at* time moves and a line under the remaining distance says how much delay the traffic adds. A reroute clears the estimate until the next one. Simulated and walking trips never ask. Not tried on a phone.
+
 - **Live traffic in the route time (`play` build only, optional, off by default).** Settings, Network, *Live traffic*: turn it on and paste your own TomTom key (free at developer.tomtom.com, no card; the app ships none and stores yours encrypted on the phone). Car routes then show the time with the real-time traffic, the delay it adds and any closed road; when the delay is 3 minutes or more the alternatives are found on their own and the fastest one with traffic is shown (you can still pick another). The router itself stays offline and does not know about traffic, so this corrects the time and the choice rather than planning around a jam. What is sent: the map squares your route crosses, with your key, to TomTom, only while the switch is on and never in offline mode. The F-Droid build has none of it. Not checked against the live service from a coding session, so tell us what you see on a real jam.
 
 ## [0.1.0-rc.29] - 2026-10-12
