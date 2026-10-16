@@ -4,6 +4,8 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 
 ## [Unreleased]
 
+## [0.1.0-rc.30] - 2026-10-16
+
 ### Added
 
 - **The arrival time follows live traffic while you drive (`play` build, live traffic on, car trips).** Five seconds after the trip starts and then every 5 minutes the app re-estimates the time still to drive with the TomTom flow of the part of the route ahead; the *Arrive at* time moves and a line under the remaining distance says how much delay the traffic adds. A reroute clears the estimate until the next one. Simulated and walking trips never ask. Not tried on a phone.
