@@ -4,6 +4,12 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 
 ## [Unreleased]
 
+## [0.1.0-rc.33] - 2026-10-16
+
+### Added
+
+- **A traffic button on the map to hide or show the traffic.** With live traffic on and a key stored (`play` build) a round traffic-light button sits under *my location*; tap it to hide the coloured roads and tap again to bring them back, as in other map apps. The icon is crossed out while the traffic is hidden. It is the same choice as the *Show traffic on the map* switch in Settings. Hiding the lines does not change the route time or the faster-route card.
+
 ## [0.1.0-rc.32] - 2026-10-16
 
 ### Fixed

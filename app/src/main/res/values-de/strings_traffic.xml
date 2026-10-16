@@ -27,4 +27,6 @@
     <string name="nav_suggest_title">Eine schnellere Route spart %1$s</string>
     <string name="nav_suggest_accept">Wechseln</string>
     <string name="nav_suggest_dismiss">Jetzt nicht</string>
+    <string name="map_traffic_show">Verkehr anzeigen</string>
+    <string name="map_traffic_hide">Verkehr ausblenden</string>
 </resources>

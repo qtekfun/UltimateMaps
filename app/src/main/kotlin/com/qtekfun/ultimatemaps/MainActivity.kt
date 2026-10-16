@@ -167,6 +167,11 @@ class MainActivity : ComponentActivity() {
         // Low-emission zones: drawn under the route line while the switch and the map toggle are on.
         com.qtekfun.ultimatemaps.zbe.ZbeMapLayer(lifecycleScope, app.zbeData.repository, app.zbeSettings.settings, engine::showLowEmissionZones).start()
         panel.onRequestLocation = ::onLocate
+        state.onToggleTraffic = {
+            app.trafficSettings.mapLayer = !app.trafficSettings.mapLayer
+            syncTrafficButton()
+            panel.refreshTraffic()
+        }
         state.onOpenMaps = { startActivity(Intent(this, RegionsActivity::class.java)) }
         state.onOpenSettings = { startActivity(Intent(this, SettingsActivity::class.java)) }
         state.onCamera(engine.cameraState())
@@ -223,10 +228,19 @@ class MainActivity : ComponentActivity() {
         panel.handleShortcut(intent.action)
     }
 
+    /** The traffic button follows the Settings (switch on, key stored) and the layer's own switch; read again whenever the map comes back. */
+    private fun syncTrafficButton() {
+        val app = application as MapasApp
+        state.trafficAvailable = app.trafficProvider.enabled
+        state.trafficShown = app.trafficSettings.mapLayer
+    }
+
     override fun onStart() {
         super.onStart()
+        syncTrafficButton()
         state.hasTiles = files.pmtilesList().isNotEmpty()
         panel.onStart()
+        panel.refreshTraffic() // the Settings may have changed the switch, the key or the layer
         engine.refreshTilesIfChanged() // back from "Maps" with a region downloaded or deleted
         (application as MapasApp).navScreen.refreshResumable() // a trip interrupted by the process dying
         (application as MapasApp).transitTrip.refreshResumable() // the same for a step-by-step transit trip

@@ -27,4 +27,6 @@
     <string name="nav_suggest_title">Uma rota mais rápida poupa %1$s</string>
     <string name="nav_suggest_accept">Mudar</string>
     <string name="nav_suggest_dismiss">Agora não</string>
+    <string name="map_traffic_show">Mostrar trânsito</string>
+    <string name="map_traffic_hide">Ocultar trânsito</string>
 </resources>
