@@ -1330,3 +1330,17 @@ Format: date · decision · reason · discarded alternatives · how to revert it
   Settings text names them.
 - **Not verified:** no phone and no live TomTom call. The MapLibre layer is built from filters and constant widths (no composite
   style expression) to keep it safe, but it has only been compiled, so the first look is the owner's.
+
+## 2026-10-16: the traffic layer is made light
+
+- **Problem (owner: "el rendimiento del pintado es pobre"):** the first version drew every road of up to 16 flow tiles with all its
+  points and built the GeoJSON feature objects on the main thread on every change. Reviewed by reading the code (no device
+  measurement yet; the Pixel is only used with the owner's permission): that is the heavy part, and the elevation chart (at most 200
+  samples) is not.
+- **Changes:** (1) only the road categories that make sense for the zoom (big roads far out, streets from tile zoom 14, never service
+  roads or tracks); free flow is drawn only on the major roads, jams on any allowed road; (2) points about a pixel apart are dropped
+  (6 units of the 4096 extent); (3) at most 4,000 lines per view, the worst kept; (4) the GeoJSON is a string built by hand off the main
+  thread and handed to MapLibre, which parses it on its own worker, so the main thread only passes a string; (5) the simplified lines
+  of a tile are made once and cached with the tile (3 minutes) instead of on every look.
+- **Not done / not measured:** frame time on the phone with the layer on, in navigation at 60 fps. If it is still heavy the next steps
+  are fewer lines while navigating or a vector source with a style filter instead of GeoJSON; both need numbers from the Pixel first.

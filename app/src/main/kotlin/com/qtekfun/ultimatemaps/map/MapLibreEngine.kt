@@ -138,7 +138,7 @@ class MapLibreEngine(
     private var bikeTapListener: ((String) -> Unit)? = null
     private var pendingTrails: List<TrailLine> = emptyList()
     private var trailSource: GeoJsonSource? = null
-    private var pendingTraffic: List<com.qtekfun.ultimatemaps.core.map.TrafficLine> = emptyList()
+    private var pendingTraffic: String? = null
     private var trafficSource: GeoJsonSource? = null
     private var trailTapListener: ((Int, LatLon) -> Unit)? = null
     private var pendingHazardPins: List<HazardPin> = emptyList()
@@ -569,23 +569,16 @@ class MapLibreEngine(
         pushTrails()
     }
 
-    override fun showTraffic(lines: List<com.qtekfun.ultimatemaps.core.map.TrafficLine>) {
-        pendingTraffic = lines
+    override fun showTraffic(geoJson: String) {
+        pendingTraffic = geoJson
         pushTraffic()
     }
 
+    /** The string is parsed by MapLibre on its own worker; nothing is built here. */
     private fun pushTraffic() {
         val source = trafficSource ?: return
         if (map == null) return
-        source.setGeoJson(
-            FeatureCollection.fromFeatures(
-                pendingTraffic.map { l ->
-                    Feature.fromGeometry(org.maplibre.geojson.LineString.fromLngLats(l.points.map { Point.fromLngLat(it.lon, it.lat) })).apply {
-                        addNumberProperty(TrafficStyle.LEVEL, l.level)
-                    }
-                },
-            ),
-        )
+        source.setGeoJson(pendingTraffic ?: com.qtekfun.ultimatemaps.core.traffic.FlowGeoJson.EMPTY)
     }
 
     /** Live traffic: coloured lines under the tracks and the route, above the hiking routes. */

@@ -1,0 +1,1 @@
+Versión candidata: la capa de tráfico en el mapa se dibuja mucho más ligera (menos líneas y más simples, preparadas fuera del hilo principal). Solo España.

@@ -23,11 +23,33 @@ object FlowLines {
         else -> 0
     }
 
+    private val MAJOR = setOf("motorway", "motorway_link", "trunk", "trunk_link", "primary", "primary_link")
+    private val MID = MAJOR + setOf("secondary", "secondary_link")
+    private val MINOR = MID + setOf("tertiary", "tertiary_link")
+    private val STREETS = MINOR + setOf("street")
+
+    /** The road categories worth drawing at a tile zoom: only the big roads far out, more as you zoom in; never service roads or tracks. */
+    fun categoriesAt(tileZoom: Int): Set<String> = when {
+        tileZoom <= 10 -> MAJOR
+        tileZoom <= 12 -> MID
+        tileZoom == 13 -> MINOR
+        else -> STREETS
+    }
+
+    /** Points closer than this (tile units of the 4096 extent, about a pixel) to the last kept one are dropped. */
+    const val SIMPLIFY_UNITS = 6
+
+    /** Never more lines than this per view: the worst levels first. A phone draws thousands of lines, not tens of thousands. */
+    const val MAX_LINES = 4_000
+
     /**
      * The lines of the decoded "Traffic flow" layers of [tile], worst last so a jam is never hidden under the free flow of the
-     * opposite direction. A `relative_speed` of 0 without a closure is "no data" and is left out.
+     * opposite direction. A `relative_speed` of 0 without a closure is "no data" and is left out. To keep the picture light:
+     * only the road categories of [categoriesAt] (a feature without the tag is kept), free flow only on the major ones, and
+     * the points a pixel apart are dropped.
      */
     fun of(tile: TileId, layers: List<MvtLayer>): List<FlowLine> {
+        val allowed = categoriesAt(tile.z)
         val out = ArrayList<FlowLine>()
         for (layer in layers) {
             if (!layer.name.equals("Traffic flow", ignoreCase = true)) continue
@@ -35,14 +57,41 @@ object FlowLines {
                 val ratio = (f.properties["relative_speed"] as? Number)?.toDouble() ?: continue
                 val closed = f.properties["road_closure"] == true
                 if (ratio <= 0.0 && !closed) continue
+                val category = f.properties["road_category"] as? String
+                if (category != null && category !in allowed) continue
                 val level = levelOf(ratio, closed)
+                if (level == 0 && category != null && category !in MAJOR) continue // free flow on side roads is only clutter
                 for (line in f.lines) {
                     if (line.size < 2) continue
-                    out += FlowLine(level, line.map { TileMath.toLatLon(tile, it[0].toDouble(), it[1].toDouble(), layer.extent) })
+                    val kept = simplify(line)
+                    if (kept.size < 2) continue
+                    out += FlowLine(level, kept.map { TileMath.toLatLon(tile, it[0].toDouble(), it[1].toDouble(), layer.extent) })
                 }
             }
         }
-        return out.sortedBy { it.level }
+        return limit(out)
+    }
+
+    /** At most [MAX_LINES], the worst kept, ordered worst last. */
+    fun limit(lines: List<FlowLine>): List<FlowLine> {
+        val capped = if (lines.size <= MAX_LINES) lines else lines.sortedByDescending { it.level }.take(MAX_LINES)
+        return capped.sortedBy { it.level }
+    }
+
+    private fun simplify(line: List<IntArray>): List<IntArray> {
+        if (line.size <= 2) return line
+        val out = ArrayList<IntArray>(line.size)
+        var last = line[0]
+        out += last
+        for (i in 1 until line.size - 1) {
+            val p = line[i]
+            if (kotlin.math.abs(p[0] - last[0]) + kotlin.math.abs(p[1] - last[1]) >= SIMPLIFY_UNITS) {
+                out += p
+                last = p
+            }
+        }
+        out += line.last()
+        return out
     }
 
     /** The tile zoom for a map at [mapZoom]: its integer part, at most [MAX_TILE_ZOOM]. */
