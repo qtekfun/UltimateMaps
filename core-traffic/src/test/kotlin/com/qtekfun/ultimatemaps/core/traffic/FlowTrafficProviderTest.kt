@@ -133,3 +133,45 @@ class FlowLinesTest {
         assertEquals(1, calls, "second ask served from the cache")
     }
 }
+
+class FlowLightweightTest {
+    private val tile = TileId(12, 2000, 1500)
+
+    private fun feat(category: String?, ratio: Double, pts: List<Pair<Int, Int>>): MvtEncoder.Feat {
+        val props = buildMap<String, Any> { put("relative_speed", ratio); if (category != null) put("road_category", category) }
+        return MvtEncoder.Feat(props, listOf(MvtEncoder.Line(pts)))
+    }
+
+    @Test fun `far out only the big roads, free flow only on them, and points a pixel apart are dropped`() {
+        val bytes = MvtEncoder.tile(
+            "Traffic flow", 4096,
+            listOf(
+                feat("motorway", 1.0, listOf(0 to 0, 2 to 1, 3 to 2, 100 to 100, 101 to 101, 400 to 400)), // free flow on a motorway: kept, simplified
+                feat("secondary", 1.0, listOf(0 to 0, 500 to 500)), // free flow on a secondary: left out
+                feat("secondary", 0.3, listOf(0 to 0, 500 to 500)), // a jam on a secondary at zoom 12: kept
+                feat("tertiary", 0.3, listOf(0 to 0, 500 to 500)), // not drawn at zoom 12
+                feat("service", 0.2, listOf(0 to 0, 500 to 500)), // never
+                feat(null, 0.2, listOf(0 to 0, 500 to 500)), // no category: kept
+            ),
+        )
+        val lines = FlowLines.of(tile, Mvt.decode(bytes))
+        assertEquals(listOf(0, 2, 2), lines.map { it.level })
+        assertEquals(3, lines.first().points.size, "0,0 .. 100,100 .. 400,400: the near points were dropped")
+    }
+
+    @Test fun `a view never carries more than the cap and keeps the worst`() {
+        val many = List(FlowLines.MAX_LINES + 500) { FlowLine(if (it < 100) 3 else 0, listOf(LatLon(40.0, -3.0), LatLon(40.001, -3.001))) }
+        val limited = FlowLines.limit(many)
+        assertEquals(FlowLines.MAX_LINES, limited.size)
+        assertEquals(100, limited.count { it.level == 3 })
+        assertEquals(3, limited.last().level)
+    }
+
+    @Test fun `the geojson is valid and compact`() {
+        assertEquals(FlowGeoJson.EMPTY, FlowGeoJson.of(emptyList()))
+        val json = FlowGeoJson.of(listOf(FlowLine(2, listOf(LatLon(40.123456789, -3.987654321), LatLon(40.2, -3.9)))))
+        assertEquals("""{"type":"FeatureCollection","features":[{"type":"Feature","properties":{"level":2},"geometry":{"type":"LineString","coordinates":[[-3.98765,40.12346],[-3.9,40.2]]}}]}""", json)
+        val big = List(FlowLines.MAX_LINES) { FlowLine(it % 4, List(20) { i -> LatLon(40.0 + i * 1e-4, -3.0 + it * 1e-5) }) }
+        assertTrue(FlowGeoJson.of(big).length > 100_000)
+    }
+}

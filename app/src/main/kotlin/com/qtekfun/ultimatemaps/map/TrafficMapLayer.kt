@@ -1,7 +1,8 @@
 package com.qtekfun.ultimatemaps.map
 
 import com.qtekfun.ultimatemaps.core.map.GeoBounds
-import com.qtekfun.ultimatemaps.core.map.TrafficLine
+import com.qtekfun.ultimatemaps.core.traffic.FlowGeoJson
+import com.qtekfun.ultimatemaps.core.traffic.FlowLine
 import com.qtekfun.ultimatemaps.core.traffic.FlowLines
 import com.qtekfun.ultimatemaps.core.traffic.TrafficProvider
 import kotlinx.coroutines.CoroutineDispatcher
@@ -24,7 +25,8 @@ class TrafficMapLayer(
     private val provider: TrafficProvider,
     /** The switch is on, a key is stored and the owner wants the layer. Read on every decision. */
     private val wanted: () -> Boolean,
-    private val render: (List<TrafficLine>) -> Unit,
+    /** Gets the GeoJSON of the lines (built on [io]); [FlowGeoJson.EMPTY] clears the layer. Called on the main thread, only on a change. */
+    private val render: (String) -> Unit,
     private val debounceMs: Long = DEBOUNCE_MS,
     private val refreshMs: Long = REFRESH_MS,
 ) {
@@ -65,22 +67,27 @@ class TrafficMapLayer(
         val vp = viewport ?: return
         job = scope.launch {
             if (delayMs > 0) delay(delayMs)
-            val lines = if (!wanted()) emptyList() else withContext(io) { read(vp) }
+            // Reading, comparing and building the GeoJSON all happen off the main thread; only [render] runs on it.
+            val frame = if (!wanted()) Frame(emptyList(), FlowGeoJson.EMPTY) else withContext(io) {
+                read(vp)?.let { Frame(it, FlowGeoJson.of(it)) }
+            }
             // A failed read keeps the picture the owner already has; only "off" or "too far out" clear it.
-            val result = lines ?: if (wanted() && vp.zoom >= FlowLines.MIN_MAP_ZOOM) return@launch else emptyList()
-            val keys = result.map { it.level.toLong() shl 40 xor (it.points.size.toLong() shl 32) xor it.points.first().lat.toBits() }
+            val result = frame ?: if (wanted() && vp.zoom >= FlowLines.MIN_MAP_ZOOM) return@launch else Frame(emptyList(), FlowGeoJson.EMPTY)
+            val keys = result.lines.map { it.level.toLong() shl 40 xor (it.points.size.toLong() shl 32) xor it.points.first().lat.toBits() }
             if (keys != shown) {
                 shown = keys
-                render(result)
+                render(result.geoJson)
             }
         }
     }
 
+    private class Frame(val lines: List<FlowLine>, val geoJson: String)
+
     /** Runs on [io]; null when the provider could not say. */
-    private suspend fun read(vp: Viewport): List<TrafficLine>? {
+    private suspend fun read(vp: Viewport): List<FlowLine>? {
         val tiles = FlowLines.tilesFor(vp.bounds.south, vp.bounds.west, vp.bounds.north, vp.bounds.east, vp.zoom)
         if (tiles.isEmpty()) return emptyList()
-        return provider.flowLines(tiles)?.map { TrafficLine(it.level, it.points) }
+        return provider.flowLines(tiles)
     }
 
     companion object {

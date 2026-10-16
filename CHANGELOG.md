@@ -4,6 +4,12 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 
 ## [Unreleased]
 
+## [0.1.0-rc.32] - 2026-10-16
+
+### Fixed
+
+- **The live-traffic layer on the map is much lighter to draw.** It used to draw every road of the tiles in view with all its points and built the map data on the main thread. Now it draws only the roads that make sense for the zoom (big roads far out, streets only when close, never service roads), only the jams on side roads, drops points a pixel apart, never more than 4,000 lines, builds the data off the main thread and reuses the simplified lines of each tile for 3 minutes. Judged from the code, not yet measured on a phone.
+
 ## [0.1.0-rc.31] - 2026-10-16
 
 ### Added
