@@ -1290,3 +1290,19 @@ Format: date · decision · reason · discarded alternatives · how to revert it
 - **Not verified:** the free quota (about 2,500 non-tile and 50,000 tile requests a day per TomTom's pages) and the terms for
   showing traffic outside TomTom maps were read from search snippets, not signed agreements; the live service was not called
   from this session (no key), so the first real check is the owner's phone.
+
+## 2026-10-16: live traffic while driving only corrects the arrival time
+
+- **Decision:** during a real car trip with live traffic on, `NavScreenController` re-estimates the rest of the route 5 s after the
+  start and then every 5 minutes (`RouteTraffic.remaining` cuts the geometry at the distance travelled; the same estimator as the
+  preview) and multiplies the follower's remaining time by `adjusted / core` (1 to 5) for the arrival clock, plus a delay line. The
+  follower, the voice and the camera are untouched; a new route revision resets the factor.
+- **Why only the ETA:** the follower's `remainingSeconds` is the plan's time spread by distance, so a factor is the smallest change
+  that cannot affect guidance. Re-planning around a jam needs the alternatives machinery of the preview and a prompt that does not
+  distract a driver; that is a design of its own (when to interrupt, what the voice says) and is left for the owner to decide.
+- **Discarded:** (1) switching routes automatically mid-trip (surprising and unsafe without a prompt); (2) a forever loop started
+  with the controller (breaks tests with virtual time and drains the battery when no trip is active): the job exists only during a
+  real car trip; (3) coloured route or flow layer on the map: the map side is the separate `ultimate-mapcore` module (AGPL) and
+  needs a new layer API there, so it was not done here.
+- **Not done:** reroute suggestion from traffic, traffic layer on the map, reading traffic for the foot/bike profiles (TomTom flow is
+  about cars).

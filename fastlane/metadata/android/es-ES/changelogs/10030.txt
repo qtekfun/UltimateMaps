@@ -1,0 +1,1 @@
+Versión candidata: tráfico en directo opcional en la versión Play (con tu propia clave gratuita de TomTom): el tiempo de las rutas y la hora de llegada siguen el tráfico, y un atasco busca una ruta más rápida. Desactivado por defecto. Solo España.

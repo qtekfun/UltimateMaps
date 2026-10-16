@@ -132,3 +132,16 @@ class TrafficCoreTest {
         assertEquals(0.0, RouteTraffic.estimate(listOf(LatLon(40.0, -3.0), LatLon(40.1, -3.0)), 0.0, f).adjustedSeconds)
     }
 }
+
+class RemainingRouteTest {
+    private val route = (0..10).map { LatLon(40.0 + it * 0.009, -3.0) } // about 10 km north
+
+    @Test fun `what is left starts at the point reached and keeps the rest of the line`() {
+        val rest = RouteTraffic.remaining(route, 5_000.0)
+        assertTrue(rest.size in 6..7, "${rest.size}")
+        assertTrue(abs(TileMath.metersBetween(rest.first(), route.last()) - 5_000.0) < 100.0)
+        assertEquals(route.last(), rest.last())
+        assertEquals(route.size, RouteTraffic.remaining(route, 0.0).size, "nothing travelled: the whole route")
+        assertTrue(RouteTraffic.remaining(route, 50_000.0).isEmpty(), "past the end")
+    }
+}

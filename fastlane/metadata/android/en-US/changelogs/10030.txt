@@ -1,0 +1,1 @@
+Release candidate: optional live traffic in the Play build (your own free TomTom key): route times and the arrival time follow the traffic, and a jam finds a faster route. Off by default. Spain only.
