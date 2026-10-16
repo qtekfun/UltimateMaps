@@ -1,0 +1,1 @@
+Release candidate: the live-traffic layer on the map draws much lighter (fewer, simpler lines, built off the main thread). Spain only.

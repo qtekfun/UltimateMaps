@@ -2,7 +2,7 @@ package com.qtekfun.ultimatemaps.map
 
 import com.qtekfun.ultimatemaps.core.geo.LatLon
 import com.qtekfun.ultimatemaps.core.map.GeoBounds
-import com.qtekfun.ultimatemaps.core.map.TrafficLine
+import com.qtekfun.ultimatemaps.core.traffic.FlowGeoJson
 import com.qtekfun.ultimatemaps.core.traffic.FlowLine
 import com.qtekfun.ultimatemaps.core.traffic.TileId
 import com.qtekfun.ultimatemaps.core.traffic.TrafficOutcome
@@ -32,18 +32,18 @@ class TrafficMapLayerTest {
         override suspend fun flowLines(tiles: List<TileId>): List<FlowLine>? { asked++; return answer }
     }
 
-    private fun TestScope.layer(draws: MutableList<List<TrafficLine>>) =
+    private fun TestScope.layer(draws: MutableList<String>) =
         TrafficMapLayer(this, StandardTestDispatcher(testScheduler), provider, { on }, { draws += it }, debounceMs = 100L, refreshMs = 1_000L)
 
     @Test fun `a view is drawn after the debounce and an identical picture is not drawn twice`() = runTest {
-        val draws = mutableListOf<List<TrafficLine>>()
+        val draws = mutableListOf<String>()
         val layer = layer(draws)
         layer.onViewport(madrid, 12.0)
         advanceTimeBy(50); runCurrent()
         assertTrue(draws.isEmpty(), "still debouncing")
         advanceTimeBy(100); runCurrent()
         assertEquals(1, draws.size)
-        assertEquals(2, draws[0][0].level)
+        assertTrue("\"level\":2" in draws[0])
         layer.onViewport(madrid, 12.0)
         advanceTimeBy(200); runCurrent()
         assertEquals(1, draws.size, "same picture")
@@ -51,7 +51,7 @@ class TrafficMapLayerTest {
 
     @Test fun `off it asks nothing and draws nothing`() = runTest {
         on = false
-        val draws = mutableListOf<List<TrafficLine>>()
+        val draws = mutableListOf<String>()
         val layer = layer(draws)
         layer.onViewport(madrid, 12.0)
         advanceTimeBy(500); runCurrent()
@@ -60,7 +60,7 @@ class TrafficMapLayerTest {
     }
 
     @Test fun `too far out clears the drawing, and a failed read keeps it`() = runTest {
-        val draws = mutableListOf<List<TrafficLine>>()
+        val draws = mutableListOf<String>()
         val layer = layer(draws)
         layer.onViewport(madrid, 12.0)
         advanceTimeBy(200); runCurrent()
@@ -72,11 +72,11 @@ class TrafficMapLayerTest {
         layer.onViewport(GeoBounds(36.0, -9.0, 44.0, 3.0), 6.0) // the whole country
         advanceTimeBy(200); runCurrent()
         assertEquals(2, draws.size)
-        assertTrue(draws.last().isEmpty())
+        assertEquals(FlowGeoJson.EMPTY, draws.last())
     }
 
     @Test fun `switching it off clears the picture on the next look and the ticker refreshes while on`() = runTest {
-        val draws = mutableListOf<List<TrafficLine>>()
+        val draws = mutableListOf<String>()
         val layer = layer(draws)
         layer.start()
         layer.onViewport(madrid, 12.0)
@@ -86,7 +86,7 @@ class TrafficMapLayerTest {
         assertTrue(asked >= 2, "looked again on the ticker")
         on = false
         advanceTimeBy(1_100); runCurrent()
-        assertTrue(draws.last().isEmpty(), "cleared once off")
+        assertEquals(FlowGeoJson.EMPTY, draws.last(), "cleared once off")
         layer.stop()
     }
 }

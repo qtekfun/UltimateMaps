@@ -70,7 +70,8 @@ class FlowTrafficProvider(
     /** Milliseconds, monotonic; virtual in tests. */
     private val clock: () -> Long,
 ) : TrafficProvider {
-    private class Cached(val at: Long, val layers: List<MvtLayer>?)
+    /** A decoded tile; [lines] (the simplified map lines) are made once, the first time the map layer asks. */
+    private class Cached(val at: Long, val layers: List<MvtLayer>?, var lines: List<FlowLine>? = null)
 
     private val cache = LinkedHashMap<TileId, Cached>()
 
@@ -84,8 +85,8 @@ class FlowTrafficProvider(
         val out = ArrayList<FlowLine>()
         var any = false
         for (tile in tiles.take(MAX_LAYER_TILES)) {
-            val layers = synchronized(cache) { cache[tile]?.layers } ?: try {
-                Mvt.decode(fetch.get(tile, key)).also { synchronized(cache) { cache[tile] = Cached(now, it) } }
+            val entry = synchronized(cache) { cache[tile] } ?: try {
+                Cached(now, Mvt.decode(fetch.get(tile, key))).also { synchronized(cache) { cache[tile] = it } }
             } catch (e: TileFetchException) {
                 if (e.failure != TileFailure.NETWORK) return null // a bad key, the limit, offline: no point in asking the others
                 continue
@@ -93,9 +94,10 @@ class FlowTrafficProvider(
                 continue
             }
             any = true
-            out += FlowLines.of(tile, layers)
+            val lines = entry.lines ?: FlowLines.of(tile, entry.layers.orEmpty()).also { entry.lines = it }
+            out += lines
         }
-        return if (any) out.sortedBy { it.level } else null
+        return if (any) FlowLines.limit(out) else null
     }
 
     override suspend fun estimate(geometry: List<LatLon>, coreSeconds: Double, baseSpeedMps: ((Double) -> Double)?): TrafficOutcome {

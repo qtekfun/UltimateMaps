@@ -74,9 +74,6 @@ data class BikePin(val id: String, val point: LatLon)
  */
 class TrailLine(val id: Int, val level: Int, val cycling: Boolean, val points: List<LatLon>)
 
-/** One stretch of road coloured by the live traffic: [level] 0 flowing, 1 slow, 2 heavy, 3 closed. */
-class TrafficLine(val level: Int, val points: List<LatLon>)
-
 /** One imported GPX track (or route) drawn as a line: [segments] are drawn separately, [color] is ARGB. */
 class TrackLine(val id: Long, val segments: List<List<LatLon>>, val color: Int)
 
@@ -220,8 +217,11 @@ interface MapEngine : AutoCloseable {
     /** Draws exactly these route pieces; an empty list removes them. Never called per frame. */
     fun showTrails(lines: List<TrailLine>) {}
 
-    /** Draws the live-traffic lines (optional `play` layer), under the route; an empty list removes them. */
-    fun showTraffic(lines: List<TrafficLine>) {}
+    /**
+     * Draws the live-traffic lines (optional `play` layer), under the route. [geoJson] is a FeatureCollection of LineStrings with a
+     * `level` property (0 flowing .. 3 closed), already built off the main thread; an empty collection removes them.
+     */
+    fun showTraffic(geoJson: String) {}
 
     /** Reports taps on a route line (its id and the tapped point), after stations, chargers and hazards; null removes it. */
     fun setTrailTapListener(listener: ((Int, LatLon) -> Unit)?) {}
