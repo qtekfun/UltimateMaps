@@ -22,4 +22,9 @@
     <string name="route_traffic_clear">No traffic delay on this route</string>
     <string name="route_traffic_bad_key">Traffic: TomTom rejected the key</string>
     <string name="route_traffic_limit">Traffic: the daily TomTom limit was reached</string>
+    <string name="traffic_map_title">Show traffic on the map</string>
+    <string name="traffic_map_body">Colours the main roads: green flowing, amber slow, red heavy, dark red closed. It reads the map squares you are looking at (from zoom 9), at most one look every 3 minutes.</string>
+    <string name="nav_suggest_title">A faster route saves %1$s</string>
+    <string name="nav_suggest_accept">Switch</string>
+    <string name="nav_suggest_dismiss">Not now</string>
 </resources>

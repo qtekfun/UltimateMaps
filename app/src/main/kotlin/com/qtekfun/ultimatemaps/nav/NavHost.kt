@@ -296,6 +296,8 @@ class NavHost(
                 onCameraVoice = screen::setCameraVoice,
                 onOverview = screen::showOverview,
                 onFaster = screen::simulationFaster,
+                onAcceptSuggestion = screen::acceptSuggestion,
+                onDismissSuggestion = screen::dismissSuggestion,
                 onSlower = screen::simulationSlower,
                 onExit = screen::stop,
                 onResume = { screen.resume() },

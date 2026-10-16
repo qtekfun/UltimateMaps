@@ -22,4 +22,9 @@
     <string name="route_traffic_clear">Keine Verkehrsverzögerung auf dieser Route</string>
     <string name="route_traffic_bad_key">Verkehr: TomTom hat den Schlüssel abgelehnt</string>
     <string name="route_traffic_limit">Verkehr: das Tageslimit von TomTom ist erreicht</string>
+    <string name="traffic_map_title">Verkehr auf der Karte zeigen</string>
+    <string name="traffic_map_body">Färbt die Hauptstraßen: grün flüssig, bernsteinfarben langsam, rot zäh, dunkelrot gesperrt. Liest die Kartenquadrate, die Sie ansehen (ab Zoom 9), höchstens alle 3 Minuten.</string>
+    <string name="nav_suggest_title">Eine schnellere Route spart %1$s</string>
+    <string name="nav_suggest_accept">Wechseln</string>
+    <string name="nav_suggest_dismiss">Jetzt nicht</string>
 </resources>

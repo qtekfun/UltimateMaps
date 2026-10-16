@@ -12,7 +12,10 @@ import com.qtekfun.ultimatemaps.core.nav.withStops
 import com.qtekfun.ultimatemaps.core.routing.RoutePlan
 import com.qtekfun.ultimatemaps.core.voice.InMemoryNavSettingsStore
 import com.qtekfun.ultimatemaps.core.voice.NavSettingsStore
+import com.qtekfun.ultimatemaps.core.nav.RouteProvider
+import com.qtekfun.ultimatemaps.core.routing.Detours
 import com.qtekfun.ultimatemaps.core.routing.RoutingProfile
+import com.qtekfun.ultimatemaps.route.RoutePreviewController
 import com.qtekfun.ultimatemaps.core.traffic.NoTrafficProvider
 import com.qtekfun.ultimatemaps.core.traffic.RouteTraffic
 import com.qtekfun.ultimatemaps.core.traffic.TrafficOutcome
@@ -73,9 +76,14 @@ data class NavUi(
     val trafficFactor: Double = 1.0,
     /** The delay live traffic adds to the rest of the route, seconds; 0 when unknown or none. */
     val trafficDelaySeconds: Double = 0.0,
+    /** A faster route the driver can switch to; null when there is none (see [NavScreenController.acceptSuggestion]). */
+    val suggestion: RouteSuggestion? = null,
 ) {
     val active: Boolean get() = phase != null
 }
+
+/** A route found while driving that the live traffic says is faster by [savedSeconds]; the driver decides. */
+data class RouteSuggestion(val plan: RoutePlan, val savedSeconds: Double)
 
 /** Starts and stops the foreground service that keeps the navigation alive; a fake in tests. */
 interface NavServiceControl {
@@ -123,6 +131,8 @@ class NavScreenController(
     private val trafficEveryMillis: Long = TRAFFIC_EVERY_MILLIS,
     private val trafficFirstMillis: Long = TRAFFIC_FIRST_MILLIS,
     private val io: CoroutineDispatcher = Dispatchers.IO,
+    /** Plans the faster-route suggestions (the same provider as the reroutes); null: no suggestions. */
+    private val reroutes: RouteProvider? = null,
 ) {
     private fun cameraUi(ui: NavUi): NavUi {
         val cs = cameraSettings?.settings?.value ?: return ui
@@ -142,6 +152,8 @@ class NavScreenController(
     private var overviewJob: Job? = null
     private var trafficJob: Job? = null
     private var trafficRevision = 0
+    private var currentTrip: NavTrip? = null
+    private var suggestAfterMillis = 0L
 
     /** The native follower itself (for the service and the camera); the screen goes through [ui]. */
     val navigation: NavigationController get() = controller
@@ -190,6 +202,8 @@ class NavScreenController(
             }
             if (simulate) simulation.start(withStops, 0.0, speedKmh) else service.start()
         }
+        currentTrip = trip.takeIf { !simulate }
+        suggestAfterMillis = 0L
         startTraffic(trip.profile == RoutingProfile.CAR && !simulate)
         sinks.forEach { runCatching { it.onNavigationStarted(simulate) } }
         return true
@@ -305,6 +319,7 @@ class NavScreenController(
         }
         _ui.update { it.copy(resumable = false) }
         if (ok) {
+            currentTrip = null // a resumed trip's options are not known here: no suggestions until the next trip
             startTraffic(controller.route.value != null && !_ui.value.simulated)
             service.resume()
             sinks.forEach { runCatching { it.onNavigationStarted(false) } }
@@ -348,7 +363,60 @@ class NavScreenController(
         }
         val estimate = (outcome as? TrafficOutcome.Ready)?.estimate
         val factor = estimate?.let { (it.adjustedSeconds / st.remainingSeconds).coerceIn(1.0, MAX_TRAFFIC_FACTOR) } ?: 1.0
+        if (estimate == null || estimate.delaySeconds < SUGGEST_MIN_DELAY_SECONDS) _ui.update { it.copy(suggestion = null) }
         _ui.update { cur -> cur.nav?.let { n -> cur.copy(trafficFactor = factor, trafficDelaySeconds = estimate?.delaySeconds ?: 0.0, etaMillis = clock() + (n.remainingSeconds * factor * 1000).toLong()) } ?: cur }
+        if (estimate != null && estimate.delaySeconds >= SUGGEST_MIN_DELAY_SECONDS) suggestFaster(st, rest, estimate)
+    }
+
+    /**
+     * Looks for a way around the jam: the routes through a point on each side of the middle of what is left, timed with the
+     * traffic. Only with no intermediate stops, a delay of at least [SUGGEST_MIN_DELAY_SECONDS], and not again for
+     * [SUGGEST_PAUSE_MILLIS] after the driver answered. Silent: no voice, no sound, nothing that takes the eyes off the road
+     * beyond a card the driver can ignore.
+     */
+    private suspend fun suggestFaster(st: NavState, rest: List<LatLon>, current: com.qtekfun.ultimatemaps.core.traffic.TrafficEstimate) {
+        val provider = reroutes ?: return
+        val trip = currentTrip ?: return
+        if (st.stopsRemaining != 0 || _ui.value.suggestion != null || clock() < suggestAfterMillis) return
+        val destination = rest.lastOrNull() ?: return
+        val remainingPlan = RoutePlan(rest, st.remainingMeters, st.remainingSeconds)
+        var best: RoutePlan? = null
+        var bestSeconds = current.adjustedSeconds
+        for (side in listOf(Detours.Side.LEFT, Detours.Side.RIGHT)) {
+            val via = Detours.viaPoint(rest, side) ?: continue
+            val alt = try {
+                provider.route(st.position, st.bearingDegrees, listOf(via), destination, trip)
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Throwable) {
+                null
+            } ?: continue
+            if (!RoutePreviewController.worthOffering(remainingPlan, alt, emptyList())) continue
+            val seconds = (withContext(io) { traffic.estimate(alt.geometry, alt.durationSeconds) } as? TrafficOutcome.Ready)?.estimate?.adjustedSeconds ?: continue
+            if (seconds < bestSeconds) {
+                best = alt
+                bestSeconds = seconds
+            }
+        }
+        val saved = current.adjustedSeconds - bestSeconds
+        val plan = best ?: return
+        if (saved >= SUGGEST_MIN_SAVING_SECONDS && saved >= current.adjustedSeconds * SUGGEST_MIN_SAVING_SHARE) {
+            _ui.update { if (it.active && it.phase != NavPhase.ARRIVED) it.copy(suggestion = RouteSuggestion(plan, saved)) else it }
+        }
+    }
+
+    /** The driver takes the faster route: the follower switches to it without restarting the trip. */
+    fun acceptSuggestion() {
+        val s = _ui.value.suggestion ?: return
+        suggestAfterMillis = clock() + SUGGEST_PAUSE_MILLIS
+        _ui.update { it.copy(suggestion = null) }
+        controller.replaceRoute(s.plan)
+    }
+
+    /** The driver keeps the route; no new suggestion for a while. */
+    fun dismissSuggestion() {
+        suggestAfterMillis = clock() + SUGGEST_PAUSE_MILLIS
+        _ui.update { it.copy(suggestion = null) }
     }
 
     // --- From the follower ---
@@ -390,6 +458,7 @@ class NavScreenController(
                 etaMillis = clock() + (st.remainingSeconds * factor * 1000).toLong(),
                 trafficFactor = factor,
                 trafficDelaySeconds = if (newRoute) 0.0 else it.trafficDelaySeconds,
+                suggestion = if (newRoute) null else it.suggestion,
                 simulated = if (it.phase == null) location.isSimulated else it.simulated,
                 resumable = false,
             )
@@ -438,6 +507,12 @@ class NavScreenController(
         const val TRAFFIC_EVERY_MILLIS = 5 * 60_000L
         const val TRAFFIC_FIRST_MILLIS = 5_000L
         const val MAX_TRAFFIC_FACTOR = 5.0
+
+        /** A faster route is offered only for a jam this big, saving this much (and this share of the time left). */
+        const val SUGGEST_MIN_DELAY_SECONDS = 300.0
+        const val SUGGEST_MIN_SAVING_SECONDS = 300.0
+        const val SUGGEST_MIN_SAVING_SHARE = 0.10
+        const val SUGGEST_PAUSE_MILLIS = 15 * 60_000L
         const val STOP_FLASH_MILLIS = 6_000L
 
         /** How long the route overview stays before the camera goes back to following. */

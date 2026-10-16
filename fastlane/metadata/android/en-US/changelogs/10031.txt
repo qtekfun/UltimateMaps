@@ -1,0 +1,1 @@
+Release candidate: live traffic on the map and, while driving, a silent card that offers a faster route when a jam is ahead (Play build, your own TomTom key). Spain only.
