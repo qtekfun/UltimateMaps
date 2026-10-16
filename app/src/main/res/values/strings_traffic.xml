@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Optional live traffic (play flavor, the user's own TomTom key): settings section, route line and the connection purpose. -->
+    <string name="traffic_title">Live traffic</string>
+    <string name="traffic_switch">Use live traffic (TomTom)</string>
+    <string name="traffic_body">Adds TomTom\'s real-time traffic to the time of car routes and picks the faster route when there is a jam. It needs your own free TomTom key.</string>
+    <string name="traffic_honesty">What is sent to TomTom: the map squares (about 40 km wide) along each car route you plan, asked for with your key. Not your position, not the route itself, not what you search. TomTom\'s terms apply to your key and it has a free daily limit. Traffic data: TomTom.</string>
+    <string name="traffic_key_title">TomTom API key</string>
+    <string name="traffic_key_saved">A key is saved. It stays on this phone, encrypted, and is only sent to TomTom.</string>
+    <string name="traffic_key_none">No key yet</string>
+    <string name="traffic_key_hint">Paste your key</string>
+    <string name="traffic_key_invalid">That does not look like a TomTom key. Paste it again, without extra text.</string>
+    <string name="traffic_key_save">Save key</string>
+    <string name="traffic_key_remove">Remove key</string>
+    <string name="traffic_key_help">How to get a free key</string>
+    <string name="traffic_key_help_body">Create a free account at developer.tomtom.com (no credit card), add an app with the Traffic API enabled and copy its key here. Your use counts against your own free quota.</string>
+    <string name="conn_purpose_traffic_flow">Live traffic (TomTom)</string>
+    <string name="backup_item_traffic">Live traffic</string>
+    <string name="backup_group_traffic">Live traffic</string>
+    <string name="route_traffic_delay">%1$s of delay because of traffic</string>
+    <string name="route_traffic_closed">Traffic reports a closed road on this route</string>
+    <string name="route_traffic_clear">No traffic delay on this route</string>
+    <string name="route_traffic_bad_key">Traffic: TomTom rejected the key</string>
+    <string name="route_traffic_limit">Traffic: the daily TomTom limit was reached</string>
+</resources>

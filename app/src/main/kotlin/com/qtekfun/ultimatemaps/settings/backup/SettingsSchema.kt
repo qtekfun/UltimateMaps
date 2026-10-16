@@ -7,6 +7,8 @@ import com.qtekfun.ultimatemaps.core.cameras.MIN_INCIDENT_REFRESH_MINUTES
 import com.qtekfun.ultimatemaps.chargers.PrefsChargerSettingsStore
 import com.qtekfun.ultimatemaps.zbe.PrefsZbeSettingsStore
 import com.qtekfun.ultimatemaps.weather.KeystoreApiKeyStore
+import com.qtekfun.ultimatemaps.traffic.PrefsTrafficSettingsStore
+import com.qtekfun.ultimatemaps.traffic.TomTomKeyStore
 import com.qtekfun.ultimatemaps.weather.PrefsWeatherAlertSettings
 import com.qtekfun.ultimatemaps.core.weather.WeatherAlertSettings
 import com.qtekfun.ultimatemaps.bikeshare.PrefsBikeShareSettingsStore
@@ -109,6 +111,7 @@ object SettingsSchema {
     const val GROUP_REGIONS = "regions"
     const val GROUP_PLACE_LANGUAGE = "place_language"
     const val GROUP_ONLINE_SEARCH = "online_search"
+    const val GROUP_TRAFFIC = "traffic"
 
     private fun bool(group: String, prefs: String, key: String, default: Boolean, policy: RestorePolicy = RestorePolicy.DIRECT) =
         SettingSpec(group, prefs, key, SettingType.BOOLEAN, default, policy)
@@ -256,6 +259,14 @@ object SettingsSchema {
         ),
         url(GROUP_ONLINE_SEARCH, PrefsOnlineSearchSettingsStore.PREFS, PrefsOnlineSearchSettingsStore.KEY_SERVER_URL, "", allowEmpty = true),
 
+        // Live traffic (play flavor): the switch sends route tiles to TomTom with the user's own key, so it needs consent. The key is
+        // NEVER exported (see [excluded]); foss has no such feature, so an "on" from a play phone is never kept there.
+        SettingSpec(
+            GROUP_TRAFFIC, PrefsTrafficSettingsStore.PREFS, PrefsTrafficSettingsStore.KEY_ENABLED, SettingType.BOOLEAN, false,
+            RestorePolicy.NEEDS_CONSENT,
+            sanitize = { v -> if (com.qtekfun.ultimatemaps.platform.PlatformServices.GOOGLE_SERVICES_FLAVOR) v else false },
+        ),
+
         // Track recording switch (not the tracks).
         bool(GROUP_RECORDING, PrefsRecordingSettings.PREFS, PrefsRecordingSettings.KEY_ENABLED, false),
 
@@ -296,6 +307,8 @@ object SettingsSchema {
         "core/isolated" to "debug valve of the native core, not a user setting",
         "${KeystoreApiKeyStore.PREFS}/${KeystoreApiKeyStore.KEY_API_KEY}" to
             "the user's AEMET API key (a credential that identifies them to AEMET): encrypted with a Keystore key that cannot leave the phone, never exported, logged or backed up",
+        "${TomTomKeyStore.PREFS}/${TomTomKeyStore.KEY_API_KEY}" to
+            "the user's TomTom API key (a credential that identifies them to TomTom): encrypted with a Keystore key that cannot leave the phone, never exported, logged or backed up",
         "${PrefsPendingRestore.PREFS}/${PrefsPendingRestore.KEY_CONSENT}" to "derived by an import, never exported",
         "${PrefsPendingRestore.PREFS}/${PrefsPendingRestore.KEY_REGIONS}" to "derived by an import, never exported",
     )

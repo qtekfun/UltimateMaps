@@ -103,6 +103,7 @@ fun settingsCategories(env: SettingsEnv): List<SettingsCategory> = buildList {
                 NetworkSettingsContent(env)
                 env.placeLanguage?.let { PlaceLanguageSection(it) }
                 env.onlineSearch?.let { OnlineSearchSection(it) }
+                env.traffic?.let { TrafficSection(it) }
             },
         ),
     )

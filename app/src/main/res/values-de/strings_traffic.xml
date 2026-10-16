@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Optional live traffic (play flavor, the user's own TomTom key): settings section, route line and the connection purpose. -->
+    <string name="traffic_title">Live-Verkehr</string>
+    <string name="traffic_switch">Live-Verkehr nutzen (TomTom)</string>
+    <string name="traffic_body">Addiert den Echtzeit-Verkehr von TomTom zur Zeit von Autorouten und wählt bei Stau die schnellere Route. Es braucht Ihren eigenen kostenlosen TomTom-Schlüssel.</string>
+    <string name="traffic_honesty">Was an TomTom gesendet wird: die Kartenquadrate (etwa 40 km Kantenlänge), die jede geplante Autoroute berührt, angefragt mit Ihrem Schlüssel. Nicht Ihre Position, nicht die Route selbst, nicht Ihre Suchen. Es gelten die Bedingungen von TomTom für Ihren Schlüssel; er hat ein kostenloses Tageslimit. Verkehrsdaten: TomTom.</string>
+    <string name="traffic_key_title">TomTom-API-Schlüssel</string>
+    <string name="traffic_key_saved">Ein Schlüssel ist gespeichert. Er bleibt verschlüsselt auf diesem Telefon und wird nur an TomTom gesendet.</string>
+    <string name="traffic_key_none">Noch kein Schlüssel</string>
+    <string name="traffic_key_hint">Schlüssel einfügen</string>
+    <string name="traffic_key_invalid">Das sieht nicht nach einem TomTom-Schlüssel aus. Fügen Sie ihn ohne zusätzlichen Text erneut ein.</string>
+    <string name="traffic_key_save">Schlüssel speichern</string>
+    <string name="traffic_key_remove">Schlüssel entfernen</string>
+    <string name="traffic_key_help">So bekommen Sie einen kostenlosen Schlüssel</string>
+    <string name="traffic_key_help_body">Erstellen Sie ein kostenloses Konto auf developer.tomtom.com (ohne Kreditkarte), fügen Sie eine App mit aktivierter Traffic-API hinzu und kopieren Sie ihren Schlüssel hierher. Ihre Nutzung zählt zu Ihrem eigenen kostenlosen Kontingent.</string>
+    <string name="conn_purpose_traffic_flow">Live-Verkehr (TomTom)</string>
+    <string name="backup_item_traffic">Live-Verkehr</string>
+    <string name="backup_group_traffic">Live-Verkehr</string>
+    <string name="route_traffic_delay">%1$s Verzögerung durch den Verkehr</string>
+    <string name="route_traffic_closed">Der Verkehr meldet eine gesperrte Straße auf dieser Route</string>
+    <string name="route_traffic_clear">Keine Verkehrsverzögerung auf dieser Route</string>
+    <string name="route_traffic_bad_key">Verkehr: TomTom hat den Schlüssel abgelehnt</string>
+    <string name="route_traffic_limit">Verkehr: das Tageslimit von TomTom ist erreicht</string>
+</resources>

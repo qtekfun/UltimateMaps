@@ -24,3 +24,4 @@ include(":mapcore") // shared MapLibre + PMTiles map viewer (git submodule, AGPL
 project(":mapcore").projectDir = file("ultimate-mapcore/mapcore")
 
 include(":gms") // Google Play Services (location, activity recognition): the optional `play` flavor only; see docs/decisions.md
+include(":core-traffic") // live traffic flow (TomTom vector tiles, the `play` flavor only): tile decoding, route travel-time adjustment (pure)

@@ -141,6 +141,27 @@ class MapasApp : Application() {
         }
     }
 
+    /** The live-traffic switch and the user's own TomTom key (`play` flavor only; off and empty by default). */
+    val trafficSettings: com.qtekfun.ultimatemaps.core.traffic.TrafficSettingsStore by lazy {
+        com.qtekfun.ultimatemaps.traffic.PrefsTrafficSettingsStore(this)
+    }
+    val trafficKeys: com.qtekfun.ultimatemaps.core.traffic.TrafficKeyStore by lazy { com.qtekfun.ultimatemaps.traffic.TomTomKeyStore(this) }
+
+    /** Live traffic for the route screen: TomTom flow tiles in `play`, nothing in `foss`. Every request goes through [policy]. */
+    val trafficProvider: com.qtekfun.ultimatemaps.core.traffic.TrafficProvider by lazy {
+        com.qtekfun.ultimatemaps.platform.PlatformServices.trafficProvider(
+            policy, trafficSettings, trafficKeys,
+            runCatching { packageManager.getPackageInfo(packageName, 0).versionName }.getOrNull(),
+        )
+    }
+
+    /** Lists the TomTom host in the connection list (RF-12) only while the traffic switch is on. Nothing connects here. */
+    fun syncTrafficEndpoint() {
+        if (!com.qtekfun.ultimatemaps.platform.PlatformServices.GOOGLE_SERVICES_FLAVOR) return
+        policy.possibleConnections().filter { it.purpose == ConnectionPurpose.TRAFFIC_FLOW }.forEach { policy.removeEndpoint(it.host) }
+        if (trafficSettings.enabled) policy.addEndpoint(AllowedEndpoint(com.qtekfun.ultimatemaps.core.traffic.TomTomEndpoints.HOST, ConnectionPurpose.TRAFFIC_FLOW, enabled = true))
+    }
+
     /** EV-charger switch and filters (off by default). The map layer, the card and Settings read these. */
     val chargerSettings: ChargerSettingsStore by lazy { PrefsChargerSettingsStore(this) }
 
@@ -498,6 +519,7 @@ class MapasApp : Application() {
         Thread({ runCatching { CoreLinks.sync(this) } }, "mapas-core-links").start()
         // Online search (play flavor): only lists the geocoder host while its switch is on; no connection here.
         syncOnlineSearchEndpoint()
+        syncTrafficEndpoint()
         // Petrol stations: only registers the host (when enabled) and reads the local cache; no connection here.
         fuel.start()
         // Cercanias real time: only follows its switch (and lists the Renfe host while it is on); no connection here.

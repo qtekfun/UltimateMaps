@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Optional live traffic (play flavor, the user's own TomTom key): settings section, route line and the connection purpose. -->
+    <string name="traffic_title">Traffico in tempo reale</string>
+    <string name="traffic_switch">Usa il traffico in tempo reale (TomTom)</string>
+    <string name="traffic_body">Aggiunge il traffico in tempo reale di TomTom al tempo dei percorsi in auto e sceglie il percorso più veloce quando c\'è coda. Serve la tua chiave TomTom gratuita.</string>
+    <string name="traffic_honesty">Cosa viene inviato a TomTom: i riquadri di mappa (circa 40 km di lato) attraversati da ogni percorso in auto che pianifichi, richiesti con la tua chiave. Non la tua posizione, né il percorso stesso, né ciò che cerchi. Le condizioni di TomTom valgono per la tua chiave e ha un limite giornaliero gratuito. Dati sul traffico: TomTom.</string>
+    <string name="traffic_key_title">Chiave API di TomTom</string>
+    <string name="traffic_key_saved">Una chiave è salvata. Resta su questo telefono, cifrata, e viene inviata solo a TomTom.</string>
+    <string name="traffic_key_none">Ancora nessuna chiave</string>
+    <string name="traffic_key_hint">Incolla la tua chiave</string>
+    <string name="traffic_key_invalid">Non sembra una chiave TomTom. Incollala di nuovo, senza testo aggiuntivo.</string>
+    <string name="traffic_key_save">Salva chiave</string>
+    <string name="traffic_key_remove">Rimuovi chiave</string>
+    <string name="traffic_key_help">Come ottenere una chiave gratuita</string>
+    <string name="traffic_key_help_body">Crea un account gratuito su developer.tomtom.com (senza carta), aggiungi un\'app con l\'API Traffic attivata e copia qui la sua chiave. Il tuo utilizzo conta sulla tua quota gratuita.</string>
+    <string name="conn_purpose_traffic_flow">Traffico in tempo reale (TomTom)</string>
+    <string name="backup_item_traffic">Traffico in tempo reale</string>
+    <string name="backup_group_traffic">Traffico in tempo reale</string>
+    <string name="route_traffic_delay">%1$s di ritardo a causa del traffico</string>
+    <string name="route_traffic_closed">Il traffico segnala una strada chiusa su questo percorso</string>
+    <string name="route_traffic_clear">Nessun ritardo per traffico su questo percorso</string>
+    <string name="route_traffic_bad_key">Traffico: TomTom ha rifiutato la chiave</string>
+    <string name="route_traffic_limit">Traffico: raggiunto il limite giornaliero di TomTom</string>
+</resources>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Optional live traffic (play flavor, the user's own TomTom key): settings section, route line and the connection purpose. -->
+    <string name="traffic_title">Trànsit en directe</string>
+    <string name="traffic_switch">Fes servir el trànsit en directe (TomTom)</string>
+    <string name="traffic_body">Suma el trànsit en temps real de TomTom al temps de les rutes en cotxe i tria la ruta més ràpida quan hi ha embús. Necessita la teva pròpia clau gratuïta de TomTom.</string>
+    <string name="traffic_honesty">Què s\'envia a TomTom: els quadrats del mapa (uns 40 km de costat) per on passa cada ruta en cotxe que planeges, demanats amb la teva clau. No la teva posició, ni la ruta en si, ni el que cerques. Els termes de TomTom s\'apliquen a la teva clau i té un límit diari gratuït. Dades de trànsit: TomTom.</string>
+    <string name="traffic_key_title">Clau d\'API de TomTom</string>
+    <string name="traffic_key_saved">Hi ha una clau desada. Es queda en aquest telèfon, xifrada, i només s\'envia a TomTom.</string>
+    <string name="traffic_key_none">Encara no hi ha clau</string>
+    <string name="traffic_key_hint">Enganxa la teva clau</string>
+    <string name="traffic_key_invalid">Això no sembla una clau de TomTom. Torna a enganxar-la, sense text addicional.</string>
+    <string name="traffic_key_save">Desa la clau</string>
+    <string name="traffic_key_remove">Treu la clau</string>
+    <string name="traffic_key_help">Com aconseguir una clau gratuïta</string>
+    <string name="traffic_key_help_body">Crea un compte gratuït a developer.tomtom.com (sense targeta), afegeix una aplicació amb l\'API de trànsit activada i copia aquí la seva clau. El teu ús compta contra la teva pròpia quota gratuïta.</string>
+    <string name="conn_purpose_traffic_flow">Trànsit en directe (TomTom)</string>
+    <string name="backup_item_traffic">Trànsit en directe</string>
+    <string name="backup_group_traffic">Trànsit en directe</string>
+    <string name="route_traffic_delay">%1$s de retard pel trànsit</string>
+    <string name="route_traffic_closed">El trànsit indica una carretera tallada en aquesta ruta</string>
+    <string name="route_traffic_clear">Sense retard pel trànsit en aquesta ruta</string>
+    <string name="route_traffic_bad_key">Trànsit: TomTom ha rebutjat la clau</string>
+    <string name="route_traffic_limit">Trànsit: s\'ha arribat al límit diari de TomTom</string>
+</resources>

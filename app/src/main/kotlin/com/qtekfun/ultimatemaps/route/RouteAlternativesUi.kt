@@ -93,12 +93,12 @@ fun AlternativesSection(route: RoutePreviewController, modifier: Modifier = Modi
                 tag = "route_alt_main",
             )
             s.alternatives.forEachIndexed { i, alt ->
-                val time = RouteDelta.duration(alt.durationSeconds - s.baseDurationSeconds)
+                val time = RouteDelta.duration(alt.effectiveSeconds - s.baseDurationSeconds)
                     ?: stringResource(R.string.route_alt_same_time)
                 val dist = RouteDelta.distance(alt.distanceMeters - s.baseDistanceMeters, locale)
                 AlternativeRow(
                     label = stringResource(labelOf(alt.kind)),
-                    detail = RouteFormat.duration(alt.durationSeconds) + " · " + RouteFormat.distance(alt.distanceMeters, locale) +
+                    detail = RouteFormat.duration(alt.effectiveSeconds) + " · " + RouteFormat.distance(alt.distanceMeters, locale) +
                         " (" + listOfNotNull(time, dist).joinToString(", ") + ")",
                     selected = s.selectedAlternative == i,
                     onClick = { route.selectAlternative(i) },

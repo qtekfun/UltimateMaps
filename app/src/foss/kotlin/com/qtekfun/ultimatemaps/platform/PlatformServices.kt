@@ -10,6 +10,10 @@ import com.qtekfun.ultimatemaps.core.net.NetworkPolicy
 import com.qtekfun.ultimatemaps.core.search.NoOnlineGeocoder
 import com.qtekfun.ultimatemaps.core.search.OnlineGeocoder
 import com.qtekfun.ultimatemaps.core.search.OnlineSearchSettingsStore
+import com.qtekfun.ultimatemaps.core.traffic.NoTrafficProvider
+import com.qtekfun.ultimatemaps.core.traffic.TrafficKeyStore
+import com.qtekfun.ultimatemaps.core.traffic.TrafficProvider
+import com.qtekfun.ultimatemaps.core.traffic.TrafficSettingsStore
 import com.qtekfun.ultimatemaps.link.NoShortLinkResolver
 import com.qtekfun.ultimatemaps.link.ShortLinkResolver
 import com.qtekfun.ultimatemaps.location.AndroidLocationSource
@@ -30,6 +34,11 @@ object PlatformServices {
         versionName: String?,
         language: () -> String?,
     ): OnlineGeocoder = NoOnlineGeocoder
+
+    /** There is no live traffic in this flavor: the router is the only source of times and nothing is ever sent. */
+    @Suppress("UNUSED_PARAMETER")
+    fun trafficProvider(policy: NetworkPolicy, settings: TrafficSettingsStore, keys: TrafficKeyStore, versionName: String?): TrafficProvider =
+        NoTrafficProvider
 
     fun locationSource(context: Context): AvailableLocationSource = AndroidLocationSource(context)
 
