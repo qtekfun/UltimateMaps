@@ -1363,3 +1363,14 @@ zoom 13; 85 % flowing, mostly minor roads, dense curves). Median of 7 runs after
   foreground with a TomTom key, which the phone did not allow. Real tiles may have more or fewer features than the synthetic ones.
 - **To repeat:** `./gradlew :core-traffic:testClasses :core-traffic:jar :core-geo:jar`, dex the jars with the Kotlin stdlib,
   `adb push`, then `app_process -cp <jar> /system/bin com.qtekfun.ultimatemaps.core.traffic.TrafficCostBench`.
+
+## 2026-10-16: a traffic button on the map
+
+- **Decision:** with live traffic on and a key stored, the map shows a round traffic-light button under "my location" (like the layers
+  button of other map apps) that hides or shows the traffic lines at once; the icon is crossed out while hidden and the description
+  says what a tap does. It changes the same `map_layer` preference as the Settings switch, so both stay in step; the layer decides
+  again immediately (`TrafficMapLayer.refresh`, no debounce) and the button is read again whenever the map comes back from Settings.
+  Hiding the layer stops its reads; the route time, the delay line and the faster-route card are not affected (they have their own
+  switch, the main one).
+- **Discarded:** a layers menu with several choices (there is only one layer to choose); hiding the button while navigating (the
+  map buttons are not shown then anyway).

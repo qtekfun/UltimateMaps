@@ -109,6 +109,11 @@ class MapScreenState {
 
     /** Opens Settings (the discreet gear on the map); set by the activity. */
     var onOpenSettings: () -> Unit = {}
+
+    /** Live traffic is on and has a key: the map shows its button. [trafficShown] is whether the layer is drawn now. */
+    var trafficAvailable by mutableStateOf(false)
+    var trafficShown by mutableStateOf(true)
+    var onToggleTraffic: () -> Unit = {}
 }
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -179,6 +184,10 @@ fun MapScreen(
             tiltDegrees = state.tilt,
             settingsDescription = stringResource(R.string.settings_open),
             onSettings = state.onOpenSettings,
+            trafficAvailable = state.trafficAvailable,
+            trafficShown = state.trafficShown,
+            trafficDescription = stringResource(if (state.trafficShown) R.string.map_traffic_hide else R.string.map_traffic_show),
+            onToggleTraffic = state.onToggleTraffic,
             modifier = Modifier
                 .align(Alignment.TopEnd)
                 .windowInsetsPadding(topAndSides)
