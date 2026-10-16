@@ -22,4 +22,9 @@
     <string name="route_traffic_clear">Nessun ritardo per traffico su questo percorso</string>
     <string name="route_traffic_bad_key">Traffico: TomTom ha rifiutato la chiave</string>
     <string name="route_traffic_limit">Traffico: raggiunto il limite giornaliero di TomTom</string>
+    <string name="traffic_map_title">Mostra il traffico sulla mappa</string>
+    <string name="traffic_map_body">Colora le strade principali: verde scorrevole, ambra lento, rosso intenso, rosso scuro chiuso. Legge i riquadri di mappa che stai guardando (dallo zoom 9), al massimo una volta ogni 3 minuti.</string>
+    <string name="nav_suggest_title">Un percorso più veloce fa risparmiare %1$s</string>
+    <string name="nav_suggest_accept">Cambia</string>
+    <string name="nav_suggest_dismiss">Non ora</string>
 </resources>

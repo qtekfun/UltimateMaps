@@ -1306,3 +1306,27 @@ Format: date · decision · reason · discarded alternatives · how to revert it
   needs a new layer API there, so it was not done here.
 - **Not done:** reroute suggestion from traffic, traffic layer on the map, reading traffic for the foot/bike profiles (TomTom flow is
   about cars).
+
+## 2026-10-16: traffic on the map and a faster-route card while driving
+
+- **Correction:** the previous entry said the traffic layer needed a new API in `ultimate-mapcore`. It does not: `MapLibreEngine`
+  (the adapter) lives in this repository and already draws hiking routes and hazards as coloured GeoJSON lines. The layer is built
+  the same way (`MapEngine.showTraffic`, `TrafficMapLayer`, `FlowLines`), so the AGPL module is untouched.
+- **Map layer:** with live traffic on, the lines of the TomTom flow tiles of the view are drawn (green flowing, amber slow below 75 %
+  of free flow, red heavy below 40 %, dark red closed; slower levels a little wider so colour is not the only cue). From map zoom
+  9, tile zoom = integer part of the map zoom (at most 14), at most 16 tiles per view, 0.8 s debounce, one look a minute while it is
+  showing and the provider's 3-minute tile cache, so a still map costs about one read of its tiles every 3 minutes. A failed read keeps
+  the picture; off or too far out clears it. A switch in Settings (on by default once traffic is on: the main switch is the
+  consent). Two directions of a road come as two lines on top of each other; the worst level is drawn last so a jam is never hidden.
+- **Faster-route card:** on a real car trip with no intermediate stops, when the delay on what is left is 5 minutes or more, the
+  app plans the routes through a point on each side of the middle of the remaining route (the same detour idea as the preview), times
+  them with the traffic and, if one saves at least 5 minutes and 10 % of the time left, shows a card: *A faster route saves N min* with
+  *Switch* and *Not now*. It is silent on purpose (no voice, no sound): the driver can ignore it. *Switch* replaces the route
+  without restarting the trip; either answer pauses new suggestions for 15 minutes. A resumed trip gets none (its options are not
+  known there). A new route clears the card.
+- **Discarded:** (1) switching without asking (a surprise on the road); (2) a spoken prompt (distraction, and the voice would need
+  its own wording and timing rules); (3) traffic for walking and cycling: the TomTom flow describes vehicle speeds, so the line would
+  be misleading for a pedestrian; they keep the router's time; (4) a legend on the map: the colours are the usual ones and the
+  Settings text names them.
+- **Not verified:** no phone and no live TomTom call. The MapLibre layer is built from filters and constant widths (no composite
+  style expression) to keep it safe, but it has only been compiled, so the first look is the owner's.

@@ -20,7 +20,7 @@ class FlowTrafficProviderTest {
         return out!!.getOrThrow()
     }
 
-    private class Settings(override var enabled: Boolean) : TrafficSettingsStore
+    private class Settings(override var enabled: Boolean, override var mapLayer: Boolean = true) : TrafficSettingsStore
 
     private class Keys(private var key: String?) : TrafficKeyStore {
         override fun read() = key
@@ -83,5 +83,53 @@ class FlowTrafficProviderTest {
         val p = provider(Settings(true), Keys("k")) { t, _ -> if (t == tile) jammed else throw TileFetchException(TileFailure.NETWORK) }
         val r = assertIs<TrafficOutcome.Ready>(run { p.estimate(far, 3600.0) })
         assertTrue(r.estimate.coverage in 0.01..0.9, "only part of the route has data: ${r.estimate.coverage}")
+    }
+}
+
+class FlowLinesTest {
+    private val tile = TileMath.tileOf(40.4168, -3.7038, 10)
+
+    @Test fun `levels follow the share of free flow and a closure wins`() {
+        assertEquals(0, FlowLines.levelOf(0.9, false))
+        assertEquals(1, FlowLines.levelOf(0.6, false))
+        assertEquals(2, FlowLines.levelOf(0.2, false))
+        assertEquals(3, FlowLines.levelOf(0.9, true))
+    }
+
+    @Test fun `lines come out worst last and no data is left out`() {
+        val bytes = MvtEncoder.tile(
+            "Traffic flow", 4096,
+            listOf(
+                MvtEncoder.Feat(mapOf("relative_speed" to 0.2), listOf(MvtEncoder.Line(listOf(100 to 100, 200 to 200)))),
+                MvtEncoder.Feat(mapOf("relative_speed" to 1.0), listOf(MvtEncoder.Line(listOf(100 to 100, 200 to 200)))),
+                MvtEncoder.Feat(mapOf("relative_speed" to 0.0), listOf(MvtEncoder.Line(listOf(300 to 300, 400 to 400)))),
+            ),
+        )
+        assertEquals(listOf(0, 2), FlowLines.of(tile, Mvt.decode(bytes)).map { it.level })
+    }
+
+    @Test fun `the tiles of a view depend on the zoom and a view that is too wide gets none`() {
+        val near = FlowLines.tilesFor(40.40, -3.72, 40.43, -3.69, 12.3)
+        assertTrue(near.isNotEmpty() && near.all { it.z == 12 })
+        assertTrue(FlowLines.tilesFor(40.0, -4.0, 41.0, -3.0, 8.0).isEmpty(), "too far out")
+        assertTrue(FlowLines.tilesFor(30.0, -10.0, 50.0, 5.0, 9.0).isEmpty(), "too many tiles")
+        assertEquals(14, FlowLines.tileZoom(17.8))
+    }
+
+    @Test fun `the provider gives the lines of the tiles it can read and caches them`() {
+        var calls = 0
+        val bytes = MvtEncoder.tile("Traffic flow", 4096, listOf(MvtEncoder.Feat(mapOf("relative_speed" to 0.3), listOf(MvtEncoder.Line(listOf(1 to 1, 9 to 9))))))
+        val p = FlowTrafficProvider(object : TrafficSettingsStore { override var enabled = true; override var mapLayer = true }, object : TrafficKeyStore {
+            override fun read() = "k"
+            override fun write(key: String) {}
+            override fun clear() {}
+        }, FlowTileFetch { _, _ -> calls++; bytes }) { 0L }
+        var out: List<FlowLine>? = null
+        val r = kotlin.coroutines.Continuation<List<FlowLine>?>(kotlin.coroutines.EmptyCoroutineContext) { out = it.getOrThrow() }
+        val run: suspend () -> List<FlowLine>? = { p.flowLines(listOf(tile)) }
+        run.startCoroutine(r)
+        assertEquals(1, out!!.size)
+        run.startCoroutine(r)
+        assertEquals(1, calls, "second ask served from the cache")
     }
 }

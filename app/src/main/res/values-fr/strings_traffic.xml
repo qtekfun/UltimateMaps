@@ -22,4 +22,9 @@
     <string name="route_traffic_clear">Pas de retard dû au trafic sur cet itinéraire</string>
     <string name="route_traffic_bad_key">Trafic : TomTom a refusé la clé</string>
     <string name="route_traffic_limit">Trafic : la limite quotidienne de TomTom est atteinte</string>
+    <string name="traffic_map_title">Afficher le trafic sur la carte</string>
+    <string name="traffic_map_body">Colore les routes principales : vert fluide, ambre lent, rouge dense, rouge foncé fermé. Lit les carrés de carte que vous regardez (à partir du zoom 9), au plus une fois toutes les 3 minutes.</string>
+    <string name="nav_suggest_title">Un itinéraire plus rapide économise %1$s</string>
+    <string name="nav_suggest_accept">Changer</string>
+    <string name="nav_suggest_dismiss">Pas maintenant</string>
 </resources>

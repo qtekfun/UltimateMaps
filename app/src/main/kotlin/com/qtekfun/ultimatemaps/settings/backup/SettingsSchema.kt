@@ -267,6 +267,8 @@ object SettingsSchema {
             sanitize = { v -> if (com.qtekfun.ultimatemaps.platform.PlatformServices.GOOGLE_SERVICES_FLAVOR) v else false },
         ),
 
+        bool(GROUP_TRAFFIC, PrefsTrafficSettingsStore.PREFS, PrefsTrafficSettingsStore.KEY_MAP_LAYER, true),
+
         // Track recording switch (not the tracks).
         bool(GROUP_RECORDING, PrefsRecordingSettings.PREFS, PrefsRecordingSettings.KEY_ENABLED, false),
 

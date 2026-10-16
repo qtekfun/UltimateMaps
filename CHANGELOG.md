@@ -4,6 +4,13 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 
 ## [Unreleased]
 
+## [0.1.0-rc.31] - 2026-10-16
+
+### Added
+
+- **Live traffic on the map (`play` build, live traffic on).** The main roads in view are coloured by the TomTom flow: green flowing, amber slow, red heavy, dark red closed (the slower ones a little wider). It shows from zoom 9 and refreshes about every 3 minutes; Settings, Network, Live traffic has a switch for it.
+- **A faster route while you drive.** On a car trip with a jam of 5 minutes or more ahead, the app looks for a route through the side of the jam and, if it saves at least 5 minutes, shows a silent card under the arrival time: *A faster route saves N min*, *Switch* or *Not now*. Nothing changes unless you tap *Switch*; after either answer it does not offer again for 15 minutes. Trips with stops and resumed trips get none. Neither is checked against the live TomTom service or on a phone.
+
 ## [0.1.0-rc.30] - 2026-10-16
 
 ### Added

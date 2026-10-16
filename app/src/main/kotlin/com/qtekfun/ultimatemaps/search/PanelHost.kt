@@ -397,6 +397,17 @@ class PanelHost(
         navigating = { navigating },
     )
 
+    /** The optional live-traffic lines (play flavor, switch on, key stored); a no-op in foss because the provider says nothing. */
+    private val trafficLayer: com.qtekfun.ultimatemaps.map.TrafficMapLayer = (activity.application as MapasApp).let { app ->
+        com.qtekfun.ultimatemaps.map.TrafficMapLayer(
+            scope = activity.lifecycleScope,
+            io = Dispatchers.IO,
+            provider = app.trafficProvider,
+            wanted = { app.trafficProvider.enabled && app.trafficSettings.mapLayer },
+            render = engine::showTraffic,
+        )
+    }
+
     private val trailLayer: TrailMapLayer? = trails?.let { t ->
         TrailMapLayer(
             scope = activity.lifecycleScope,
@@ -479,6 +490,7 @@ class PanelHost(
         chargerLayer?.stop()
         bikeLayer?.stop()
         trailLayer?.stop()
+        trafficLayer.stop()
         hazardLayer?.stop()
         search.close()
         navLauncher?.reset()
@@ -505,11 +517,13 @@ class PanelHost(
             chargerLayer?.onViewport(bounds, zoom)
             bikeLayer?.onViewport(bounds, zoom)
             trailLayer?.onViewport(bounds, zoom)
+            trafficLayer.onViewport(bounds, zoom)
         }
         fuelLayer.start()
         chargerLayer?.start()
         bikeLayer?.start()
         trailLayer?.start()
+        trafficLayer.start()
         hazardLayer?.start()
         // A recording was saved or tracks were deleted: refresh the tracks list.
         (tracks.recording?.controller)?.let { r -> activity.lifecycleScope.launch { r.stored.collect { tracks.refresh() } } }

@@ -22,4 +22,9 @@
     <string name="route_traffic_clear">Sem atraso de trânsito nesta rota</string>
     <string name="route_traffic_bad_key">Trânsito: a TomTom rejeitou a chave</string>
     <string name="route_traffic_limit">Trânsito: o limite diário da TomTom foi atingido</string>
+    <string name="traffic_map_title">Mostrar o trânsito no mapa</string>
+    <string name="traffic_map_body">Colore as estradas principais: verde fluido, âmbar lento, vermelho denso, vermelho escuro cortado. Lê os quadrados do mapa que está a ver (a partir do zoom 9), no máximo uma vez a cada 3 minutos.</string>
+    <string name="nav_suggest_title">Uma rota mais rápida poupa %1$s</string>
+    <string name="nav_suggest_accept">Mudar</string>
+    <string name="nav_suggest_dismiss">Agora não</string>
 </resources>

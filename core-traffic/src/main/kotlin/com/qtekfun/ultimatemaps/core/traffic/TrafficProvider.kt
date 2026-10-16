@@ -6,6 +6,9 @@ import java.io.IOException
 /** The optional traffic switch (off by default; `play` flavor only). */
 interface TrafficSettingsStore {
     var enabled: Boolean
+
+    /** Draw the traffic on the map too (only while [enabled]). On by default: the switch is the consent. */
+    var mapLayer: Boolean
 }
 
 /** The user's own TomTom API key, kept encrypted by the app. Never logged, never exported. */
@@ -44,6 +47,9 @@ interface TrafficProvider {
      * [baseSpeedMps] is the speed the router assumes along the route (null: the same everywhere).
      */
     suspend fun estimate(geometry: List<LatLon>, coreSeconds: Double, baseSpeedMps: ((Double) -> Double)? = null): TrafficOutcome
+
+    /** The flow lines of [tiles] for the map layer; null when nothing can be said (off, no key, offline, nothing came). */
+    suspend fun flowLines(tiles: List<TileId>): List<FlowLine>? = null
 }
 
 object NoTrafficProvider : TrafficProvider {
@@ -69,6 +75,28 @@ class FlowTrafficProvider(
     private val cache = LinkedHashMap<TileId, Cached>()
 
     override val enabled: Boolean get() = settings.enabled && !keys.read().isNullOrBlank()
+
+    override suspend fun flowLines(tiles: List<TileId>): List<FlowLine>? {
+        if (!settings.enabled) return null
+        val key = keys.read()?.takeIf { it.isNotBlank() } ?: return null
+        val now = clock()
+        synchronized(cache) { cache.entries.removeAll { now - it.value.at > CACHE_MS } }
+        val out = ArrayList<FlowLine>()
+        var any = false
+        for (tile in tiles.take(MAX_LAYER_TILES)) {
+            val layers = synchronized(cache) { cache[tile]?.layers } ?: try {
+                Mvt.decode(fetch.get(tile, key)).also { synchronized(cache) { cache[tile] = Cached(now, it) } }
+            } catch (e: TileFetchException) {
+                if (e.failure != TileFailure.NETWORK) return null // a bad key, the limit, offline: no point in asking the others
+                continue
+            } catch (e: RuntimeException) {
+                continue
+            }
+            any = true
+            out += FlowLines.of(tile, layers)
+        }
+        return if (any) out.sortedBy { it.level } else null
+    }
 
     override suspend fun estimate(geometry: List<LatLon>, coreSeconds: Double, baseSpeedMps: ((Double) -> Double)?): TrafficOutcome {
         if (!settings.enabled) return TrafficOutcome.Unavailable(TrafficOutcome.Reason.DISABLED)
@@ -107,5 +135,6 @@ class FlowTrafficProvider(
     companion object {
         const val CACHE_MS = 3 * 60_000L
         const val MAX_TILES = 12
+        const val MAX_LAYER_TILES = FlowLines.MAX_TILES
     }
 }

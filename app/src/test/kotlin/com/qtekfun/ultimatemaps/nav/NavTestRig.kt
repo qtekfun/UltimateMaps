@@ -65,6 +65,7 @@ class NavTestRig(
     overviewMillis: Long = 60_000L,
     cameraSettings: com.qtekfun.ultimatemaps.core.cameras.CameraSettingsStore? = null,
     traffic: com.qtekfun.ultimatemaps.core.traffic.TrafficProvider = com.qtekfun.ultimatemaps.core.traffic.NoTrafficProvider,
+    suggestions: RouteProvider? = null,
 ) : AutoCloseable {
     val settings = com.qtekfun.ultimatemaps.core.voice.InMemoryNavSettingsStore()
     private val executor = Executors.newSingleThreadExecutor { Thread(it, "nav-test").apply { isDaemon = true } }
@@ -90,7 +91,7 @@ class NavTestRig(
         val g = gate
         if (g != null && gateWhen(screen.ui.value)) g.await()
     }
-    val screen: NavScreenController = NavScreenController(scope, controller, simulation, switch, service, settings = settings, clock = { clock.get() }, stopFlashMillis = 60_000L, overviewMillis = overviewMillis, cameraSettings = cameraSettings, traffic = traffic, trafficEveryMillis = 3_600_000L, trafficFirstMillis = 1L)
+    val screen: NavScreenController = NavScreenController(scope, controller, simulation, switch, service, settings = settings, clock = { clock.get() }, stopFlashMillis = 60_000L, overviewMillis = overviewMillis, cameraSettings = cameraSettings, traffic = traffic, trafficEveryMillis = 3_600_000L, trafficFirstMillis = 1L, reroutes = suggestions)
 
     init { screen.addSink(sink) }
 
