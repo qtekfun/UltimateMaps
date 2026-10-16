@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Optional live traffic (play flavor, the user's own TomTom key): settings section, route line and the connection purpose. -->
+    <string name="traffic_title">Trânsito em direto</string>
+    <string name="traffic_switch">Usar o trânsito em direto (TomTom)</string>
+    <string name="traffic_body">Soma o trânsito em tempo real da TomTom ao tempo das rotas de carro e escolhe a rota mais rápida quando há engarrafamento. Precisa da sua própria chave gratuita da TomTom.</string>
+    <string name="traffic_honesty">O que é enviado à TomTom: os quadrados do mapa (cerca de 40 km de lado) por onde passa cada rota de carro que planeia, pedidos com a sua chave. Não a sua posição, nem a rota em si, nem o que pesquisa. Os termos da TomTom aplicam-se à sua chave e tem um limite diário gratuito. Dados de trânsito: TomTom.</string>
+    <string name="traffic_key_title">Chave de API da TomTom</string>
+    <string name="traffic_key_saved">Há uma chave guardada. Fica neste telemóvel, cifrada, e só é enviada à TomTom.</string>
+    <string name="traffic_key_none">Ainda não há chave</string>
+    <string name="traffic_key_hint">Cole a sua chave</string>
+    <string name="traffic_key_invalid">Isso não parece uma chave da TomTom. Cole-a de novo, sem texto adicional.</string>
+    <string name="traffic_key_save">Guardar chave</string>
+    <string name="traffic_key_remove">Remover chave</string>
+    <string name="traffic_key_help">Como obter uma chave gratuita</string>
+    <string name="traffic_key_help_body">Crie uma conta gratuita em developer.tomtom.com (sem cartão), adicione uma aplicação com a API de trânsito ativada e copie aqui a sua chave. A sua utilização conta para a sua própria quota gratuita.</string>
+    <string name="conn_purpose_traffic_flow">Trânsito em direto (TomTom)</string>
+    <string name="backup_item_traffic">Trânsito em direto</string>
+    <string name="backup_group_traffic">Trânsito em direto</string>
+    <string name="route_traffic_delay">%1$s de atraso por causa do trânsito</string>
+    <string name="route_traffic_closed">O trânsito indica uma estrada cortada nesta rota</string>
+    <string name="route_traffic_clear">Sem atraso de trânsito nesta rota</string>
+    <string name="route_traffic_bad_key">Trânsito: a TomTom rejeitou a chave</string>
+    <string name="route_traffic_limit">Trânsito: o limite diário da TomTom foi atingido</string>
+</resources>

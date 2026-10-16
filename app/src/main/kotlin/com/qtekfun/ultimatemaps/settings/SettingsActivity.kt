@@ -98,6 +98,9 @@ class SettingsActivity : ComponentActivity() {
             onlineSearch = if (com.qtekfun.ultimatemaps.platform.PlatformServices.GOOGLE_SERVICES_FLAVOR) {
                 OnlineSearchSettingsEnv(app.onlineSearchSettings, onChanged = app::syncOnlineSearchEndpoint)
             } else null,
+            traffic = if (com.qtekfun.ultimatemaps.platform.PlatformServices.GOOGLE_SERVICES_FLAVOR) {
+                TrafficSettingsEnv(app.trafficSettings, app.trafficKeys, onChanged = app::syncTrafficEndpoint, openUrl = ::openInBrowser)
+            } else null,
             backup = backupEnv(app),
             about = AboutSettingsEnv(
                 version = runCatching { packageManager.getPackageInfo(packageName, 0).versionName }.getOrNull().orEmpty(),
@@ -134,6 +137,7 @@ class SettingsActivity : ComponentActivity() {
                 app.ensureCameraAlerts()
                 app.ensureZbePrompter()
                 app.syncOnlineSearchEndpoint() // a restored switch or address changes the connection list
+                app.syncTrafficEndpoint()
             },
         )
         val version = runCatching { packageManager.getPackageInfo(packageName, 0).versionName }.getOrNull().orEmpty()

@@ -103,10 +103,10 @@ class SettingsBackupTest {
         val result = SettingsBackup.apply(file, b, pending)
 
         val consentIds = SettingsSchema.specs.filter { it.policy == RestorePolicy.NEEDS_CONSENT }.map { it.id }.toSet()
-        assertEquals(setOf("cameras/fixed", "cameras/mobile_zones", "cameras/incidents", "cameras/v16", "cameras/roadworks", "fuel/enabled", "chargers/enabled", "trails/enabled", "zbe/enabled", "bikeshare/enabled", "bikeshare/live_availability", "weather/enabled", "navigation/cercanias_real_time", "online_search/enabled"), consentIds)
+        assertEquals(setOf("cameras/fixed", "cameras/mobile_zones", "cameras/incidents", "cameras/v16", "cameras/roadworks", "fuel/enabled", "chargers/enabled", "trails/enabled", "zbe/enabled", "bikeshare/enabled", "bikeshare/live_availability", "weather/enabled", "navigation/cercanias_real_time", "online_search/enabled", "traffic/enabled"), consentIds)
         consentIds.forEach { assertEquals(false, b.read(SettingsSchema.byId(it)!!), "$it must stay off") }
         // The online search switch exists only in the play flavor: a foss phone has nothing that could accept it, so it is not kept.
-        val expectedPending = if (PlatformServices.GOOGLE_SERVICES_FLAVOR) consentIds else consentIds - "online_search/enabled"
+        val expectedPending = if (PlatformServices.GOOGLE_SERVICES_FLAVOR) consentIds else consentIds - "online_search/enabled" - "traffic/enabled"
         assertEquals(expectedPending, pending.consent)
         assertEquals(expectedPending.size, result.needConsent)
         // Everything else is restored exactly.

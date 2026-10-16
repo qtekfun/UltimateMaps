@@ -1264,3 +1264,29 @@ Format: date · decision · reason · discarded alternatives · how to revert it
   layout change before a gesture frames and after one does not), `TransitTripRecenterButtonTest`.
 - **Not verified:** no device. The exact trigger of the reported jump was not reproduced on a phone: no code path in the trip
   screen re-frames on a zoom by itself, so the fix removes every unguarded framing and puts the rest behind the gesture check.
+
+## 2026-10-16: optional live traffic from TomTom (play only, the user's own key)
+
+- **Decision:** the `play` flavor can add real-time traffic to car routes, off by default, with a TomTom API key that each user
+  gets for free at developer.tomtom.com and pastes in Settings (encrypted in the Android Keystore like the AEMET key, never
+  exported or backed up; the switch needs consent on restore). The app ships no key. `foss` has no such code path
+  (`NoTrafficProvider`). The owner asked for it on 2026-10-16 ("lo haces opcional y que cada uno se saque sus claves").
+- **What it does:** for a car route the app asks for the TomTom Orbis Maps v2 *Vector Flow Tiles* (zoom 10, about 40 km wide)
+  that the route crosses, reads `relative_speed` and `road_closure` and (1) corrects the shown time (the router stays offline and
+  traffic-blind: the sum over 200 m samples of the router's time divided by the share of free flow), (2) shows the delay and
+  closed roads, (3) when the delay is 3 minutes or more finds the alternatives on its own and shows the fastest one with traffic
+  if it saves 2 minutes or more, unless the user already picked a route. Not done yet: re-checking during guidance, and a traffic
+  layer on the map.
+- **Privacy:** only tile addresses (where the route is, in 40 km squares), the key (in the `TomTom-Api-Key` header, never in the
+  URL) and the User-Agent leave the phone. Not the position, the route or what is searched. Everything goes through
+  `NetworkPolicy` (`ConnectionPurpose.TRAFFIC_FLOW`); the host is listed only while the switch is on; tiles live in memory for 3
+  minutes. Zero telemetry still holds: the request goes to TomTom with the user's own key and to nobody else.
+- **Why Orbis v2 and not the v4 (TomTom Maps) tiles:** TomTom recommends the Orbis APIs for new integrations, the key can go in
+  a header, and `relative_speed` is already a 0..1 share. Two-way roads come as two directional geometries, so the direction
+  of travel decides which one applies.
+- **Discarded:** (1) a TomTom key shipped in the app (it would be shared quota and a credential in a public repo); (2) routing
+  *through* traffic (the CoMaps core has no live-cost hook): the alternatives are re-timed instead; (3) raster flow tiles
+  (no speeds); (4) the DGT/NAP TomTom entries: they are catalogue pointers to this same commercial API.
+- **Not verified:** the free quota (about 2,500 non-tile and 50,000 tile requests a day per TomTom's pages) and the terms for
+  showing traffic outside TomTom maps were read from search snippets, not signed agreements; the live service was not called
+  from this session (no key), so the first real check is the owner's phone.

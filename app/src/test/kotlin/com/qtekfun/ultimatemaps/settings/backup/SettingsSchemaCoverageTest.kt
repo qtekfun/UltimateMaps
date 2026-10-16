@@ -15,6 +15,8 @@ import com.qtekfun.ultimatemaps.regions.RegionsController
 import com.qtekfun.ultimatemaps.search.CoMapsSearchBackend
 import com.qtekfun.ultimatemaps.search.PrefsHistorySettings
 import com.qtekfun.ultimatemaps.search.PrefsOnlineSearchSettingsStore
+import com.qtekfun.ultimatemaps.traffic.PrefsTrafficSettingsStore
+import com.qtekfun.ultimatemaps.traffic.TomTomKeyStore
 import com.qtekfun.ultimatemaps.search.PrefsPlaceLanguageStore
 import com.qtekfun.ultimatemaps.settings.PrefsNavSettingsStore
 import com.qtekfun.ultimatemaps.transit.follow.PrefsTransitTripSettings
@@ -54,6 +56,8 @@ class SettingsSchemaCoverageTest {
         addAll(keysOf(PrefsRecordingSettings::class.java, PrefsRecordingSettings.PREFS))
         addAll(keysOf(PrefsPlaceLanguageStore::class.java, PrefsPlaceLanguageStore.PREFS))
         addAll(keysOf(PrefsOnlineSearchSettingsStore::class.java, PrefsOnlineSearchSettingsStore.PREFS))
+        addAll(keysOf(PrefsTrafficSettingsStore::class.java, PrefsTrafficSettingsStore.PREFS))
+        addAll(keysOf(KeystoreApiKeyStore::class.java, TomTomKeyStore.PREFS)) // the TomTom key reuses that store's key name
         addAll(keysOf(SharedNavUiPrefs::class.java, SharedNavUiPrefs.PREFS))
         addAll(keysOf(RegionsController::class.java, RegionsController.PREFS))
         addAll(keysOf(PrefsPendingRestore::class.java, PrefsPendingRestore.PREFS))
@@ -98,7 +102,7 @@ class SettingsSchemaCoverageTest {
             .toSortedSet()
         val expected = sortedSetOf(
             "AndroidNavServiceControl.kt", "AndroidPlaces.kt", "AndroidSettingsStorage.kt", "CoMapsSearchBackend.kt", "MapasApp.kt",
-            "PendingRestore.kt", "PlaceLanguage.kt", "PrefsOnlineSearchSettingsStore.kt", "PrefsCameraSettingsStore.kt", "PrefsBikeShareSettingsStore.kt", "PrefsWeatherAlertSettings.kt", "KeystoreApiKeyStore.kt", "PrefsCameraStateStore.kt", "PrefsChargerSettingsStore.kt", "PrefsFuelSettingsStore.kt",
+            "PendingRestore.kt", "PlaceLanguage.kt", "PrefsOnlineSearchSettingsStore.kt", "TrafficStores.kt", "PrefsCameraSettingsStore.kt", "PrefsBikeShareSettingsStore.kt", "PrefsWeatherAlertSettings.kt", "KeystoreApiKeyStore.kt", "PrefsCameraStateStore.kt", "PrefsChargerSettingsStore.kt", "PrefsFuelSettingsStore.kt",
             "PrefsNavSettingsStore.kt", "PrefsRouteSettingsStore.kt", "PrefsZbeSettingsStore.kt", "RecordingController.kt", "RegionsController.kt", "SearchHistory.kt", "TransitTripSettings.kt",
         )
         assertEquals(expected, found, "a new SharedPreferences file needs a SettingsSchema entry or an exclusion, then add its file here")
