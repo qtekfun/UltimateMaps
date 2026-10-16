@@ -90,6 +90,23 @@ object RouteTraffic {
         return TrafficEstimate(coreSeconds + delay, delay, worst, closed, covered.toDouble() / steps)
     }
 
+    /** The part of [geometry] still ahead after [traveledMeters] along it (starting at the exact point); empty past the end. */
+    fun remaining(geometry: List<LatLon>, traveledMeters: Double): List<LatLon> {
+        if (geometry.size < 2) return emptyList()
+        var along = 0.0
+        for (i in 1 until geometry.size) {
+            val seg = TileMath.metersBetween(geometry[i - 1], geometry[i])
+            if (along + seg > traveledMeters) {
+                val t = if (seg <= 0.0) 0.0 else ((traveledMeters - along) / seg).coerceIn(0.0, 1.0)
+                val a = geometry[i - 1]
+                val b = geometry[i]
+                return listOf(LatLon(a.lat + (b.lat - a.lat) * t, a.lon + (b.lon - a.lon) * t)) + geometry.subList(i, geometry.size)
+            }
+            along += seg
+        }
+        return emptyList()
+    }
+
     private fun heading(a: LatLon, b: LatLon): Double {
         val dy = b.lat - a.lat
         val dx = (b.lon - a.lon) * cos(Math.toRadians((a.lat + b.lat) / 2))
