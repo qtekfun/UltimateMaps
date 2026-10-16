@@ -408,6 +408,9 @@ class PanelHost(
         )
     }
 
+    /** Looks again now (the owner showed or hid the traffic with the map button). */
+    fun refreshTraffic() = trafficLayer.refresh()
+
     private val trailLayer: TrailMapLayer? = trails?.let { t ->
         TrailMapLayer(
             scope = activity.lifecycleScope,

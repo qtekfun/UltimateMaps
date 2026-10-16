@@ -70,6 +70,16 @@ fun DrawScope.drawLocateIcon(tint: Color, filled: Boolean) {
     if (filled) drawPath(path, tint) else drawPath(path, tint, style = Stroke(width = 2.2f * density))
 }
 
+/** Traffic button icon: a traffic light (three dots); crossed out by a slash while the traffic is hidden. */
+fun DrawScope.drawTrafficIcon(tint: Color, shown: Boolean) {
+    val w = size.width
+    val h = size.height
+    drawRoundRect(tint, Offset(w * 0.30f, h * 0.06f), androidx.compose.ui.geometry.Size(w * 0.40f, h * 0.88f), androidx.compose.ui.geometry.CornerRadius(w * 0.12f), style = Stroke(width = 2.2f * density))
+    val dots = listOf(Color(0xFFFF3B30), Color(0xFFFF9F0A), Color(0xFF30B454))
+    for ((i, color) in dots.withIndex()) drawCircle(if (shown) color else tint.copy(alpha = 0.45f), radius = w * 0.075f, center = Offset(w * 0.5f, h * (0.26f + i * 0.24f)))
+    if (!shown) drawLine(tint, Offset(w * 0.12f, h * 0.88f), Offset(w * 0.88f, h * 0.12f), strokeWidth = 2.6f * density)
+}
+
 /** Compass needle (north red). Rotated by the caller so it points to the map's north. */
 fun DrawScope.drawCompassIcon(tint: Color) {
     val c = Offset(size.width / 2, size.height / 2)
@@ -117,9 +127,18 @@ fun MapButtons(
     tiltDegrees: Float = 0f,
     settingsDescription: String = "",
     onSettings: (() -> Unit)? = null,
+    /** Live traffic: the button shows only while [trafficAvailable] (switch on and key stored), like the layers button of other map apps. */
+    trafficAvailable: Boolean = false,
+    trafficShown: Boolean = true,
+    trafficDescription: String = "",
+    onToggleTraffic: () -> Unit = {},
 ) {
     Column(modifier = modifier, horizontalAlignment = Alignment.End) {
         MapButton(locateDescription, onLocate, tag = "btn_locate") { tint -> drawLocateIcon(tint, filled = locating) }
+        if (trafficAvailable) {
+            Spacer(Modifier.height(BUTTON_GAP))
+            MapButton(trafficDescription, onToggleTraffic, tag = "btn_traffic") { tint -> drawTrafficIcon(tint, shown = trafficShown) }
+        }
         if (compassVisible(bearingDegrees, tiltDegrees)) {
             Spacer(Modifier.height(BUTTON_GAP))
             MapButton(compassDescription, onResetNorth, tag = "btn_compass") { tint ->

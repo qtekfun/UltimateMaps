@@ -27,4 +27,6 @@
     <string name="nav_suggest_title">Ibilbide azkarrago batek %1$s aurrezten du</string>
     <string name="nav_suggest_accept">Aldatu</string>
     <string name="nav_suggest_dismiss">Orain ez</string>
+    <string name="map_traffic_show">Erakutsi trafikoa</string>
+    <string name="map_traffic_hide">Ezkutatu trafikoa</string>
 </resources>

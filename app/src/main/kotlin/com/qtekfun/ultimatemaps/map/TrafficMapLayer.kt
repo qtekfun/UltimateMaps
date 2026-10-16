@@ -55,6 +55,9 @@ class TrafficMapLayer(
         job = null
     }
 
+    /** The owner changed something that decides what is shown (the map button): decide again now, without the debounce. */
+    fun refresh() = schedule(0)
+
     /** The camera stopped at [bounds] / [zoom]. Cheap when the layer is off and nothing is drawn. */
     fun onViewport(bounds: GeoBounds, zoom: Double) {
         viewport = Viewport(bounds, zoom)
