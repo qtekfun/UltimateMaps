@@ -22,4 +22,9 @@
     <string name="route_traffic_clear">Sense retard pel trànsit en aquesta ruta</string>
     <string name="route_traffic_bad_key">Trànsit: TomTom ha rebutjat la clau</string>
     <string name="route_traffic_limit">Trànsit: s\'ha arribat al límit diari de TomTom</string>
+    <string name="traffic_map_title">Mostra el trànsit al mapa</string>
+    <string name="traffic_map_body">Acoloreix les carreteres principals: verd fluid, ambre lent, vermell dens, vermell fosc tallat. Llegeix els quadrats del mapa que estàs mirant (des del zoom 9), com a molt un cop cada 3 minuts.</string>
+    <string name="nav_suggest_title">Una ruta més ràpida estalvia %1$s</string>
+    <string name="nav_suggest_accept">Canvia</string>
+    <string name="nav_suggest_dismiss">Ara no</string>
 </resources>

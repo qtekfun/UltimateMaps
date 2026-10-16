@@ -431,6 +431,7 @@ class MapasApp : Application() {
             settings = com.qtekfun.ultimatemaps.voice.VoiceModule.settings(this), // the 2D/3D choice lives with the navigation settings
             cameraSettings = cameraSettings,
             traffic = trafficProvider,
+            reroutes = CoreRouteProvider(this),
         ).also {
             it.addSink(VoiceNavSink(this))
             it.addSink(AlertNavSink { if (alertsStarted) cameraAlerts else null })

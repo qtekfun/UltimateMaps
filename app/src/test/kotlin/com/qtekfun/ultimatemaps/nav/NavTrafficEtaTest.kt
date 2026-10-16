@@ -63,3 +63,71 @@ class NavTrafficEtaTest {
 
     private fun NavTestRig.stopAndSettle() { screen.stop(); settle() }
 }
+
+/** The faster-route card: found with traffic, accepted or declined by the driver, never imposed. */
+class NavFasterRouteSuggestionTest {
+    private val rigs = ArrayList<NavTestRig>()
+
+    // 8 km straight north, a point every 40 m, just a start and an arrival.
+    private fun longPlan(eastMeters: Double = 0.0, seconds: Double = 600.0): com.qtekfun.ultimatemaps.core.routing.RoutePlan {
+        val pts = (0..200).map { pt(eastMeters, it * 40.0) }
+        val g = com.qtekfun.ultimatemaps.core.routing.RouteGuidance(
+            listOf(
+                com.qtekfun.ultimatemaps.core.routing.Maneuver(0, com.qtekfun.ultimatemaps.core.routing.TurnType.DEPART),
+                com.qtekfun.ultimatemaps.core.routing.Maneuver(pts.lastIndex, com.qtekfun.ultimatemaps.core.routing.TurnType.ARRIVE),
+            ),
+        )
+        return com.qtekfun.ultimatemaps.core.routing.RoutePlan(pts, 8_000.0 + eastMeters / 100, seconds, g)
+    }
+
+    private val eastRoute = longPlan(eastMeters = 2_000.0, seconds = 650.0)
+
+    /** The road you are on has a 15 minute jam; the one 2 km east is clear. */
+    private val feed = object : TrafficProvider {
+        override val enabled = true
+        override suspend fun estimate(geometry: List<LatLon>, coreSeconds: Double, baseSpeedMps: ((Double) -> Double)?): TrafficOutcome {
+            val east = geometry.any { it.lon > pt(1_000.0, 0.0).lon }
+            val delay = if (east) 0.0 else 900.0
+            return TrafficOutcome.Ready(TrafficEstimate(coreSeconds + delay, delay, if (east) 1.0 else 0.3, 0.0, 1.0))
+        }
+    }
+
+    private val provider = com.qtekfun.ultimatemaps.core.nav.RouteProvider { _, _, _, _, _ -> eastRoute }
+
+    @After fun tearDown() = rigs.forEach { it.close() }
+
+    private fun rig(routes: com.qtekfun.ultimatemaps.core.nav.RouteProvider? = provider) =
+        NavTestRig(traffic = feed, suggestions = routes).also { rigs += it }
+
+    private fun start(h: NavTestRig) {
+        assertTrue(h.screen.begin(longPlan(), emptyList(), NavTrip(), simulate = false))
+        h.emitReal(pt(0.0, 40.0), seconds = 3)
+    }
+
+    @Test fun `a jam with a clear road beside it offers the faster route and accepting switches to it`() {
+        val h = rig()
+        start(h)
+        val ui = h.await("suggestion") { it.suggestion != null }
+        assertTrue(ui.suggestion!!.savedSeconds >= 300.0, "${ui.suggestion!!.savedSeconds}")
+        assertEquals(eastRoute, ui.suggestion!!.plan)
+        h.screen.acceptSuggestion()
+        h.await("route replaced") { it.suggestion == null && (it.nav?.routeRevision ?: 0) >= 1 }
+        assertEquals(eastRoute.geometry, h.controller.route.value!!.geometry)
+    }
+
+    @Test fun `declining keeps the route and clears the card`() {
+        val h = rig()
+        start(h)
+        h.await("suggestion") { it.suggestion != null }
+        h.screen.dismissSuggestion()
+        assertEquals(null, h.screen.ui.value.suggestion)
+        assertEquals(0, h.screen.ui.value.nav!!.routeRevision)
+    }
+
+    @Test fun `without a provider for the alternatives there is no card`() {
+        val h = rig(routes = null)
+        start(h)
+        h.await("delay known") { it.trafficDelaySeconds > 0.0 }
+        assertEquals(null, h.screen.ui.value.suggestion)
+    }
+}

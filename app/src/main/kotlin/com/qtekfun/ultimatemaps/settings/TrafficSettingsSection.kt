@@ -47,6 +47,7 @@ class TrafficSettingsEnv(
 @Composable
 fun TrafficSection(env: TrafficSettingsEnv) {
     var enabled by remember { mutableStateOf(env.settings.enabled) }
+    var mapLayer by remember { mutableStateOf(env.settings.mapLayer) }
     var hasKey by remember { mutableStateOf(!env.keys.read().isNullOrBlank()) }
     var text by remember { mutableStateOf("") }
     var invalid by remember { mutableStateOf(false) }
@@ -64,6 +65,13 @@ fun TrafficSection(env: TrafficSettingsEnv) {
         )
     }
     if (!enabled) return
+    Spacer(Modifier.height(10.dp))
+    Card("traffic_map_card") {
+        SwitchRow(stringResource(R.string.traffic_map_title), stringResource(R.string.traffic_map_body), mapLayer, "traffic_map_switch") {
+            env.settings.mapLayer = it
+            mapLayer = it
+        }
+    }
     Spacer(Modifier.height(10.dp))
     Card("traffic_key_card") {
         BasicText(stringResource(R.string.traffic_key_title), style = Mapas.typography.body.copy(color = Mapas.colors.label))

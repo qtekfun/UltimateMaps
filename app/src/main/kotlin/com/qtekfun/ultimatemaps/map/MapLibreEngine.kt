@@ -138,6 +138,8 @@ class MapLibreEngine(
     private var bikeTapListener: ((String) -> Unit)? = null
     private var pendingTrails: List<TrailLine> = emptyList()
     private var trailSource: GeoJsonSource? = null
+    private var pendingTraffic: List<com.qtekfun.ultimatemaps.core.map.TrafficLine> = emptyList()
+    private var trafficSource: GeoJsonSource? = null
     private var trailTapListener: ((Int, LatLon) -> Unit)? = null
     private var pendingHazardPins: List<HazardPin> = emptyList()
     private var pendingHazardLines: List<HazardLine> = emptyList()
@@ -565,6 +567,44 @@ class MapLibreEngine(
     override fun showTrails(lines: List<TrailLine>) {
         pendingTrails = lines
         pushTrails()
+    }
+
+    override fun showTraffic(lines: List<com.qtekfun.ultimatemaps.core.map.TrafficLine>) {
+        pendingTraffic = lines
+        pushTraffic()
+    }
+
+    private fun pushTraffic() {
+        val source = trafficSource ?: return
+        if (map == null) return
+        source.setGeoJson(
+            FeatureCollection.fromFeatures(
+                pendingTraffic.map { l ->
+                    Feature.fromGeometry(org.maplibre.geojson.LineString.fromLngLats(l.points.map { Point.fromLngLat(it.lon, it.lat) })).apply {
+                        addNumberProperty(TrafficStyle.LEVEL, l.level)
+                    }
+                },
+            ),
+        )
+    }
+
+    /** Live traffic: coloured lines under the tracks and the route, above the hiking routes. */
+    private fun addTrafficLayer(style: Style) {
+        style.addSource(GeoJsonSource(TrafficStyle.SOURCE).also { trafficSource = it })
+        // One layer per level (a filter each), worst last so it is on top; slower levels are a little wider, not only another colour.
+        for (level in 0..3) {
+            val factor = if (level == 0) 1f else if (level == 1) 1.3f else 1.5f
+            style.addLayer(
+                LineLayer("${TrafficStyle.LAYER}-$level", TrafficStyle.SOURCE)
+                    .withFilter(Expression.eq(Expression.get(TrafficStyle.LEVEL), level))
+                    .withProperties(
+                        lineColor(TrafficStyle.colorOf(level)),
+                        lineWidth(Expression.interpolate(Expression.linear(), Expression.zoom(), *TrafficStyle.WIDTH_STOPS.map { (z, w) -> Expression.stop(z, w * factor) }.toTypedArray())),
+                        lineOpacity(0.85f), lineCap(Property.LINE_CAP_ROUND), lineJoin(Property.LINE_JOIN_ROUND),
+                    ),
+            )
+        }
+        pushTraffic()
     }
 
     override fun setTrailTapListener(listener: ((Int, LatLon) -> Unit)?) {
@@ -1042,6 +1082,7 @@ class MapLibreEngine(
         val pin = GeoJsonSource(PIN_SOURCE).also { pinSource = it }
         addZoneLayer(style, wanted == MapTheme.DARK) // low-emission zones: below everything drawn on top of the map
         addTrailLayers(style, wanted == MapTheme.DARK) // hiking and cycling routes: below everything else
+        addTrafficLayer(style) // live traffic (play, optional): above the trails, below the route
         addTracksLayer(style, wanted == MapTheme.DARK) // below the route line
         addRouteLayer(style, wanted == MapTheme.DARK) // below the markers, pin and user dots
         addTransitLayer(style, wanted == MapTheme.DARK)

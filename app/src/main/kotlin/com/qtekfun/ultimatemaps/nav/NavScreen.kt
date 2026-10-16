@@ -98,6 +98,9 @@ class NavActions(
     val onDiscard: () -> Unit = {},
     /** Shares the estimated arrival as plain text through the system share sheet (no server, no live tracking). */
     val onShareEta: () -> Unit = {},
+    /** The driver takes or declines the faster route that live traffic found (a card in the bottom panel). */
+    val onAcceptSuggestion: () -> Unit = {},
+    val onDismissSuggestion: () -> Unit = {},
 )
 
 /** The instruction of a maneuver ("Turn left onto Calle de Alcalá"), shared by the banner and the tests. */
@@ -571,6 +574,7 @@ private fun BottomPanel(ui: NavUi, nav: NavState, actions: NavActions) {
                     modifier = Modifier.testTag("nav_traffic"),
                 )
             }
+            ui.suggestion?.let { SuggestionCard(it, actions) }
             // ODbL: the attribution stays visible while navigating.
             Row(verticalAlignment = Alignment.CenterVertically) {
                 BasicText(
@@ -601,6 +605,35 @@ private fun BottomPanel(ui: NavUi, nav: NavState, actions: NavActions) {
             container = c.stopButton, content = c.onStopButton,
             description = stringResource(R.string.nav_ui_stop_description),
         )
+    }
+}
+
+/** "A faster route saves 7 min": silent, two plain buttons, ignorable. */
+@Composable
+private fun SuggestionCard(s: RouteSuggestion, actions: NavActions) {
+    val c = NavTheme.colors
+    Column(Modifier.padding(top = 4.dp).testTag("nav_suggestion")) {
+        BasicText(
+            stringResource(R.string.nav_suggest_title, RouteFormat.duration(s.savedSeconds)),
+            style = Mapas.typography.body.copy(color = c.onPanel, fontWeight = FontWeight.SemiBold),
+        )
+        Row {
+            for ((label, tag, onClick) in listOf(
+                Triple(stringResource(R.string.nav_suggest_accept), "nav_suggest_accept", actions.onAcceptSuggestion),
+                Triple(stringResource(R.string.nav_suggest_dismiss), "nav_suggest_dismiss", actions.onDismissSuggestion),
+            )) {
+                BasicText(
+                    label,
+                    style = Mapas.typography.callout.copy(color = c.onPanel, fontWeight = FontWeight.SemiBold),
+                    modifier = Modifier
+                        .clickable(role = Role.Button, onClick = onClick)
+                        .heightIn(min = 40.dp)
+                        .padding(end = 16.dp)
+                        .wrapContentHeight(Alignment.CenterVertically)
+                        .testTag(tag),
+                )
+            }
+        }
     }
 }
 

@@ -16,9 +16,14 @@ class PrefsTrafficSettingsStore(private val prefs: SharedPreferences) : TrafficS
         get() = runCatching { prefs.getBoolean(KEY_ENABLED, false) }.getOrDefault(false)
         set(value) { prefs.edit().putBoolean(KEY_ENABLED, value).apply() }
 
+    override var mapLayer: Boolean
+        get() = runCatching { prefs.getBoolean(KEY_MAP_LAYER, true) }.getOrDefault(true)
+        set(value) { prefs.edit().putBoolean(KEY_MAP_LAYER, value).apply() }
+
     companion object {
         const val PREFS = "traffic"
         const val KEY_ENABLED = "enabled"
+        const val KEY_MAP_LAYER = "map_layer"
     }
 }
 
