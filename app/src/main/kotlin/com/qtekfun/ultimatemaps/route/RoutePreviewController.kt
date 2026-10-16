@@ -9,6 +9,10 @@ import com.qtekfun.ultimatemaps.core.routing.BikeCycleways
 import com.qtekfun.ultimatemaps.core.routing.Detours
 import com.qtekfun.ultimatemaps.core.routing.RouteOptions
 import com.qtekfun.ultimatemaps.core.routing.ElevationProfile
+import com.qtekfun.ultimatemaps.core.traffic.NoTrafficProvider
+import com.qtekfun.ultimatemaps.core.traffic.TrafficEstimate
+import com.qtekfun.ultimatemaps.core.traffic.TrafficOutcome
+import com.qtekfun.ultimatemaps.core.traffic.TrafficProvider
 import com.qtekfun.ultimatemaps.core.zbe.ZbeCrossing
 import com.qtekfun.ultimatemaps.core.weather.WeatherWarning
 import com.qtekfun.ultimatemaps.core.routing.RoutePlan
@@ -27,6 +31,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withTimeoutOrNull
@@ -74,7 +79,12 @@ data class RouteAlternative(
     val via: List<LatLon> = emptyList(),
     /** Raw heights of [geometry] (see `RoutePlan.altitudes`); empty when the maps gave none. */
     val altitudes: List<Double> = emptyList(),
-)
+    /** What live traffic does to this route's time (optional TomTom feed); null while unknown or when the feature is off. */
+    val traffic: TrafficEstimate? = null,
+) {
+    /** The time to show and to compare: the router's, corrected by the traffic when there is any. */
+    val effectiveSeconds: Double get() = traffic?.adjustedSeconds ?: durationSeconds
+}
 
 enum class AlternativesStatus { NONE, FINDING, DONE }
 
@@ -118,6 +128,15 @@ class RouteState {
 
     /** Index into [alternatives] of the selected route; null means the main route. [distanceMeters] follows it. */
     var selectedAlternative by mutableStateOf<Int?>(null)
+
+    /** The traffic delay of the shown route in seconds (already inside [durationSeconds]); null when unknown or off. */
+    var trafficDelaySeconds by mutableStateOf<Double?>(null)
+
+    /** The shown route uses a road the traffic feed reports closed. */
+    var trafficClosed by mutableStateOf(false)
+
+    /** Why the traffic feed gave nothing although it is on (a wrong key, the daily limit); null otherwise. */
+    var trafficProblem by mutableStateOf<TrafficOutcome.Reason?>(null)
 }
 
 /** Opens the routing engine on top of the installed maps. Blocking and heavy: always called off the main thread. */
@@ -162,6 +181,8 @@ class RoutePreviewController(
     private val lowEmissionZones: (List<LatLon>) -> List<ZbeCrossing> = { emptyList() },
     /** The orange and red weather warnings along a route (optional AEMET alerts, matched on the phone). Empty while off. */
     private val weatherWarnings: (List<LatLon>) -> List<WeatherWarning> = { emptyList() },
+    /** Live traffic for car routes (optional, `play` flavor only): corrects the time and picks the fastest alternative. */
+    private val traffic: TrafficProvider = NoTrafficProvider,
     /** Where an unexpected failure is noted (exception class and stack only, never a message or a position). */
     private val onFailure: (String, Throwable) -> Unit = { _, _ -> },
 ) {
@@ -187,6 +208,11 @@ class RoutePreviewController(
     private var altJob: Job? = null
     private var mainPlan: RoutePlan? = null
     private var mainRequest: RouteRequest? = null
+    private var trafficJob: Job? = null
+    private var mainTraffic: TrafficEstimate? = null
+
+    /** The owner picked a route by hand: the automatic choice of the fastest one with traffic leaves it alone. */
+    private var chosenByUser = false
 
     @Volatile private var engine: DetailedRoutingEngine? = null
 
@@ -303,24 +329,39 @@ class RoutePreviewController(
                         redrawAlternatives()
                     }
                 }
+                if (base.profile == RoutingProfile.CAR && traffic.enabled && found.isNotEmpty()) {
+                    for (i in found.indices) {
+                        val a = found[i]
+                        found[i] = a.copy(traffic = estimateTraffic(a.geometry, a.durationSeconds))
+                        state.alternatives = found.toList()
+                    }
+                    state.selectedAlternative?.let { select(it) } // its time now includes the traffic
+                }
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Throwable) {
                 onFailure("alternatives", e) // keep what was found; the main route stays as it is
             }
             state.alternativesStatus = AlternativesStatus.DONE
+            chooseFastest()
         }
     }
 
     /** Selects the alternative at [index], or the main route with null; the map and the figures follow. */
     fun selectAlternative(index: Int?) {
+        chosenByUser = true
+        select(index)
+    }
+
+    private fun select(index: Int?) {
         val main = mainPlan ?: return
         if (!state.active || state.status != RouteStatus.DONE) return
         val alt = index?.let { state.alternatives.getOrNull(it) }
         if (index != null && alt == null) return
         state.selectedAlternative = index
         state.distanceMeters = alt?.distanceMeters ?: main.distanceMeters
-        state.durationSeconds = alt?.durationSeconds ?: main.durationSeconds
+        state.durationSeconds = alt?.effectiveSeconds ?: mainTraffic?.adjustedSeconds ?: main.durationSeconds
+        showTraffic(alt?.traffic ?: if (alt == null) mainTraffic else null)
         state.elevation = guarded("elevation", null) {
             if (alt != null) ElevationProfile.of(alt.geometry, alt.altitudes) else ElevationProfile.of(main.geometry, main.altitudes)
         }
@@ -328,6 +369,49 @@ class RoutePreviewController(
         state.weather = guarded("weather", emptyList()) { weatherWarnings(alt?.geometry ?: main.geometry) }
         guarded("draw", Unit) { showRoute(alt?.geometry ?: main.geometry) }
         redrawAlternatives()
+    }
+
+    private fun showTraffic(t: TrafficEstimate?) {
+        state.trafficDelaySeconds = t?.delaySeconds
+        state.trafficClosed = t?.hasClosure == true
+    }
+
+    /** Asks the traffic feed for [geometry]'s time; null when it says nothing (the reason goes to [RouteState.trafficProblem]). */
+    private suspend fun estimateTraffic(geometry: List<LatLon>, seconds: Double): TrafficEstimate? = try {
+        when (val outcome = withContext(io) { traffic.estimate(geometry, seconds) }) {
+            is TrafficOutcome.Ready -> outcome.estimate.also { state.trafficProblem = null }
+            is TrafficOutcome.Unavailable -> {
+                state.trafficProblem = outcome.reason.takeIf { it == TrafficOutcome.Reason.BAD_KEY || it == TrafficOutcome.Reason.RATE_LIMITED }
+                null
+            }
+        }
+    } catch (e: CancellationException) {
+        throw e
+    } catch (e: Throwable) {
+        onFailure("traffic", e)
+        null
+    }
+
+    /** Live traffic for the main route: corrects its time and, when it is long enough, looks for a way around. */
+    private fun launchTraffic(plan: RoutePlan) {
+        if (state.profile != RoutingProfile.CAR || !traffic.enabled) return
+        trafficJob = scope.launch {
+            val estimate = estimateTraffic(plan.geometry, plan.durationSeconds) ?: return@launch
+            mainTraffic = estimate
+            state.baseDurationSeconds = estimate.adjustedSeconds
+            if (state.selectedAlternative == null) state.durationSeconds = estimate.adjustedSeconds
+            if (state.selectedAlternative == null) showTraffic(estimate)
+            if (estimate.delaySeconds >= AUTO_ALTERNATIVES_DELAY_SECONDS) findAlternatives()
+            chooseFastest()
+        }
+    }
+
+    /** With traffic known for the main route and the alternatives, the fastest one is shown unless the owner already chose. */
+    private fun chooseFastest() {
+        if (chosenByUser || state.alternativesStatus == AlternativesStatus.FINDING) return
+        val main = mainTraffic ?: return
+        val best = state.alternatives.withIndex().filter { it.value.traffic != null }.minByOrNull { it.value.effectiveSeconds } ?: return
+        if (main.adjustedSeconds - best.value.effectiveSeconds >= AUTO_SWITCH_SAVING_SECONDS && state.selectedAlternative != best.index) select(best.index)
     }
 
     private fun redrawAlternatives() {
@@ -341,6 +425,12 @@ class RoutePreviewController(
 
     private fun resetAlternatives() {
         altJob?.cancel()
+        trafficJob?.cancel()
+        mainTraffic = null
+        chosenByUser = false
+        state.trafficDelaySeconds = null
+        state.trafficClosed = false
+        state.trafficProblem = null
         mainPlan = null
         mainRequest = null
         state.elevation = null
@@ -529,6 +619,7 @@ class RoutePreviewController(
             state.weather = guarded("weather", emptyList()) { weatherWarnings(plan.geometry) }
             state.status = RouteStatus.DONE
             guarded("draw", Unit) { showRoute(plan.geometry) }
+            launchTraffic(plan)
         } else {
             state.error = error
             state.status = RouteStatus.ERROR
@@ -572,6 +663,12 @@ class RoutePreviewController(
 
         /** ...and different-road ones fill up to this many in all. */
         const val MAX_ALTERNATIVES_TOTAL = 3
+
+        /** A traffic delay of at least this many seconds makes the alternatives start on their own. */
+        const val AUTO_ALTERNATIVES_DELAY_SECONDS = 180.0
+
+        /** An alternative that is this much faster with the traffic is shown instead of the main route (unless the owner chose). */
+        const val AUTO_SWITCH_SAVING_SECONDS = 120.0
 
         /** A detour is worth showing when it is really another road and not much worse than the main route. */
         const val DETOUR_MAX_SHARED = 0.75

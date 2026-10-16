@@ -69,7 +69,7 @@ class HttpShortLinkResolver(
     private fun unwrapConsent(consentUrl: String): ShortLinkResult {
         val raw = consentUrl.substringAfter('?', "").split('&').firstOrNull { it.startsWith("continue=") }
             ?.removePrefix("continue=") ?: return ShortLinkResult.Failed
-        val target = runCatching { URLDecoder.decode(raw, Charsets.UTF_8) }.getOrNull() ?: return ShortLinkResult.Failed
+        val target = runCatching { URLDecoder.decode(raw, "UTF-8") }.getOrNull() ?: return ShortLinkResult.Failed
         return if (target.startsWith("https://")) ShortLinkResult.Expanded(target) else ShortLinkResult.Failed
     }
 

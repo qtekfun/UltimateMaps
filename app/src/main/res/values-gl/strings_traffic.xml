@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Optional live traffic (play flavor, the user's own TomTom key): settings section, route line and the connection purpose. -->
+    <string name="traffic_title">Tráfico en directo</string>
+    <string name="traffic_switch">Usar o tráfico en directo (TomTom)</string>
+    <string name="traffic_body">Suma o tráfico en tempo real de TomTom ao tempo das rutas en coche e escolle a ruta máis rápida cando hai atasco. Precisa a túa propia clave gratuíta de TomTom.</string>
+    <string name="traffic_honesty">Que se envía a TomTom: os cadrados do mapa (uns 40 km de lado) polos que pasa cada ruta en coche que planeas, pedidos coa túa clave. Non a túa posición, nin a ruta en si, nin o que buscas. Os termos de TomTom aplícanse á túa clave e ten un límite diario gratuíto. Datos de tráfico: TomTom.</string>
+    <string name="traffic_key_title">Clave de API de TomTom</string>
+    <string name="traffic_key_saved">Hai unha clave gardada. Queda neste teléfono, cifrada, e só se envía a TomTom.</string>
+    <string name="traffic_key_none">Aínda non hai clave</string>
+    <string name="traffic_key_hint">Pega a túa clave</string>
+    <string name="traffic_key_invalid">Iso non parece unha clave de TomTom. Pégaa de novo, sen texto adicional.</string>
+    <string name="traffic_key_save">Gardar clave</string>
+    <string name="traffic_key_remove">Quitar clave</string>
+    <string name="traffic_key_help">Como conseguir unha clave gratuíta</string>
+    <string name="traffic_key_help_body">Crea unha conta gratuíta en developer.tomtom.com (sen tarxeta), engade unha aplicación coa API de tráfico activada e copia aquí a súa clave. O teu uso conta contra a túa propia cota gratuíta.</string>
+    <string name="conn_purpose_traffic_flow">Tráfico en directo (TomTom)</string>
+    <string name="backup_item_traffic">Tráfico en directo</string>
+    <string name="backup_group_traffic">Tráfico en directo</string>
+    <string name="route_traffic_delay">%1$s de atraso polo tráfico</string>
+    <string name="route_traffic_closed">O tráfico indica unha estrada cortada nesta ruta</string>
+    <string name="route_traffic_clear">Sen atraso polo tráfico nesta ruta</string>
+    <string name="route_traffic_bad_key">Tráfico: TomTom rexeitou a clave</string>
+    <string name="route_traffic_limit">Tráfico: alcanzouse o límite diario de TomTom</string>
+</resources>

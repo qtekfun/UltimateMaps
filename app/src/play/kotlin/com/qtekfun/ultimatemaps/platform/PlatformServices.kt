@@ -9,6 +9,10 @@ import com.qtekfun.ultimatemaps.core.map.NoMovementHint
 import com.qtekfun.ultimatemaps.core.net.NetworkPolicy
 import com.qtekfun.ultimatemaps.core.search.OnlineGeocoder
 import com.qtekfun.ultimatemaps.core.search.OnlineSearchSettingsStore
+import com.qtekfun.ultimatemaps.core.traffic.FlowTrafficProvider
+import com.qtekfun.ultimatemaps.core.traffic.TrafficKeyStore
+import com.qtekfun.ultimatemaps.core.traffic.TrafficProvider
+import com.qtekfun.ultimatemaps.core.traffic.TrafficSettingsStore
 import com.qtekfun.ultimatemaps.gms.GmsAvailability
 import com.qtekfun.ultimatemaps.gms.GmsGeofencer
 import com.qtekfun.ultimatemaps.gms.GmsLocationSource
@@ -35,6 +39,19 @@ object PlatformServices {
         language: () -> String?,
     ): OnlineGeocoder = PhotonGeocoder(
         settings, policy, PhotonGeocoder.fetchOver(policy, PhotonGeocoder.userAgent(versionName)), language,
+    )
+
+    /**
+     * Live traffic from TomTom (Orbis flow tiles) with the user's own key. Off until the owner turns the switch on and stores a
+     * key; every request goes through [policy], so offline mode blocks it.
+     */
+    fun trafficProvider(
+        policy: NetworkPolicy,
+        settings: TrafficSettingsStore,
+        keys: TrafficKeyStore,
+        versionName: String?,
+    ): TrafficProvider = FlowTrafficProvider(
+        settings, keys, TomTomFlowFetch.over(policy, PhotonGeocoder.userAgent(versionName)), clock = { System.nanoTime() / 1_000_000L },
     )
 
     fun locationSource(context: Context): AvailableLocationSource =

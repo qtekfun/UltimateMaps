@@ -50,6 +50,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.isSpecified
 import com.qtekfun.ultimatemaps.R
 import com.qtekfun.ultimatemaps.core.routing.RoutingProfile
+import com.qtekfun.ultimatemaps.core.traffic.TrafficOutcome
 import com.qtekfun.ultimatemaps.nav.LaunchStatus
 import com.qtekfun.ultimatemaps.nav.NavStartHost
 import com.qtekfun.ultimatemaps.nav.RouteFailureMessages
@@ -534,11 +535,27 @@ private fun Status(s: RouteState) {
                     BasicText(time, style = Mapas.typography.largeTitle.copy(color = Mapas.colors.label))
                     BasicText(distance, style = Mapas.typography.callout.copy(color = Mapas.colors.secondaryLabel))
                 }
+                TrafficSummary(s)
                 ElevationSummary(s.elevation)
             }
         }
         RouteStatus.IDLE -> Unit
     }
+}
+
+/** The traffic line under the figures: the delay it adds, a closed road, or why the feed gave nothing. Nothing when it is off. */
+@Composable
+private fun TrafficSummary(s: RouteState) {
+    val delay = s.trafficDelaySeconds
+    val line = when {
+        s.trafficClosed -> stringResource(R.string.route_traffic_closed) to Mapas.colors.warning
+        delay != null && delay >= 60.0 -> stringResource(R.string.route_traffic_delay, RouteFormat.duration(delay)) to Mapas.colors.warning
+        delay != null -> stringResource(R.string.route_traffic_clear) to Mapas.colors.secondaryLabel
+        s.trafficProblem == TrafficOutcome.Reason.BAD_KEY -> stringResource(R.string.route_traffic_bad_key) to Mapas.colors.warning
+        s.trafficProblem == TrafficOutcome.Reason.RATE_LIMITED -> stringResource(R.string.route_traffic_limit) to Mapas.colors.warning
+        else -> return
+    }
+    BasicText(line.first, style = Mapas.typography.callout.copy(color = line.second), modifier = Modifier.testTag("route_traffic"))
 }
 
 private val profiles = listOf(

@@ -97,6 +97,8 @@ class SettingsEnv(
     val placeLanguage: PlaceLanguageSettingsEnv? = null,
     /** "Online search" section of the Network category (`play` flavor only: switch and server address); null hides it. */
     val onlineSearch: OnlineSearchSettingsEnv? = null,
+    /** "Live traffic" section of the Network category (`play` flavor only: switch and the user's own TomTom key); null hides it. */
+    val traffic: TrafficSettingsEnv? = null,
     /** Backup and restore part of the Data category (export, import, export everything); null hides it. */
     val backup: BackupSettingsEnv? = null,
     /** About category: the version name and the attribution lines of the installed public-transport data. */
@@ -261,6 +263,7 @@ private fun purposeLabel(p: ConnectionPurpose) = stringResource(
         ConnectionPurpose.BIKE_AVAILABILITY -> R.string.conn_purpose_bike
         ConnectionPurpose.WEATHER_ALERTS -> R.string.conn_purpose_weather
         ConnectionPurpose.ONLINE_SEARCH -> R.string.conn_purpose_online_search
+        ConnectionPurpose.TRAFFIC_FLOW -> R.string.conn_purpose_traffic_flow
         ConnectionPurpose.OTHER -> R.string.conn_purpose_other
     },
 )

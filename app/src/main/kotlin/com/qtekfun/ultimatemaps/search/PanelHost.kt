@@ -248,6 +248,7 @@ class PanelHost(
             if (app.zbeSettings.settings.value.enabled) app.zbeData.repository.index.crossings(geometry) else emptyList()
         },
         weatherWarnings = { geometry -> (activity.application as MapasApp).weatherAlerts.forRoute(geometry) },
+        traffic = (activity.application as MapasApp).trafficProvider,
         onFailure = { where, e -> com.qtekfun.ultimatemaps.diagnostics.Diagnostics.notes(activity).record("route/$where", e) },
     )
 
