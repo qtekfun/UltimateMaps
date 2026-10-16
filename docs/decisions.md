@@ -1344,3 +1344,22 @@ Format: date · decision · reason · discarded alternatives · how to revert it
   of a tile are made once and cached with the tile (3 minutes) instead of on every look.
 - **Not done / not measured:** frame time on the phone with the layer on, in navigation at 60 fps. If it is still heavy the next steps
   are fewer lines while navigating or a vector source with a style filter instead of GeoJSON; both need numbers from the Pixel first.
+
+### Measured on the Pixel 8 (2026-10-16, with the owner's permission)
+
+Another app was in the foreground, so nothing was opened on screen: `TrafficCostBench` (`core-traffic/src/test`) was dexed
+(`d8 --min-api 26`) and run with `app_process` on the phone, against synthetic tiles shaped like real flow tiles (16 tiles of tile
+zoom 13; 85 % flowing, mostly minor roads, dense curves). Median of 7 runs after warm-up, work done off the main thread:
+
+| features per tile | old: ms, lines, KB | now: ms, lines, KB |
+| ---: | --- | --- |
+| 500 | 53, 8,000, 3,818 | 5, 921, 292 |
+| 1,500 | 204, 24,000, 11,442 | 12, 2,587, 805 |
+| 4,000 | 1,018, 64,000, 30,591 | 29, 4,000, 1,265 |
+
+- **Reading:** the work for a view fell by about 10x to 35x and the data handed to MapLibre by about 13x to 24x. The old code also built
+  feature objects on the main thread, which this benchmark does not count, so the real gain on the main thread is larger.
+- **Not measured:** MapLibre parsing and drawing the lines, and frame times while panning or navigating: that needs the app in the
+  foreground with a TomTom key, which the phone did not allow. Real tiles may have more or fewer features than the synthetic ones.
+- **To repeat:** `./gradlew :core-traffic:testClasses :core-traffic:jar :core-geo:jar`, dex the jars with the Kotlin stdlib,
+  `adb push`, then `app_process -cp <jar> /system/bin com.qtekfun.ultimatemaps.core.traffic.TrafficCostBench`.
