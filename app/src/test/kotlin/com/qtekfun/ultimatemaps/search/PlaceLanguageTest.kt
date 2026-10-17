@@ -54,6 +54,47 @@ class PlaceLocaleSearchEngineTest {
     }
 }
 
+/** Answers like the real engine for "paseo prado": the street the user meant comes after other streets. */
+private class AsksCore : CoreHandle {
+    val asked = mutableListOf<Pair<String, Int>>()
+
+    override fun init(apkPath: String, mapsDir: String, tmpDir: String, locale: String) = Unit
+    override fun refreshMaps(): Int = 0
+    override fun routingEngine(timeoutSec: Int, withGuidance: Boolean): DetailedRoutingEngine = error("not used")
+
+    override fun searchEngine(locale: String, timeoutMs: Int): SearchEngine = object : SearchEngine {
+        override fun search(query: String, near: LatLon?, limit: Int): List<SearchResult> {
+            asked += query to limit
+            return listOf("Paseo de los Pinos", "Paseo del Prado", "Paseo Prado Alto").map { SearchResult(it, LatLon(0.0, 0.0)) }.take(limit)
+        }
+        override fun close() = Unit
+    }
+}
+
+class LinkingWordsSearchTest {
+    private fun engine(core: CoreHandle) = PlaceLocaleSearchEngine(core) { "es" }
+
+    @Test fun aTextWithLinkingWordsIsAskedWithoutThemAndPutInTheOrderOfThePhrase() {
+        val core = AsksCore()
+        val found = engine(core).search("paseo del prado", null, 2)
+        assertEquals(listOf("paseo prado" to 4), core.asked) // twice the limit, up to 40
+        assertEquals(listOf("Paseo del Prado", "Paseo de los Pinos"), found.map { it.name })
+    }
+
+    @Test fun aTextWithoutLinkingWordsGoesAsTyped() {
+        val core = AsksCore()
+        val found = engine(core).search("paseo prado", null, 20)
+        assertEquals(listOf("paseo prado" to 20), core.asked)
+        assertEquals(3, found.size)
+    }
+
+    @Test fun aLargeLimitIsNeverShrunk() {
+        val core = AsksCore()
+        engine(core).search("paseo del prado", null, 60)
+        assertEquals(60, core.asked.single().second)
+    }
+}
+
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [34])
 class PrefsPlaceLanguageStoreTest {
