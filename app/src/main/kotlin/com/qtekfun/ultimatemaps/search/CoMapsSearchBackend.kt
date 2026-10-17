@@ -43,7 +43,12 @@ class CoMapsSearchBackend(
             (if (isolated) IsolatedCore(BinderCoreTransport(app), onEvent = { notes.note("core", it) }) else CoMapsCore()).also { core = it }
         }
 
-        /** Starts the process-wide core if needed and re-scans [maps]; shared by search and routing. */
+        private val refreshGate = MapsRefreshGate()
+
+        /**
+         * Starts the process-wide core if needed and re-scans [maps] when they changed since the last scan; shared by search and
+         * routing (every reroute and guided launch comes through here, and a scan also empties the core's caches).
+         */
         fun prepareCore(context: Context, maps: CoreMaps): CoreHandle {
             val app = context.applicationContext
             val core = handle(app)
@@ -53,7 +58,8 @@ class CoMapsSearchBackend(
                 currentCoreLocale(PrefsPlaceLanguageStore(app)),
             )
             CoreLinks.coreLoaded = true // from now on a deleted region needs an app restart (see CoreLinks)
-            core.refreshMaps() // also picks up regions installed after the first start
+            // Also picks up regions installed after the first start. An isolated core that restarts repeats the last scan itself.
+            refreshGate.refreshIfChanged(MapsRefreshGate.fingerprint(maps.mapsDir)) { core.refreshMaps() }
             return core
         }
     }

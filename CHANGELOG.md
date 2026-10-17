@@ -4,6 +4,10 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 
 ## [Unreleased]
 
+### Changed
+
+- **Reroutes and route launches no longer rescan the maps when nothing changed.** Every reroute used to make the offline engine rebuild its routers, empty its search caches and reload the city boundaries, which also made the next search slower. It now rescans only after a download, an update or a delete.
+
 ## [0.1.0-rc.33] - 2026-10-16
 
 ### Added
