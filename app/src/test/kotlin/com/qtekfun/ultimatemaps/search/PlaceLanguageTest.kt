@@ -77,7 +77,7 @@ class LinkingWordsSearchTest {
     @Test fun aTextWithLinkingWordsIsAskedWithoutThemAndPutInTheOrderOfThePhrase() {
         val core = AsksCore()
         val found = engine(core).search("paseo del prado", null, 2)
-        assertEquals(listOf("paseo prado" to 4), core.asked) // twice the limit, up to 40
+        assertEquals(listOf("paseo prado" to 2), core.asked)
         assertEquals(listOf("Paseo del Prado", "Paseo de los Pinos"), found.map { it.name })
     }
 
@@ -88,7 +88,7 @@ class LinkingWordsSearchTest {
         assertEquals(3, found.size)
     }
 
-    @Test fun aLargeLimitIsNeverShrunk() {
+    @Test fun theLimitIsPassedOn() {
         val core = AsksCore()
         engine(core).search("paseo del prado", null, 60)
         assertEquals(60, core.asked.single().second)

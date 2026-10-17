@@ -36,22 +36,19 @@ internal class PlaceLocaleSearchEngine(
 ) : SearchEngine {
     /**
      * A text with linking words ("plaza de espana") is searched without them, which the engine answers 5 to 10 times faster, and
-     * the answer is put in the order of the typed phrase; asking for more results costs nothing, so the best of a wider list is kept.
+     * the answer is put in the order of the typed phrase (on the Pixel 8 the first 20 results of the shorter text already hold
+     * the names that contain the phrase).
      */
     override fun search(query: String, near: LatLon?, limit: Int): List<SearchResult> {
         val engine = core.searchEngine(coreLocale())
         val fast = QueryParticles.withoutParticles(query) ?: return engine.search(query, near, limit)
-        return QueryParticles.rerank(query, engine.search(fast, near, maxOf(limit, (limit * 2).coerceAtMost(MAX_WIDE)))).take(limit)
+        return QueryParticles.rerank(query, engine.search(fast, near, limit))
     }
 
     override fun searchCategory(categoryName: String, near: LatLon?, limit: Int): List<SearchResult> =
         core.searchEngine(coreLocale()).searchCategory(categoryName, near, limit)
 
     override fun close() = Unit
-
-    private companion object {
-        const val MAX_WIDE = 40
-    }
 }
 
 /** The core locale string for the stored choice on this phone. */
