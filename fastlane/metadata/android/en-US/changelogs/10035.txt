@@ -1,1 +1,1 @@
-Release candidate: routes inside a city are two to ten times faster (the road network of the last maps is kept in memory); same routes as before.
+Release candidate: routes inside a city are two to ten times faster and a long trip such as Barcelona to Madrid no longer stalls for 20 seconds; same routes as before.

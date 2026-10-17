@@ -191,3 +191,21 @@ Measured on the Pixel 8, all of Spain installed (26 maps), same device and sessi
 - Memory (bench, in-process, the simulated drive): native heap 125-138 MB to 197-253 MB, PSS 350-379 MB to 414-473 MB, i.e. 60 to 100 MB more, bounded (the removed switch held 340 MB). In the app (all three vehicles used): core process PSS 380 MB; after `onTrimMemory` (moderate) 279 MB and native heap 280 to 175 MB; the next routes worked and re-read their graphs.
 - **A finding for the long routes:** with all of Spain installed the long routes are much slower than in the seven-region A/B (Madrid to Barcelona 23.4 s against 15 s, Barcelona to Madrid 46.9 s against 31.7 s, Madrid to Zaragoza 13.3 s against 7.5 s): more maps give the leaps stage more candidates. The owner's phone has all of Spain, so R2 (one-to-many candidate legs) and R1 (splice reroute) matter more than the first table suggested.
 - Not verified: behaviour under a real low-memory kill; a download or map update while the cache is held (the refresh drops it, tested only by reading the code); conditional access (opening hours of roads) after ten minutes of the cache (the loader is recreated, not tested with such data).
+
+## 9. Where a long route spends its time with all of Spain, and the leg budget
+
+Method: the engine's own log lines (`Routing in mode`, `Filtered candidates count`, `Route build time`, forwarded to logcat as `UMCORE`) plus, in a throwaway build, one log line per candidate leg (`RoutesCalculator::Calc2Times`: milliseconds of the single-map attempt, whether it was retried in Joints mode, total). The throwaway line is not in the code.
+
+Split of the long routes (Pixel 8, 26 maps, graph cache on):
+
+| Trip | leaps stage (to "Filtered candidates") | candidate legs and final route |
+|---|---|---|
+| Madrid to Lleida | 7.0 s | 2.0 s |
+| Madrid to Tarragona | 7.8 s | 4.5 s |
+| Madrid to Barcelona | 7.9 s | 9.8 s (one leg failed in 4 ms and took 2.1 s more in Joints mode) |
+| Barcelona to Madrid | 12.5 s | **32 s: one leg searched 22,988 ms inside one map, failed, and the Joints retry then took 232 ms** |
+
+- A typical successful leg takes 0.1 to 1.1 s. So stage 2 is not 15 slow searches as assumed in R2: it is a few fast legs and, sometimes, **one leg whose single-map search cannot reach its target and only stops after visiting the whole map**. That one leg is 23 of the 45 s of Barcelona to Madrid, and it is the whole "reverse trip is twice as slow" mystery. R2's one-to-many rewrite is not needed for this case.
+- **Done (CoMaps patch 0005, second part):** the single-map first attempt of a leg gets a 3 s budget (`BudgetedCancellable`: the route's own cancellation plus a deadline); when it runs out the leg continues in Joints mode, the path the code already takes after a failure. Barcelona to Madrid 42 s to 22 s in two runs, exactly the same route (length, duration, points); the other 11 pairs return the same routes (their times moved by up to +-40 % between runs on the shared phone, so no other gain is claimed).
+- **Tried and discarded:** forcing the LeapsOnly mode for trips above 120 km and ignoring the neighbouring-maps test (to avoid the slow single Joints search of 150 to 312 km). It was worse: Madrid to Medinaceli 1.9 s to 45 s, Zaragoza to Barcelona 10.9 s to 31 s, and Zaragoza to Lleida came out 200 km instead of 152 km. The routes of Madrid to Zaragoza, Lleida to Barcelona and Medinaceli differed in duration by a second or so.
+- What is left for the long routes: the leaps stage (7 to 12.5 s, it reads 400 to 500 routes to find 15 and 15 distinct road features; more maps make it longer), the 150 to 312 km trips in Joints mode (Madrid to Zaragoza 10 s, Zaragoza to Barcelona 10.5 s, Lleida to Barcelona 7.2 s: a weak straight-line bound), and the connectors read again per route. R5 (earlier stop of the leaps stage), a better bound for Joints (R7) and keeping connectors are the next candidates; R1 (splice reroute) removes the long routes from navigation altogether.

@@ -123,7 +123,7 @@ index 3e56ea851..cf62e2bcd 100644
                                                    std::shared_ptr<VehicleModelFactoryInterface> vehicleModelFactory,
                                                    std::shared_ptr<EdgeEstimator> estimator, MwmDataSource & dataSource,
 diff --git a/libs/routing/index_router.cpp b/libs/routing/index_router.cpp
-index 62675e1bc..02370f833 100644
+index 62675e1bc..d7494a6da 100644
 --- a/libs/routing/index_router.cpp
 +++ b/libs/routing/index_router.cpp
 @@ -64,6 +64,7 @@
@@ -134,13 +134,45 @@ index 62675e1bc..02370f833 100644
  #include <deque>
  #include <iterator>
  #include <map>
-@@ -89,6 +90,34 @@ double constexpr kMinDistanceToFinishM = 10000;
+@@ -89,6 +90,66 @@ double constexpr kMinDistanceToFinishM = 10000;
  // Near MWMs criteria when choosing routing mode.
  double constexpr kCloseMwmPointsDistanceM = 300000;
  
 +// UltimateMaps: how many maps keep their decoded road graph between routes, and for how long a kept loader is trusted
 +// (its clock for conditional access is fixed when it is created).
 +size_t constexpr kRetainedMaps = 2;
++
++// UltimateMaps: the first attempt of a leg in LeapsOnly mode searches inside one map. When the target cannot be reached that way
++// the search only ends after it has visited the whole map (23 s for one leg of Barcelona to Madrid on a Pixel 8, while the
++// Joints retry then takes 0.2 s). Legs that do succeed take 0.1 to 1.1 s there, so this budget leaves room for slow phones.
++std::chrono::milliseconds constexpr kSingleMwmLegBudget{3000};
++
++/// The cancellation of the whole route plus a deadline of its own.
++class BudgetedCancellable final : public base::Cancellable
++{
++public:
++  BudgetedCancellable(base::Cancellable const & parent, std::chrono::milliseconds budget)
++    : m_parent(parent)
++    , m_end(std::chrono::steady_clock::now() + budget)
++  {}
++
++  bool IsCancelled() const override
++  {
++    return m_parent.IsCancelled() || std::chrono::steady_clock::now() >= m_end;
++  }
++
++  Status CancellationStatus() const override
++  {
++    auto const status = m_parent.CancellationStatus();
++    if (status != Status::Active)
++      return status;
++    return std::chrono::steady_clock::now() >= m_end ? Status::DeadlineExceeded : Status::Active;
++  }
++
++private:
++  base::Cancellable const & m_parent;
++  std::chrono::steady_clock::time_point const m_end;
++};
 +int64_t constexpr kPersistentLoaderMaxAgeS = 600;
 +
 +int64_t SteadyNowS()
@@ -169,7 +201,7 @@ index 62675e1bc..02370f833 100644
  double CalcMaxSpeed(NumMwmIds const & numMwmIds, VehicleModelFactoryInterface const & vehicleModelFactory,
                      VehicleType vehicleType)
  {
-@@ -299,6 +328,16 @@ void IndexRouter::ClearState()
+@@ -299,6 +360,16 @@ void IndexRouter::ClearState()
  {
    m_roadGraph.ClearState();
    m_directionsEngine->Clear();
@@ -186,7 +218,7 @@ index 62675e1bc..02370f833 100644
    m_dataSource.FreeHandles();
  }
  
-@@ -1099,9 +1138,28 @@ unique_ptr<WorldGraph> IndexRouter::MakeWorldGraph()
+@@ -1099,9 +1170,28 @@ unique_ptr<WorldGraph> IndexRouter::MakeWorldGraph()
        m_numMwmIds, m_numMwmTree, m_vehicleType == VehicleType::Transit ? VehicleType::Pedestrian : m_vehicleType,
        m_countryRectFn, m_dataSource);
  
@@ -218,8 +250,40 @@ index 62675e1bc..02370f833 100644
  
    if (m_vehicleType != VehicleType::Transit)
    {
+@@ -1384,7 +1474,8 @@ bool IndexRouter::PointsOnEdgesSnapping::FindBestEdges(m2::PointD const & checkp
+ 
+ IndexRouter::RoutingResultT const * IndexRouter::RoutesCalculator::Calc(Segment const & beg, Segment const & end,
+                                                                         ProgressPtrT const & progress,
+-                                                                        double progressCoef)
++                                                                        double progressCoef,
++                                                                        base::Cancellable const * cancellable)
+ {
+   auto itCache = m_cache.insert({{beg, end}, {}});
+   auto * res = &itCache.first->second;
+@@ -1406,7 +1497,8 @@ IndexRouter::RoutingResultT const * IndexRouter::RoutesCalculator::Calc(Segment
+ 
+     using Visitor = JunctionVisitor<JointsStarter>;
+     AStarAlgorithm<Vertex, Edge, Weight>::Params<Visitor, AStarLengthChecker> params(
+-        jointStarter, jointStarter.GetStartJoint(), jointStarter.GetFinishJoint(), m_delegate.GetCancellable(),
++        jointStarter, jointStarter.GetStartJoint(), jointStarter.GetFinishJoint(),
++        cancellable ? *cancellable : m_delegate.GetCancellable(),
+         Visitor(jointStarter, m_delegate, kVisitPeriod, progress), AStarLengthChecker(m_starter));
+ 
+     RoutingResult<JointSegment, RouteWeight> route;
+@@ -1441,8 +1533,10 @@ IndexRouter::RoutingResultT const * IndexRouter::RoutesCalculator::Calc2Times(Se
+   /// @see RussiaMoscow_ItalySienaCenter_SplittedMotorway
+   /// Enter Tuscany motorway (43.5016115, 11.1872607) is splitted by MWM boundaries many times.
+ 
++  // UltimateMaps: a bounded first attempt (see kSingleMwmLegBudget); a leg that runs out of it goes on in Joints mode.
++  BudgetedCancellable const budget(m_delegate.GetCancellable(), kSingleMwmLegBudget);
+   m_starter.GetGraph().SetMode(WorldGraphMode::JointSingleMwm);
+-  auto const * r = Calc(beg, end, progress, progressCoef);
++  auto const * r = Calc(beg, end, progress, progressCoef, &budget);
+   if (r == nullptr)
+   {
+     m_starter.GetGraph().SetMode(WorldGraphMode::Joints);
 diff --git a/libs/routing/index_router.hpp b/libs/routing/index_router.hpp
-index c7ed18c95..5c89a25e8 100644
+index c7ed18c95..245408d4e 100644
 --- a/libs/routing/index_router.hpp
 +++ b/libs/routing/index_router.hpp
 @@ -34,6 +34,7 @@ class AStarProgress;
@@ -241,6 +305,15 @@ index c7ed18c95..5c89a25e8 100644
    void SetGuides(GuidesTracks && guides) override;
    RouterResultCode CalculateRoute(Checkpoints const & checkpoints, m2::PointD const & startDirection,
                                    bool adjustToPrevRoute, RouterDelegate const & delegate, Route & route) override;
+@@ -205,7 +210,7 @@ private:
+ 
+     using ProgressPtrT = std::shared_ptr<AStarProgress>;
+     RoutingResultT const * Calc(Segment const & beg, Segment const & end, ProgressPtrT const & progress,
+-                                double progressCoef);
++                                double progressCoef, base::Cancellable const * cancellable = nullptr);
+     // Makes JointSingleMwm first and Joints then, if first attempt was failed.
+     RoutingResultT const * Calc2Times(Segment const & beg, Segment const & end, ProgressPtrT const & progress,
+                                       double progressCoef);
 @@ -289,5 +294,11 @@ private:
    CountryParentNameGetterFn m_countryParentNameGetterFn;
  

@@ -1,1 +1,1 @@
-Versión candidata: las rutas dentro de una ciudad son de dos a diez veces más rápidas (se guarda en memoria la red de carreteras de los últimos mapas); mismas rutas que antes.
+Versión candidata: las rutas dentro de una ciudad son de dos a diez veces más rápidas y un viaje largo como Barcelona a Madrid ya no se atasca 20 segundos; mismas rutas que antes.
