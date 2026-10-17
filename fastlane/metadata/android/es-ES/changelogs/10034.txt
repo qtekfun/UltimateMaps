@@ -1,0 +1,1 @@
+Versión candidata: búsquedas mucho más rápidas cuando llevan "de" o "del" (plaza de España: de 9 s a menos de 2 s) y sin reescaneo innecesario de los mapas al recalcular.

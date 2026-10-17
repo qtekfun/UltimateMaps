@@ -1,0 +1,1 @@
+Release candidate: much faster searches that contain "de" or "del" (plaza de España: 9 s to under 2 s), and no needless rescan of the maps on reroutes.
