@@ -1,6 +1,6 @@
 # Speed plan: route calculation and search
 
-Status: **design** (2026-10-17, owner's request: "route calculation and search are very, very slow; design creative optimizations that give us much more"). Nothing in this document has been run on a phone. Every number comes from the measurements already in the repo (`docs/phase2/device-test/route-perf-ab-2026-10-08/`, `route-bench-2026-10-07.md`, `docs/phase1/device-test/release-rc1/README.md`, `docs/spike-informe.md`); every gain is an expectation and says what would prove it.
+Status: **design, first measurements done** (2026-10-17: section 7 holds what was measured on the Pixel 8 with the owner's permission and what it changed in the plan; owner's request: "route calculation and search are very, very slow; design creative optimizations that give us much more"). Nothing in this document has been run on a phone. Every number comes from the measurements already in the repo (`docs/phase2/device-test/route-perf-ab-2026-10-08/`, `route-bench-2026-10-07.md`, `docs/phase1/device-test/release-rc1/README.md`, `docs/spike-informe.md`); every gain is an expectation and says what would prove it.
 
 The earlier analysis (`long-routes-perf.md`) tried run-time switches inside the CoMaps router and concluded that nothing cheap reaches the target. This plan looks at the parts it did not: **what the app does around the core** (serialization, restarts of caches, waiting for results nobody needs yet) and **work the router repeats without need** (a reroute recomputes a route that is 99 % unchanged; the candidate stage runs one search per candidate).
 
@@ -41,7 +41,7 @@ None of these was in `long-routes-perf.md`.
 
 - **F1. Search and route share one lane end to end.** `IsolatedCore.call` holds `callLock` for the whole exchange, and `CoreHost.dispatch` is one `synchronized(lock)` around every operation. A reroute of 11 to 31 s therefore blocks every search, category browse and even `OP_PING` behind it. The native `Core::Search` does not take the core mutex, so the serialization is ours, not the engine's. While navigating, any search the user types (a fuel stop, "add a stop") waits for the reroute.
 - **F2. Every reroute and every guided launch calls `refreshMaps()`.** `CoreRouteProvider.route` and `NavLauncher.launchGuided` go through `prepareCore`, which re-scans the maps. `Core::RefreshMaps` is not a cheap check: it clears all routers (they are rebuilt, including the map tree), clears the search engine caches, reloads city boundaries and the countries tree and re-caches the world localities. Nothing changed on disk in the usual case. It also throws away the search warm state, so the first search after a route is slower.
-- **F3. The search waits for the end marker.** `Core::Search` returns only when the engine says the search is over (`results.IsEndMarker()`), after `Mode::Everywhere` has widened beyond the 20 km viewport. The first batch is what matters for typing. The first call also builds an address for each hit (`m_needAddress = true`), which loads the street and house indexes.
+- **F3. The search waits for the end marker.** `Core::Search` returns only when the engine says the search is over (`results.IsEndMarker()`). *Measured later (section 7): the end marker comes 6 to 480 ms after the one batch the engine emits, so waiting for it costs almost nothing; this finding is retracted.* The first call also builds an address for each hit (`m_needAddress = true`).
 - **F4. A stale search cannot be cancelled.** A new keystroke cancels the coroutine, but the native call of the previous query keeps running to its end (and holds the lane, F1), so quick typing queues behind searches nobody wants.
 - **F5. A reroute recomputes everything.** The new route is computed from the position to the far destination as if the previous one did not exist, so a 600 km trip costs the full 11 to 31 s for a deviation of a few hundred meters. The follower keeps the old route meanwhile (so it is not unsafe), but the new line and the new guidance arrive late (reported by the owner for rc.18 and rc.19).
 - **F6. The kill-to-cancel contract is expensive.** Cancelling a reroute kills the `:core` process (the only cancel the host has); the restart is about 1.1 s plus a cold cache (F2 again). There is no cooperative cancel although `RouterDelegate` has one.
@@ -82,7 +82,7 @@ Each item says: idea, why it should work, expected effect, exactness (does the r
 
 ### 3.2 Search
 
-**S1. Two-tier search: quick as you type, full on pause or submit.** The wrapper returns as soon as the first batch with at least N hits arrives (N = 5, with a soft deadline after the first non-empty batch of about 250 ms) and cancels the engine's search; the full search (today's behaviour) runs when the user pauses for about 600 ms, presses the search key, or browses a category. The list is replaced when the full answer arrives only if it differs (no flicker for identical lists).
+**S1. Two-tier search: quick as you type, full on pause or submit. (Retracted by the measurements: the engine emits a single batch, so there is no earlier first batch to return; see section 7. The idea survives only as "fast text first, exact text later", which section 7 replaces with a better one.)** The wrapper returns as soon as the first batch with at least N hits arrives (N = 5, with a soft deadline after the first non-empty batch of about 250 ms) and cancels the engine's search; the full search (today's behaviour) runs when the user pauses for about 600 ms, presses the search key, or browses a category. The list is replaced when the full answer arrives only if it differs (no flicker for identical lists).
 - Expected: the 3 to 4 s tail disappears for typing; the typical case follows the spike's first-batch figure (median 0.6 s, p95 1.7 s on a loaded phone) and then the items below. Needs: a `quick` flag in the protocol (`SearchArgs`), the native early return, and a UI that treats a quick result as provisional.
 - Risk: the first batch ranks differently from the final list; mitigated by replacing when the full answer arrives.
 
@@ -131,3 +131,42 @@ A faster loop: all the Spanish regions are already on this PC (`~/mapas-data/rel
 1. Permission to use the Pixel 8 for Wave 1 (install a build with the extra timing lines, copy the seven regions, run the matrix and a fixed list of searches, restore the phone).
 2. Whether to warm the core in the background (S3b) without a switch, with a switch, or only on focus of the search field (S3a).
 3. For R1: is a slightly longer route right after a reroute (refined a few seconds later) acceptable, and should the refinement be silent or offered with the faster-route card.
+
+## 7. Measured on the Pixel 8 (2026-10-17, owner's permission) and what changed
+
+Setup: debug build of master plus the bench; first the seven regions of the long-route A/B, then all of Spain (26 `.mwm` files incl. World, 1.2 GB more copied with `run-as`); the real app driven by `uiautomator` input and the `UMSEARCH`/`UMROUTE`/`UMCORE` logs; the in-process bench `--ez urban true` (new: everyday routes and searches with repeats). Raw logs are in `~/mapas-data/bench/speed/` (not in the repo). Single runs on a phone that other sessions also use; the same query varied by up to 70 % between runs.
+
+**Routes (core alone, Sol to the destination, each repeated 4 times; same with all of Spain)**
+
+| Trip | car | on foot |
+|---|---|---|
+| Sol to Gran Via, 0.8 km | 220 to 455 ms | 330 ms |
+| Sol to Atocha, 3 km | 230 to 250 ms | 430 ms |
+| Sol to Chamartin, 12 km | 330 to 410 ms | **1,300 ms** |
+| Sol to Barajas, 22 km | 290 to 330 ms | - |
+| Sol to Alcala de Henares, 21 km | 360 to 415 ms | - |
+
+In the app (binder, one core process): car 435 to 441 ms, on foot 573 to 639 ms, bike 696 ms for the 470 m Sol to Gran Via trip; it was on screen less than 2 s after the tap.
+- A 0.8 km route costs about as much as a 22 km one: **the cost is fixed**. `simpleperf` over 8 s of urban routes: **64.5 % is `routing::DeserializeIndexGraph`** (called from `IndexGraphLoaderImpl::GetIndexGraph`, first reached by the dead-end check of the start snapping, `FillDeadEndsCache`), i.e. the router reads and decodes the whole road graph of the region again for every route, and another 14 to 21 % is `free`/`malloc` of that work. This is the "everything is rebuilt per request" cost C4 of `long-routes-perf.md`, now with a number: it is about 150 to 200 ms of every urban route, and it is also paid by every reroute.
+- Having all of Spain installed (26 maps against 7) does not change the route times; core start plus map scan is 0.25 s in the bench (1.2 s in the app on the first search).
+
+**Search (real app, map centred on Madrid)**
+
+| Query | before | with linking words removed (new) |
+|---|---|---|
+| gran via | 0.76 to 1.06 s | unchanged (no linking word) |
+| puerta del sol | 5.1 s (bench 2.2 to 3.6 s) | 1.3 to 1.8 s |
+| plaza de espana | 8.9 s (bench 7.2 to 9.1 s) | 1.3 to 2.2 s |
+| calle de alcala | about 8 s | 1.5 to 2.7 s |
+| paseo del prado | 3.7 s | 1.4 to 2.1 s |
+
+- **The cause of the multi-second searches is the linking words.** Same engine, same map: `plaza espana` 0.85 s against `plaza de espana` 9.0 s; `puerta sol` 0.78 s against `puerta del sol` 3.6 s; `calle alcala` 0.9 s against `calle de alcala` 7.8 s; `alcala` 0.77 s; `plaza de` alone 4.6 s against `plaza` 0.77 s. Every Spanish place name has "de" or "del"; the engine has no stop-word handling for names (only for house numbers). `simpleperf` of the slow search: `coding::SparseCBV::GetBit` (intersecting very large candidate sets), `IntervalIndex::ForEachLeaf`, `ReaderCache::ReadPage` and plain `read`/`lseek` syscalls (about 25 % of the samples), plus allocator churn.
+- Dropping the words and putting the names that contain the typed phrase first gives the same first results (`plaza de espana`: same top four; `calle de alcala`, `puerta del sol`: same top six; `paseo del prado`: top five; `plaza de cibeles`: top four), so it **was implemented** (`QueryParticles`, `PlaceLocaleSearchEngine`, 13 JVM tests). The tail of the list differs from the exact search. This replaces S1's "two tiers": there is no early batch to return, and an exact second tier would cost 5 to 9 s and, without cancel (R3), would hold the lane.
+- The engine emits **one batch** and the end marker follows 6 to 480 ms later (UMCORE `Emitting a new batch`), so F3 and S1 were wrong about a cheaper first batch.
+- Engine settings tried through a temporary file read by the native search (removed, not shipped): without addresses 40 % faster on fast queries (gran via 386 to 238 ms, atocha 367 to 202 ms) but nothing on slow ones, and the list needs the address line; asking for 8 results instead of 20: no difference (the cost is in finding candidates, not in ranking); viewport-only mode with a 20 km or 5 km radius: slow queries about half (plaza de espana 8.2 to 4.6 and 3.3 s) but fewer results for far or specific queries (`gran via 30`: 5 to 6 results instead of 20). None adopted.
+- Typing a query in the real app sent a single search (the field's 250 ms debounce works).
+
+**Consequences for the plan**
+1. Search: done for the linking words. Left: the first search after starting the app (engine ready 1.2 s, cities boundaries load 0.3 s, then 0.8 s of search) which S3 (warm-up) targets, and the remaining 0.4 to 0.8 s of normal queries.
+2. A new item for route, **R8: keep the deserialized road graph between routes, bounded**. It is the same idea as the removed `cache` switch (measured then: urban 304 to 84 ms, reroute 9 508 to 289 ms) but limited to the two most recently used maps and dropped after a few idle minutes, so it does not pin 340 MB after a long trip. Expected: urban routes and reroutes inside a region from about 220 ms to about 85 ms (2 to 3 times), on foot from 330 to about 150 ms. It needs the CoMaps patches of the old switch (persistent loader and the handle fix) restored in a bounded form.
+3. R1 to R3 stay as they are; they target the long trips (14 to 32 s), not the everyday ones.
