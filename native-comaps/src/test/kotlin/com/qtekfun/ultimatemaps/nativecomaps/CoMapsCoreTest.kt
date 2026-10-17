@@ -22,6 +22,8 @@ internal class FakeBridge : NativeBridge {
 
     override fun init(apk: String, writableDir: String, tmpDir: String, locale: String) = initError
     override fun refreshMaps() = 3
+    var trims = 0
+    override fun trimCaches() { trims++ }
     override fun search(
         query: String, hasPos: Boolean, lat: Double, lon: Double, limit: Int, timeoutMs: Int, locale: String,
     ): Array<String> {
@@ -56,6 +58,16 @@ class CoMapsCoreTest {
     private val b = LatLon(40.1, -3.1)
 
     private fun core(f: FakeBridge = FakeBridge()) = CoMapsCore(f).also { it.init("a.apk", "/maps", "/tmp") }
+
+    @Test fun `trimming before init does nothing and after init reaches the native core`() {
+        val f = FakeBridge()
+        val c = CoMapsCore(f)
+        c.trimCaches()
+        assertEquals(0, f.trims)
+        c.init("a.apk", "/maps", "/tmp")
+        c.trimCaches()
+        assertEquals(1, f.trims)
+    }
 
     @Test fun `init failure is reported`() {
         val f = FakeBridge().apply { initError = "missing classificator" }

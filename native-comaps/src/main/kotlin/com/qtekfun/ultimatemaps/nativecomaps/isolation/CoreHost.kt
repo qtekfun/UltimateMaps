@@ -117,6 +117,9 @@ class CoreHost(private val core: CoreHandle, private val maxParked: Int = 4) {
 
     private fun optionsOf(f: Int) = com.qtekfun.ultimatemaps.core.routing.RouteOptions.fromFlags(f)
 
+    /** Android asked this process for memory: the core drops what it keeps between routes (it skips it while a route runs). */
+    fun trimCaches() = core.trimCaches()
+
     /** Number of replies parked and not yet fetched (tests and diagnostics). */
     val parkedCount: Int get() = synchronized(lock) { parked.size }
 }

@@ -7,6 +7,7 @@ package com.qtekfun.ultimatemaps.nativecomaps
 internal class NativeCore : NativeBridge {
     external fun nativeInit(apk: String, writableDir: String, tmpDir: String, locale: String): String
     external fun nativeRefreshMaps(): Int
+    external fun nativeTrimCaches()
 
     /** Isolated core process only: native crashes end the process quietly and append a note to [path] (`um_crash.hpp`). */
     external fun nativeInstallCrashNote(path: String)
@@ -23,6 +24,7 @@ internal class NativeCore : NativeBridge {
         nativeInit(apk, writableDir, tmpDir, locale)
 
     override fun refreshMaps(): Int = nativeRefreshMaps()
+    override fun trimCaches() = nativeTrimCaches()
 
     override fun installCrashNote(path: String) {
         try {
@@ -66,6 +68,9 @@ internal interface NativeBridge {
     /** Returns "" if all is well, or the error message. */
     fun init(apk: String, writableDir: String, tmpDir: String, locale: String): String
     fun refreshMaps(): Int
+
+    /** Frees the memory kept between routes; nothing to do for a fake. */
+    fun trimCaches() = Unit
 
     /** See [NativeCore.installCrashNote]; nothing to do for a fake. */
     fun installCrashNote(path: String) = Unit

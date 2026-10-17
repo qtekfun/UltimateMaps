@@ -494,6 +494,15 @@ int Core::RefreshMaps()
   return static_cast<int>(m_impl->localFiles.size());
 }
 
+void Core::TrimCaches()
+{
+  std::unique_lock<std::mutex> lock(m_impl->mu, std::try_to_lock);
+  if (!lock.owns_lock() || !m_impl->initialized)
+    return;
+  for (auto & [vehicle, router] : m_impl->routers)
+    router->TrimCaches();
+}
+
 namespace
 {
 // Fills phone, website, wheelchair and opening hours of |hit| from the feature |id|. Never throws: a map that went away
