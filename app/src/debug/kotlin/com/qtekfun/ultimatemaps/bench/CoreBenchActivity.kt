@@ -43,9 +43,46 @@ class CoreBenchActivity : Activity() {
         // `--es search "<query>" [--es near "lat,lon"]`: runs the free-text search of the core and logs every result (name,
         // address, category, rank); used to look at how addresses with a house number are answered.
         val searchQuery = intent?.getStringExtra("search")
+        // `--ez urban true`: everyday latency in Madrid: short routes by car, on foot and with guidance, and typical searches,
+        // each repeated (`--ei runs <n>`, default 4) so the first (cold) call can be told from the warm ones.
+        val urban = intent?.getBooleanExtra("urban", false) == true
         thread(name = "umbench") {
-            runCatching { if (searchQuery != null) dumpSearch(searchQuery, intent?.getStringExtra("near")) else if (exits) dumpExits() else if (tunnels) dumpTunnels() else if (reroute) dumpReroute() else if (matrix) dumpMatrix() else if (guidanceOnly) dumpGuidance() else run() }.onFailure { Log.e(tag, "FAILED: $it", it) }
+            runCatching { if (searchQuery != null) dumpSearch(searchQuery, intent?.getStringExtra("near")) else if (urban) dumpUrban() else if (exits) dumpExits() else if (tunnels) dumpTunnels() else if (reroute) dumpReroute() else if (matrix) dumpMatrix() else if (guidanceOnly) dumpGuidance() else run() }.onFailure { Log.e(tag, "FAILED: $it", it) }
         }
+    }
+
+    /** Madrid everyday latency: ms of each call, no coordinates. See `docs/phase2/speed-plan.md`. */
+    private fun dumpUrban() {
+        val core = CoMapsCore()
+        val t = SystemClock.elapsedRealtime()
+        core.init(applicationInfo.sourceDir, File(filesDir, "maps-core").absolutePath, cacheDir.absolutePath, "es")
+        Log.i(tag, "urban init_ms=${SystemClock.elapsedRealtime() - t} maps=${core.refreshMaps()} refresh_ms=${SystemClock.elapsedRealtime() - t}")
+        val runs = (intent?.getIntExtra("runs", 4) ?: 4).coerceIn(1, 10)
+        val sol = LatLon(40.4168, -3.7038)
+        val places = listOf(
+            "GranVia" to LatLon(40.4200, -3.7050), "Atocha" to LatLon(40.4065, -3.6890), "Chamartin" to LatLon(40.4725, -3.6824),
+            "Barajas" to LatLon(40.4719, -3.5626), "Alcala" to LatLon(40.3482, -3.8392),
+        )
+        for (withGuidance in listOf(false, true)) {
+            val router = core.routingEngine(withGuidance = withGuidance)
+            for ((name, to) in places) for (profile in listOf(RoutingProfile.CAR, RoutingProfile.FOOT)) {
+                if (profile == RoutingProfile.FOOT && name in setOf("Barajas", "Alcala")) continue
+                repeat(runs) { run ->
+                    val t0 = SystemClock.elapsedRealtime()
+                    val out = router.routeDetailed(RouteRequest(sol, to, profile = profile))
+                    Log.i(tag, "urban route guidance=$withGuidance to=$name profile=${profile.name} run=$run code=${out.code} ms=${SystemClock.elapsedRealtime() - t0} m=${out.plan?.distanceMeters?.toInt()}")
+                }
+            }
+        }
+        val engine = core.searchEngine("es")
+        for (q in listOf("gran via", "calle mayor", "farmacia", "restaurante", "plaza de espana", "atocha", "gran via 30")) {
+            repeat(runs) { run ->
+                val t0 = SystemClock.elapsedRealtime()
+                val n = engine.search(q, sol, 20).size
+                Log.i(tag, "urban search q='$q' run=$run results=$n ms=${SystemClock.elapsedRealtime() - t0}")
+            }
+        }
+        Log.i(tag, "FIN urban")
     }
 
     /** One free-text search, every result logged. The near point (if any) is only used to bias the ranking and is not logged. */
