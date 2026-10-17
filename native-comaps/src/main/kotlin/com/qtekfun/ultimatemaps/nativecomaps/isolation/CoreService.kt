@@ -19,7 +19,7 @@ import com.qtekfun.ultimatemaps.nativecomaps.CoMapsCore
  * binding costs nothing until a search or a route is actually asked for.
  */
 class CoreService : Service() {
-    private val host by lazy {
+    private val hostLazy = lazy {
         val core = CoMapsCore() // loads the native library: only in this process
         runCatching {
             val dir = java.io.File(noBackupFilesDir, "diagnostics").also { it.mkdirs() }
@@ -27,6 +27,7 @@ class CoreService : Service() {
         }
         CoreHost(core)
     }
+    private val host get() = hostLazy.value
 
     private val binder = object : Binder() {
         override fun onTransact(code: Int, data: Parcel, reply: Parcel?, flags: Int): Boolean {
@@ -44,6 +45,16 @@ class CoreService : Service() {
     }
 
     override fun onBind(intent: Intent?): IBinder = binder
+
+    /**
+     * The system wants memory back (this process is cached or the device is low): the core drops the road graphs it keeps between
+     * routes. They are read again, about 0.2 s for a city, on the next route. Does not start the core just to trim it.
+     */
+    override fun onTrimMemory(level: Int) {
+        super.onTrimMemory(level)
+        val low = level == TRIM_MEMORY_RUNNING_LOW || level == TRIM_MEMORY_RUNNING_CRITICAL || level >= TRIM_MEMORY_BACKGROUND
+        if (low && hostLazy.isInitialized()) host.trimCaches()
+    }
 
     // Not sticky and not foreground: the main process binds when it needs the core and the system may reclaim the
     // process when nobody is bound. The client simply starts it again (lazily) on the next call.

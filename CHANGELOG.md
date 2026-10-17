@@ -4,6 +4,12 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 
 ## [Unreleased]
 
+## [0.1.0-rc.35] - 2026-10-17
+
+### Changed
+
+- **Routes inside a city are two to ten times faster.** The offline engine used to read and decode the whole road network of the region for every route, which was about two thirds of the time of a short route. It now keeps the network of the two maps used last and gives the memory back when Android asks for it. Sol to Gran Vía by car went from 220 to 65 ms and on foot from 330 to 33 ms; reroutes and the long routes are 5 to 30 % faster too, with exactly the same routes. The engine uses about 60 to 100 MB more while it is in use.
+
 ## [0.1.0-rc.34] - 2026-10-17
 
 ### Changed

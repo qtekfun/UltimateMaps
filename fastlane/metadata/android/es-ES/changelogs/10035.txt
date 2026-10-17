@@ -1,0 +1,1 @@
+Versión candidata: las rutas dentro de una ciudad son de dos a diez veces más rápidas (se guarda en memoria la red de carreteras de los últimos mapas); mismas rutas que antes.

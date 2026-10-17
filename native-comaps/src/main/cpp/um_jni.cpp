@@ -103,6 +103,11 @@ JNIEXPORT jint JNICALL Java_com_qtekfun_ultimatemaps_nativecomaps_NativeCore_nat
   return um::Core::Instance().RefreshMaps();
 }
 
+JNIEXPORT void JNICALL Java_com_qtekfun_ultimatemaps_nativecomaps_NativeCore_nativeTrimCaches(JNIEnv *, jobject)
+{
+  um::Core::Instance().TrimCaches();
+}
+
 // Returns kSearchStride strings per result: name, address, category, lat, lon, phone, website, wheelchair, opening hours.
 // Keep in sync with SearchWire in CoMapsCore.kt (version 2; version 1 was the first five only).
 constexpr jsize kSearchStride = 9;

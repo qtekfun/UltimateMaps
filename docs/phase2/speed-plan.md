@@ -170,3 +170,24 @@ In the app (binder, one core process): car 435 to 441 ms, on foot 573 to 639 ms,
 1. Search: done for the linking words. Left: the first search after starting the app (engine ready 1.2 s, cities boundaries load 0.3 s, then 0.8 s of search) which S3 (warm-up) targets, and the remaining 0.4 to 0.8 s of normal queries.
 2. A new item for route, **R8: keep the deserialized road graph between routes, bounded**. It is the same idea as the removed `cache` switch (measured then: urban 304 to 84 ms, reroute 9 508 to 289 ms) but limited to the two most recently used maps and dropped after a few idle minutes, so it does not pin 340 MB after a long trip. Expected: urban routes and reroutes inside a region from about 220 ms to about 85 ms (2 to 3 times), on foot from 330 to about 150 ms. It needs the CoMaps patches of the old switch (persistent loader and the handle fix) restored in a bounded form.
 3. R1 to R3 stay as they are; they target the long trips (14 to 32 s), not the everyday ones.
+
+## 8. R8 done: a bounded road-graph cache (CoMaps patch 0005)
+
+What it is: `IndexRouter` keeps one `IndexGraphLoader` between routes (same avoid options, at most 10 minutes old because its clock for conditional access is fixed at creation). After every route it keeps the decoded graph and geometry loader of the **two most recently used maps** and drops the rest, and frees the handles of the dropped maps only (`MwmDataSource::FreeHandlesExcept`). The graphs point into the handles, so they are never freed while a graph needs them (the bug that crashed the old `cache` switch). `Core::TrimCaches` (try-lock: it does nothing while a route runs) drops everything; the `:core` service calls it from `onTrimMemory` when the system is low or the process is cached. A map refresh destroys the routers and with them the cache.
+
+Measured on the Pixel 8, all of Spain installed (26 maps), same device and session, patch off against on:
+
+| Trip (Sol to ...) | car before | car now | on foot before | on foot now |
+|---|---|---|---|---|
+| Gran Via 0.8 km | 220 ms | 65 ms | 330 ms | 33 ms |
+| Atocha 3 km | 240 ms | 65 ms | 430 ms | 100 ms |
+| Chamartin 12 km | 340 ms | 140 ms | 1,300 ms | 980 ms |
+| Barajas 22 km | 300 ms | 93 ms | - | - |
+| Alcala 21 km | 380 ms | 150 ms | - | - |
+
+- Real app (one core process, the 470 m trip): car 441 to 117-144 ms, on foot 573-639 to 104-180 ms, bike 696 to 107 ms. The first route of each vehicle after the core starts, or after a trim, still reads the graph (car 367-420 ms, on foot 495-618 ms, bike 589 ms).
+- **Same routes**: all 12 pairs of the long-route matrix give exactly the same length, duration and point count as the earlier baseline; every step of the simulated Madrid to Barcelona drive (initial, nine reroutes, way back) matches the unpatched run.
+- Long routes, matrix first run, ms (patch off to on): Madrid to Guadalajara 1,286 to 1,099; Medinaceli 2,821 to 1,836; Zaragoza 13,287 to 10,640; Lleida 9,982 to 9,547; Tarragona 17,662 to 14,474; Barcelona 23,437 to 20,625; Zaragoza to Lleida 2,581 to 1,989; Zaragoza to Barcelona 15,325 to 12,381; Lleida to Barcelona 11,310 to 7,823; Barcelona to Madrid 46,865 to 39,476. The drive with nine reroutes: 208.7 s to 200.3 s in total (reroute 9: 783 to 448 ms; the urban step at the end 358 to 105 ms).
+- Memory (bench, in-process, the simulated drive): native heap 125-138 MB to 197-253 MB, PSS 350-379 MB to 414-473 MB, i.e. 60 to 100 MB more, bounded (the removed switch held 340 MB). In the app (all three vehicles used): core process PSS 380 MB; after `onTrimMemory` (moderate) 279 MB and native heap 280 to 175 MB; the next routes worked and re-read their graphs.
+- **A finding for the long routes:** with all of Spain installed the long routes are much slower than in the seven-region A/B (Madrid to Barcelona 23.4 s against 15 s, Barcelona to Madrid 46.9 s against 31.7 s, Madrid to Zaragoza 13.3 s against 7.5 s): more maps give the leaps stage more candidates. The owner's phone has all of Spain, so R2 (one-to-many candidate legs) and R1 (splice reroute) matter more than the first table suggested.
+- Not verified: behaviour under a real low-memory kill; a download or map update while the cache is held (the refresh drops it, tested only by reading the code); conditional access (opening hours of roads) after ten minutes of the cache (the loader is recreated, not tested with such data).
