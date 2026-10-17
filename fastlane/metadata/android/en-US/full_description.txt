@@ -1,14 +1,14 @@
 UltimateMaps is an offline, private map app. The map, the search and the routes are all computed on your phone: no live traffic, no accounts, no ads, no analytics and no telemetry. It works without Google Play Services.
 
-This is a release candidate of an MVP, not a finished app. What works today:
+This is the first stable release; the app is young and some parts are not finished. What works today:
 
 • Offline vector map (MapLibre + PMTiles), light and dark theme.
 • Region downloads from the Maps screen: resumable and verified with SHA-256. A no-network mode blocks every connection of the app.
 • Offline search for places and addresses, powered by the CoMaps engine.
-• Route preview by car, on foot or by bike (no turn-by-turn guidance yet).
+• Routes by car, on foot or by bike, with up to five stops, and turn-by-turn navigation with voice guidance, lanes and speed limits.
 • Saved places and lists, with GPX and KML import and export.
 • Opens Google Maps, Apple Maps, Waze and geo: links.
 
-Not there yet: turn-by-turn voice navigation, lane guidance and speed limits, a motorcycle profile and twisty routes, track recording, Nextcloud sync, Google Takeout import, Android Auto.
+Not there yet: a motorcycle profile and twisty routes, Nextcloud sync, Android Auto. Very long routes across many regions can take 20 to 40 seconds to calculate.
 
 Only Spain is available for now. Map data comes from OpenStreetMap (© OpenStreetMap contributors, ODbL) and is downloaded only when you ask. Free software, GPL-3.0-or-later.

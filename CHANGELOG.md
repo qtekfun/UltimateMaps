@@ -4,6 +4,24 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 
 ## [Unreleased]
 
+## [0.1.0] - 2026-10-17
+
+First stable release. It collects everything of the release candidates `0.1.0-rc.1` to `rc.35` below; the last two made the engine much faster.
+
+### What it is
+
+- An offline, private maps and navigation app for Android (Spain for now): the map, the search and the routes are computed on the phone, with no accounts, no ads and no telemetry. The F-Droid build (`foss`) has no Google or proprietary code; the optional `play` build adds Fused Location and, with your own TomTom key, live traffic.
+- Offline map, region downloads, search of places and addresses, routes by car, on foot or by bike with stops, turn-by-turn navigation with voice, saved places and lists, GPX and KML import and export, optional fuel prices, speed cameras and incidents, public transport and other optional data sources. See the sections below for each feature and for what was and was not tested on a device.
+
+### Speed (the last two candidates)
+
+- Searches with "de", "del", "la"... went from 3 to 9 seconds to about 1.5 s; routes inside a city are two to ten times faster; a long trip such as Barcelona to Madrid no longer stalls for 20 seconds (42 s to 22 s). Details in `0.1.0-rc.34` and `0.1.0-rc.35`.
+
+### Known limits
+
+- Long routes across many regions still take 20 to 40 seconds to calculate (with all of Spain installed), and the first search after opening the app about 2.5 s.
+- The road tests were made by the author; the translations other than Spanish and English have not been reviewed by native speakers; there is no motorcycle profile, no Nextcloud sync and no Android Auto (dropped).
+
 ## [0.1.0-rc.35] - 2026-10-17
 
 ### Changed

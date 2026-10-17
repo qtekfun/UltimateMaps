@@ -1,0 +1,1 @@
+First stable release: offline maps, search and routes on your phone, turn-by-turn navigation with voice, no accounts and no telemetry. Spain only.

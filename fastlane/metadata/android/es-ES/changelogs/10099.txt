@@ -1,0 +1,1 @@
+Primera versión estable: mapas, búsqueda y rutas sin conexión en tu teléfono, navegación giro a giro con voz, sin cuentas ni telemetría. Solo España.
