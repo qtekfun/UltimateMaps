@@ -102,6 +102,10 @@ public:
   // Rescans writableDir and registers the new mwm files; rebuilds the routers. Returns how many maps there are.
   int RefreshMaps();
 
+  // Drops the road graphs the routers keep between routes and the map handles they pin (Android asked for memory). Does nothing
+  // while a route is being calculated: the caches are in use then and the next trim will do it.
+  void TrimCaches();
+
   std::vector<SearchHit> Search(std::string const & query, bool hasPos, double lat, double lon, int limit,
                                 int timeoutMs, std::string const & locale, bool categorial = false);
 

@@ -51,6 +51,9 @@ interface CoreHandle {
     /** Rescans the maps directory. Returns how many maps are registered. */
     fun refreshMaps(): Int
 
+    /** Frees the memory the core keeps between routes (the road graphs of the last maps). A no-op while a route is being calculated. */
+    fun trimCaches() = Unit
+
     fun searchEngine(locale: String = "en", timeoutMs: Int = 8000): SearchEngine
 
     fun routingEngine(timeoutSec: Int = 120, withGuidance: Boolean = false): DetailedRoutingEngine
@@ -107,6 +110,10 @@ class CoMapsCore internal constructor(private val bridge: NativeBridge) : CoreHa
     override fun refreshMaps(): Int {
         check(initialized) { "CoMapsCore.init() not called" }
         return bridge.refreshMaps()
+    }
+
+    override fun trimCaches() {
+        if (initialized) bridge.trimCaches()
     }
 
     override fun searchEngine(locale: String, timeoutMs: Int): SearchEngine =

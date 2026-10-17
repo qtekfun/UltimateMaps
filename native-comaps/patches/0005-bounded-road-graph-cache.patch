@@ -1,0 +1,328 @@
+diff --git a/libs/routing/data_source.hpp b/libs/routing/data_source.hpp
+index 105f03b0c..91d9c06cb 100644
+--- a/libs/routing/data_source.hpp
++++ b/libs/routing/data_source.hpp
+@@ -7,7 +7,10 @@
+ 
+ #include "base/lru_cache.hpp"
+ 
++#include <algorithm>
++#include <iterator>
+ #include <map>
++#include <vector>
+ 
+ namespace routing
+ {
+@@ -56,6 +59,15 @@ public:
+     m_handles2.clear();
+   }
+ 
++  // UltimateMaps: frees every handle except those of |keep|, whose graphs a persistent loader still points into.
++  void FreeHandlesExcept(std::vector<NumMwmId> const & keep)
++  {
++    m_featureSources.Clear();
++    m_handles2.clear();
++    for (auto it = m_handles.begin(); it != m_handles.end();)
++      it = std::find(keep.begin(), keep.end(), it->first) == keep.end() ? m_handles.erase(it) : std::next(it);
++  }
++
+   bool IsLoaded(platform::CountryFile const & file) const { return m_dataSource.IsLoaded(file); }
+ 
+   enum SectionStatus
+diff --git a/libs/routing/index_graph_loader.cpp b/libs/routing/index_graph_loader.cpp
+index f07674ca1..2a7941c17 100644
+--- a/libs/routing/index_graph_loader.cpp
++++ b/libs/routing/index_graph_loader.cpp
+@@ -26,6 +26,7 @@
+ #include "defines.hpp"
+ 
+ #include <algorithm>
++#include <iterator>
+ #include <map>
+ #include <unordered_map>
+ 
+@@ -63,6 +64,7 @@ public:
+   Geometry & GetGeometry(NumMwmId numMwmId) override;
+   vector<RouteSegment::SpeedCamera> GetSpeedCameraInfo(Segment const & segment) override;
+   void Clear() override;
++  std::vector<NumMwmId> Retain(size_t keep) override;
+ 
+ private:
+   using GeometryPtrT = shared_ptr<Geometry>;
+@@ -81,7 +83,9 @@ private:
+     GeometryPtrT m_geometry;
+     // May be nullptr, because it has "lazy" loading.
+     GraphPtrT m_graph;
++    uint64_t m_lastUse = 0;  // UltimateMaps: see Retain()
+   };
++  uint64_t m_useTick = 0;
+   std::unordered_map<NumMwmId, GraphAttrs> m_graphs;
+ 
+   ankerl::unordered_dense::map<NumMwmId, SpeedCamerasMapT> m_cachedCameras;
+@@ -94,6 +98,7 @@ private:
+ IndexGraph & IndexGraphLoaderImpl::GetIndexGraph(NumMwmId numMwmId)
+ {
+   auto res = m_graphs.try_emplace(numMwmId, GraphAttrs());
++  res.first->second.m_lastUse = ++m_useTick;
+   if (res.second || res.first->second.m_graph == nullptr)
+   {
+     // Create graph using (or initializing) existing geometry.
+@@ -105,6 +110,7 @@ IndexGraph & IndexGraphLoaderImpl::GetIndexGraph(NumMwmId numMwmId)
+ Geometry & IndexGraphLoaderImpl::GetGeometry(NumMwmId numMwmId)
+ {
+   auto res = m_graphs.try_emplace(numMwmId, GraphAttrs());
++  res.first->second.m_lastUse = ++m_useTick;
+   if (res.second)
+   {
+     // Create geometry only, graph stays nullptr.
+@@ -184,6 +190,27 @@ void IndexGraphLoaderImpl::Clear()
+   m_graphs.clear();
+ }
+ 
++std::vector<NumMwmId> IndexGraphLoaderImpl::Retain(size_t keep)
++{
++  std::vector<std::pair<uint64_t, NumMwmId>> byUse;
++  byUse.reserve(m_graphs.size());
++  for (auto const & [id, attrs] : m_graphs)
++    byUse.emplace_back(attrs.m_lastUse, id);
++  std::sort(byUse.begin(), byUse.end(), [](auto const & l, auto const & r) { return l.first > r.first; });
++
++  std::vector<NumMwmId> kept;
++  for (size_t i = 0; i < byUse.size(); ++i)
++  {
++    if (i < keep)
++      kept.push_back(byUse[i].second);
++    else
++      m_graphs.erase(byUse[i].second);
++  }
++  for (auto it = m_cachedCameras.begin(); it != m_cachedCameras.end();)
++    it = std::find(kept.begin(), kept.end(), it->first) == kept.end() ? m_cachedCameras.erase(it) : std::next(it);
++  return kept;
++}
++
+ }  // namespace
+ 
+ bool ReadSpeedCamsFromMwm(MwmValue const & mwmValue, SpeedCamerasMapT & camerasMap)
+diff --git a/libs/routing/index_graph_loader.hpp b/libs/routing/index_graph_loader.hpp
+index 3e56ea851..cf62e2bcd 100644
+--- a/libs/routing/index_graph_loader.hpp
++++ b/libs/routing/index_graph_loader.hpp
+@@ -29,6 +29,14 @@ public:
+   virtual std::vector<RouteSegment::SpeedCamera> GetSpeedCameraInfo(Segment const & segment) = 0;
+   virtual void Clear() = 0;
+ 
++  // UltimateMaps: keeps the geometry and graph of the |keep| most recently used maps and drops the rest. Returns the ids
++  // kept, so the caller can release the handles of the others. The default drops everything.
++  virtual std::vector<NumMwmId> Retain(size_t keep)
++  {
++    Clear();
++    return {};
++  }
++
+   static std::unique_ptr<IndexGraphLoader> Create(VehicleType vehicleType, bool loadAltitudes,
+                                                   std::shared_ptr<VehicleModelFactoryInterface> vehicleModelFactory,
+                                                   std::shared_ptr<EdgeEstimator> estimator, MwmDataSource & dataSource,
+diff --git a/libs/routing/index_router.cpp b/libs/routing/index_router.cpp
+index 62675e1bc..d7494a6da 100644
+--- a/libs/routing/index_router.cpp
++++ b/libs/routing/index_router.cpp
+@@ -64,6 +64,7 @@
+ #include "defines.hpp"
+ 
+ #include <algorithm>
++#include <chrono>
+ #include <deque>
+ #include <iterator>
+ #include <map>
+@@ -89,6 +90,66 @@ double constexpr kMinDistanceToFinishM = 10000;
+ // Near MWMs criteria when choosing routing mode.
+ double constexpr kCloseMwmPointsDistanceM = 300000;
+ 
++// UltimateMaps: how many maps keep their decoded road graph between routes, and for how long a kept loader is trusted
++// (its clock for conditional access is fixed when it is created).
++size_t constexpr kRetainedMaps = 2;
++
++// UltimateMaps: the first attempt of a leg in LeapsOnly mode searches inside one map. When the target cannot be reached that way
++// the search only ends after it has visited the whole map (23 s for one leg of Barcelona to Madrid on a Pixel 8, while the
++// Joints retry then takes 0.2 s). Legs that do succeed take 0.1 to 1.1 s there, so this budget leaves room for slow phones.
++std::chrono::milliseconds constexpr kSingleMwmLegBudget{3000};
++
++/// The cancellation of the whole route plus a deadline of its own.
++class BudgetedCancellable final : public base::Cancellable
++{
++public:
++  BudgetedCancellable(base::Cancellable const & parent, std::chrono::milliseconds budget)
++    : m_parent(parent)
++    , m_end(std::chrono::steady_clock::now() + budget)
++  {}
++
++  bool IsCancelled() const override
++  {
++    return m_parent.IsCancelled() || std::chrono::steady_clock::now() >= m_end;
++  }
++
++  Status CancellationStatus() const override
++  {
++    auto const status = m_parent.CancellationStatus();
++    if (status != Status::Active)
++      return status;
++    return std::chrono::steady_clock::now() >= m_end ? Status::DeadlineExceeded : Status::Active;
++  }
++
++private:
++  base::Cancellable const & m_parent;
++  std::chrono::steady_clock::time_point const m_end;
++};
++int64_t constexpr kPersistentLoaderMaxAgeS = 600;
++
++int64_t SteadyNowS()
++{
++  return std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
++}
++
++/// Forwards to a loader that outlives the world graph (WorldGraph owns its loader through a unique_ptr).
++class SharedIndexGraphLoader final : public IndexGraphLoader
++{
++public:
++  explicit SharedIndexGraphLoader(std::shared_ptr<IndexGraphLoader> impl) : m_impl(std::move(impl)) {}
++
++  IndexGraph & GetIndexGraph(NumMwmId mwmId) override { return m_impl->GetIndexGraph(mwmId); }
++  Geometry & GetGeometry(NumMwmId numMwmId) override { return m_impl->GetGeometry(numMwmId); }
++  std::vector<RouteSegment::SpeedCamera> GetSpeedCameraInfo(Segment const & segment) override
++  {
++    return m_impl->GetSpeedCameraInfo(segment);
++  }
++  void Clear() override {}  // the owner decides when the cache goes away
++
++private:
++  std::shared_ptr<IndexGraphLoader> m_impl;
++};
++
+ double CalcMaxSpeed(NumMwmIds const & numMwmIds, VehicleModelFactoryInterface const & vehicleModelFactory,
+                     VehicleType vehicleType)
+ {
+@@ -299,6 +360,16 @@ void IndexRouter::ClearState()
+ {
+   m_roadGraph.ClearState();
+   m_directionsEngine->Clear();
++  // UltimateMaps: the kept graphs and geometry loaders point into the handles of their maps, so those stay; the others go.
++  if (m_persistentLoader)
++    m_dataSource.FreeHandlesExcept(m_persistentLoader->Retain(kRetainedMaps));
++  else
++    m_dataSource.FreeHandles();
++}
++
++void IndexRouter::TrimCaches()
++{
++  m_persistentLoader.reset();  // the graphs first: they point into the handles
+   m_dataSource.FreeHandles();
+ }
+ 
+@@ -1099,9 +1170,28 @@ unique_ptr<WorldGraph> IndexRouter::MakeWorldGraph()
+       m_numMwmIds, m_numMwmTree, m_vehicleType == VehicleType::Transit ? VehicleType::Pedestrian : m_vehicleType,
+       m_countryRectFn, m_dataSource);
+ 
+-  auto indexGraphLoader = IndexGraphLoader::Create(
+-      m_vehicleType == VehicleType::Transit ? VehicleType::Pedestrian : m_vehicleType, m_loadAltitudes,
+-      m_vehicleModelFactory, m_estimator, m_dataSource, routingOptions, m_currentTimeGetter);
++  unique_ptr<IndexGraphLoader> indexGraphLoader;
++  if (m_vehicleType != VehicleType::Transit)
++  {
++    // UltimateMaps: reuse the loader of the previous route while the avoid options are the same and it is not too old.
++    int64_t const now = SteadyNowS();
++    bool const reusable = m_persistentLoader && m_persistentLoaderOptions == routingOptions.GetOptions() &&
++                          now - m_persistentLoaderBirthS <= kPersistentLoaderMaxAgeS;
++    if (!reusable)
++    {
++      // Graphs first (they point into the handles); the old handles go at the end of the route like the other ones.
++      m_persistentLoader = IndexGraphLoader::Create(m_vehicleType, m_loadAltitudes, m_vehicleModelFactory, m_estimator,
++                                                    m_dataSource, routingOptions, m_currentTimeGetter);
++      m_persistentLoaderOptions = routingOptions.GetOptions();
++      m_persistentLoaderBirthS = now;
++    }
++    indexGraphLoader = make_unique<SharedIndexGraphLoader>(m_persistentLoader);
++  }
++  else
++  {
++    indexGraphLoader = IndexGraphLoader::Create(VehicleType::Pedestrian, m_loadAltitudes, m_vehicleModelFactory,
++                                                m_estimator, m_dataSource, routingOptions, m_currentTimeGetter);
++  }
+ 
+   if (m_vehicleType != VehicleType::Transit)
+   {
+@@ -1384,7 +1474,8 @@ bool IndexRouter::PointsOnEdgesSnapping::FindBestEdges(m2::PointD const & checkp
+ 
+ IndexRouter::RoutingResultT const * IndexRouter::RoutesCalculator::Calc(Segment const & beg, Segment const & end,
+                                                                         ProgressPtrT const & progress,
+-                                                                        double progressCoef)
++                                                                        double progressCoef,
++                                                                        base::Cancellable const * cancellable)
+ {
+   auto itCache = m_cache.insert({{beg, end}, {}});
+   auto * res = &itCache.first->second;
+@@ -1406,7 +1497,8 @@ IndexRouter::RoutingResultT const * IndexRouter::RoutesCalculator::Calc(Segment
+ 
+     using Visitor = JunctionVisitor<JointsStarter>;
+     AStarAlgorithm<Vertex, Edge, Weight>::Params<Visitor, AStarLengthChecker> params(
+-        jointStarter, jointStarter.GetStartJoint(), jointStarter.GetFinishJoint(), m_delegate.GetCancellable(),
++        jointStarter, jointStarter.GetStartJoint(), jointStarter.GetFinishJoint(),
++        cancellable ? *cancellable : m_delegate.GetCancellable(),
+         Visitor(jointStarter, m_delegate, kVisitPeriod, progress), AStarLengthChecker(m_starter));
+ 
+     RoutingResult<JointSegment, RouteWeight> route;
+@@ -1441,8 +1533,10 @@ IndexRouter::RoutingResultT const * IndexRouter::RoutesCalculator::Calc2Times(Se
+   /// @see RussiaMoscow_ItalySienaCenter_SplittedMotorway
+   /// Enter Tuscany motorway (43.5016115, 11.1872607) is splitted by MWM boundaries many times.
+ 
++  // UltimateMaps: a bounded first attempt (see kSingleMwmLegBudget); a leg that runs out of it goes on in Joints mode.
++  BudgetedCancellable const budget(m_delegate.GetCancellable(), kSingleMwmLegBudget);
+   m_starter.GetGraph().SetMode(WorldGraphMode::JointSingleMwm);
+-  auto const * r = Calc(beg, end, progress, progressCoef);
++  auto const * r = Calc(beg, end, progress, progressCoef, &budget);
+   if (r == nullptr)
+   {
+     m_starter.GetGraph().SetMode(WorldGraphMode::Joints);
+diff --git a/libs/routing/index_router.hpp b/libs/routing/index_router.hpp
+index c7ed18c95..245408d4e 100644
+--- a/libs/routing/index_router.hpp
++++ b/libs/routing/index_router.hpp
+@@ -34,6 +34,7 @@ class AStarProgress;
+ class DirectionsEngine;
+ class FakeEdgesContainer;
+ class IndexGraph;
++class IndexGraphLoader;
+ class IndexGraphStarter;
+ class RouteWeight;
+ class TrafficStash;
+@@ -78,6 +79,10 @@ public:
+   std::string GetName() const override { return m_name; }
+   void ClearState() override;
+ 
++  // UltimateMaps: drops the road graphs kept between routes and frees the map handles they pinned (memory pressure, idle).
++  // Never call it while a route is being calculated.
++  void TrimCaches();
++
+   void SetGuides(GuidesTracks && guides) override;
+   RouterResultCode CalculateRoute(Checkpoints const & checkpoints, m2::PointD const & startDirection,
+                                   bool adjustToPrevRoute, RouterDelegate const & delegate, Route & route) override;
+@@ -205,7 +210,7 @@ private:
+ 
+     using ProgressPtrT = std::shared_ptr<AStarProgress>;
+     RoutingResultT const * Calc(Segment const & beg, Segment const & end, ProgressPtrT const & progress,
+-                                double progressCoef);
++                                double progressCoef, base::Cancellable const * cancellable = nullptr);
+     // Makes JointSingleMwm first and Joints then, if first attempt was failed.
+     RoutingResultT const * Calc2Times(Segment const & beg, Segment const & end, ProgressPtrT const & progress,
+                                       double progressCoef);
+@@ -289,5 +294,11 @@ private:
+   CountryParentNameGetterFn m_countryParentNameGetterFn;
+ 
+   TimeGetterT m_currentTimeGetter;
++
++  // UltimateMaps: the road graphs of the most recently used maps survive between routes (reading and decoding a region's
++  // graph is about two thirds of every short route). Created by MakeWorldGraph; bounded by kRetainedMaps after each route.
++  std::shared_ptr<IndexGraphLoader> m_persistentLoader;
++  RoutingOptions::OptionType m_persistentLoaderOptions = 0;
++  int64_t m_persistentLoaderBirthS = 0;
+ };
+ }  // namespace routing
