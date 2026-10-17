@@ -4,9 +4,9 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 
 ## [Unreleased]
 
-## [0.1.0] - 2026-10-17
+## [1.0.0] - 2026-10-17
 
-First stable release. It collects everything of the release candidates `0.1.0-rc.1` to `rc.35` below; the last two made the engine much faster.
+First stable release. It collects everything of the release candidates `0.1.0-rc.1` to `0.1.0-rc.35` below; the last two made the engine much faster.
 
 ### What it is
 

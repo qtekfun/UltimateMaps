@@ -2,7 +2,7 @@
 
 An Android maps and navigation app that is **offline and private**: map, search and routes are computed on the device, with no accounts and no telemetry (the F-Droid build has no live traffic; the optional `play` build can show it with your own TomTom key). It works without Google Play Services. Free software (GPLv3).
 
-> **Status: 0.1.0, the first stable release.** The app is young: it has been road-tested only by its author and some parts are not finished (see below).  See [`CHANGELOG.md`](CHANGELOG.md) for what exists and what is missing, and [`docs/mvp-plan.md`](docs/mvp-plan.md) for the plan.
+> **Status: 1.0.0, the first stable release.** The app is young: it has been road-tested only by its author and some parts are not finished (see below).  See [`CHANGELOG.md`](CHANGELOG.md) for what exists and what is missing, and [`docs/mvp-plan.md`](docs/mvp-plan.md) for the plan.
 
 ## What it does today
 
