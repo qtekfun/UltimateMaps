@@ -1,8 +1,8 @@
 # UltimateMaps
 
-An Android maps and navigation app that is **offline and private**: map, search and routes are computed on the device, with no real-time traffic, no accounts and no telemetry. It works without Google Play Services. Free software (GPLv3).
+An Android maps and navigation app that is **offline and private**: map, search and routes are computed on the device, with no accounts and no telemetry (the F-Droid build has no live traffic; the optional `play` build can show it with your own TomTom key). It works without Google Play Services. Free software (GPLv3).
 
-> **Status: release candidate (0.1.0-rc.3, test pre-releases).** It is an MVP under development, not a finished app. See [`CHANGELOG.md`](CHANGELOG.md) for what exists and what is missing, and [`docs/mvp-plan.md`](docs/mvp-plan.md) for the plan.
+> **Status: 1.0.0, the first stable release.** The app is young: it has been road-tested only by its author and some parts are not finished (see below).  See [`CHANGELOG.md`](CHANGELOG.md) for what exists and what is missing, and [`docs/mvp-plan.md`](docs/mvp-plan.md) for the plan.
 
 ## What it does today
 
@@ -12,7 +12,7 @@ An Android maps and navigation app that is **offline and private**: map, search 
 - Route preview by car, on foot or by bike, with up to 5 stops.
 - **Petrol stations (optional, off by default):** choose the fuels in Settings (LPG, petrol, diesel, CNG…), see the price over each station on the map, tap one to go there or add it as a stop. Prices come from the Spanish Ministry for the Ecological Transition (unofficial).
 - **Speed cameras and traffic (optional, off by default, one switch per category):** fixed cameras and average-speed sections, stretches where the DGT says mobile radars may operate (never exact points), live traffic incidents and V16 beacons, on the map and as spoken alerts ahead. Data from the DGT (CC BY) and OpenStreetMap (ODbL); traffic is downloaded only when you turn it on and never with your position. Informational and possibly out of date.
-- **Navigation screen with voice** (new, not yet verified on a device): turn banner, lanes, speed limit, arrival time, night and glove modes, a route simulator, and voice guidance in English, Spanish, Catalan, Galician, French, German, Portuguese and Italian.
+- **Turn-by-turn navigation with voice:** turn banner, lanes, speed limit, arrival time, night and glove modes, a route simulator, and voice guidance in English, Spanish, Catalan, Galician, French, German, Portuguese and Italian.
 - Saved places and lists, with GPX and KML import and export.
 - **Backup and restore of the settings** (Settings): save your preferences and the list of installed maps to a file (or everything, with your places, in one ZIP) and restore them on a new phone. No locations or credentials in the settings file; switches that start a download are not turned on by a restore.
 - Opens Google Maps, Apple Maps, Waze and `geo:` links.
@@ -20,7 +20,7 @@ An Android maps and navigation app that is **offline and private**: map, search 
 
 ## What it does not do (yet)
 
-Motorcycle profile and curvy routes, track recording, Nextcloud sync, Google Takeout import, Android Auto. Long routes can return "route not found" with few regions installed. See `docs/mapas-05-roadmap.md`.
+Motorcycle profile and curvy routes, Nextcloud sync, Android Auto (dropped). Long routes (hundreds of kilometres across many regions) take 20 to 40 seconds to calculate, and can return "route not found" when the regions along the way are not installed. See `docs/mapas-05-roadmap.md`.
 
 ## Data
 
