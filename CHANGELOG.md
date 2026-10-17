@@ -4,8 +4,11 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 
 ## [Unreleased]
 
+## [0.1.0-rc.34] - 2026-10-17
+
 ### Changed
 
+- **Searches with "de", "del", "la"... are several times faster.** The offline engine reads and intersects the whole list of places for every such word, so *plaza de España* took about 9 s, *puerta del sol* 5 s and *calle de Alcalá* 8 s on the Pixel 8 (with the map on Madrid). The text is now searched without the linking words and the names that contain what you typed go first; the top results are the same and the searches take about 1.3 to 2.7 s.
 - **Reroutes and route launches no longer rescan the maps when nothing changed.** Every reroute used to make the offline engine rebuild its routers, empty its search caches and reload the city boundaries, which also made the next search slower. It now rescans only after a download, an update or a delete.
 
 ## [0.1.0-rc.33] - 2026-10-16
