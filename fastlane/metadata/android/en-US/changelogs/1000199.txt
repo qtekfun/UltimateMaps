@@ -1,0 +1,1 @@
+Maps for China and other trips: the voice no longer tries to read Chinese, Japanese or Korean street names, and the maps screen finds the region that holds Beijing, Hong Kong, Chengdu and other Chinese cities.

@@ -57,6 +57,32 @@ class RegionSearchTest {
     }
 
     @Test
+    fun aChineseCityFindsTheProvinceThatHoldsIt() {
+        val china = RegionCatalog(
+            "t",
+            listOf(
+                Region("people-s-republic-of-china", "People's Republic of China", null, "2"),
+                leaf("china_hebei", "China - Hebei", "people-s-republic-of-china"),
+                leaf("china_guangdong", "China - Guangdong", "people-s-republic-of-china"),
+                leaf("china_shanghai", "China - Shanghai", "people-s-republic-of-china"),
+                leaf("china_shaanxi", "China - Shaanxi", "people-s-republic-of-china"),
+            ),
+        )
+        val chinaIndex = RegionSearch.Index(china)
+        fun found(q: String) = RegionSearch.filter(chinaIndex, q).map { it.region.id }
+        assertEquals(listOf("china_hebei"), found("pekin"))
+        assertEquals(listOf("china_hebei"), found("Beijing"))
+        assertEquals(listOf("china_guangdong"), found("hong kong"))
+        assertEquals(listOf("china_guangdong"), found("shenzhen"))
+        assertEquals(listOf("china_shaanxi"), found("xi'an"))
+        assertEquals(listOf("china_shanghai"), found("shanghai"))
+        assertEquals(
+            setOf("people-s-republic-of-china", "china_hebei", "china_guangdong", "china_shanghai", "china_shaanxi"),
+            found("china").toSet(),
+        )
+    }
+
+    @Test
     fun ancestorsCountAsLongAsOneWordIsInTheOwnName() {
         assertEquals(setOf("spain_catalonia_barcelona", "spain_catalonia_sub"), ids("cataluna barcelona").toSet())
         // "spain" alone only finds Spain itself, not its children.

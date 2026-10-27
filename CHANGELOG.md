@@ -4,6 +4,20 @@ All notable changes are listed here. The format follows [Keep a Changelog](https
 
 ## [Unreleased]
 
+## [1.0.1] - 2026-10-27
+
+### Added
+
+- **Chinese cities in the region search.** The map data is split by province and Beijing, Tianjin, Hong Kong, Macau, Hainan, Chengdu, Xi'an and other big cities are inside them, so searching for the city in the *Maps* screen now finds the province region that holds it (Beijing is in *Hebei*, Hong Kong and Shenzhen in *Guangdong*).
+
+### Changed
+
+- **The voice leaves out Chinese, Japanese and Korean characters of street names.** A Spanish or English voice cannot read them. "Yan'an Road 延安路" is spoken as "Yan'an Road" and a name that is only ideograms is not spoken at all, like a missing name; the screen still shows the whole name.
+
+### Data
+
+- Map data for the 28 Chinese regions of CoMaps is published as a separate data release, see `docs/phase2/china.md` (how it is built, what to install before travelling and what was and was not tested).
+
 ## [1.0.0] - 2026-10-17
 
 First stable release. It collects everything of the release candidates `0.1.0-rc.1` to `0.1.0-rc.35` below; the last two made the engine much faster.
