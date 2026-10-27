@@ -1,0 +1,1 @@
+Mapas para China y otros viajes: la voz ya no intenta leer nombres de calles en chino, japonés o coreano, y la pantalla de mapas encuentra la región que contiene Pekín, Hong Kong, Chengdu y otras ciudades chinas.

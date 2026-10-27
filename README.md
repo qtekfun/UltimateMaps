@@ -24,7 +24,7 @@ Motorcycle profile and curvy routes, Nextcloud sync, Android Auto (dropped). Lon
 
 ## Data
 
-Map data (OpenStreetMap, ODbL) is downloaded by region from [`ultimate-maps-data`](https://github.com/qtekfun/ultimate-maps-data). Only Spain for now. The app does not connect to anything until you open "Mapas" ("Maps") or download a region.
+Map data (OpenStreetMap, ODbL) is downloaded by region from [`ultimate-maps-data`](https://github.com/qtekfun/ultimate-maps-data). Spain is built every week; other countries are built by hand when needed (China is available: `docs/phase2/china.md`). The app does not connect to anything until you open "Mapas" ("Maps") or download a region.
 
 ## Building
 

@@ -141,6 +141,25 @@ class InstructionTextTest {
         assertEquals("Ahora, gira a la izquierda en Nullarbor Road", say(TurnType.LEFT, AnnouncementKind.NOW, 10, "Nullarbor Road"))
     }
 
+    @Test fun ideogramsAreNotSpokenButTheLatinPartIs() {
+        fun left(name: String) = say(TurnType.LEFT, AnnouncementKind.NOW, 10, name)
+        assertEquals("Ahora, gira a la izquierda en Yan'an Road", left("Yan'an Road 延安路"))
+        assertEquals("Ahora, gira a la izquierda en Yan'an Road", left("Yan'an Road (延安路)"))
+        assertEquals("Ahora, gira a la izquierda en Nanjing Road", left("Nanjing Road / 南京路"))
+        assertEquals("Ahora, gira a la izquierda en Sakura-dori", left("さくら通り Sakura-dori"))
+        assertEquals("Ahora, gira a la izquierda en Sejong-daero", left("세종대로 · Sejong-daero"))
+    }
+
+    @Test fun aNameOfOnlyIdeogramsIsLeftOutLikeAMissingOne() {
+        assertEquals("Ahora, gira a la izquierda", say(TurnType.LEFT, AnnouncementKind.NOW, 10, "外滩"))
+        assertEquals("Ahora, gira a la izquierda", say(TurnType.LEFT, AnnouncementKind.NOW, 10, "（外滩）"))
+    }
+
+    @Test fun otherScriptsAndAccentsAreKept() {
+        assertEquals("Ahora, gira a la derecha en Тверская улица", say(TurnType.RIGHT, AnnouncementKind.NOW, 10, "Тверская улица"))
+        assertEquals("Ahora, gira a la derecha en Rue Saint-Honoré", say(TurnType.RIGHT, AnnouncementKind.NOW, 10, "Rue Saint-Honoré"))
+    }
+
     @Test fun streetNamesAreTrimmed() {
         assertEquals("Ahora, gira a la derecha en Gran Vía", say(TurnType.RIGHT, AnnouncementKind.NOW, 10, "  Gran Vía "))
     }

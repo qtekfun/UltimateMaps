@@ -63,10 +63,27 @@ object InstructionText {
         return "${words(language).testIntro}. $sample"
     }
 
-    /** The street to say, or null when there is none worth saying. */
+    /**
+     * The street to say, or null when there is none worth saying. Characters of Chinese, Japanese and Korean scripts are left
+     * out: a Spanish or English voice cannot read them ("Yan'an Road 延安路" is said "Yan'an Road", a name that is only
+     * ideograms is not said at all, like a missing name). The screen still shows the whole name.
+     */
     internal fun cleanStreet(raw: String?): String? {
-        val s = raw?.trim().orEmpty()
+        val s = raw?.let(::withoutEastAsianScripts)?.trim().orEmpty()
         return if (s.isEmpty() || s.equals("null", ignoreCase = true) || s.equals("none", ignoreCase = true)) null else s
+    }
+
+    private val EAST_ASIAN = setOf(
+        Character.UnicodeScript.HAN, Character.UnicodeScript.HIRAGANA, Character.UnicodeScript.KATAKANA, Character.UnicodeScript.HANGUL,
+    )
+    private val EMPTY_BRACKETS = Regex("""\(\s*\)|\[\s*]|（\s*）""")
+    private val SPACES = Regex("""\s{2,}""")
+
+    private fun withoutEastAsianScripts(name: String): String {
+        if (name.codePoints().noneMatch { Character.UnicodeScript.of(it) in EAST_ASIAN }) return name
+        val kept = StringBuilder()
+        name.codePoints().filter { Character.UnicodeScript.of(it) !in EAST_ASIAN }.forEach { kept.appendCodePoint(it) }
+        return SPACES.replace(EMPTY_BRACKETS.replace(kept, ""), " ").trim(' ', '/', '-', '·', ',', ';', '|')
     }
 
     /** Which side an exit is on; null when [m] is not spoken as an exit. */
